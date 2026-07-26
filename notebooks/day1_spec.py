@@ -198,13 +198,21 @@ print(len(rows))
 """),
 
     Ex(11, "`rows` 에서 생존자(`survived == 1`)가 몇 명인지 세어 `alive` 에 담는다.",
-        setup="",
+        setup="""rows = [
+    {"name": "Owen",     "age": 22, "survived": 0},
+    {"name": "Florence", "age": 38, "survived": 1},
+    {"name": "Laina",    "age": 26, "survived": 1},
+]""",
         blank="alive = 0\nfor r in rows:\n    ___",
         answer="alive = 0\nfor r in rows:\n    if r['survived'] == 1:\n        alive = alive + 1",
         check='assert alive == 2, f"기대 2, 실제 {alive}"\nprint("통과")'),
 
     Task(3, "`rows` 에서 **이름만 모은 리스트**를 `names` 에 만든다.",
-         setup="",
+         setup="""rows = [
+    {"name": "Owen",     "age": 22, "survived": 0},
+    {"name": "Florence", "age": 38, "survived": 1},
+    {"name": "Laina",    "age": 26, "survived": 1},
+]""",
          answer='names = [r["name"] for r in rows]',
          check='assert names == ["Owen", "Florence", "Laina"], f"실제 {names}"\nprint("통과")'),
 
@@ -517,7 +525,13 @@ except AttributeError as e:
 
     Task(10, "승객 목록을 받아 **성별 생존율 딕셔너리**를 돌려주는 함수를 만든다.\n"
              "> 결과는 `{\"male\": 0.0, \"female\": 0.666…}` 형태다.",
-         setup="",
+         setup="""passengers = [
+    {"name": "Owen",     "sex": "male",   "survived": 0},
+    {"name": "Florence", "sex": "female", "survived": 1},
+    {"name": "Laina",    "sex": "female", "survived": 1},
+    {"name": "William",  "sex": "male",   "survived": 0},
+    {"name": "Lily",     "sex": "female", "survived": 0},
+]""",
          answer='def survival_by_sex(rows):\n'
                 '    result = {}\n'
                 '    for sex in set(r["sex"] for r in rows):\n'
@@ -550,4 +564,23 @@ except AttributeError as e:
 """),
 ]
 
-SPEC = ("파이썬 문법", "값과 변수 · 자료 구조 · 흐름 제어 · 함수", CELLS)
+# 문제별 진행 방식 — 섹션마다 첫 문제는 강사와 함께, 종합·어려운 것은 조별
+MODES = {
+    # 1. 값과 변수
+    ("ex", 1): "together",   ("ex", 5): "together",
+    ("task", 1): "solo",     ("task", 2): "team",
+    # 2. 자료 구조
+    ("ex", 7): "together",   ("ex", 10): "together",
+    ("task", 3): "solo",     ("task", 4): "team",
+    # 3. 흐름 제어
+    ("ex", 12): "together",  ("ex", 14): "together",  ("ex", 17): "together",
+    ("task", 5): "solo",     ("task", 6): "team",     ("task", 7): "team",
+    # 4. 함수
+    ("ex", 20): "together",
+    ("task", 8): "team",     ("task", 9): "team",
+    # 5. 종합 — 전부 조별
+    ("ex", 23): "team",  ("ex", 24): "team",  ("ex", 25): "team",  ("ex", 26): "team",
+    ("task", 10): "team",    ("task", 11): "team",
+}
+
+SPEC = ("파이썬 문법", "값과 변수 · 자료 구조 · 흐름 제어 · 함수", CELLS, MODES)

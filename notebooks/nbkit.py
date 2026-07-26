@@ -24,19 +24,34 @@ def lab(text):
     """따라 해 보는 실습 안내"""
     return md(f"**실습.** {text}")
 
+MODES = {
+    "together": "강사와 함께",
+    "solo":     "스스로",
+    "team":     "조별로",
+}
+
+
+GROUPS = [
+    ("together", "함께 풀기",  "강사가 화면을 켜고 같이 푼다."),
+    ("solo",     "스스로 풀기", "각자 푼다. 막히면 손을 든다."),
+    ("team",     "조별 과제",   "2~3명이 한 조로 상의하며 푼다."),
+]
+
+
 def q(no, text):
-    """빈칸 문제 안내"""
     return md(f"> **빈칸 문제 {no}.** {text}")
 
 
 def t(no, text):
-    """직접 작성하는 실습문제 안내"""
     return md(f"> **실습문제 {no}.** {text}")
 
 class Task:
     """실습문제 — 빈 자리에 직접 작성한다"""
+    kind = "task"
+
     def __init__(self, no, prompt, answer, check, setup=""):
         self.no, self.prompt, self.answer, self.check, self.setup = no, prompt, answer, check, setup
+        self.mode = "solo"
 
     def cells(self, solution):
         body = self.answer if solution else "# 여기에 작성한다\n"
@@ -46,9 +61,12 @@ class Task:
 
 class Ex:
     """빈칸 문제 — blank/answer 두 벌로 갈린다"""
+    kind = "ex"
+
     def __init__(self, no, prompt, blank, answer, check, setup=""):
         self.no, self.prompt, self.blank, self.answer = no, prompt, blank, answer
         self.check, self.setup = check, setup
+        self.mode = "solo"
 
     def cells(self, solution):
         body = self.answer if solution else self.blank
@@ -56,14 +74,36 @@ class Ex:
         return [q(self.no, self.prompt), code(src)]
 
 
-def build(day, title, subtitle, spec, solution):
-    nb_cells = []
-    suffix = "_solution" if solution else ""
-    url = f"https://colab.research.google.com/github/{REPO}/blob/main/notebooks/day{day}{suffix}.ipynb"
-    nb_cells.append(md(f"""
+VARIANTS = {
+    # 파일 이름         (설명,                       담을 문제 모드,      정답 여부)
+    "lecture":  ("강사와 함께",   ("together",),        False),
+    "practice": ("수강생끼리",    ("solo", "team"),     False),
+    "solution": ("정답",          ("together", "solo", "team"), True),
+}
+
+INTRO = {
+    "lecture": """강의를 따라가며 **강사와 같이** 진행한다.
+
+**실습** 셀은 그대로 실행해 결과를 눈으로 확인한다.
+**문제** 셀은 강사가 화면을 켜고 함께 푼다.""",
+    "practice": """강의가 끝난 뒤 **수강생끼리** 푼다.
+
+`스스로 풀기` 는 각자, `조별 과제` 는 2~3명이 한 조로 상의하며 푼다.
+막히면 강의 노트북(`lecture`)의 실습 셀로 돌아가 확인한다.""",
+    "solution": """`lecture` 와 `practice` 의 모든 문제에 대한 정답본이다.
+수강생은 먼저 스스로 풀어 본 뒤에 연다.""",
+}
+
+
+def build(day, title, subtitle, spec, variant, modes=None):
+    desc, keep, solution = VARIANTS[variant]
+    url = (f"https://colab.research.google.com/github/{REPO}"
+           f"/blob/main/notebooks/day{day}_{variant}.ipynb")
+
+    cells = [md(f"""
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]({url})
 
-# Day {day} 실습 — {title}
+# Day {day} · {desc} — {title}
 
 {subtitle}
 
@@ -71,43 +111,71 @@ def build(day, title, subtitle, spec, solution):
 
 ### 시작하기 전에
 
-1. 위 메뉴에서 **파일 → 드라이브에 사본 저장** 을 먼저 누른다.
-   이걸 안 하면 고친 내용이 저장되지 않는다.
-2. 셀을 고르고 **Shift + Enter** 로 실행한다. 왼쪽 `[1]` 은 실행 순서다.
-### 셀 세 가지
+1. **파일 → 드라이브에 사본 저장** 을 먼저 누른다. 안 하면 고친 내용이 남지 않는다.
+2. 셀을 고르고 **Shift + Enter** 로 실행한다.
 
-| 표시 | 하는 일 |
-|---|---|
-| **실습** | 그대로 실행해 결과를 눈으로 확인한다 |
-| **빈칸 문제** | `___` 를 채워 넣는다 |
-| **실습문제** | 빈 자리에 처음부터 직접 작성한다 |
+{INTRO[variant]}
 
 문제는 실행하면 `assert` 로 자가 채점된다. 맞으면 `통과` 가 찍히고,
 틀리면 기대값과 실제값이 같이 나온다.
-"""))
+""")]
+
+    pending, section_open = [], None
+
+    def flush():
+        for key, label, how in GROUPS:
+            if key not in keep:
+                continue
+            group = [x for x in pending if x.mode == key]
+            if not group:
+                continue
+            if len(keep) > 1:
+                cells.append(md(f"### {label}\n\n{how}"))
+            for x in group:
+                cells.extend(x.cells(solution))
+        pending.clear()
+
+    def is_section(cell):
+        return cell["cell_type"] == "markdown" and "".join(cell["source"]).startswith("## ")
+
     for item in spec:
         if isinstance(item, (Ex, Task)):
-            nb_cells += item.cells(solution)
+            item.mode = (modes or {}).get((item.kind, item.no), "solo")
+            pending.append(item)
+        elif is_section(item):
+            flush()
+            section_open = item
+            cells.append(item)
         else:
-            nb_cells.append(item)
+            # 데모·설명 셀은 lecture 에만 담는다
+            if variant == "lecture":
+                cells.append(item)
+    flush()
 
-    nb = {"cells": nb_cells,
+    # 문제가 하나도 없는 절 머리글은 지운다
+    pruned, i = [], 0
+    while i < len(cells):
+        c = cells[i]
+        if (c["cell_type"] == "markdown" and "".join(c["source"]).startswith("## ")
+                and (i + 1 == len(cells) or
+                     ("".join(cells[i + 1]["source"]).startswith("## ")))):
+            i += 1
+            continue
+        pruned.append(c)
+        i += 1
+
+    nb = {"cells": pruned,
           "metadata": {"kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
                        "language_info": {"name": "python", "version": "3.11"},
                        "colab": {"provenance": [], "toc_visible": True}},
           "nbformat": 4, "nbformat_minor": 0}
-    path = os.path.join(HERE, f"day{day}{suffix}.ipynb")
+    path = os.path.join(HERE, f"day{day}_{variant}.ipynb")
     with open(path, "w", encoding="utf-8") as f:
         json.dump(nb, f, ensure_ascii=False, indent=1)
-    return path, sum(1 for c in nb_cells if c["cell_type"] == "code")
+    return path, sum(1 for c in pruned if c["cell_type"] == "code")
 
 
-def emit(day, title, subtitle, spec):
-    n_ex = sum(1 for x in spec if isinstance(x, Ex))
-    n_task = sum(1 for x in spec if isinstance(x, Task))
-    for sol in (False, True):
-        p, n = build(day, title, subtitle, spec, sol)
-        print(f"  {os.path.basename(p):<26} 코드 셀 {n:>3}개  "
-              f"빈칸 {n_ex}개  실습문제 {n_task}개")
-
-
+def emit(day, title, subtitle, spec, modes=None):
+    for variant in VARIANTS:
+        p, n = build(day, title, subtitle, spec, variant, modes)
+        print(f"  {os.path.basename(p):<26} 코드 셀 {n:>3}개")
