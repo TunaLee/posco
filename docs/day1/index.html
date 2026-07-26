@@ -1,0 +1,2179 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Day 1 · 파이썬 문법</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#16142B; --ink-soft:#4A4766; --mut:#8E8AAC;
+    --violet:#5B3DF5; --violet-700:#3A1FC9; --violet-300:#B7A9FF;
+    --wash:#F4F1FF; --wash-2:#FAF9FF; --line:#E8E4F8;
+    --paper:#FFFFFF; --mint:#0FB5A1; --mint-soft:#E4F8F4;
+    --amber:#F4A93C; --rose:#E8537A;
+    --code-bg:#1C1933; --code-ink:#ECEAFF; --code-dim:#9C97D6;
+    --sw:1280px; --sh:720px;
+    --shadow:0 24px 60px -24px rgba(43,28,120,.45);
+    --serif: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:var(--serif); color:var(--ink);
+    background:
+      radial-gradient(1200px 600px at 15% -10%, #ECE7FF 0%, rgba(236,231,255,0) 60%),
+      radial-gradient(1000px 700px at 110% 10%, #F0EBFF 0%, rgba(240,235,255,0) 55%),
+      #EAE7F4;
+    min-height:100vh; -webkit-font-smoothing:antialiased;
+  }
+  .progress{position:fixed; top:0; left:0; right:0; height:3px; z-index:60; background:transparent;}
+  .progress .fill{height:100%; width:0; background:linear-gradient(90deg,var(--violet),#9B7BFF); transition:width .2s ease;}
+
+  .stage{
+    position:fixed; inset:0 0 0 0; z-index:10;
+    display:flex; justify-content:safe center; align-items:safe center;
+    overflow:auto; padding:30px 30px 96px;
+  }
+  .sizer{position:relative;}
+  .scaler{ width:var(--sw); height:var(--sh); transform-origin:top left; position:relative; }
+
+  .slide{
+    width:var(--sw); height:var(--sh);
+    background:var(--paper); border:1px solid var(--line);
+    border-radius:22px; box-shadow:var(--shadow);
+    overflow:hidden; display:none; flex-direction:column;
+    padding:50px 60px 46px; position:relative;
+  }
+  .slide.active{display:flex;}
+
+  .eyebrow{display:inline-flex; align-items:center; gap:10px; font-family:var(--mono); font-size:13px; font-weight:700; letter-spacing:.04em; color:var(--violet); text-transform:uppercase;}
+  .eyebrow .tag{color:#fff; background:var(--violet); border-radius:6px; padding:3px 8px; font-size:11px; letter-spacing:.05em;}
+  .eyebrow .tag.mint{background:var(--mint);}
+  .eyebrow .dot{width:5px;height:5px;border-radius:50%;background:var(--violet-300);}
+  .coord{position:absolute; top:30px; right:40px; font-family:var(--mono); font-size:12px; color:var(--mut); font-weight:600; letter-spacing:.05em;}
+  .coord b{color:var(--ink);}
+
+  .s-title{font-size:39px; line-height:1.12; letter-spacing:-.025em; font-weight:800; margin:14px 0 4px;}
+  .s-title.sm{font-size:32px;} .s-title.xs{font-size:28px;}
+  .s-sub{font-size:17px; color:var(--ink-soft); font-weight:500; line-height:1.5; max-width:64ch;}
+  .rule{height:4px; width:54px; border-radius:3px; background:var(--violet); margin:13px 0 6px;}
+  .body{flex:1; min-height:0; display:flex; flex-direction:column; justify-content:center;}
+  .body.top{justify-content:flex-start; padding-top:6px;}
+
+  .slide.cover{ padding:0; justify-content:center;
+    background:
+      radial-gradient(900px 520px at 100% 0%, #6B4BFF 0%, rgba(107,75,255,0) 58%),
+      radial-gradient(700px 600px at -5% 110%, #3A1FC9 0%, rgba(58,31,201,0) 55%),
+      linear-gradient(135deg,#2A1B8C 0%, #4226D6 48%, #5B3DF5 100%);
+    color:#fff; border:none; }
+  .cover .aperture{position:absolute; top:-120px; right:-120px; width:460px; height:460px; border-radius:50%; background:radial-gradient(circle at 35% 35%, rgba(255,255,255,.5), rgba(255,255,255,0) 62%); filter:blur(2px);}
+  .cover .ring{position:absolute; right:60px; top:60px; width:120px; height:120px; border-radius:50%; border:1.5px solid rgba(255,255,255,.4);}
+  .cover .ring::after{content:""; position:absolute; inset:18px; border-radius:50%; border:1.5px dashed rgba(255,255,255,.35);}
+  .cover .wrap{padding:60px 70px; position:relative; z-index:2; width:100%;}
+  .cover .kick{font-family:var(--mono); letter-spacing:.18em; font-size:13.5px; font-weight:600; color:rgba(255,255,255,.86); text-transform:uppercase; display:flex; align-items:center; gap:14px;}
+  .cover .kick .pill{border:1px solid rgba(255,255,255,.45); border-radius:999px; padding:4px 12px;}
+  .cover h1{font-size:58px; line-height:1.08; letter-spacing:-.03em; font-weight:800; margin:24px 0 16px; max-width:21ch;}
+  .cover .lead{font-size:18px; line-height:1.55; color:rgba(255,255,255,.9); max-width:56ch; font-weight:400;}
+  .cover .meta{margin-top:36px; display:flex; gap:24px; flex-wrap:wrap; font-size:14px;}
+  .cover .meta .it{display:flex; flex-direction:column; gap:3px;}
+  .cover .meta .it .k{font-family:var(--mono); font-size:11px; letter-spacing:.1em; color:rgba(255,255,255,.6); text-transform:uppercase;}
+  .cover .meta .it .v{font-size:15px; font-weight:700; color:#fff;}
+
+  .slide.section{ background:linear-gradient(140deg,#3A1FC9 0%, #5B3DF5 70%, #7A5BFF 100%); color:#fff; border:none; justify-content:center; padding:60px 70px; }
+  .slide.section.mintbg{ background:linear-gradient(140deg,#0A8A7A 0%, #0FB5A1 70%, #34D6C2 100%); }
+  .slide.section .ghost{position:absolute; right:34px; bottom:-66px; font-family:var(--mono); font-weight:700; font-size:330px; line-height:.8; color:rgba(255,255,255,.10); letter-spacing:-.04em;}
+  .slide.section .lab-flag{display:inline-flex; align-items:center; gap:9px; align-self:flex-start; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.4); padding:7px 14px; border-radius:999px; font-weight:700; font-size:13px; font-family:var(--mono); letter-spacing:.06em;}
+  .slide.section .lab-flag .sq{width:9px;height:9px;border-radius:3px;background:#fff;}
+  .slide.section .seyebrow{font-family:var(--mono); letter-spacing:.16em; font-size:14px; color:rgba(255,255,255,.85); text-transform:uppercase; margin-bottom:14px;}
+  .slide.section h2{font-size:48px; line-height:1.1; letter-spacing:-.025em; font-weight:800; margin:0 0 14px; max-width:24ch; position:relative; z-index:2;}
+  .slide.section p{font-size:18px; color:rgba(255,255,255,.92); max-width:54ch; line-height:1.55; position:relative; z-index:2;}
+  .slide.section .agenda{display:flex; gap:10px; flex-wrap:wrap; margin-top:22px; position:relative; z-index:2;}
+  .slide.section .agenda span{font-size:13px; font-weight:600; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3); padding:6px 12px; border-radius:999px;}
+
+  .cards{display:grid; gap:16px;}
+  .cards.c2{grid-template-columns:repeat(2,1fr);} .cards.c3{grid-template-columns:repeat(3,1fr);} .cards.c4{grid-template-columns:repeat(4,1fr);}
+  .card{background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:17px 19px; display:flex; flex-direction:column; gap:7px; position:relative;}
+  .card .ic{width:38px; height:38px; border-radius:4px; display:grid; place-items:center; background:transparent; border:1.5px solid var(--violet-300); color:var(--violet); margin-bottom:3px;}
+  .card .ic svg{width:20px;height:20px;}
+  .card h3{font-size:17px; font-weight:800; letter-spacing:-.01em; margin:0 0 1px; padding-bottom:8px; border-bottom:1px solid var(--line);}
+  .card p{font-size:14px; color:var(--ink-soft); line-height:1.5; margin:0;}
+  .card .n{font-family:var(--mono); font-size:11.5px; color:var(--violet); font-weight:700;}
+
+  .biglist{display:flex; flex-direction:column; gap:13px;}
+  .biglist .li{display:flex; gap:15px; align-items:flex-start;}
+  .biglist .li .num{flex:none; width:34px; height:34px; border-radius:10px; background:var(--violet); color:#fff; font-family:var(--mono); font-weight:700; display:grid; place-items:center; font-size:14px; margin-top:1px;}
+  .biglist .li .tx h4{margin:0 0 3px; font-size:17.5px; font-weight:800;}
+  .biglist .li .tx p{margin:0; font-size:14px; color:var(--ink-soft); line-height:1.5;}
+
+  .phase-label{font-family:var(--mono); font-size:12px; font-weight:700; letter-spacing:.08em; color:var(--violet); text-transform:uppercase; margin:0 0 10px; display:flex; align-items:center; gap:9px;}
+  .phase-label .ln{height:1px; flex:1; background:var(--line);}
+  .pipe{display:flex; align-items:stretch; gap:0; margin-bottom:20px;}
+  .pipe .step{flex:1; background:var(--paper); border:1px solid var(--line); border-top:3px solid var(--violet); border-radius:4px; padding:12px 10px; text-align:center; min-width:0;}
+  .pipe .step .si{font-family:var(--mono); font-size:11px; color:var(--violet); font-weight:700;}
+  .pipe .step .sn{font-size:14.5px; font-weight:800; margin-top:3px; letter-spacing:-.01em;}
+  .pipe .step .sd{font-size:11px; color:var(--mut); margin-top:2px; line-height:1.3;}
+  .pipe .arrow{display:flex; align-items:center; padding:0 5px; color:var(--violet-300);}
+  .pipe .arrow svg{width:17px;height:17px;}
+  .pipe.q .step{background:var(--paper); border-color:var(--line); border-top-color:var(--mint);} .pipe.q .step .si{color:var(--mint);} .pipe.q .arrow{color:#8AD7CC;}
+
+  .code{background:var(--code-bg); border-radius:14px; overflow:hidden; border:1px solid #2A2548; box-shadow:0 18px 40px -22px rgba(28,25,51,.7);}
+  .code .bar{display:flex; align-items:center; gap:7px; padding:10px 15px; border-bottom:1px solid #2A2548; background:#171430;}
+  .code .bar .dot{width:11px;height:11px;border-radius:50%;}
+  .code .bar .r{background:#FF6058;} .code .bar .y{background:#FFC130;} .code .bar .g{background:#28CA42;}
+  .code .bar .fn{margin-left:8px; font-family:var(--mono); font-size:12px; color:var(--code-dim);}
+  .code pre{margin:0; padding:16px 18px; overflow:auto;}
+  .code code{font-family:var(--mono); font-size:13px; line-height:1.6; color:var(--code-ink); white-space:pre;}
+  .code.sm code{font-size:12px; line-height:1.55;}
+  .cm{color:#7D78B8;} .kw{color:#C792FF;} .st{color:#9DE39A;} .fn2{color:#82D3FF;} .nm{color:#FFD479;}
+
+  .callout{border-radius:4px; padding:15px 18px; display:flex; gap:13px; align-items:flex-start; background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet);}
+  .callout .ci{flex:none; width:34px;height:34px;border-radius:4px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .callout .ci svg{width:18px;height:18px;}
+  .callout .ct h4{margin:0 0 3px; font-size:15.5px; font-weight:800;}
+  .callout .ct p{margin:0; font-size:13.5px; color:var(--ink-soft); line-height:1.5;}
+  .callout.mint{border-left-color:var(--mint);} .callout.mint .ci{background:var(--mint);}
+  .callout.amber{border-left-color:var(--amber);} .callout.amber .ci{background:var(--amber);}
+  .callout.rose{border-left-color:var(--rose);} .callout.rose .ci{background:var(--rose);}
+
+  .lab-badge{display:inline-flex; align-items:center; gap:9px; background:var(--mint-soft); color:#0A7F70; border:1px solid #BFE9E1; padding:7px 13px; border-radius:999px; font-weight:700; font-size:13px; font-family:var(--mono); letter-spacing:.04em;}
+  .lab-badge .sq{width:9px;height:9px;border-radius:3px;background:var(--mint);}
+
+  .twocol{display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start;}
+  .twocol.w{grid-template-columns:1.15fr .85fr;} .twocol.w2{grid-template-columns:.85fr 1.15fr;}
+
+  .chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{font-size:12.5px; font-weight:600; color:var(--ink-soft); background:#fff; border:1px solid var(--line); padding:6px 12px; border-radius:999px;}
+  .chip b{color:var(--violet);}
+
+  .deliv{background:var(--paper); border:1px dashed var(--violet-300); border-left:3px solid var(--violet); border-radius:4px; padding:15px 18px; display:flex; align-items:center; gap:13px;}
+  .deliv .di{flex:none;width:36px;height:36px;border-radius:4px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .deliv .di svg{width:19px;height:19px;}
+  .deliv .dt b{display:block;font-size:11px;font-family:var(--mono);letter-spacing:.08em;color:var(--violet);text-transform:uppercase;}
+  .deliv .dt span{font-size:15px;font-weight:700;}
+
+  .vlist{display:flex;flex-direction:column;gap:10px;}
+  .vlist .v{display:flex;gap:11px;align-items:flex-start;font-size:14.5px;color:var(--ink-soft);line-height:1.45;}
+  .vlist .v .b{flex:none;width:22px;height:22px;border-radius:7px;background:var(--wash);color:var(--violet);display:grid;place-items:center;font-family:var(--mono);font-size:12px;font-weight:700;margin-top:1px;}
+  .vlist .v b{color:var(--ink);font-weight:700;}
+
+  .keymsg{margin-top:auto; background:var(--ink); color:#fff; border-radius:4px; padding:15px 20px; display:flex; gap:13px; align-items:center; font-size:15px; line-height:1.5;}
+  .keymsg .k{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;color:var(--violet-300);text-transform:uppercase;flex:none;}
+  .keymsg b{color:#fff;}
+
+  .formula{display:flex; flex-direction:column; gap:10px; background:var(--code-bg); border-radius:13px; padding:20px; color:#fff; font-family:var(--mono);}
+  .formula .big{font-size:21px; text-align:center;}
+
+  .ctable{width:100%; border-collapse:separate; border-spacing:0; font-size:14px; border:1px solid var(--line); border-radius:13px; overflow:hidden;}
+  .ctable th,.ctable td{padding:13px 16px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top;}
+  .ctable thead th{background:var(--wash); color:var(--violet); font-family:var(--mono); font-size:12px; letter-spacing:.04em; text-transform:uppercase; font-weight:700;}
+  .ctable tbody tr:last-child td{border-bottom:none;}
+  .ctable td b{color:var(--ink);} .ctable .hl{color:var(--violet); font-weight:700;}
+  .ctable .yes{color:var(--mint); font-weight:700;} .ctable .no{color:var(--rose); font-weight:700;}
+
+  .timeline{display:flex; gap:0; align-items:stretch; margin-top:6px;}
+  .timeline .t{flex:1; position:relative; padding:0 6px;}
+  .timeline .t .yr{font-family:var(--mono); font-size:13px; font-weight:700; color:var(--violet);}
+  .timeline .t .ev{font-size:13px; font-weight:700; margin-top:30px; line-height:1.3;}
+  .timeline .t .ds{font-size:11.5px; color:var(--mut); margin-top:3px; line-height:1.35;}
+  .timeline .t::before{content:""; position:absolute; left:0; right:0; top:26px; height:2px; background:var(--line);}
+  .timeline .t::after{content:""; position:absolute; left:8px; top:21px; width:12px; height:12px; border-radius:50%; background:var(--violet); border:3px solid #fff; box-shadow:0 0 0 1px var(--violet-300);}
+
+  .quote{background:var(--wash-2); border-left:4px solid var(--violet); border-radius:0 13px 13px 0; padding:18px 22px;}
+  .quote p{margin:0; font-size:18px; line-height:1.5; font-weight:600; color:var(--ink);}
+  .quote .src{margin-top:10px; font-size:12.5px; color:var(--mut); font-family:var(--mono);}
+  .refbox{background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:14px 16px; display:flex; gap:12px; align-items:flex-start;}
+  .refbox .rk{font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; color:var(--violet); text-transform:uppercase; font-weight:700;}
+  .refbox h4{margin:2px 0 3px; font-size:14.5px; font-weight:800;}
+  .refbox p{margin:0; font-size:12.5px; color:var(--ink-soft); line-height:1.45;}
+  .refbox .ri{flex:none;width:30px;height:30px;border-radius:8px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .refbox .ri svg{width:16px;height:16px;}
+
+  .arch{display:flex; align-items:center; gap:18px; justify-content:center; margin:6px 0;}
+  .arch .box{border:1.5px solid var(--line); border-radius:14px; padding:18px 20px; text-align:center; background:var(--wash-2); min-width:160px;}
+  .arch .box .bt{font-size:15px; font-weight:800;} .arch .box .bs{font-size:12px; color:var(--mut); margin-top:3px; line-height:1.35;}
+  .arch .box.local{border-style:dashed; border-color:var(--violet-300); background:#fff;}
+  .arch .box.api{background:linear-gradient(135deg,#EFEAFF,#F8F5FF); border-color:var(--violet-300);}
+  .arch .conn{display:flex; flex-direction:column; align-items:center; gap:4px; color:var(--violet); font-family:var(--mono); font-size:11px; font-weight:700;}
+  .arch .conn svg{width:34px;height:18px;}
+
+  .stat-row{display:flex; gap:16px;}
+  .stat{flex:1; background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:16px 18px;}
+  .stat .num{font-size:30px; font-weight:800; letter-spacing:-.02em; color:var(--violet); font-family:var(--mono);}
+  .stat .lab{font-size:13px; color:var(--ink-soft); margin-top:4px; line-height:1.4;}
+
+  .twopane{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .pane{border:1px solid var(--line); border-radius:4px; padding:16px 18px; background:var(--paper);}
+  .pane.bad{border-left:3px solid var(--rose);} .pane.good{border-left:3px solid var(--mint);}
+  .pane h4{margin:0 0 9px; font-size:14px; font-weight:800; display:flex; align-items:center; gap:7px;}
+  .pane.bad h4{color:#C9405B;} .pane.good h4{color:#0E9E6E;}
+  .pane p{margin:0; font-size:13px; color:var(--ink-soft); line-height:1.5;}
+  .pane .mini{font-family:var(--mono); font-size:12px; background:var(--wash-2); border:1px solid var(--line); border-radius:3px; padding:8px 10px; color:var(--ink-soft); line-height:1.5; margin-top:8px;}
+
+  .controlbar{
+    position:fixed; left:50%; bottom:18px; transform:translateX(-50%); z-index:70;
+    display:flex; align-items:center; gap:4px;
+    background:#2B2B2E; border-radius:999px; padding:8px 10px;
+    box-shadow:0 16px 40px -12px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.04) inset;
+  }
+  .controlbar button{appearance:none; border:none; background:transparent; cursor:pointer; color:#C9C9D2; display:grid; place-items:center; border-radius:999px; transition:.12s ease; font-family:var(--serif);}
+  .controlbar .ico{width:38px; height:38px;}
+  .controlbar .ico svg{width:19px;height:19px;}
+  .controlbar .ico:hover{color:#fff; background:rgba(255,255,255,.1);}
+  .controlbar .ico:disabled{color:#5C5C66; cursor:not-allowed; background:transparent;}
+  .controlbar .sep{width:1px; height:24px; background:rgba(255,255,255,.16); margin:0 6px;}
+  .controlbar .count{ color:#EDEDF2; font-style:italic; font-family:Georgia,'Times New Roman',serif; font-size:17px; min-width:78px; text-align:center; letter-spacing:.02em; user-select:none;}
+  .controlbar .count b{font-style:italic; font-weight:600;}
+  .controlbar .zoom{width:32px;height:38px; color:#9A9AA6; font-size:18px;}
+  .controlbar .zoom:hover{color:#fff;}
+  .controlbar .zoom svg{width:17px;height:17px;}
+  .controlbar .pdf{
+    margin-left:6px; background:#7CB342; color:#fff; font-weight:800; font-size:14px; letter-spacing:.06em;
+    padding:0 22px; height:38px; border-radius:999px; display:flex; align-items:center;
+    box-shadow:0 6px 16px -6px rgba(124,179,66,.8);
+  }
+  .controlbar .pdf:hover{background:#86BD4B; color:#fff;}
+
+  .overview{position:fixed; inset:0; z-index:80; background:rgba(22,20,43,.55); backdrop-filter:blur(8px); display:none; padding:40px; overflow:auto;}
+  .overview.on{display:block;}
+  .overview .head{display:flex; align-items:center; justify-content:space-between; max-width:1100px; margin:0 auto 18px; color:#fff;}
+  .overview .head h3{margin:0; font-size:18px; font-weight:800;}
+  .overview .head button{appearance:none;border:1px solid rgba(255,255,255,.3); background:rgba(255,255,255,.1); color:#fff; border-radius:10px; padding:8px 14px; cursor:pointer; font-family:var(--serif); font-weight:700; font-size:13px;}
+  .ovgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; max-width:1100px; margin:0 auto;}
+  .ovcard{background:#fff; border:1px solid var(--line); border-radius:11px; padding:13px 15px; cursor:pointer; transition:.12s; text-align:left;}
+  .ovcard:hover{transform:translateY(-2px); box-shadow:0 12px 22px -12px rgba(0,0,0,.4); border-color:var(--violet);}
+  .ovcard .ovn{font-family:var(--mono); font-size:11px; color:var(--violet); font-weight:700;}
+  .ovcard .ovt{font-size:13.5px; font-weight:700; margin-top:4px; line-height:1.3; color:var(--ink);}
+
+  .hint{position:fixed; left:18px; bottom:24px; z-index:65; font-size:11px; color:var(--mut); font-family:var(--mono);}
+
+
+  /* ===== 이미지 / 도해 컴포넌트 (덱 하네스 추가분) ===== */
+  .figure{border:1px solid var(--line); border-radius:4px; background:var(--wash-2); overflow:hidden; display:flex; flex-direction:column; min-height:0;}
+  .figure img{display:block; width:100%; height:auto; object-fit:contain; min-height:0;}
+  .figure figcaption{font-family:var(--mono); font-size:11px; color:var(--mut); padding:7px 11px; border-top:1px solid var(--line); background:#fff;}
+  .figure.tight img{max-height:330px; object-fit:contain; background:#fff;}
+  /* 원본이 검은 여백을 달고 있는 캡처용 */
+  .figure.dark{background:#16142B; border-color:#2A2548;}
+  .figure.dark img{background:#16142B;}
+  .figure.dark figcaption{background:#1C1933; color:#9C97D6; border-top-color:#2A2548;}
+
+  /* 스크린샷: 창 프레임을 씌워 원본 캡처임을 드러낸다 */
+  .shot{border:1px solid var(--line); border-radius:9px; overflow:hidden; background:#fff; box-shadow:0 10px 26px -18px rgba(28,25,51,.6); display:flex; flex-direction:column; min-height:0;}
+  .shot .sbar{display:flex; align-items:center; gap:6px; padding:7px 11px; background:var(--wash); border-bottom:1px solid var(--line);}
+  .shot .sbar .d{width:9px;height:9px;border-radius:50%;background:var(--violet-300);}
+  .shot .sbar .t{margin-left:6px; font-family:var(--mono); font-size:11px; color:var(--mut);}
+  .shot img{display:block; width:100%; height:auto; max-height:400px; object-fit:contain; min-height:0;}
+
+  /* 제품·도구 로고 — 작은 브랜드 마크 */
+  .brandmark{display:flex; align-items:center; gap:15px; margin-bottom:18px;}
+  .brandmark img{height:46px; width:auto; display:block;}
+  .brandmark .bt{font-size:13.5px; color:var(--ink-soft); line-height:1.45;}
+  .brandmark .bt b{color:var(--ink);}
+
+  /* 채워야 할 이미지 자리 — 인쇄에도 남으므로 발표 전 반드시 교체 */
+  .need-img{border:2px dashed var(--violet-300); border-radius:4px; background:repeating-linear-gradient(135deg,#FBFAFF,#FBFAFF 10px,#F4F1FF 10px,#F4F1FF 20px);
+    display:flex; flex-direction:column; justify-content:center; gap:6px; padding:20px 22px; min-height:150px;}
+  .need-img .nk{font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:.1em; color:var(--violet); text-transform:uppercase;}
+  .need-img .nd{font-size:14px; font-weight:700; color:var(--ink); line-height:1.4;}
+  .need-img .nm2{font-family:var(--mono); font-size:11.5px; color:var(--mut);}
+
+  /* 코드 실행 결과 */
+  .code .out{border-top:1px dashed #38325C; background:#141127; padding:11px 18px; font-family:var(--mono); font-size:12.5px; line-height:1.55; color:#9DE39A; white-space:pre; overflow:auto;}
+  .code .out .ol{color:#7D78B8;}
+  .code .err{color:#FF8E8E;}
+
+  /* 메모리 슬롯 도해 */
+  .slots{display:flex; gap:8px; flex-wrap:wrap; align-items:flex-start;}
+  .slot{border:1.5px solid var(--line); border-radius:8px; min-width:74px; padding:9px 11px; text-align:center; background:#fff;}
+  .slot .adr{font-family:var(--mono); font-size:10px; color:var(--mut); letter-spacing:.02em;}
+  .slot .val{font-family:var(--mono); font-size:15px; font-weight:700; color:var(--ink); margin-top:2px;}
+  .slot .nm{font-size:11px; color:var(--violet); font-weight:700; margin-top:3px;}
+  .slot.ref{border-style:dashed; border-color:var(--violet-300); background:var(--wash-2);}
+  .slot.dim{opacity:.45;}
+  .ptr{display:grid; place-items:center; color:var(--violet); font-family:var(--mono); font-size:18px; font-weight:700; padding:0 2px; align-self:center;}
+
+  /* 인라인 SVG 차트 */
+  .plot{background:var(--wash-2); border:1px solid var(--line); border-radius:4px; padding:14px; display:grid; place-items:center; min-height:0;}
+  .plot svg{width:100%; height:auto; display:block; max-height:300px;}
+  .plot .cap{font-family:var(--mono); font-size:11px; color:var(--mut); margin-top:8px; text-align:center;}
+  .formula .cap{font-family:var(--mono); font-size:11.5px; color:var(--code-dim); text-align:center;}
+
+  /* 수정·보강 표시 (원본 pptx에 없던 내용) */
+  .newmark{position:absolute; top:30px; right:112px; font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.08em;
+    color:var(--mint); border:1px solid #BFE9E1; background:var(--mint-soft); border-radius:999px; padding:3px 9px;}
+
+  @media print{
+    @page{ size:1280px 720px; margin:0; }
+    body{background:#fff !important;}
+    .controlbar,.progress,.hint,.overview{display:none !important;}
+    .stage{position:static; inset:auto; overflow:visible; display:block; padding:0;}
+    .sizer{width:auto !important; height:auto !important;}
+    .scaler{transform:none !important; width:auto !important; height:auto !important;}
+    .slide{ display:flex !important; width:1280px !important; height:720px !important;
+      border-radius:0 !important; border:none !important; box-shadow:none !important;
+      page-break-after:always; break-after:page;
+      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .slide:last-child{page-break-after:auto;}
+  }
+</style>
+</head>
+<body>
+
+<div class="progress"><div class="fill" id="pfill"></div></div>
+
+<main class="stage" id="stage">
+  <div class="sizer" id="sizer">
+    <div class="scaler" id="scaler">
+
+
+
+<!-- ============================================================
+     슬라이드는 여기부터. 규격: 1280x720 고정.
+     첫 장은 slide cover active, 나머지는 active 없이.
+     ============================================================ -->
+
+<section class="slide cover active" data-title="표지 · Day 1">
+  <div class="aperture"></div><div class="ring"></div>
+  <div class="wrap">
+    <div class="kick"><span class="pill">WEEK 1 · DAY 1</span><span>PYTHON</span></div>
+    <h1>파이썬 문법<br/>코드를 읽는 최소 단위</h1>
+  </div>
+</section>
+
+<section class="slide" data-title="오늘의 일정">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">AGENDA</span><span class="dot"></span>일정</div>
+  <h2 class="s-title sm">오늘의 일정</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c3">
+      <div class="card"><span class="n">CH0</span><h3>작업 환경</h3><p>로컬과 클라우드 · Anaconda · Jupyter · Colab · 세션의 수명.</p></div>
+      <div class="card"><span class="n">CH1</span><h3>값과 변수</h3><p>자료형 · 연산자 · 문자열 · 불변과 가변.</p></div>
+      <div class="card"><span class="n">CH2</span><h3>자료 구조</h3><p>리스트 · 튜플 · 딕셔너리 · 집합.</p></div>
+      <div class="card"><span class="n">CH3</span><h3>흐름 제어</h3><p>입력 · 형변환 · 비교와 논리 · 조건문 · 반복문 · 컴프리헨션.</p></div>
+      <div class="card"><span class="n">CH4</span><h3>함수</h3><p>내장 함수 · def · 반환 · 인자의 가변성 · 메서드.</p></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>문법을 외우는 것이 목표가 아니다. <b>남의 코드를 끝까지 읽고 어디를 고칠지 짚는 것</b>이 목표다.</div></div>
+  </div>
+</section>
+
+<section class="slide section mintbg" data-title="[섹션] 작업 환경">
+  <div class="ghost">00</div>
+  <div class="lab-flag"><span class="sq"></span>HANDS-ON</div>
+  <div class="seyebrow">CHAPTER 00</div>
+  <h2>작업 환경</h2>
+  <div class="agenda"><span>두 갈래</span><span>Anaconda</span><span>Jupyter</span><span>Colab</span><span>세션의 수명</span></div>
+</section>
+
+<section class="slide" data-title="로컬과 클라우드">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">CH0</span><span class="dot"></span>선택</div>
+  <h2 class="s-title sm">로컬과 클라우드 두 갈래</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable">
+      <thead><tr><th></th><th>로컬 — Anaconda + Jupyter</th><th>클라우드 — Colab</th></tr></thead>
+      <tbody>
+        <tr><td>설치</td><td>아나콘다 한 번</td><td class="yes">없음</td></tr>
+        <tr><td>코드가 도는 곳</td><td class="hl">내 컴퓨터</td><td class="hl">구글 서버</td></tr>
+        <tr><td>GPU</td><td>내 장비에 있어야 쓴다</td><td class="yes">T4를 무료로 배정</td></tr>
+        <tr><td>데이터</td><td class="yes">밖으로 나가지 않는다</td><td class="no">구글 서버로 올라간다</td></tr>
+        <tr><td>세션</td><td class="yes">끄지 않으면 유지</td><td class="no">끊기면 초기화</td></tr>
+        <tr><td>공유</td><td>파일을 전달한다</td><td class="yes">링크 하나</td></tr>
+        <tr><td>오프라인</td><td class="yes">된다</td><td class="no">안 된다</td></tr>
+      </tbody>
+    </table>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>강의 실습은 <b>Colab</b>으로 한다. 설치 문제로 시간을 쓰지 않고, GPU가 필요한 실습까지 같은 환경에서 끝난다.</div></div>
+      <div class="v"><span class="b">→</span><div>사내 데이터처럼 <b>밖으로 내보낼 수 없는 자료</b>를 다룰 때는 로컬이 맞다. 둘 다 익혀 둔다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>노트북 파일(<code>.ipynb</code>)은 두 환경에서 <b>그대로 열린다</b>. 고르는 기준은 문법이 아니라 <b>데이터를 어디에 둘 수 있느냐</b>다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="Anaconda란">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">CH0</span><span class="dot"></span>로컬 1</div>
+  <h2 class="s-title sm">Anaconda가 묶어 놓은 것</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w2">
+      <div>
+        <div class="brandmark">
+          <img src="assets/anaconda.png" alt="Anaconda 로고">
+          <div class="bt"><b>anaconda.com</b><br/>개인 사용은 무료다</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>아나콘다는 <b>파이썬 · 자주 쓰는 패키지 · 환경 관리자</b>를 한 번에 묶은 배포판이다.</div></div>
+          <div class="v"><span class="b">→</span><div>따로 설치하면 패키지끼리 <b>버전을 맞추는 데</b> 시간이 든다. 아나콘다는 맞춰진 조합을 준다.</div></div>
+          <div class="v"><span class="b">★</span><div>아나콘다를 깔면 <b>파이썬을 따로 설치할 필요가 없다</b>. 또 깔면 두 개가 충돌한다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="plot">
+          <svg viewBox="0 0 320 250">
+            <rect x="10" y="10" width="300" height="230" rx="16" fill="#F4F1FF" stroke="#B7A9FF" stroke-width="1.8"/>
+            <text x="26" y="34" font-size="13" font-weight="700" fill="#3A1FC9">Anaconda 배포판</text>
+
+            <rect x="26" y="48" width="268" height="46" rx="10" fill="#fff" stroke="#B7A9FF"/>
+            <text x="40" y="70" font-size="12" font-weight="700" fill="#16142B">Python 3.x</text>
+            <text x="40" y="86" font-size="10.5" fill="#8E8AAC">코드를 실행하는 본체</text>
+
+            <rect x="26" y="104" width="268" height="70" rx="10" fill="#fff" stroke="#B7A9FF"/>
+            <text x="40" y="126" font-size="12" font-weight="700" fill="#16142B">패키지 묶음</text>
+            <g font-family="monospace" font-size="10.5" fill="#5B3DF5">
+              <text x="40" y="146">numpy   pandas   matplotlib</text>
+              <text x="40" y="163">scikit-learn   seaborn   jupyter</text>
+            </g>
+
+            <rect x="26" y="184" width="268" height="46" rx="10" fill="#5B3DF5"/>
+            <text x="40" y="206" font-size="12" font-weight="700" fill="#fff">conda</text>
+            <text x="40" y="222" font-size="10.5" fill="#D8CFFF">환경과 패키지를 관리하는 명령</text>
+          </svg>
+          <div class="cap">셋을 따로 맞추는 대신 묶음으로 받는다</div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>아나콘다를 고르는 이유는 기능이 많아서가 아니라 <b>버전이 이미 맞춰져 있어서</b>다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="Anaconda 설치">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">CH0</span><span class="dot"></span>로컬 2</div>
+  <h2 class="s-title sm">설치와 확인</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="biglist">
+          <div class="li"><div class="num">1</div><div class="tx"><h4>내려받기</h4><p><code>anaconda.com</code>에서 운영체제에 맞는 설치 파일을 받는다.</p></div></div>
+          <div class="li"><div class="num">2</div><div class="tx"><h4>기본 옵션으로 설치</h4><p>경로에 <b>한글과 공백</b>을 넣지 않는다. 나중에 패키지가 깨진다.</p></div></div>
+          <div class="li"><div class="num">3</div><div class="tx"><h4>Anaconda Prompt 열기</h4><p>Windows는 시작 메뉴에서, macOS는 터미널을 새로 연다.</p></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">설치가 됐는지 확인한다</span></div>
+          <pre><code>conda --version
+python --version</code></pre>
+          <div class="out">conda 24.9.2
+Python 3.12.7</div>
+        </div>
+        <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4><code>conda: command not found</code></h4><p>일반 터미널이 아니라 <b>Anaconda Prompt</b>를 열어야 한다. macOS는 터미널을 닫았다 다시 연다.</p></div></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">정리</span><div>두 줄이 버전을 찍으면 설치가 끝난 것이다. <b>여기서 막히면 다음으로 넘어가지 않는다</b>.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="가상 환경">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">CH0</span><span class="dot"></span>로컬 3</div>
+  <h2 class="s-title sm">패키지 버전이 부딪히는 자리</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="twopane">
+          <div class="pane bad"><h4>환경 하나로 쓸 때</h4><div class="mini">프로젝트 A → pandas 1.5 필요
+프로젝트 B → pandas 2.2 필요
+
+한쪽을 맞추면 다른 쪽이 깨진다</div></div>
+          <div class="pane good"><h4>가상 환경을 쓸 때</h4><div class="mini">env-a → pandas 1.5
+env-b → pandas 2.2
+
+서로 모른다</div></div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>가상 환경은 <b>프로젝트마다 따로 두는 파이썬과 패키지 묶음</b>이다.</div></div>
+          <div class="v"><span class="b">★</span><div>프롬프트 앞에 <code>(ai-basic)</code>이 붙으면 그 환경이 켜진 상태다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">만들고 켜고 설치하기</span></div>
+          <pre><code><span class="cm"># 이름과 파이썬 버전을 정해 만든다</span>
+conda create -n ai-basic python=3.11
+
+<span class="cm"># 켠다 — 이후 명령이 이 환경에 걸린다</span>
+conda activate ai-basic
+
+<span class="cm"># 필요한 것만 설치한다</span>
+conda install pandas scikit-learn matplotlib seaborn
+
+<span class="cm"># 끈다</span>
+conda deactivate</code></pre>
+          <div class="out"><span class="ol">(base) C:\Users\me></span> conda activate ai-basic
+<span class="ol">(ai-basic) C:\Users\me></span></div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">✕</span><div><code>conda</code>로 먼저 찾고, 없을 때만 <code>pip</code>를 쓴다. 두 도구를 섞어 같은 패키지를 깔면 <b>환경이 깨진다</b>.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>환경을 만들었으면 <b>켜는 것을 잊지 않는다</b>. 설치가 안 먹거나 <code>ModuleNotFoundError</code>가 나면 켜지 않은 것이다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="Jupyter Lab">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">CH0</span><span class="dot"></span>로컬 4</div>
+  <h2 class="s-title sm">Jupyter Lab 실행과 커널</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w2">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">환경을 켜고 실행한다</span></div>
+          <pre><code>conda activate ai-basic
+cd C:\work\ai-basic      <span class="cm"># 작업할 폴더로 이동</span>
+jupyter lab</code></pre>
+          <div class="out">Jupyter Server is running at:
+http://localhost:8888/lab</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>브라우저가 열린다. 화면은 웹이지만 <b>코드는 내 컴퓨터에서</b> 돈다.</div></div>
+          <div class="v"><span class="b">★</span><div><code>jupyter lab</code>을 <b>실행한 폴더가 작업 디렉터리</b>다. 데이터 파일을 그 폴더에 둔다.</div></div>
+          <div class="v"><span class="b">→</span><div><b>커널</b>은 코드를 실제로 돌리는 파이썬 프로세스다. 환경마다 하나씩 붙는다.</div></div>
+          <div class="v"><span class="b">✕</span><div>브라우저만 닫으면 서버가 계속 돈다. 터미널에서 <code>Ctrl + C</code>로 끝낸다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="plot">
+          <svg viewBox="0 0 320 230">
+            <rect x="8" y="8" width="304" height="214" rx="8" fill="#fff" stroke="#E8E4F8"/>
+            <rect x="8" y="8" width="304" height="22" rx="8" fill="#F4F1FF"/>
+            <text x="20" y="24" font-family="monospace" font-size="10" fill="#8E8AAC">localhost — Jupyter Lab</text>
+            <rect x="8" y="30" width="92" height="192" fill="#FAF9FF" stroke="#E8E4F8"/>
+            <text x="18" y="46" font-size="10" fill="#5B3DF5" font-weight="700">파일 브라우저</text>
+            <g font-family="monospace" font-size="9.5" fill="#4A4766">
+              <text x="18" y="66">data/</text><text x="18" y="82">  titanic.csv</text>
+              <text x="18" y="100">day1.ipynb</text><text x="18" y="116">day2.ipynb</text>
+            </g>
+            <text x="18" y="146" font-size="9.5" fill="#8E8AAC">← 실행한 폴더가</text>
+            <text x="18" y="160" font-size="9.5" fill="#8E8AAC">   여기 보인다</text>
+
+            <g>
+              <rect x="108" y="40" width="196" height="40" rx="4" fill="#F4F1FF" stroke="#B7A9FF"/>
+              <text x="116" y="56" font-family="monospace" font-size="9.5" fill="#8E8AAC">[1]</text>
+              <text x="140" y="56" font-family="monospace" font-size="10" fill="#3A1FC9">import pandas as pd</text>
+              <text x="140" y="72" font-family="monospace" font-size="10" fill="#3A1FC9">df = pd.read_csv('data/titanic.csv')</text>
+              <rect x="108" y="86" width="196" height="26" rx="4" fill="#fff" stroke="#E8E4F8"/>
+              <text x="140" y="103" font-family="monospace" font-size="10" fill="#4A4766">(891, 12)</text>
+              <rect x="108" y="120" width="196" height="26" rx="4" fill="#F4F1FF" stroke="#B7A9FF" stroke-dasharray="4 3"/>
+              <text x="116" y="137" font-family="monospace" font-size="9.5" fill="#8E8AAC">[ ]</text>
+            </g>
+            <rect x="108" y="188" width="196" height="30" rx="4" fill="#E4F8F4" stroke="#8AD7CC"/>
+            <circle cx="122" cy="203" r="5" fill="#0FB5A1"/>
+            <text x="136" y="207" font-size="10" fill="#0A7F70">커널: ai-basic (Python 3.11)</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">함정</span><div>커널 목록에 만든 환경이 안 보이면 그 환경에서 <code>conda install ipykernel</code>을 한 번 돌린다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="Colab의 정체">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">CH0</span><span class="dot"></span>클라우드 1</div>
+  <h2 class="s-title sm">브라우저 안에서 도는 남의 컴퓨터</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>구글이 운영하는 클라우드 <b>Jupyter Notebook</b> 환경이다. 브라우저에서 코드를 쓰고 실행한다.</div></div>
+          <div class="v"><span class="b">→</span><div>파이썬과 Pandas·PyTorch가 <b>이미 깔려 있다</b>. 설치할 것이 없다.</div></div>
+          <div class="v"><span class="b">→</span><div>노트북 파일은 구글 드라이브에 저장되고 링크로 공유된다.</div></div>
+          <div class="v"><span class="b">★</span><div>GPU를 <b>무료로 배정</b>받는다. 개인 장비 없이 신경망 실습이 되는 이유다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="arch">
+          <div class="box local"><div class="bt">내 노트북</div><div class="bs">브라우저 하나</div></div>
+          <div class="conn"><svg viewBox="0 0 34 18" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 9h26M22 3l6 6-6 6"/></svg><span>HTTPS</span></div>
+          <div class="box api"><div class="bt">Colab VM</div><div class="bs">CPU · T4 GPU<br/>구글 데이터센터</div></div>
+        </div>
+        <div class="callout mint"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div class="ct"><h4>코드는 저쪽에서 돈다</h4><p>화면만 브라우저에 있다. 파일을 읽는 경로도, 설치되는 패키지도 전부 <b>Colab VM 쪽</b>이다.</p></div></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">정리</span><div>Colab은 편집기가 아니라 <b>원격 실행 환경</b>이다. 이 구분이 다음 장의 함정을 만든다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="세션의 수명">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">CH0</span><span class="dot"></span>클라우드 2</div>
+  <h2 class="s-title sm">런타임이 끊긴 뒤 남는 것</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">✕</span><div>런타임은 <b>임시 VM</b>이다. 끊기면 설치한 패키지와 업로드한 파일이 같이 사라진다.</div></div>
+          <div class="v"><span class="b">✕</span><div>무료 런타임은 유휴 상태가 이어지거나 연속 사용이 길어지면 회수된다.</div></div>
+          <div class="v"><span class="b">✕</span><div>GPU는 할당량제다. 오래 붙잡고 있으면 한동안 CPU만 배정된다.</div></div>
+          <div class="v"><span class="b">★</span><div>남겨야 할 파일은 <b>드라이브를 마운트</b>해서 그쪽에 쓴다. <code>/content</code>는 세션 저장소다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">세션이 죽어도 남기려면</span></div>
+          <pre><code><span class="kw">from</span> google.colab <span class="kw">import</span> drive
+drive.mount(<span class="st">'/content/drive'</span>)
+
+<span class="cm"># 세션 저장소 — 끊기면 사라진다</span>
+df.to_csv(<span class="st">'/content/result.csv'</span>)
+
+<span class="cm"># 드라이브 — 계정에 남는다</span>
+df.to_csv(<span class="st">'/content/drive/MyDrive/result.csv'</span>)</code></pre>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">함정</span><div>런타임이 끊기면 <b>맨 위 셀부터 다시 실행</b>해야 한다. 노트북은 코드만 저장하지, 변수 값은 저장하지 않는다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="GPU 런타임">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">CH0</span><span class="dot"></span>클라우드 3</div>
+  <h2 class="s-title sm">기본값 CPU와 T4 런타임</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w2">
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div><code>런타임 → 런타임 유형 변경</code>에서 하드웨어 가속기를 고른다.</div></div>
+          <div class="v"><span class="b">→</span><div>무료 계정의 현실적인 선택지는 <b>T4 GPU</b>다. 신경망 학습에서 쓴다.</div></div>
+          <div class="v"><span class="b">✕</span><div>바꾸면 <b>런타임이 재시작</b>된다. 실행해 둔 변수가 전부 날아간다.</div></div>
+        </div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">붙었는지 확인</span></div>
+          <pre><code>!nvidia-smi --query-gpu=name,memory.total --format=csv</code></pre>
+          <div class="out">name, memory.total
+Tesla T4, 15360 MiB</div>
+        </div>
+      </div>
+      <div>
+        <div class="shot">
+          <div class="sbar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">Colab · 런타임 유형 변경</span></div>
+          <img src="assets/colab-gpu.png" alt="런타임 유형 변경 대화상자에서 하드웨어 가속기를 고르는 화면">
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">주의</span><div>문법·데이터 실습은 CPU로 충분하다. 안 쓰면서 GPU를 붙잡고 있으면 <b>할당량만 깎인다</b>.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="셀 실행과 출력">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">CH0</span><span class="dot"></span>조작</div>
+  <h2 class="s-title sm">실행 순서라는 상태</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="shot">
+          <div class="sbar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">Colab · 셀 실행 결과</span></div>
+          <img src="assets/colab-run-output.png" alt="print 세 줄이 실행되어 출력이 아래에 표시된 셀">
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>왼쪽 <code>[1]</code>은 <b>실행 순서</b>다. 위에서 아래 순서와 무관하다.</div></div>
+          <div class="v"><span class="b">★</span><div>이 단축키와 셀 구조는 <b>Jupyter와 Colab이 같다</b>. 한 번 익히면 양쪽에서 통한다.</div></div>
+        </div>
+      </div>
+      <div>
+        <table class="ctable">
+          <thead><tr><th>단축키</th><th>동작</th></tr></thead>
+          <tbody>
+            <tr><td><code>Ctrl + Enter</code></td><td>실행하고 <b>그 자리에</b> 머문다</td></tr>
+            <tr><td><code>Shift + Enter</code></td><td>실행하고 <b>아래 셀로</b> 넘어간다</td></tr>
+            <tr><td><code>Alt + Enter</code></td><td>실행하고 아래에 <b>새 셀</b>을 만든다</td></tr>
+            <tr><td><code>Ctrl + M, M</code></td><td>코드 셀 → 마크다운 셀</td></tr>
+          </tbody>
+        </table>
+        <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>번호가 뒤엉킨 노트북</h4><p>셀을 건너뛰며 실행하면 <code>[7] [3] [12]</code>처럼 남는다. 제출 전 <b>런타임 초기화 후 전체 실행</b>으로 검증한다.</p></div></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">주의</span><div>노트북은 위에서 아래로 읽히지만 <b>실행 순서대로</b> 동작한다. 둘이 어긋난 노트북은 남이 못 돌린다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="결과 남기기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">CH0</span><span class="dot"></span>보관</div>
+  <h2 class="s-title sm">노트북을 계정 밖에 남기는 두 길</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="phase-label">파일 → GitHub에 사본 저장<span class="ln"></span></div>
+        <div class="shot">
+          <div class="sbar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">GitHub으로 복사</span></div>
+          <img src="assets/colab-github-dialog.png" alt="저장소·브랜치·파일 경로·커밋 메시지를 입력하는 대화상자">
+        </div>
+      </div>
+      <div>
+        <div class="phase-label">올라간 결과<span class="ln"></span></div>
+        <div class="shot">
+          <div class="sbar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">github.com · .ipynb</span></div>
+          <img src="assets/github-notebook.png" alt="GitHub에서 ipynb 파일이 셀과 출력까지 렌더링된 화면">
+        </div>
+      </div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">→</span><div>드라이브 저장은 <b>내 사본</b>을 남기고, GitHub 저장은 <b>변경 이력</b>을 남긴다.</div></div>
+      <div class="v"><span class="b">★</span><div><code>.ipynb</code>는 GitHub가 <b>셀 단위로 렌더링</b>한다. 링크 하나가 실행 결과까지 포함된 보고가 된다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">결과</span><div>실습 산출물은 이 형태로 낸다. <b>코드와 출력이 그 시점 그대로</b> 남는다.</div></div>
+  </div>
+</section>
+
+<section class="slide section" data-title="[섹션] 값과 변수">
+  <div class="ghost">01</div>
+  <div class="seyebrow">CHAPTER 01</div>
+  <h2>값과 변수</h2>
+  <div class="agenda"><span>자료형</span><span>연산자</span><span>문자열</span><span>불변과 가변</span></div>
+</section>
+
+<section class="slide" data-title="자료형 세 가지">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>자료형</div>
+  <h2 class="s-title sm">값의 종류와 연산 규칙</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c3">
+      <div class="card"><span class="n">숫자형</span><h3>int · float</h3>
+        <div class="code sm"><pre><code><span class="nm">22</span>      <span class="cm"># 정수 int</span>
+<span class="nm">7.25</span>    <span class="cm"># 실수 float</span>
+<span class="kw">True</span>    <span class="cm"># 참·거짓 bool</span></code></pre></div>
+        <p>숫자끼리 사칙연산이 된다.</p></div>
+      <div class="card"><span class="n">문자형</span><h3>str</h3>
+        <div class="code sm"><pre><code><span class="st">'Braund, Mr. Owen'</span>
+<span class="st">"1234"</span>   <span class="cm"># 숫자처럼 보여도 문자</span>
+<span class="st">''</span>       <span class="cm"># 빈 문자열</span></code></pre></div>
+        <p>따옴표 안은 전부 글자다.</p></div>
+      <div class="card"><span class="n">리스트</span><h3>list</h3>
+        <div class="code sm"><pre><code>[]             <span class="cm"># 빈 리스트</span>
+[<span class="nm">22</span>, <span class="nm">38</span>, <span class="nm">26</span>]
+[<span class="st">'S'</span>, <span class="nm">7.25</span>]   <span class="cm"># 섞어도 된다</span></code></pre></div>
+        <p>여러 값을 <b>순서대로</b> 담는다.</p></div>
+    </div>
+    <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4><code>"1234"</code>와 <code>1234</code>는 다른 값이다</h4><p><code>"1234" + "5"</code>는 <code>"12345"</code>가 된다. CSV에서 읽은 숫자가 문자로 들어오는 사고가 여기서 시작된다.</p></div></div>
+    <div class="keymsg"><span class="k">기준</span><div>같은 <code>+</code>라도 <b>피연산자의 자료형</b>에 따라 덧셈이 되기도, 이어 붙이기가 되기도 한다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="숫자 연산자">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>연산</div>
+  <h2 class="s-title sm">나눗셈이 세 종류인 이유</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <table class="ctable">
+          <thead><tr><th>연산자</th><th>뜻</th><th>예</th></tr></thead>
+          <tbody>
+            <tr><td><code>+ - *</code></td><td>더하기 빼기 곱하기</td><td><code>7 * 2</code> → 14</td></tr>
+            <tr><td><code>/</code></td><td>나누기 — 결과는 <span class="hl">항상 float</span></td><td><code>6 / 2</code> → 3.0</td></tr>
+            <tr><td><code>//</code></td><td>몫만 (버림)</td><td><code>7 // 2</code> → 3</td></tr>
+            <tr><td><code>%</code></td><td>나머지</td><td><code>7 % 2</code> → 1</td></tr>
+            <tr><td><code>**</code></td><td>거듭제곱</td><td><code>2 ** 10</code> → 1024</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">/ 와 // 의 차이</span></div>
+          <pre><code><span class="fn2">print</span>(<span class="nm">6</span> / <span class="nm">2</span>)     <span class="cm"># 나누어 떨어져도</span>
+<span class="fn2">print</span>(<span class="nm">7</span> // <span class="nm">2</span>)
+<span class="fn2">print</span>(<span class="nm">7</span> % <span class="nm">2</span>)
+
+<span class="cm"># 짝수 판별에 % 를 쓴다</span>
+<span class="fn2">print</span>(<span class="nm">10</span> % <span class="nm">2</span> == <span class="nm">0</span>)</code></pre>
+          <div class="out">3.0
+3
+1
+True</div>
+        </div>
+        <div class="vlist"><div class="v"><span class="b">✕</span><div><code>/</code>는 <b>나누어 떨어져도 float</b>를 준다. 인덱스 계산에 쓰면 에러가 난다.</div></div></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>개수·인덱스처럼 <b>정수여야 하는 자리</b>에는 <code>//</code>를 쓴다. <code>%</code>는 짝수 판별과 주기 처리의 기본 도구다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="문자열 다루기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>문자열</div>
+  <h2 class="s-title sm">문자열의 인덱스와 슬라이스</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">인덱싱과 슬라이싱</span></div>
+          <pre><code>name = <span class="st">"Braund, Mr. Owen"</span>
+
+<span class="fn2">print</span>(name[<span class="nm">0</span>])       <span class="cm"># 0부터 센다</span>
+<span class="fn2">print</span>(name[-<span class="nm">1</span>])      <span class="cm"># 뒤에서 한 칸</span>
+<span class="fn2">print</span>(name[<span class="nm">8</span>:<span class="nm">11</span>])    <span class="cm"># 8 이상 11 미만</span>
+<span class="fn2">print</span>(<span class="fn2">len</span>(name))</code></pre>
+          <div class="out">B
+n
+Mr.
+16</div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">자주 쓰는 메서드와 f-string</span></div>
+          <pre><code>raw = <span class="st">"  female  "</span>
+<span class="fn2">print</span>(raw.strip())          <span class="cm"># 양끝 공백 제거</span>
+<span class="fn2">print</span>(name.split(<span class="st">", "</span>))     <span class="cm"># 쪼개서 리스트로</span>
+<span class="fn2">print</span>(raw.strip().upper())
+
+rate = <span class="nm">0.3838</span>
+<span class="fn2">print</span>(<span class="st">f"생존율 {rate:.1%}"</span>)</code></pre>
+          <div class="out">female
+['Braund', 'Mr. Owen']
+FEMALE
+생존율 38.4%</div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">정리</span><div>현장 데이터의 절반은 <b>문자열을 쪼개고 다듬는 일</b>이다. <code>strip · split · upper</code>가 전처리의 기본 세 가지다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="변수">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>변수</div>
+  <h2 class="s-title sm">변수 이름 = 자료</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">변수에 값을 붙인다</span></div>
+          <pre><code>age   = <span class="nm">22</span>                    <span class="cm"># 숫자</span>
+name  = <span class="st">"Owen"</span>                <span class="cm"># 문자열</span>
+fares = [<span class="nm">7.25</span>, <span class="nm">71.28</span>, <span class="nm">7.92</span>]  <span class="cm"># 리스트</span>
+
+<span class="cm"># 자료형은 값이 정한다 — 선언하지 않는다</span>
+<span class="fn2">print</span>(<span class="fn2">type</span>(age), <span class="fn2">type</span>(name))</code></pre>
+          <div class="out">&lt;class 'int'&gt; &lt;class 'str'&gt;</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div><code>=</code>는 같다는 뜻이 아니라 <b>이 이름을 저 값에 붙인다</b>는 뜻이다.</div></div>
+          <div class="v"><span class="b">→</span><div><code>#</code> 뒤는 주석이다. 실행되지 않고, 사람이 읽는다.</div></div>
+          <div class="v"><span class="b">✕</span><div>이름은 영문·숫자·<code>_</code>만 쓴다. <code>list</code> <code>sum</code>처럼 <b>내장 함수 이름</b>을 변수로 쓰면 그 함수를 못 쓴다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="phase-label">이름과 값은 따로 있다<span class="ln"></span></div>
+        <div class="slots">
+          <div class="slot"><div class="adr">이름</div><div class="val">age</div></div>
+          <div class="ptr">→</div>
+          <div class="slot ref"><div class="adr">int 객체</div><div class="val">22</div></div>
+        </div>
+        <div class="slots">
+          <div class="slot"><div class="adr">이름</div><div class="val">name</div></div>
+          <div class="ptr">→</div>
+          <div class="slot ref"><div class="adr">str 객체</div><div class="val">"Owen"</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>변수는 값을 <b>담는 상자가 아니라 가리키는 이름표</b>다. 이 차이가 다음 장에서 결과를 바꾼다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="불변과 가변">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>변수</div>
+  <h2 class="s-title sm">값이 바뀌는 자료형과 바뀌지 않는 자료형</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twopane">
+      <div class="pane good"><h4>불변 immutable</h4><p><code>int · float · str · tuple</code></p><div class="mini">한 번 만들어진 값은 고칠 수 없다.
+"바꾼다"는 것은 <b>새 값을 만들어 이름을 옮겨 붙이는</b> 일이다.</div></div>
+      <div class="pane bad"><h4>가변 mutable</h4><p><code>list · dict · set</code></p><div class="mini">값 자체를 제자리에서 고친다.
+그 값을 가리키던 <b>모든 이름이 같이 바뀐다</b>.</div></div>
+    </div>
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">불변 — 안전하다</span></div>
+          <pre><code>a = <span class="nm">10</span>
+b = a
+b = b + <span class="nm">5</span>      <span class="cm"># 새 정수 15를 만든다</span>
+<span class="fn2">print</span>(a, b)</code></pre>
+          <div class="out">10 15</div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">가변 — 같이 바뀐다</span></div>
+          <pre><code>a = [<span class="nm">1</span>, <span class="nm">2</span>]
+b = a
+b.append(<span class="nm">3</span>)    <span class="cm"># 그 리스트를 직접 고친다</span>
+<span class="fn2">print</span>(a, b)</code></pre>
+          <div class="out"><span class="err">[1, 2, 3] [1, 2, 3]</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">함정</span><div><code>b = a</code>는 <b>복사가 아니다</b>. 이름 하나를 더 붙였을 뿐이다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="같이 바뀌는 이유">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>변수</div>
+  <h2 class="s-title sm">한 값을 가리키는 이름 두 개</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="phase-label">가변 — 이름 둘, 값 하나<span class="ln"></span></div>
+        <div class="slots">
+          <div class="slot"><div class="adr">이름</div><div class="val">a</div></div>
+          <div class="slot"><div class="adr">이름</div><div class="val">b</div></div>
+          <div class="ptr">→</div>
+          <div class="slot ref"><div class="adr">list 객체 하나</div><div class="val">[1, 2, 3]</div><div class="nm">append가 여기를 고친다</div></div>
+        </div>
+        <div class="phase-label">불변 — 값이 갈라진다<span class="ln"></span></div>
+        <div class="slots">
+          <div class="slot"><div class="adr">이름</div><div class="val">a</div></div>
+          <div class="ptr">→</div>
+          <div class="slot ref dim"><div class="adr">int 객체</div><div class="val">10</div></div>
+          <div class="slot"><div class="adr">이름</div><div class="val">b</div></div>
+          <div class="ptr">→</div>
+          <div class="slot ref"><div class="adr">새 int 객체</div><div class="val">15</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">id() 로 확인한다</span></div>
+          <pre><code>a = [<span class="nm">1</span>, <span class="nm">2</span>]
+b = a
+<span class="fn2">print</span>(<span class="fn2">id</span>(a) == <span class="fn2">id</span>(b))   <span class="cm"># 같은 객체인가</span>
+
+c = a.copy()             <span class="cm"># 얕은 복사</span>
+c.append(<span class="nm">99</span>)
+<span class="fn2">print</span>(a, c)</code></pre>
+          <div class="out">True
+[1, 2] [1, 2, 99]</div>
+        </div>
+        <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>Pandas에서도 같은 함정</h4><p><code>df2 = df</code>로 넘긴 뒤 <code>df2</code>를 고치면 <code>df</code>도 바뀐다. 원본을 지키려면 <code>df.copy()</code>를 쓴다.</p></div></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div><code>b = a</code>는 복사가 아니라 <b>이름을 하나 더 붙이는 것</b>이다. 복사하려면 <code>.copy()</code>를 명시해야 한다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="얕은 복사와 깊은 복사">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>복사</div>
+  <h2 class="s-title sm">얕은 복사와 깊은 복사</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">얕은 복사 — 안쪽은 그대로 공유된다</span></div>
+          <pre><code>rows = [{<span class="st">'name'</span>: <span class="st">'Owen'</span>,  <span class="st">'age'</span>: <span class="nm">22</span>},
+        {<span class="st">'name'</span>: <span class="st">'Laina'</span>, <span class="st">'age'</span>: <span class="nm">26</span>}]
+
+shallow = rows.copy()      <span class="cm"># 바깥 리스트만 새로</span>
+shallow[<span class="nm">0</span>][<span class="st">'age'</span>] = <span class="nm">99</span>     <span class="cm"># 안쪽 딕셔너리를 고친다</span>
+
+<span class="fn2">print</span>(rows[<span class="nm">0</span>][<span class="st">'age'</span>])</code></pre>
+          <div class="out"><span class="err">99</span>   ← 원본도 바뀌었다</div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">깊은 복사 — 안쪽까지 새로 만든다</span></div>
+          <pre><code><span class="kw">import</span> copy
+
+deep = copy.deepcopy(rows)
+deep[<span class="nm">0</span>][<span class="st">'age'</span>] = <span class="nm">99</span>
+
+<span class="fn2">print</span>(rows[<span class="nm">0</span>][<span class="st">'age'</span>])</code></pre>
+          <div class="out">22   ← 원본은 그대로</div>
+        </div>
+      </div>
+    </div>
+    <table class="ctable">
+      <thead><tr><th>쓰는 법</th><th>바깥 구조</th><th>안쪽 객체</th><th>이름</th></tr></thead>
+      <tbody>
+        <tr><td><code>b = a</code></td><td class="no">공유</td><td class="no">공유</td><td>대입 — 복사가 아니다</td></tr>
+        <tr><td><code>a.copy()</code> · <code>a[:]</code></td><td class="yes">새로 만든다</td><td class="no">공유</td><td class="hl">얕은 복사</td></tr>
+        <tr><td><code>copy.deepcopy(a)</code></td><td class="yes">새로 만든다</td><td class="yes">새로 만든다</td><td class="hl">깊은 복사</td></tr>
+      </tbody>
+    </table>
+    <div class="keymsg"><span class="k">기준</span><div><b>안에 또 리스트나 딕셔너리가 있는지</b>를 본다. 없으면 <code>.copy()</code>로 끝나고, 있으면 <code>deepcopy</code>가 필요하다.</div></div>
+  </div>
+</section>
+
+<section class="slide section" data-title="[섹션] 자료 구조">
+  <div class="ghost">02</div>
+  <div class="seyebrow">CHAPTER 02</div>
+  <h2>자료 구조</h2>
+  <div class="agenda"><span>리스트</span><span>튜플</span><span>딕셔너리</span><span>집합</span></div>
+</section>
+
+<section class="slide" data-title="리스트">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>list</div>
+  <h2 class="s-title sm">순서를 가진 값의 나열</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">만들고 꺼내기</span></div>
+          <pre><code>ages = [<span class="nm">22</span>, <span class="nm">38</span>, <span class="nm">26</span>, <span class="nm">35</span>]
+
+<span class="fn2">print</span>(ages[<span class="nm">0</span>])
+<span class="fn2">print</span>(ages[-<span class="nm">1</span>])
+<span class="fn2">print</span>(ages[<span class="nm">1</span>:<span class="nm">3</span>])
+<span class="fn2">print</span>(<span class="fn2">len</span>(ages))</code></pre>
+          <div class="out">22
+35
+[38, 26]
+4</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>인덱스는 <b>0부터</b> 센다. 마지막은 <code>-1</code>이다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">넣고 빼고 정렬하기</span></div>
+          <pre><code>ages.append(<span class="nm">54</span>)     <span class="cm"># 뒤에 추가</span>
+ages[<span class="nm">1</span>] = <span class="nm">39</span>         <span class="cm"># 그 자리를 교체</span>
+ages.remove(<span class="nm">26</span>)     <span class="cm"># 값으로 삭제</span>
+ages.sort()          <span class="cm"># 오름차순 정렬</span>
+<span class="fn2">print</span>(ages)
+
+<span class="fn2">print</span>(<span class="nm">22</span> <span class="kw">in</span> ages)    <span class="cm"># 있는지 확인</span></code></pre>
+          <div class="out">[22, 35, 39, 54]
+True</div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>리스트는 <b>만든 뒤에도 내용이 바뀐다</b>. 순서가 있고, 같은 값이 여러 번 들어가도 된다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="네 가지 자료 구조">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>비교</div>
+  <h2 class="s-title sm">네 가지 자료 구조의 쓰임</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable">
+      <thead><tr><th>자료 구조</th><th>표기</th><th>순서</th><th>수정</th><th>쓰는 자리</th></tr></thead>
+      <tbody>
+        <tr><td><b>리스트</b> list</td><td><code>[22, 38, 26]</code></td><td class="yes">있음</td><td class="yes">가능</td><td>순서대로 쌓고 바꾸는 값</td></tr>
+        <tr><td><b>튜플</b> tuple</td><td><code>(891, 12)</code></td><td class="yes">있음</td><td class="no">불가</td><td>바뀌면 안 되는 좌표 · <b>텐서 shape</b></td></tr>
+        <tr><td><b>딕셔너리</b> dict</td><td><code>{'age': 22}</code></td><td>키로 접근</td><td class="yes">가능</td><td>이름표가 붙은 값 묶음 · <b>설정</b></td></tr>
+        <tr><td><b>집합</b> set</td><td><code>{'S', 'C', 'Q'}</code></td><td class="no">없음</td><td class="yes">가능</td><td>중복 제거 · 포함 여부 검사</td></tr>
+      </tbody>
+    </table>
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">튜플 — 고쳐지지 않는다</span></div>
+          <pre><code>shape = (<span class="nm">891</span>, <span class="nm">12</span>)   <span class="cm"># 행 891, 열 12</span>
+<span class="fn2">print</span>(shape[<span class="nm">0</span>])
+shape[<span class="nm">0</span>] = <span class="nm">100</span></code></pre>
+          <div class="out">891
+<span class="err">TypeError: 'tuple' object does not
+support item assignment</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">집합 — 중복이 사라진다</span></div>
+          <pre><code>ports = [<span class="st">'S'</span>, <span class="st">'C'</span>, <span class="st">'S'</span>, <span class="st">'Q'</span>, <span class="st">'S'</span>]
+<span class="fn2">print</span>(<span class="fn2">set</span>(ports))
+<span class="fn2">print</span>(<span class="fn2">len</span>(<span class="fn2">set</span>(ports)))</code></pre>
+          <div class="out">{'S', 'C', 'Q'}
+3</div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>값을 바꿔야 하면 리스트, 절대 안 바뀌어야 하면 튜플이다. <b>텐서 shape도 늘 튜플</b>로 나온다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="딕셔너리">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>dict</div>
+  <h2 class="s-title sm">설정과 JSON의 모양</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">이름으로 꺼낸다</span></div>
+          <pre><code>row = {<span class="st">'name'</span>: <span class="st">'Owen'</span>, <span class="st">'age'</span>: <span class="nm">22</span>, <span class="st">'fare'</span>: <span class="nm">7.25</span>}
+
+<span class="fn2">print</span>(row[<span class="st">'age'</span>])
+row[<span class="st">'survived'</span>] = <span class="nm">0</span>       <span class="cm"># 키 추가</span>
+<span class="fn2">print</span>(row.keys())
+<span class="fn2">print</span>(row.get(<span class="st">'cabin'</span>, <span class="st">'미상'</span>))  <span class="cm"># 없으면 기본값</span></code></pre>
+          <div class="out">22
+dict_keys(['name', 'age', 'fare', 'survived'])
+미상</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">✕</span><div>없는 키를 <code>row['cabin']</code>으로 부르면 <code>KeyError</code>다. <code>.get()</code>은 대신 기본값을 준다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">모델 설정도 딕셔너리다</span></div>
+          <pre><code>config = {
+    <span class="st">'lr'</span>: <span class="nm">0.001</span>,
+    <span class="st">'epochs'</span>: <span class="nm">50</span>,
+    <span class="st">'hidden'</span>: [<span class="nm">64</span>, <span class="nm">32</span>],
+    <span class="st">'shuffle'</span>: <span class="kw">True</span>,
+}
+<span class="fn2">print</span>(config[<span class="st">'hidden'</span>][<span class="nm">0</span>])</code></pre>
+          <div class="out">64</div>
+        </div>
+        <div class="callout"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 15l4-6 4 3 5-8"/></svg></div><div class="ct"><h4>JSON과 같은 모양</h4><p>API 응답과 설정 파일이 이 구조다. <code>{ }</code>는 딕셔너리, <code>[ ]</code>는 리스트로 읽으면 그대로 파이썬이 된다.</p></div></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">정리</span><div>딕셔너리는 <b>순서가 아니라 이름으로</b> 값을 꺼낸다. 열 이름이 있는 데이터에 맞는 구조다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="표의 파이썬 표현">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>중첩</div>
+  <h2 class="s-title sm">표 한 장의 파이썬 표현</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <table class="ctable">
+          <thead><tr><th>name</th><th>age</th><th>survived</th></tr></thead>
+          <tbody>
+            <tr><td>Owen</td><td>22</td><td class="no">0</td></tr>
+            <tr><td>Florence</td><td>38</td><td class="yes">1</td></tr>
+            <tr><td>Laina</td><td>26</td><td class="yes">1</td></tr>
+          </tbody>
+        </table>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>한 <b>행</b>은 딕셔너리 하나, 표 전체는 <b>딕셔너리의 리스트</b>다.</div></div>
+          <div class="v"><span class="b">★</span><div><code>DataFrame</code>이 정확히 이 구조를 감싼 것이다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">같은 표, 파이썬으로</span></div>
+          <pre><code>rows = [
+    {<span class="st">'name'</span>: <span class="st">'Owen'</span>,     <span class="st">'age'</span>: <span class="nm">22</span>, <span class="st">'survived'</span>: <span class="nm">0</span>},
+    {<span class="st">'name'</span>: <span class="st">'Florence'</span>, <span class="st">'age'</span>: <span class="nm">38</span>, <span class="st">'survived'</span>: <span class="nm">1</span>},
+    {<span class="st">'name'</span>: <span class="st">'Laina'</span>,    <span class="st">'age'</span>: <span class="nm">26</span>, <span class="st">'survived'</span>: <span class="nm">1</span>},
+]
+
+<span class="fn2">print</span>(rows[<span class="nm">1</span>][<span class="st">'name'</span>])   <span class="cm"># 2행의 name</span>
+<span class="fn2">print</span>(<span class="fn2">len</span>(rows))          <span class="cm"># 행 수</span></code></pre>
+          <div class="out">Florence
+3</div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>대괄호가 겹쳐 나오면 <b>바깥부터 안으로</b> 읽는다. <code>rows[1]['name']</code>은 "2번째 행의 name"이다.</div></div>
+  </div>
+</section>
+
+<section class="slide section" data-title="[섹션] 흐름 제어">
+  <div class="ghost">03</div>
+  <div class="seyebrow">CHAPTER 03</div>
+  <h2>흐름 제어</h2>
+  <div class="agenda"><span>입력</span><span>비교와 논리</span><span>조건문</span><span>반복문</span><span>컴프리헨션</span></div>
+</section>
+
+<section class="slide" data-title="input()">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>입력</div>
+  <h2 class="s-title sm">input()이 돌려주는 문자열</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">변수 = input()</span></div>
+          <pre><code>var = <span class="fn2">input</span>(<span class="st">"나이: "</span>)
+<span class="fn2">print</span>(var)
+<span class="fn2">print</span>(<span class="fn2">type</span>(var))</code></pre>
+          <div class="out"><span class="ol">나이: </span>22
+22
+&lt;class 'str'&gt;</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>실행하면 그 자리에서 <b>멈춰서 기다린다</b>. 값을 치고 Enter를 누르면 이어진다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">숫자를 받은 줄 알았는데</span></div>
+          <pre><code>n = <span class="fn2">input</span>(<span class="st">"인원: "</span>)   <span class="cm"># 3 을 입력</span>
+<span class="fn2">print</span>(n * <span class="nm">2</span>)</code></pre>
+          <div class="out"><span class="ol">인원: </span>3
+<span class="err">33</span></div>
+        </div>
+        <div class="callout rose"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>6이 아니라 33이 나온다</h4><p><code>"3" * 2</code>는 문자열을 <b>두 번 이어 붙인다</b>. 계산하려면 먼저 숫자로 바꿔야 한다.</p></div></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">함정</span><div>키보드로 들어온 값, 파일에서 읽은 값은 <b>일단 전부 문자열</b>이다. 계산 전에 형변환이 온다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="형변환">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>입력</div>
+  <h2 class="s-title sm">자료형을 바꿔 끼우는 함수들</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c3">
+      <div class="card"><span class="n">int()</span><h3>정수로</h3>
+        <div class="code sm"><pre><code>raw = <span class="st">"22"</span>
+<span class="fn2">print</span>(<span class="fn2">int</span>(raw) + <span class="nm">1</span>)
+<span class="fn2">print</span>(<span class="fn2">type</span>(<span class="fn2">int</span>(raw)))</code></pre><div class="out">23
+&lt;class 'int'&gt;</div></div>
+      </div>
+      <div class="card"><span class="n">float()</span><h3>실수로</h3>
+        <div class="code sm"><pre><code>raw = <span class="st">"7.25"</span>
+<span class="fn2">print</span>(<span class="fn2">float</span>(raw) * <span class="nm">2</span>)
+<span class="fn2">print</span>(<span class="fn2">int</span>(<span class="st">"7.25"</span>))</code></pre><div class="out">14.5
+<span class="err">ValueError</span></div></div>
+      </div>
+      <div class="card"><span class="n">str()</span><h3>문자열로</h3>
+        <div class="code sm"><pre><code>n = <span class="nm">891</span>
+<span class="fn2">print</span>(<span class="st">"승객 "</span> + <span class="fn2">str</span>(n) + <span class="st">"명"</span>)
+<span class="fn2">print</span>(<span class="st">f"승객 {n}명"</span>)</code></pre><div class="out">승객 891명
+승객 891명</div></div>
+      </div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">✕</span><div><code>int("7.25")</code>는 실패한다. 소수점 문자열은 <code>int(float(raw))</code>처럼 <b>두 단계</b>로 간다.</div></div>
+      <div class="v"><span class="b">★</span><div>계산할 값은 <b>받는 즉시</b> 바꾼다. <code>n = int(input("인원: "))</code>처럼 한 줄로 묶는다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">정리</span><div>화면에 붙일 때는 <code>str()</code>, 계산할 때는 <code>int()</code>·<code>float()</code>. 방향이 반대다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="형변환이 실패할 때">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>함정</div>
+  <h2 class="s-title sm">숫자처럼 보이지만 숫자가 아닌 것들</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">실제 CSV에서 나오는 값</span></div>
+          <pre><code><span class="fn2">int</span>(<span class="st">"1,234"</span>)   <span class="cm"># 천 단위 쉼표</span>
+<span class="fn2">int</span>(<span class="st">"12.0"</span>)    <span class="cm"># 소수점</span>
+<span class="fn2">int</span>(<span class="st">" 12 "</span>)    <span class="cm"># 공백은 괜찮다</span>
+<span class="fn2">int</span>(<span class="st">"N/A"</span>)     <span class="cm"># 결측 표기</span></code></pre>
+          <div class="out"><span class="err">ValueError: invalid literal for int()
+with base 10: '1,234'</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">먼저 다듬고 바꾼다</span></div>
+          <pre><code>raw = <span class="st">"1,234"</span>
+<span class="fn2">print</span>(<span class="fn2">int</span>(raw.replace(<span class="st">","</span>, <span class="st">""</span>)))
+
+raw = <span class="st">"12.0"</span>
+<span class="fn2">print</span>(<span class="fn2">int</span>(<span class="fn2">float</span>(raw)))   <span class="cm"># 두 단계</span></code></pre>
+          <div class="out">1234
+12</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div>Pandas에는 이 처리를 <b>열 단위로</b> 하는 <code>pd.to_numeric()</code>이 있다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">주의</span><div>엑셀에서 온 열은 <b>쉼표·단위·결측 표기</b>가 섞여 있다. 변환 실패는 데이터가 지저분하다는 신호다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="비교 연산자">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>논리</div>
+  <h2 class="s-title sm">참인지 거짓인지를 내놓는 식</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <table class="ctable">
+          <thead><tr><th>연산자</th><th>뜻</th><th>예</th><th>결과</th></tr></thead>
+          <tbody>
+            <tr><td><code>==</code></td><td>같다</td><td><code>3 == 3</code></td><td class="yes">True</td></tr>
+            <tr><td><code>!=</code></td><td>다르다</td><td><code>3 != 3</code></td><td class="no">False</td></tr>
+            <tr><td><code>&gt;</code> <code>&lt;</code></td><td>크다 · 작다</td><td><code>38 &gt; 22</code></td><td class="yes">True</td></tr>
+            <tr><td><code>&gt;=</code> <code>&lt;=</code></td><td>크거나 같다</td><td><code>3 &gt;= 3</code></td><td class="yes">True</td></tr>
+          </tbody>
+        </table>
+        <div class="callout rose"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4><code>=</code>와 <code>==</code></h4><p><code>=</code>는 값을 붙이고, <code>==</code>는 같은지 묻는다. 조건문에 <code>=</code>를 쓰면 문법 오류가 난다.</p></div></div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">결과는 bool 자료형</span></div>
+          <pre><code>age = <span class="nm">22</span>
+<span class="fn2">print</span>(age &lt; <span class="nm">18</span>)
+<span class="fn2">print</span>(<span class="fn2">type</span>(age &lt; <span class="nm">18</span>))
+
+<span class="cm"># 문자열도 비교된다 — 대소문자 구분</span>
+<span class="fn2">print</span>(<span class="st">"Male"</span> == <span class="st">"male"</span>)</code></pre>
+          <div class="out">False
+&lt;class 'bool'&gt;
+False</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">✕</span><div>문자열 비교는 <b>대소문자를 구분</b>한다. 범주형 값 대조에서 자주 터진다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">정리</span><div>비교식의 결과는 <code>True</code>/<code>False</code> 두 값뿐이고, 이것이 조건문과 <b>데이터 필터링</b>의 입력이 된다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="논리 연산자">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>논리</div>
+  <h2 class="s-title sm">조건 여러 개의 결합</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c3">
+      <div class="card"><span class="n">and</span><h3>둘 다 참이어야 참</h3>
+        <table class="ctable"><tbody>
+          <tr><td>True and True</td><td class="yes">True</td></tr>
+          <tr><td>True and False</td><td class="no">False</td></tr>
+          <tr><td>False and False</td><td class="no">False</td></tr>
+        </tbody></table>
+      </div>
+      <div class="card"><span class="n">or</span><h3>하나만 참이어도 참</h3>
+        <table class="ctable"><tbody>
+          <tr><td>True or True</td><td class="yes">True</td></tr>
+          <tr><td>True or False</td><td class="yes">True</td></tr>
+          <tr><td>False or False</td><td class="no">False</td></tr>
+        </tbody></table>
+      </div>
+      <div class="card"><span class="n">not</span><h3>참·거짓을 뒤집는다</h3>
+        <table class="ctable"><tbody>
+          <tr><td>not True</td><td class="no">False</td></tr>
+          <tr><td>not False</td><td class="yes">True</td></tr>
+          <tr><td>not (3 &gt; 5)</td><td class="yes">True</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+    <div class="code sm">
+      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">조건은 대부분 복합 조건이다</span></div>
+      <pre><code>age, pclass = <span class="nm">22</span>, <span class="nm">3</span>
+
+<span class="fn2">print</span>(age &lt; <span class="nm">18</span> <span class="kw">and</span> pclass == <span class="nm">1</span>)   <span class="cm"># 둘 다 맞아야</span>
+<span class="fn2">print</span>(age &lt; <span class="nm">18</span> <span class="kw">or</span> pclass == <span class="nm">3</span>)    <span class="cm"># 하나만 맞아도</span>
+<span class="fn2">print</span>(<span class="nm">18</span> &lt;= age &lt; <span class="nm">65</span>)              <span class="cm"># 범위는 이어 쓴다</span></code></pre>
+      <div class="out">False
+True
+True</div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div><code>and</code>는 조건을 <b>좁히고</b>, <code>or</code>는 <b>넓힌다</b>. 둘을 바꿔 쓰면 결과 건수가 통째로 달라진다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="참으로 취급되는 값">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>논리</div>
+  <h2 class="s-title sm">True가 아닌 참</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <table class="ctable">
+          <thead><tr><th>값</th><th>판정</th></tr></thead>
+          <tbody>
+            <tr><td><code>0</code> · <code>0.0</code></td><td class="no">거짓</td></tr>
+            <tr><td><code>""</code> 빈 문자열</td><td class="no">거짓</td></tr>
+            <tr><td><code>[]</code> <code>{}</code> 빈 리스트·딕셔너리</td><td class="no">거짓</td></tr>
+            <tr><td><code>None</code></td><td class="no">거짓</td></tr>
+            <tr><td>그 밖의 모든 값</td><td class="yes">참</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">비어 있는지 확인할 때</span></div>
+          <pre><code>rows = []
+
+<span class="cm"># 길이를 세지 않아도 된다</span>
+<span class="kw">if</span> rows:
+    <span class="fn2">print</span>(<span class="st">"데이터 있음"</span>)
+<span class="kw">else</span>:
+    <span class="fn2">print</span>(<span class="st">"비어 있음"</span>)</code></pre>
+          <div class="out">비어 있음</div>
+        </div>
+        <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>값 0이 걸러진다</h4><p><code>if fare:</code>는 <b>요금이 0일 때 거짓</b>이 된다. 값의 유무를 볼 때는 <code>if fare is not None:</code>을 쓴다.</p></div></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">함정</span><div>"비었는가"와 "값이 0인가"는 다른 질문이다. 데이터에서 이 둘을 섞으면 <b>정상값이 결측으로 처리</b>된다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="조건문">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>조건문</div>
+  <h2 class="s-title sm">조건에 따라 갈라지는 실행</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">if · else</span></div>
+          <pre><code>age = <span class="nm">12</span>
+
+<span class="kw">if</span> age &lt; <span class="nm">18</span>:
+    <span class="fn2">print</span>(<span class="st">"미성년"</span>)
+<span class="kw">else</span>:
+    <span class="fn2">print</span>(<span class="st">"성인"</span>)</code></pre>
+          <div class="out">미성년</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>조건식 끝에 <b>콜론</b>을 찍고, 실행할 줄은 <b>들여쓴다</b>.</div></div>
+          <div class="v"><span class="b">→</span><div><code>else</code>는 생략할 수 있다. 조건이 거짓이면 그냥 지나간다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">elif — 갈래가 셋 이상일 때</span></div>
+          <pre><code>age = <span class="nm">35</span>
+
+<span class="kw">if</span> age &lt; <span class="nm">13</span>:
+    group = <span class="st">"어린이"</span>
+<span class="kw">elif</span> age &lt; <span class="nm">20</span>:
+    group = <span class="st">"청소년"</span>
+<span class="kw">elif</span> age &lt; <span class="nm">65</span>:
+    group = <span class="st">"성인"</span>
+<span class="kw">else</span>:
+    group = <span class="st">"노년"</span>
+
+<span class="fn2">print</span>(group)</code></pre>
+          <div class="out">성인</div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">주의</span><div><code>elif</code>는 <b>위에서부터 걸리는 첫 줄만</b> 실행된다. 범위를 넓은 것부터 쓰면 아래 조건은 영원히 안 걸린다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="들여쓰기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>조건문</div>
+  <h2 class="s-title sm">괄호 대신 공백으로 묶는 블록</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twopane">
+      <div class="pane bad"><h4>조건 안에 있는 줄</h4><div class="mini">if age &lt; 18:
+    print("미성년")
+    count += 1        ← 조건이 참일 때만
+
+print("끝")           ← 항상 실행</div></div>
+      <div class="pane good"><h4>들여쓰기를 하나 옮기면</h4><div class="mini">if age &lt; 18:
+    print("미성년")
+count += 1            ← <b>항상 실행된다</b>
+
+print("끝")</div></div>
+    </div>
+    <div class="twocol">
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>들여쓰기는 <b>공백 4칸</b>이 관례다. 탭과 공백을 섞으면 에러가 난다.</div></div>
+          <div class="v"><span class="b">✕</span><div>줄을 옮겨도 <b>문법 오류가 나지 않는다</b>. 동작만 조용히 달라진다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">깜빡 잊으면</span></div>
+          <pre><code><span class="kw">if</span> age &lt; <span class="nm">18</span>:
+<span class="fn2">print</span>(<span class="st">"미성년"</span>)</code></pre>
+          <div class="out"><span class="err">IndentationError: expected an
+indented block after 'if' statement</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">함정</span><div>들여쓰기 오류의 절반은 <b>에러 없이 통과</b>한다. 남의 코드를 붙여 넣을 때 특히 확인한다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="반복문의 필요성">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>반복문</div>
+  <h2 class="s-title sm">같은 코드를 다시 쓰지 않는 법</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twopane">
+      <div class="pane bad"><h4>손으로 쓴다면</h4><div class="mini">print(ages[0])
+print(ages[1])
+print(ages[2])
+print(ages[3])
+    ⋮  승객 891명이면 891줄</div></div>
+      <div class="pane good"><h4>묶으면</h4><div class="mini">for age in ages:
+    print(age)</div><p>같은 명령이 반복되는 코드를 <b>한 덩어리</b>로 표현한다.</p></div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">→</span><div>행 수가 바뀌어도 <b>코드는 그대로</b>다.</div></div>
+      <div class="v"><span class="b">★</span><div>데이터 처리는 <b>행이 몇 개인지 모르는 채</b> 시작한다. 반복문 없이는 쓸 수 없다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>같은 코드가 <b>두 번 넘게</b> 반복되면 반복문으로 바꿀 자리다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="for 문">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>반복문</div>
+  <h2 class="s-title sm">꺼낼 것이 정해진 반복</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">리스트에서 하나씩 꺼낸다</span></div>
+          <pre><code>ages = [<span class="nm">22</span>, <span class="nm">38</span>, <span class="nm">26</span>]
+
+<span class="kw">for</span> a <span class="kw">in</span> ages:
+    <span class="fn2">print</span>(<span class="st">"나이:"</span>, a)</code></pre>
+          <div class="out">나이: 22
+나이: 38
+나이: 26</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div><code>a</code>는 반복할 때마다 <b>다음 값으로 바뀌는</b> 이름이다. 아무 이름이나 써도 된다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">순번과 딕셔너리</span></div>
+          <pre><code><span class="kw">for</span> i, a <span class="kw">in</span> <span class="fn2">enumerate</span>(ages, start=<span class="nm">1</span>):
+    <span class="fn2">print</span>(i, a)
+
+row = {<span class="st">'age'</span>: <span class="nm">22</span>, <span class="st">'fare'</span>: <span class="nm">7.25</span>}
+<span class="kw">for</span> k, v <span class="kw">in</span> row.items():
+    <span class="fn2">print</span>(k, v)</code></pre>
+          <div class="out">1 22
+2 38
+3 26
+age 22
+fare 7.25</div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">정리</span><div><code>for</code>는 <b>꺼낼 대상이 있을 때</b> 쓴다. 리스트·문자열·딕셔너리·파일 모두 대상이 된다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="range()">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>반복문</div>
+  <h2 class="s-title sm">횟수만 필요할 때 쓰는 숫자 공급기</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <table class="ctable">
+          <thead><tr><th>쓰는 법</th><th>나오는 값</th></tr></thead>
+          <tbody>
+            <tr><td><code>range(5)</code></td><td>0 1 2 3 4</td></tr>
+            <tr><td><code>range(1, 5)</code></td><td>1 2 3 4</td></tr>
+            <tr><td><code>range(0, 10, 2)</code></td><td>0 2 4 6 8</td></tr>
+            <tr><td><code>range(5, 0, -1)</code></td><td>5 4 3 2 1</td></tr>
+          </tbody>
+        </table>
+        <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>끝 값은 포함되지 않는다</h4><p><code>range(1, 5)</code>에 5는 없다. 1부터 5까지 돌려면 <code>range(1, 6)</code>이다.</p></div></div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">학습 루프의 모양</span></div>
+          <pre><code><span class="kw">for</span> epoch <span class="kw">in</span> <span class="fn2">range</span>(<span class="nm">1</span>, <span class="nm">4</span>):
+    <span class="fn2">print</span>(<span class="st">f"epoch {epoch} 학습 중"</span>)</code></pre>
+          <div class="out">epoch 1 학습 중
+epoch 2 학습 중
+epoch 3 학습 중</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div>신경망 학습이 정확히 이 구조다. <code>range(epochs)</code>를 돌며 오차를 줄인다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>꺼낼 값이 있으면 <code>for x in 리스트</code>, 횟수만 필요하면 <code>for i in range(n)</code>다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="while 문">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>반복문</div>
+  <h2 class="s-title sm">끝을 조건이 정하는 반복</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">조건이 참인 동안 돈다</span></div>
+          <pre><code>count = <span class="nm">1</span>
+
+<span class="kw">while</span> count &lt;= <span class="nm">3</span>:
+    <span class="fn2">print</span>(<span class="st">"시도"</span>, count)
+    count = count + <span class="nm">1</span>   <span class="cm"># 이 줄이 핵심</span></code></pre>
+          <div class="out">시도 1
+시도 2
+시도 3</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>반복 횟수를 <b>미리 모를 때</b> 쓴다. 조건이 거짓이 되면 빠져나온다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">멈추지 않는 코드</span></div>
+          <pre><code>count = <span class="nm">1</span>
+
+<span class="kw">while</span> count &lt;= <span class="nm">3</span>:
+    <span class="fn2">print</span>(<span class="st">"시도"</span>, count)
+    <span class="cm"># count 를 안 늘리면?</span></code></pre>
+          <div class="out">시도 1
+시도 1
+시도 1
+<span class="err">… 영원히</span></div>
+        </div>
+        <div class="callout rose"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>Colab에서 멈추는 법</h4><p>셀 왼쪽의 <b>정지 버튼</b>을 누른다. 그래도 안 되면 <code>런타임 → 런타임 다시 시작</code>.</p></div></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">함정</span><div><code>while</code>을 쓸 때는 <b>조건을 거짓으로 만드는 줄</b>이 몸통 안에 있는지 먼저 확인한다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="break와 continue">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>반복문</div>
+  <h2 class="s-title sm">반복 도중의 탈출과 건너뜀</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">break — 반복 자체를 끝낸다</span></div>
+          <pre><code>ages = [<span class="nm">22</span>, <span class="nm">38</span>, <span class="nm">4</span>, <span class="nm">35</span>]
+
+<span class="kw">for</span> a <span class="kw">in</span> ages:
+    <span class="kw">if</span> a &lt; <span class="nm">18</span>:
+        <span class="fn2">print</span>(<span class="st">"미성년 발견:"</span>, a)
+        <span class="kw">break</span>
+    <span class="fn2">print</span>(<span class="st">"확인:"</span>, a)</code></pre>
+          <div class="out">확인: 22
+확인: 38
+미성년 발견: 4</div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">continue — 이번 회차만 건너뛴다</span></div>
+          <pre><code><span class="kw">for</span> a <span class="kw">in</span> ages:
+    <span class="kw">if</span> a &lt; <span class="nm">18</span>:
+        <span class="kw">continue</span>          <span class="cm"># 아래를 건너뛴다</span>
+    <span class="fn2">print</span>(<span class="st">"집계:"</span>, a)</code></pre>
+          <div class="out">집계: 22
+집계: 38
+집계: 35</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div><code>break</code>는 <b>찾으면 그만</b>, <code>continue</code>는 <b>거르고 계속</b>이다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">정리</span><div>둘 다 <b>가장 안쪽 반복문</b>에만 영향을 준다. 중첩 반복에서 바깥까지 끊고 싶으면 함수로 빼고 <code>return</code>을 쓴다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="리스트 컴프리헨션">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>반복문</div>
+  <h2 class="s-title sm">한 줄로 접은 반복</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twopane">
+      <div class="pane bad"><h4>for 문으로</h4><div class="mini">result = []
+for a in ages:
+    result.append(a * 12)</div><p>빈 리스트를 만들고 <b>하나씩 append</b>한다.</p></div>
+      <div class="pane good"><h4>컴프리헨션으로</h4><div class="mini">result = [a * 12 for a in ages]</div><p>같은 일을 <b>한 줄</b>로 쓴다. 데이터 전처리 코드에서 늘 보인다.</p></div>
+    </div>
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">읽는 순서 — 뒤부터 앞으로</span></div>
+          <pre><code>ages = [<span class="nm">22</span>, <span class="nm">38</span>, <span class="nm">4</span>, <span class="nm">35</span>]
+
+<span class="cm"># [ 꺼낸 값을 어떻게  for  무엇에서 ]</span>
+months = [a * <span class="nm">12</span> <span class="kw">for</span> a <span class="kw">in</span> ages]
+<span class="fn2">print</span>(months)</code></pre>
+          <div class="out">[264, 456, 48, 420]</div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">조건을 붙여 거르기</span></div>
+          <pre><code>adults = [a <span class="kw">for</span> a <span class="kw">in</span> ages <span class="kw">if</span> a &gt;= <span class="nm">18</span>]
+<span class="fn2">print</span>(adults)
+
+labels = [<span class="st">"성인"</span> <span class="kw">if</span> a &gt;= <span class="nm">18</span> <span class="kw">else</span> <span class="st">"미성년"</span>
+          <span class="kw">for</span> a <span class="kw">in</span> ages]
+<span class="fn2">print</span>(labels)</code></pre>
+          <div class="out">[22, 38, 35]
+['성인', '성인', '미성년', '성인']</div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>한 줄에 안 들어가면 <b>그냥 for 문으로 쓴다</b>. 짧게 쓰는 것이 목적이 아니라 읽히는 것이 목적이다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="컴프리헨션 네 가지">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>반복문</div>
+  <h2 class="s-title sm">괄호가 정하는 결과 자료형</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable">
+      <thead><tr><th>표기</th><th>결과</th><th>예</th><th>쓰는 자리</th></tr></thead>
+      <tbody>
+        <tr><td><code>[ x <span class="hl">for</span> … ]</code></td><td><b>list</b></td><td><code>[n.upper() for n in names]</code></td><td>값을 하나씩 바꿔 담을 때</td></tr>
+        <tr><td><code>{ k<span class="hl">:</span> v for … }</code></td><td><b>dict</b></td><td><code>{n: a for n, a in zip(…)}</code></td><td>범주 → 숫자 <b>대응표</b></td></tr>
+        <tr><td><code>{ x for … }</code></td><td><b>set</b></td><td><code>{a // 10 for a in ages}</code></td><td>중복을 없앨 때</td></tr>
+        <tr><td><code>( x for … )</code></td><td><b>generator</b></td><td><code>sum(a * 12 for a in ages)</code></td><td>담지 않고 바로 집계할 때</td></tr>
+      </tbody>
+    </table>
+    <div class="twocol w2">
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div>중괄호는 <b>콜론이 있으면 딕셔너리, 없으면 집합</b>이다. 이 하나만 구분하면 된다.</div></div>
+          <div class="v"><span class="b">→</span><div><code>{}</code>만 쓰면 <b>빈 딕셔너리</b>다. 빈 집합은 <code>set()</code>으로 만든다.</div></div>
+          <div class="v"><span class="b">→</span><div>제너레이터는 값을 미리 만들지 않는다. <code>sum()</code> 안에서는 <b>대괄호를 빼는 편이</b> 메모리를 덜 쓴다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">같은 데이터, 네 가지 결과</span></div>
+          <pre><code>names = [<span class="st">'Owen'</span>, <span class="st">'Florence'</span>, <span class="st">'Laina'</span>]
+ages  = [<span class="nm">22</span>, <span class="nm">38</span>, <span class="nm">26</span>]
+
+<span class="fn2">print</span>([n.upper() <span class="kw">for</span> n <span class="kw">in</span> names])
+<span class="fn2">print</span>({n: a <span class="kw">for</span> n, a <span class="kw">in</span> <span class="fn2">zip</span>(names, ages)})
+<span class="fn2">print</span>({a // <span class="nm">10</span> * <span class="nm">10</span> <span class="kw">for</span> a <span class="kw">in</span> [<span class="nm">22</span>, <span class="nm">38</span>, <span class="nm">26</span>, <span class="nm">25</span>]})
+<span class="fn2">print</span>(<span class="fn2">sum</span>(a * <span class="nm">12</span> <span class="kw">for</span> a <span class="kw">in</span> ages))</code></pre>
+          <div class="out">['OWEN', 'FLORENCE', 'LAINA']
+{'Owen': 22, 'Florence': 38, 'Laina': 26}
+{20, 30}
+1032</div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>컴프리헨션은 리스트 전용이 아니다. <b>어떤 괄호로 감싸느냐가 결과 자료형을 정한다</b>.</div></div>
+  </div>
+</section>
+
+<section class="slide section" data-title="[섹션] 함수">
+  <div class="ghost">04</div>
+  <div class="seyebrow">CHAPTER 04</div>
+  <h2>함수</h2>
+  <div class="agenda"><span>내장 함수</span><span>def</span><span>반환</span><span>인자의 가변성</span><span>메서드</span></div>
+</section>
+
+<section class="slide" data-title="프로그래밍의 기본 틀">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>구조</div>
+  <h2 class="s-title sm">입력 · 처리 · 출력</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="pipe">
+      <div class="step"><div class="si">INPUT</div><div class="sn">입력</div><div class="sd">input() · read_csv() · 센서 로그</div></div>
+      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="step"><div class="si">PROCESS</div><div class="sn">처리</div><div class="sd">조건 · 반복 · 계산</div></div>
+      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="step"><div class="si">OUTPUT</div><div class="sn">출력</div><div class="sd">print() · 파일 저장 · 그래프</div></div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">→</span><div>어떤 프로그램이든 이 세 덩어리로 나뉜다. <b>함수</b>는 그중 처리 부분에 이름을 붙인 것이다.</div></div>
+      <div class="v"><span class="b">★</span><div>이름이 붙으면 <b>다시 쓸 수 있고</b>, 그 부분만 따로 검증할 수 있다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>남의 코드를 읽을 때 먼저 <b>이 세 덩어리로 잘라 본다</b>. 어디가 입력이고 어디가 처리인지 보이면 나머지는 세부다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="내장 함수">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>내장</div>
+  <h2 class="s-title sm">이미 만들어져 있는 것들</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <table class="ctable">
+          <thead><tr><th>함수</th><th>하는 일</th></tr></thead>
+          <tbody>
+            <tr><td><code>print()</code></td><td>화면에 출력</td></tr>
+            <tr><td><code>len()</code></td><td>길이·개수</td></tr>
+            <tr><td><code>max()</code> <code>min()</code></td><td>최댓값 · 최솟값</td></tr>
+            <tr><td><code>sum()</code></td><td>합계</td></tr>
+            <tr><td><code>sorted()</code></td><td>정렬한 새 리스트</td></tr>
+            <tr><td><code>type()</code></td><td>자료형 확인</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">묶어서 쓴다</span></div>
+          <pre><code>ages = [<span class="nm">22</span>, <span class="nm">38</span>, <span class="nm">26</span>, <span class="nm">35</span>]
+
+<span class="fn2">print</span>(<span class="fn2">max</span>(ages), <span class="fn2">min</span>(ages))
+<span class="fn2">print</span>(<span class="fn2">sum</span>(ages))
+<span class="fn2">print</span>(<span class="fn2">sum</span>(ages) / <span class="fn2">len</span>(ages))   <span class="cm"># 평균</span></code></pre>
+          <div class="out">38 22
+121
+30.25</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>평균 함수는 내장에 없다. <code>sum()</code>과 <code>len()</code>을 조합하거나 <b>Pandas</b>를 쓴다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">정리</span><div>내장 함수는 <b>가져오지 않고 바로</b> 쓴다. 그래서 이 이름들을 변수로 덮어쓰면 그 뒤로 못 쓴다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="함수 만들기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>정의</div>
+  <h2 class="s-title sm">def · 인자 · 들여쓰기 · return</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">네 부분으로 이루어진다</span></div>
+          <pre><code><span class="kw">def</span> <span class="fn2">age_group</span>(age, adult=<span class="nm">18</span>):
+    <span class="kw">if</span> age &lt; adult:
+        <span class="kw">return</span> <span class="st">"미성년"</span>
+    <span class="kw">return</span> <span class="st">"성인"</span>
+
+<span class="fn2">print</span>(<span class="fn2">age_group</span>(<span class="nm">12</span>))
+<span class="fn2">print</span>(<span class="fn2">age_group</span>(<span class="nm">12</span>, adult=<span class="nm">10</span>))</code></pre>
+          <div class="out">미성년
+성인</div>
+        </div>
+      </div>
+      <div>
+        <div class="biglist">
+          <div class="li"><div class="num">1</div><div class="tx"><h4>정의</h4><p><code>def 이름(...):</code> — 콜론으로 끝낸다.</p></div></div>
+          <div class="li"><div class="num">2</div><div class="tx"><h4>입력</h4><p>괄호 안이 인자다. <code>adult=18</code>처럼 <b>기본값</b>을 줄 수 있다.</p></div></div>
+          <div class="li"><div class="num">3</div><div class="tx"><h4>몸통</h4><p>들여쓴 줄까지가 함수다. 들여쓰기가 풀리면 함수 밖이다.</p></div></div>
+          <div class="li"><div class="num">4</div><div class="tx"><h4>반환</h4><p><code>return</code>이 값을 돌려주고 <b>함수를 즉시 끝낸다</b>.</p></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>함수는 <b>정의만으로는 아무 일도 하지 않는다</b>. 이름 뒤에 괄호를 붙여 호출해야 실행된다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="반환이 필요한 이유">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>반환</div>
+  <h2 class="s-title sm">출력하는 함수와 돌려주는 함수</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twopane">
+      <div class="pane bad"><h4>print만 하는 함수</h4><div class="mini">def group(a):
+    print("성인" if a &gt;= 18 else "미성년")
+
+r = group(22)
+print(r)        → <b>None</b></div><p>화면에 보이지만 <b>값을 쓸 수 없다</b>.</p></div>
+      <div class="pane good"><h4>return 하는 함수</h4><div class="mini">def group(a):
+    return "성인" if a &gt;= 18 else "미성년"
+
+r = group(22)
+print(r)        → <b>성인</b></div><p>결과를 변수에 담고 <b>다음 계산에 넘긴다</b>.</p></div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">→</span><div><code>return</code>이 없는 함수는 <code>None</code>을 돌려준다. 그 값을 계산에 쓰면 에러가 난다.</div></div>
+      <div class="v"><span class="b">★</span><div>표의 열 전체에 함수를 태울 때(<code>apply</code>) <b>반드시 return</b>이 있어야 한다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div><code>print</code>는 사람에게 보여 주고, <code>return</code>은 <b>다음 코드에 넘긴다</b>. 둘을 헷갈리면 결과가 None으로 흐른다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="전역 변수와 지역 변수">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>범위</div>
+  <h2 class="s-title sm">함수 안에서만 사는 이름</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">지역 변수 — 함수가 끝나면 사라진다</span></div>
+          <pre><code>ADULT = <span class="nm">18</span>          <span class="cm"># 전역</span>
+
+<span class="kw">def</span> <span class="fn2">gap</span>(age):
+    diff = age - ADULT   <span class="cm"># 지역</span>
+    <span class="kw">return</span> diff
+
+<span class="fn2">print</span>(<span class="fn2">gap</span>(<span class="nm">22</span>))
+<span class="fn2">print</span>(diff)</code></pre>
+          <div class="out">4
+<span class="err">NameError: name 'diff' is not defined</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>함수 밖에서 만든 이름은 <b>전역</b>이다. 함수 안에서 읽을 수 있다.</div></div>
+          <div class="v"><span class="b">→</span><div>함수 안에서 만든 이름은 <b>지역</b>이다. 함수가 끝나면 없어진다.</div></div>
+          <div class="v"><span class="b">✕</span><div>함수 안에서 전역 이름에 값을 넣으면, 같은 이름의 <b>새 지역 변수</b>가 생긴다. 밖은 그대로다.</div></div>
+        </div>
+        <div class="callout mint"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div class="ct"><h4>바깥값을 바꾸려면</h4><p><code>global</code>을 쓰는 대신 <b>인자로 받고 return으로 돌려준다</b>. 어디서 값이 바뀌는지 코드에 드러난다.</p></div></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>함수는 <b>인자로만 받고 return으로만 내보내는</b> 것이 안전하다. 그래야 그 함수만 따로 검증할 수 있다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="함수 인자의 가변성">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>범위</div>
+  <h2 class="s-title sm">함수가 고칠 수 있는 인자와 못 하는 인자</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">불변 인자 — 밖이 안 바뀐다</span></div>
+          <pre><code><span class="kw">def</span> <span class="fn2">add_one</span>(n):
+    n = n + <span class="nm">1</span>      <span class="cm"># 새 정수를 만든다</span>
+    <span class="kw">return</span> n
+
+x = <span class="nm">10</span>
+<span class="fn2">add_one</span>(x)
+<span class="fn2">print</span>(x)</code></pre>
+          <div class="out">10</div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">가변 인자 — 밖도 바뀐다</span></div>
+          <pre><code><span class="kw">def</span> <span class="fn2">append_one</span>(lst):
+    lst.append(<span class="nm">1</span>)   <span class="cm"># 그 객체를 고친다</span>
+
+nums = [<span class="nm">0</span>]
+<span class="fn2">append_one</span>(nums)
+<span class="fn2">print</span>(nums)</code></pre>
+          <div class="out"><span class="err">[0, 1]</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">→</span><div>인자로 넘어가는 것은 <b>그 객체를 가리키는 이름</b>이다. 값이 복사되는 것이 아니다.</div></div>
+      <div class="v"><span class="b">✕</span><div>그래서 <b>가변 객체를 넘기면 함수가 원본을 고칠 수 있다</b>. 호출한 쪽은 모른다.</div></div>
+      <div class="v"><span class="b">★</span><div>원본을 지켜야 하면 <code>func(nums.copy())</code>로 넘기거나, 함수 안에서 새 리스트를 만들어 <code>return</code>한다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">함정</span><div>전처리 함수가 <b>DataFrame을 조용히 고쳐 놓는</b> 사고가 여기서 나온다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="함수와 메서드">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>구분</div>
+  <h2 class="s-title sm">괄호 앞의 점 하나</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twopane">
+      <div class="pane good"><h4>함수 — 독립적으로 호출</h4><div class="mini">len(ages)
+sum(ages)
+print(name)</div><p>대상을 <b>괄호 안에</b> 넣는다.</p></div>
+      <div class="pane good"><h4>메서드 — 값에 붙어서 호출</h4><div class="mini">ages.append(54)
+name.upper()
+df.head()</div><p>대상 뒤에 <b>점을 찍고</b> 부른다.</p></div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">→</span><div>메서드는 <b>그 자료형이 가진 기능</b>이다. 리스트에는 <code>append</code>가 있고 문자열에는 없다.</div></div>
+      <div class="v"><span class="b">★</span><div>Pandas는 거의 전부 메서드다. <code>df.head().sort_values(...)</code>처럼 <b>점으로 이어 붙인다</b>.</div></div>
+      <div class="v"><span class="b">✕</span><div><code>"abc".append()</code>처럼 없는 메서드를 부르면 <code>AttributeError</code>가 난다. 자료형을 잘못 안 것이다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>에러 메시지에 <code>AttributeError</code>가 뜨면 문법이 아니라 <b>다루는 값의 자료형</b>을 의심한다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="Day 1 정리">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>정리</div>
+  <h2 class="s-title sm">손에 남는 것</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="biglist">
+      <div class="li"><div class="num">1</div><div class="tx"><h4>Colab은 원격 실행 환경</h4><p>세션이 끊기면 변수와 파일이 사라진다. 남길 것은 드라이브나 GitHub로 뺀다.</p></div></div>
+      <div class="li"><div class="num">2</div><div class="tx"><h4>불변과 가변</h4><p><code>int·str·tuple</code>은 고쳐지지 않고 <code>list·dict·set</code>은 고쳐진다. <code>b = a</code>와 함수 인자 전달에서 결과가 갈린다.</p></div></div>
+      <div class="li"><div class="num">3</div><div class="tx"><h4>표는 딕셔너리의 리스트다</h4><p>한 행이 딕셔너리, 표 전체가 리스트. Pandas의 DataFrame이 이 구조를 감싼 것이다.</p></div></div>
+      <div class="li"><div class="num">4</div><div class="tx"><h4>들여쓰기가 블록이다</h4><p>조건문·반복문·함수 모두 콜론과 들여쓰기로 범위를 정한다. 어긋나도 에러가 안 날 때가 있다.</p></div></div>
+      <div class="li"><div class="num">5</div><div class="tx"><h4>return이 없으면 None이 흐른다</h4><p><code>print</code>는 사람에게, <code>return</code>은 다음 코드에. <code>apply</code>에서 바로 쓰인다.</p></div></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>문법을 다 외울 필요는 없다. <b>남의 코드에서 이 다섯 가지를 찾아낼 수 있으면</b> 충분하다.</div></div>
+  </div>
+</section>
+
+
+
+    </div>
+  </div>
+</main>
+<div class="overview" id="overview">
+  <div class="head"><h3>슬라이드 목차</h3><button id="ovClose">닫기 ✕</button></div>
+  <div class="ovgrid" id="ovgrid"></div>
+</div>
+
+<div class="controlbar">
+  <button class="ico" id="btnMenu" title="목차"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+  <span class="sep"></span>
+  <button class="ico" id="btnPrev" title="이전"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <span class="count"><b id="cur">1</b> / <span id="tot2">75</span></span>
+  <button class="ico" id="btnNext" title="다음"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 18l6-6-6-6"/></svg></button>
+  <span class="sep"></span>
+  <button class="zoom" id="btnOut" title="축소"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14"/></svg></button>
+  <button class="zoom" id="btnIn" title="확대"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></button>
+  <button class="zoom" id="btnFit" title="화면 맞춤"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 4H5a1 1 0 0 0-1 1v4M15 4h4a1 1 0 0 1 1 1v4M9 20H5a1 1 0 0 1-1-1v-4M15 20h4a1 1 0 0 0 1-1v-4"/></svg></button>
+  <button class="pdf" id="btnPdf" title="PDF로 저장 (인쇄 → PDF로 저장)">PDF</button>
+</div>
+
+<div class="hint">← → 또는 Space · 목차(≡) · 줌(−/+) · 숫자 입력 후 Enter로 이동</div>
+<div id="jumpHint"></div>
+<style>
+  #jumpHint{position:fixed; left:50%; bottom:74px; transform:translateX(-50%) translateY(6px); z-index:75;
+    background:#2B2B2E; color:#fff; font-family:Georgia,'Times New Roman',serif; font-style:italic;
+    font-size:20px; letter-spacing:.04em; padding:8px 20px; border-radius:999px;
+    box-shadow:0 12px 28px -10px rgba(0,0,0,.55); opacity:0; pointer-events:none;
+    transition:opacity .12s ease, transform .12s ease;}
+  #jumpHint.on{opacity:1; transform:translateX(-50%) translateY(0);}
+  @media print{ #jumpHint{display:none !important;} }
+</style>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const scaler = document.getElementById('scaler');
+  const sizer  = document.getElementById('sizer');
+  const stage  = document.getElementById('stage');
+  const total  = slides.length;
+  let idx = 0, userZoom = 1;
+  const BW = 1280, BH = 720;
+
+  document.getElementById('tot2').textContent = total;
+  slides.forEach((s, i) => {
+    const c = s.querySelector('.coord b');     if (c) c.textContent = String(i + 1).padStart(2, '0');
+    const t = s.querySelector('.coord .tot');  if (t) t.textContent = total;
+  });
+
+  const ovgrid = document.getElementById('ovgrid');
+  slides.forEach((s, i) => {
+    const b = document.createElement('button');
+    b.className = 'ovcard';
+    b.innerHTML = '<div class="ovn">' + String(i + 1).padStart(2, '0') + '</div><div class="ovt">' + (s.dataset.title || '') + '</div>';
+    b.addEventListener('click', () => { go(i); closeOverview(); });
+    ovgrid.appendChild(b);
+  });
+  const overview = document.getElementById('overview');
+  function openOverview(){ overview.classList.add('on'); }
+  function closeOverview(){ overview.classList.remove('on'); }
+  document.getElementById('btnMenu').addEventListener('click', openOverview);
+  document.getElementById('ovClose').addEventListener('click', closeOverview);
+  overview.addEventListener('click', (e) => { if (e.target === overview) closeOverview(); });
+
+  function fitScale(){
+    const availW = stage.clientWidth  - 60;
+    const availH = stage.clientHeight - 60;
+    return Math.min(availW / BW, availH / BH);
+  }
+  function applyScale(){
+    const eff = fitScale() * userZoom;
+    scaler.style.transform = 'scale(' + eff + ')';
+    sizer.style.width  = (BW * eff) + 'px';
+    sizer.style.height = (BH * eff) + 'px';
+  }
+  window.addEventListener('resize', applyScale);
+
+  function go(n){
+    idx = Math.max(0, Math.min(total - 1, n));
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    document.getElementById('cur').textContent = idx + 1;
+    document.getElementById('btnPrev').disabled = idx === 0;
+    document.getElementById('btnNext').disabled = idx === total - 1;
+    document.getElementById('pfill').style.width = (idx / (total - 1) * 100) + '%';
+    applyScale();
+    stage.scrollTop = 0; stage.scrollLeft = 0;
+  }
+  document.getElementById('btnPrev').addEventListener('click', () => go(idx - 1));
+  document.getElementById('btnNext').addEventListener('click', () => go(idx + 1));
+  document.getElementById('btnIn').addEventListener('click',  () => { userZoom = Math.min(2.4, userZoom + 0.15); applyScale(); });
+  document.getElementById('btnOut').addEventListener('click', () => { userZoom = Math.max(0.5, userZoom - 0.15); applyScale(); });
+  document.getElementById('btnFit').addEventListener('click', () => { userZoom = 1; applyScale(); });
+  document.getElementById('btnPdf').addEventListener('click', () => window.print());
+
+  // ---- 슬라이드 번호 입력 → Enter 로 점프 ----
+  let jumpBuf = '', jumpTimer = null;
+  const jumpHint = document.getElementById('jumpHint');
+  function showJump(){
+    if (!jumpHint) return;
+    if (jumpBuf){ jumpHint.textContent = '→ ' + jumpBuf; jumpHint.classList.add('on'); }
+    else { jumpHint.classList.remove('on'); }
+  }
+  function clearJump(){ jumpBuf = ''; if (jumpTimer) clearTimeout(jumpTimer); showJump(); }
+  function commitJump(){
+    if (jumpBuf){ const n = parseInt(jumpBuf, 10); if (!isNaN(n)) go(n - 1); }
+    clearJump();
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (overview.classList.contains('on')) { if (e.key === 'Escape') closeOverview(); return; }
+    if (/^[0-9]$/.test(e.key)){
+      e.preventDefault();
+      jumpBuf = (jumpBuf + e.key).slice(0, 3);
+      showJump();
+      if (jumpTimer) clearTimeout(jumpTimer);
+      jumpTimer = setTimeout(clearJump, 1600);
+      return;
+    }
+    if (e.key === 'Enter'){ e.preventDefault(); commitJump(); return; }
+    if (e.key === 'Escape'){ clearJump(); }
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown'){ e.preventDefault(); clearJump(); go(idx + 1); }
+    if (e.key === 'ArrowLeft'  || e.key === 'PageUp'){ e.preventDefault(); clearJump(); go(idx - 1); }
+    if (e.key === 'Home'){ clearJump(); go(0); } if (e.key === 'End'){ clearJump(); go(total - 1); }
+    if (e.key === '+' || e.key === '='){ userZoom = Math.min(2.4, userZoom + 0.15); applyScale(); }
+    if (e.key === '-'){ userZoom = Math.max(0.5, userZoom - 0.15); applyScale(); }
+  });
+
+  applyScale(); go(0);
+</script>
+</body>
+</html>

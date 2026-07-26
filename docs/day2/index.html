@@ -1,0 +1,1921 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Day 2 · Pandas · 전처리 · 시각화 · NumPy</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#16142B; --ink-soft:#4A4766; --mut:#8E8AAC;
+    --violet:#5B3DF5; --violet-700:#3A1FC9; --violet-300:#B7A9FF;
+    --wash:#F4F1FF; --wash-2:#FAF9FF; --line:#E8E4F8;
+    --paper:#FFFFFF; --mint:#0FB5A1; --mint-soft:#E4F8F4;
+    --amber:#F4A93C; --rose:#E8537A;
+    --code-bg:#1C1933; --code-ink:#ECEAFF; --code-dim:#9C97D6;
+    --sw:1280px; --sh:720px;
+    --shadow:0 24px 60px -24px rgba(43,28,120,.45);
+    --serif: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:var(--serif); color:var(--ink);
+    background:
+      radial-gradient(1200px 600px at 15% -10%, #ECE7FF 0%, rgba(236,231,255,0) 60%),
+      radial-gradient(1000px 700px at 110% 10%, #F0EBFF 0%, rgba(240,235,255,0) 55%),
+      #EAE7F4;
+    min-height:100vh; -webkit-font-smoothing:antialiased;
+  }
+  .progress{position:fixed; top:0; left:0; right:0; height:3px; z-index:60; background:transparent;}
+  .progress .fill{height:100%; width:0; background:linear-gradient(90deg,var(--violet),#9B7BFF); transition:width .2s ease;}
+
+  .stage{
+    position:fixed; inset:0 0 0 0; z-index:10;
+    display:flex; justify-content:safe center; align-items:safe center;
+    overflow:auto; padding:30px 30px 96px;
+  }
+  .sizer{position:relative;}
+  .scaler{ width:var(--sw); height:var(--sh); transform-origin:top left; position:relative; }
+
+  .slide{
+    width:var(--sw); height:var(--sh);
+    background:var(--paper); border:1px solid var(--line);
+    border-radius:22px; box-shadow:var(--shadow);
+    overflow:hidden; display:none; flex-direction:column;
+    padding:50px 60px 46px; position:relative;
+  }
+  .slide.active{display:flex;}
+
+  .eyebrow{display:inline-flex; align-items:center; gap:10px; font-family:var(--mono); font-size:13px; font-weight:700; letter-spacing:.04em; color:var(--violet); text-transform:uppercase;}
+  .eyebrow .tag{color:#fff; background:var(--violet); border-radius:6px; padding:3px 8px; font-size:11px; letter-spacing:.05em;}
+  .eyebrow .tag.mint{background:var(--mint);}
+  .eyebrow .dot{width:5px;height:5px;border-radius:50%;background:var(--violet-300);}
+  .coord{position:absolute; top:30px; right:40px; font-family:var(--mono); font-size:12px; color:var(--mut); font-weight:600; letter-spacing:.05em;}
+  .coord b{color:var(--ink);}
+
+  .s-title{font-size:39px; line-height:1.12; letter-spacing:-.025em; font-weight:800; margin:14px 0 4px;}
+  .s-title.sm{font-size:32px;} .s-title.xs{font-size:28px;}
+  .s-sub{font-size:17px; color:var(--ink-soft); font-weight:500; line-height:1.5; max-width:64ch;}
+  .rule{height:4px; width:54px; border-radius:3px; background:var(--violet); margin:13px 0 6px;}
+  .body{flex:1; min-height:0; display:flex; flex-direction:column; justify-content:center;}
+  .body.top{justify-content:flex-start; padding-top:6px;}
+
+  .slide.cover{ padding:0; justify-content:center;
+    background:
+      radial-gradient(900px 520px at 100% 0%, #6B4BFF 0%, rgba(107,75,255,0) 58%),
+      radial-gradient(700px 600px at -5% 110%, #3A1FC9 0%, rgba(58,31,201,0) 55%),
+      linear-gradient(135deg,#2A1B8C 0%, #4226D6 48%, #5B3DF5 100%);
+    color:#fff; border:none; }
+  .cover .aperture{position:absolute; top:-120px; right:-120px; width:460px; height:460px; border-radius:50%; background:radial-gradient(circle at 35% 35%, rgba(255,255,255,.5), rgba(255,255,255,0) 62%); filter:blur(2px);}
+  .cover .ring{position:absolute; right:60px; top:60px; width:120px; height:120px; border-radius:50%; border:1.5px solid rgba(255,255,255,.4);}
+  .cover .ring::after{content:""; position:absolute; inset:18px; border-radius:50%; border:1.5px dashed rgba(255,255,255,.35);}
+  .cover .wrap{padding:60px 70px; position:relative; z-index:2; width:100%;}
+  .cover .kick{font-family:var(--mono); letter-spacing:.18em; font-size:13.5px; font-weight:600; color:rgba(255,255,255,.86); text-transform:uppercase; display:flex; align-items:center; gap:14px;}
+  .cover .kick .pill{border:1px solid rgba(255,255,255,.45); border-radius:999px; padding:4px 12px;}
+  .cover h1{font-size:58px; line-height:1.08; letter-spacing:-.03em; font-weight:800; margin:24px 0 16px; max-width:21ch;}
+  .cover .lead{font-size:18px; line-height:1.55; color:rgba(255,255,255,.9); max-width:56ch; font-weight:400;}
+  .cover .meta{margin-top:36px; display:flex; gap:24px; flex-wrap:wrap; font-size:14px;}
+  .cover .meta .it{display:flex; flex-direction:column; gap:3px;}
+  .cover .meta .it .k{font-family:var(--mono); font-size:11px; letter-spacing:.1em; color:rgba(255,255,255,.6); text-transform:uppercase;}
+  .cover .meta .it .v{font-size:15px; font-weight:700; color:#fff;}
+
+  .slide.section{ background:linear-gradient(140deg,#3A1FC9 0%, #5B3DF5 70%, #7A5BFF 100%); color:#fff; border:none; justify-content:center; padding:60px 70px; }
+  .slide.section.mintbg{ background:linear-gradient(140deg,#0A8A7A 0%, #0FB5A1 70%, #34D6C2 100%); }
+  .slide.section .ghost{position:absolute; right:34px; bottom:-66px; font-family:var(--mono); font-weight:700; font-size:330px; line-height:.8; color:rgba(255,255,255,.10); letter-spacing:-.04em;}
+  .slide.section .lab-flag{display:inline-flex; align-items:center; gap:9px; align-self:flex-start; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.4); padding:7px 14px; border-radius:999px; font-weight:700; font-size:13px; font-family:var(--mono); letter-spacing:.06em;}
+  .slide.section .lab-flag .sq{width:9px;height:9px;border-radius:3px;background:#fff;}
+  .slide.section .seyebrow{font-family:var(--mono); letter-spacing:.16em; font-size:14px; color:rgba(255,255,255,.85); text-transform:uppercase; margin-bottom:14px;}
+  .slide.section h2{font-size:48px; line-height:1.1; letter-spacing:-.025em; font-weight:800; margin:0 0 14px; max-width:24ch; position:relative; z-index:2;}
+  .slide.section p{font-size:18px; color:rgba(255,255,255,.92); max-width:54ch; line-height:1.55; position:relative; z-index:2;}
+  .slide.section .agenda{display:flex; gap:10px; flex-wrap:wrap; margin-top:22px; position:relative; z-index:2;}
+  .slide.section .agenda span{font-size:13px; font-weight:600; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3); padding:6px 12px; border-radius:999px;}
+
+  .cards{display:grid; gap:16px;}
+  .cards.c2{grid-template-columns:repeat(2,1fr);} .cards.c3{grid-template-columns:repeat(3,1fr);} .cards.c4{grid-template-columns:repeat(4,1fr);}
+  .card{background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:17px 19px; display:flex; flex-direction:column; gap:7px; position:relative;}
+  .card .ic{width:38px; height:38px; border-radius:4px; display:grid; place-items:center; background:transparent; border:1.5px solid var(--violet-300); color:var(--violet); margin-bottom:3px;}
+  .card .ic svg{width:20px;height:20px;}
+  .card h3{font-size:17px; font-weight:800; letter-spacing:-.01em; margin:0 0 1px; padding-bottom:8px; border-bottom:1px solid var(--line);}
+  .card p{font-size:14px; color:var(--ink-soft); line-height:1.5; margin:0;}
+  .card .n{font-family:var(--mono); font-size:11.5px; color:var(--violet); font-weight:700;}
+
+  .biglist{display:flex; flex-direction:column; gap:13px;}
+  .biglist .li{display:flex; gap:15px; align-items:flex-start;}
+  .biglist .li .num{flex:none; width:34px; height:34px; border-radius:10px; background:var(--violet); color:#fff; font-family:var(--mono); font-weight:700; display:grid; place-items:center; font-size:14px; margin-top:1px;}
+  .biglist .li .tx h4{margin:0 0 3px; font-size:17.5px; font-weight:800;}
+  .biglist .li .tx p{margin:0; font-size:14px; color:var(--ink-soft); line-height:1.5;}
+
+  .phase-label{font-family:var(--mono); font-size:12px; font-weight:700; letter-spacing:.08em; color:var(--violet); text-transform:uppercase; margin:0 0 10px; display:flex; align-items:center; gap:9px;}
+  .phase-label .ln{height:1px; flex:1; background:var(--line);}
+  .pipe{display:flex; align-items:stretch; gap:0; margin-bottom:20px;}
+  .pipe .step{flex:1; background:var(--paper); border:1px solid var(--line); border-top:3px solid var(--violet); border-radius:4px; padding:12px 10px; text-align:center; min-width:0;}
+  .pipe .step .si{font-family:var(--mono); font-size:11px; color:var(--violet); font-weight:700;}
+  .pipe .step .sn{font-size:14.5px; font-weight:800; margin-top:3px; letter-spacing:-.01em;}
+  .pipe .step .sd{font-size:11px; color:var(--mut); margin-top:2px; line-height:1.3;}
+  .pipe .arrow{display:flex; align-items:center; padding:0 5px; color:var(--violet-300);}
+  .pipe .arrow svg{width:17px;height:17px;}
+  .pipe.q .step{background:var(--paper); border-color:var(--line); border-top-color:var(--mint);} .pipe.q .step .si{color:var(--mint);} .pipe.q .arrow{color:#8AD7CC;}
+
+  .code{background:var(--code-bg); border-radius:14px; overflow:hidden; border:1px solid #2A2548; box-shadow:0 18px 40px -22px rgba(28,25,51,.7);}
+  .code .bar{display:flex; align-items:center; gap:7px; padding:10px 15px; border-bottom:1px solid #2A2548; background:#171430;}
+  .code .bar .dot{width:11px;height:11px;border-radius:50%;}
+  .code .bar .r{background:#FF6058;} .code .bar .y{background:#FFC130;} .code .bar .g{background:#28CA42;}
+  .code .bar .fn{margin-left:8px; font-family:var(--mono); font-size:12px; color:var(--code-dim);}
+  .code pre{margin:0; padding:16px 18px; overflow:auto;}
+  .code code{font-family:var(--mono); font-size:13px; line-height:1.6; color:var(--code-ink); white-space:pre;}
+  .code.sm code{font-size:12px; line-height:1.55;}
+  .cm{color:#7D78B8;} .kw{color:#C792FF;} .st{color:#9DE39A;} .fn2{color:#82D3FF;} .nm{color:#FFD479;}
+
+  .callout{border-radius:4px; padding:15px 18px; display:flex; gap:13px; align-items:flex-start; background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet);}
+  .callout .ci{flex:none; width:34px;height:34px;border-radius:4px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .callout .ci svg{width:18px;height:18px;}
+  .callout .ct h4{margin:0 0 3px; font-size:15.5px; font-weight:800;}
+  .callout .ct p{margin:0; font-size:13.5px; color:var(--ink-soft); line-height:1.5;}
+  .callout.mint{border-left-color:var(--mint);} .callout.mint .ci{background:var(--mint);}
+  .callout.amber{border-left-color:var(--amber);} .callout.amber .ci{background:var(--amber);}
+  .callout.rose{border-left-color:var(--rose);} .callout.rose .ci{background:var(--rose);}
+
+  .lab-badge{display:inline-flex; align-items:center; gap:9px; background:var(--mint-soft); color:#0A7F70; border:1px solid #BFE9E1; padding:7px 13px; border-radius:999px; font-weight:700; font-size:13px; font-family:var(--mono); letter-spacing:.04em;}
+  .lab-badge .sq{width:9px;height:9px;border-radius:3px;background:var(--mint);}
+
+  .twocol{display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start;}
+  .twocol.w{grid-template-columns:1.15fr .85fr;} .twocol.w2{grid-template-columns:.85fr 1.15fr;}
+
+  .chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{font-size:12.5px; font-weight:600; color:var(--ink-soft); background:#fff; border:1px solid var(--line); padding:6px 12px; border-radius:999px;}
+  .chip b{color:var(--violet);}
+
+  .deliv{background:var(--paper); border:1px dashed var(--violet-300); border-left:3px solid var(--violet); border-radius:4px; padding:15px 18px; display:flex; align-items:center; gap:13px;}
+  .deliv .di{flex:none;width:36px;height:36px;border-radius:4px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .deliv .di svg{width:19px;height:19px;}
+  .deliv .dt b{display:block;font-size:11px;font-family:var(--mono);letter-spacing:.08em;color:var(--violet);text-transform:uppercase;}
+  .deliv .dt span{font-size:15px;font-weight:700;}
+
+  .vlist{display:flex;flex-direction:column;gap:10px;}
+  .vlist .v{display:flex;gap:11px;align-items:flex-start;font-size:14.5px;color:var(--ink-soft);line-height:1.45;}
+  .vlist .v .b{flex:none;width:22px;height:22px;border-radius:7px;background:var(--wash);color:var(--violet);display:grid;place-items:center;font-family:var(--mono);font-size:12px;font-weight:700;margin-top:1px;}
+  .vlist .v b{color:var(--ink);font-weight:700;}
+
+  .keymsg{margin-top:auto; background:var(--ink); color:#fff; border-radius:4px; padding:15px 20px; display:flex; gap:13px; align-items:center; font-size:15px; line-height:1.5;}
+  .keymsg .k{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;color:var(--violet-300);text-transform:uppercase;flex:none;}
+  .keymsg b{color:#fff;}
+
+  .formula{display:flex; flex-direction:column; gap:10px; background:var(--code-bg); border-radius:13px; padding:20px; color:#fff; font-family:var(--mono);}
+  .formula .big{font-size:21px; text-align:center;}
+
+  .ctable{width:100%; border-collapse:separate; border-spacing:0; font-size:14px; border:1px solid var(--line); border-radius:13px; overflow:hidden;}
+  .ctable th,.ctable td{padding:13px 16px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top;}
+  .ctable thead th{background:var(--wash); color:var(--violet); font-family:var(--mono); font-size:12px; letter-spacing:.04em; text-transform:uppercase; font-weight:700;}
+  .ctable tbody tr:last-child td{border-bottom:none;}
+  .ctable td b{color:var(--ink);} .ctable .hl{color:var(--violet); font-weight:700;}
+  .ctable .yes{color:var(--mint); font-weight:700;} .ctable .no{color:var(--rose); font-weight:700;}
+
+  .timeline{display:flex; gap:0; align-items:stretch; margin-top:6px;}
+  .timeline .t{flex:1; position:relative; padding:0 6px;}
+  .timeline .t .yr{font-family:var(--mono); font-size:13px; font-weight:700; color:var(--violet);}
+  .timeline .t .ev{font-size:13px; font-weight:700; margin-top:30px; line-height:1.3;}
+  .timeline .t .ds{font-size:11.5px; color:var(--mut); margin-top:3px; line-height:1.35;}
+  .timeline .t::before{content:""; position:absolute; left:0; right:0; top:26px; height:2px; background:var(--line);}
+  .timeline .t::after{content:""; position:absolute; left:8px; top:21px; width:12px; height:12px; border-radius:50%; background:var(--violet); border:3px solid #fff; box-shadow:0 0 0 1px var(--violet-300);}
+
+  .quote{background:var(--wash-2); border-left:4px solid var(--violet); border-radius:0 13px 13px 0; padding:18px 22px;}
+  .quote p{margin:0; font-size:18px; line-height:1.5; font-weight:600; color:var(--ink);}
+  .quote .src{margin-top:10px; font-size:12.5px; color:var(--mut); font-family:var(--mono);}
+  .refbox{background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:14px 16px; display:flex; gap:12px; align-items:flex-start;}
+  .refbox .rk{font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; color:var(--violet); text-transform:uppercase; font-weight:700;}
+  .refbox h4{margin:2px 0 3px; font-size:14.5px; font-weight:800;}
+  .refbox p{margin:0; font-size:12.5px; color:var(--ink-soft); line-height:1.45;}
+  .refbox .ri{flex:none;width:30px;height:30px;border-radius:8px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .refbox .ri svg{width:16px;height:16px;}
+
+  .arch{display:flex; align-items:center; gap:18px; justify-content:center; margin:6px 0;}
+  .arch .box{border:1.5px solid var(--line); border-radius:14px; padding:18px 20px; text-align:center; background:var(--wash-2); min-width:160px;}
+  .arch .box .bt{font-size:15px; font-weight:800;} .arch .box .bs{font-size:12px; color:var(--mut); margin-top:3px; line-height:1.35;}
+  .arch .box.local{border-style:dashed; border-color:var(--violet-300); background:#fff;}
+  .arch .box.api{background:linear-gradient(135deg,#EFEAFF,#F8F5FF); border-color:var(--violet-300);}
+  .arch .conn{display:flex; flex-direction:column; align-items:center; gap:4px; color:var(--violet); font-family:var(--mono); font-size:11px; font-weight:700;}
+  .arch .conn svg{width:34px;height:18px;}
+
+  .stat-row{display:flex; gap:16px;}
+  .stat{flex:1; background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:16px 18px;}
+  .stat .num{font-size:30px; font-weight:800; letter-spacing:-.02em; color:var(--violet); font-family:var(--mono);}
+  .stat .lab{font-size:13px; color:var(--ink-soft); margin-top:4px; line-height:1.4;}
+
+  .twopane{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .pane{border:1px solid var(--line); border-radius:4px; padding:16px 18px; background:var(--paper);}
+  .pane.bad{border-left:3px solid var(--rose);} .pane.good{border-left:3px solid var(--mint);}
+  .pane h4{margin:0 0 9px; font-size:14px; font-weight:800; display:flex; align-items:center; gap:7px;}
+  .pane.bad h4{color:#C9405B;} .pane.good h4{color:#0E9E6E;}
+  .pane p{margin:0; font-size:13px; color:var(--ink-soft); line-height:1.5;}
+  .pane .mini{font-family:var(--mono); font-size:12px; background:var(--wash-2); border:1px solid var(--line); border-radius:3px; padding:8px 10px; color:var(--ink-soft); line-height:1.5; margin-top:8px;}
+
+  .controlbar{
+    position:fixed; left:50%; bottom:18px; transform:translateX(-50%); z-index:70;
+    display:flex; align-items:center; gap:4px;
+    background:#2B2B2E; border-radius:999px; padding:8px 10px;
+    box-shadow:0 16px 40px -12px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.04) inset;
+  }
+  .controlbar button{appearance:none; border:none; background:transparent; cursor:pointer; color:#C9C9D2; display:grid; place-items:center; border-radius:999px; transition:.12s ease; font-family:var(--serif);}
+  .controlbar .ico{width:38px; height:38px;}
+  .controlbar .ico svg{width:19px;height:19px;}
+  .controlbar .ico:hover{color:#fff; background:rgba(255,255,255,.1);}
+  .controlbar .ico:disabled{color:#5C5C66; cursor:not-allowed; background:transparent;}
+  .controlbar .sep{width:1px; height:24px; background:rgba(255,255,255,.16); margin:0 6px;}
+  .controlbar .count{ color:#EDEDF2; font-style:italic; font-family:Georgia,'Times New Roman',serif; font-size:17px; min-width:78px; text-align:center; letter-spacing:.02em; user-select:none;}
+  .controlbar .count b{font-style:italic; font-weight:600;}
+  .controlbar .zoom{width:32px;height:38px; color:#9A9AA6; font-size:18px;}
+  .controlbar .zoom:hover{color:#fff;}
+  .controlbar .zoom svg{width:17px;height:17px;}
+  .controlbar .pdf{
+    margin-left:6px; background:#7CB342; color:#fff; font-weight:800; font-size:14px; letter-spacing:.06em;
+    padding:0 22px; height:38px; border-radius:999px; display:flex; align-items:center;
+    box-shadow:0 6px 16px -6px rgba(124,179,66,.8);
+  }
+  .controlbar .pdf:hover{background:#86BD4B; color:#fff;}
+
+  .overview{position:fixed; inset:0; z-index:80; background:rgba(22,20,43,.55); backdrop-filter:blur(8px); display:none; padding:40px; overflow:auto;}
+  .overview.on{display:block;}
+  .overview .head{display:flex; align-items:center; justify-content:space-between; max-width:1100px; margin:0 auto 18px; color:#fff;}
+  .overview .head h3{margin:0; font-size:18px; font-weight:800;}
+  .overview .head button{appearance:none;border:1px solid rgba(255,255,255,.3); background:rgba(255,255,255,.1); color:#fff; border-radius:10px; padding:8px 14px; cursor:pointer; font-family:var(--serif); font-weight:700; font-size:13px;}
+  .ovgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; max-width:1100px; margin:0 auto;}
+  .ovcard{background:#fff; border:1px solid var(--line); border-radius:11px; padding:13px 15px; cursor:pointer; transition:.12s; text-align:left;}
+  .ovcard:hover{transform:translateY(-2px); box-shadow:0 12px 22px -12px rgba(0,0,0,.4); border-color:var(--violet);}
+  .ovcard .ovn{font-family:var(--mono); font-size:11px; color:var(--violet); font-weight:700;}
+  .ovcard .ovt{font-size:13.5px; font-weight:700; margin-top:4px; line-height:1.3; color:var(--ink);}
+
+  .hint{position:fixed; left:18px; bottom:24px; z-index:65; font-size:11px; color:var(--mut); font-family:var(--mono);}
+
+
+  /* ===== 이미지 / 도해 컴포넌트 (덱 하네스 추가분) ===== */
+  .figure{border:1px solid var(--line); border-radius:4px; background:var(--wash-2); overflow:hidden; display:flex; flex-direction:column; min-height:0;}
+  .figure img{display:block; width:100%; height:auto; object-fit:contain; min-height:0;}
+  .figure figcaption{font-family:var(--mono); font-size:11px; color:var(--mut); padding:7px 11px; border-top:1px solid var(--line); background:#fff;}
+  .figure.tight img{max-height:330px; object-fit:contain; background:#fff;}
+  /* 원본이 검은 여백을 달고 있는 캡처용 */
+  .figure.dark{background:#16142B; border-color:#2A2548;}
+  .figure.dark img{background:#16142B;}
+  .figure.dark figcaption{background:#1C1933; color:#9C97D6; border-top-color:#2A2548;}
+
+  /* 스크린샷: 창 프레임을 씌워 원본 캡처임을 드러낸다 */
+  .shot{border:1px solid var(--line); border-radius:9px; overflow:hidden; background:#fff; box-shadow:0 10px 26px -18px rgba(28,25,51,.6); display:flex; flex-direction:column; min-height:0;}
+  .shot .sbar{display:flex; align-items:center; gap:6px; padding:7px 11px; background:var(--wash); border-bottom:1px solid var(--line);}
+  .shot .sbar .d{width:9px;height:9px;border-radius:50%;background:var(--violet-300);}
+  .shot .sbar .t{margin-left:6px; font-family:var(--mono); font-size:11px; color:var(--mut);}
+  .shot img{display:block; width:100%; height:auto; max-height:400px; object-fit:contain; min-height:0;}
+
+  /* 제품·도구 로고 — 작은 브랜드 마크 */
+  .brandmark{display:flex; align-items:center; gap:15px; margin-bottom:18px;}
+  .brandmark img{height:46px; width:auto; display:block;}
+  .brandmark .bt{font-size:13.5px; color:var(--ink-soft); line-height:1.45;}
+  .brandmark .bt b{color:var(--ink);}
+
+  /* 채워야 할 이미지 자리 — 인쇄에도 남으므로 발표 전 반드시 교체 */
+  .need-img{border:2px dashed var(--violet-300); border-radius:4px; background:repeating-linear-gradient(135deg,#FBFAFF,#FBFAFF 10px,#F4F1FF 10px,#F4F1FF 20px);
+    display:flex; flex-direction:column; justify-content:center; gap:6px; padding:20px 22px; min-height:150px;}
+  .need-img .nk{font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:.1em; color:var(--violet); text-transform:uppercase;}
+  .need-img .nd{font-size:14px; font-weight:700; color:var(--ink); line-height:1.4;}
+  .need-img .nm2{font-family:var(--mono); font-size:11.5px; color:var(--mut);}
+
+  /* 코드 실행 결과 */
+  .code .out{border-top:1px dashed #38325C; background:#141127; padding:11px 18px; font-family:var(--mono); font-size:12.5px; line-height:1.55; color:#9DE39A; white-space:pre; overflow:auto;}
+  .code .out .ol{color:#7D78B8;}
+  .code .err{color:#FF8E8E;}
+
+  /* 메모리 슬롯 도해 */
+  .slots{display:flex; gap:8px; flex-wrap:wrap; align-items:flex-start;}
+  .slot{border:1.5px solid var(--line); border-radius:8px; min-width:74px; padding:9px 11px; text-align:center; background:#fff;}
+  .slot .adr{font-family:var(--mono); font-size:10px; color:var(--mut); letter-spacing:.02em;}
+  .slot .val{font-family:var(--mono); font-size:15px; font-weight:700; color:var(--ink); margin-top:2px;}
+  .slot .nm{font-size:11px; color:var(--violet); font-weight:700; margin-top:3px;}
+  .slot.ref{border-style:dashed; border-color:var(--violet-300); background:var(--wash-2);}
+  .slot.dim{opacity:.45;}
+  .ptr{display:grid; place-items:center; color:var(--violet); font-family:var(--mono); font-size:18px; font-weight:700; padding:0 2px; align-self:center;}
+
+  /* 인라인 SVG 차트 */
+  .plot{background:var(--wash-2); border:1px solid var(--line); border-radius:4px; padding:14px; display:grid; place-items:center; min-height:0;}
+  .plot svg{width:100%; height:auto; display:block; max-height:300px;}
+  .plot .cap{font-family:var(--mono); font-size:11px; color:var(--mut); margin-top:8px; text-align:center;}
+  .formula .cap{font-family:var(--mono); font-size:11.5px; color:var(--code-dim); text-align:center;}
+
+  /* 수정·보강 표시 (원본 pptx에 없던 내용) */
+  .newmark{position:absolute; top:30px; right:112px; font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.08em;
+    color:var(--mint); border:1px solid #BFE9E1; background:var(--mint-soft); border-radius:999px; padding:3px 9px;}
+
+  @media print{
+    @page{ size:1280px 720px; margin:0; }
+    body{background:#fff !important;}
+    .controlbar,.progress,.hint,.overview{display:none !important;}
+    .stage{position:static; inset:auto; overflow:visible; display:block; padding:0;}
+    .sizer{width:auto !important; height:auto !important;}
+    .scaler{transform:none !important; width:auto !important; height:auto !important;}
+    .slide{ display:flex !important; width:1280px !important; height:720px !important;
+      border-radius:0 !important; border:none !important; box-shadow:none !important;
+      page-break-after:always; break-after:page;
+      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .slide:last-child{page-break-after:auto;}
+  }
+</style>
+</head>
+<body>
+
+<div class="progress"><div class="fill" id="pfill"></div></div>
+
+<main class="stage" id="stage">
+  <div class="sizer" id="sizer">
+    <div class="scaler" id="scaler">
+
+
+
+<!-- ============================================================
+     슬라이드는 여기부터. 규격: 1280x720 고정.
+     첫 장은 slide cover active, 나머지는 active 없이.
+     ============================================================ -->
+
+<section class="slide cover active" data-title="표지 · Day 2">
+  <div class="aperture"></div><div class="ring"></div>
+  <div class="wrap">
+    <div class="kick"><span class="pill">WEEK 1 · DAY 2</span><span>DATA</span></div>
+    <h1>표와 배열<br/>모델에 넣기 전의 데이터</h1>
+  </div>
+</section>
+
+<section class="slide" data-title="오늘의 일정">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">AGENDA</span><span class="dot"></span>일정</div>
+  <h2 class="s-title sm">오늘의 일정</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c4">
+      <div class="card"><span class="n">CH0</span><h3>Pandas</h3><p>DataFrame · 타입 · 결측 · 집계.</p></div>
+      <div class="card"><span class="n">CH1</span><h3>전처리</h3><p>결측 처리 · 인코딩 · 스케일링 · 데이터 분할.</p></div>
+      <div class="card"><span class="n">CH2</span><h3>시각화</h3><p>Matplotlib · seaborn · 탐색용 그래프.</p></div>
+      <div class="card"><span class="n">CH3</span><h3>NumPy</h3><p>배열 · shape · 브로드캐스팅 · 행렬 곱.</p></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>모델은 <b>숫자로 된 직사각형 배열</b>만 먹는다. 표 한 장을 그 모양으로 바꾸는 과정이 아래 네 챕터다.</div></div>
+  </div>
+</section>
+
+<section class="slide section" data-title="[섹션] Pandas">
+  <div class="ghost">00</div>
+  <div class="seyebrow">CHAPTER 00</div>
+  <h2>Pandas</h2>
+  <div class="agenda"><span>DataFrame</span><span>타입 변환</span><span>map · apply</span><span>groupby</span></div>
+</section>
+
+<section class="slide" data-title="Pandas의 자리">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>배경</div>
+  <h2 class="s-title sm">표 한 장을 통째로 다루는 도구</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twopane">
+      <div class="pane bad"><h4>순수 파이썬</h4><div class="mini">total = 0
+count = 0
+for row in rows:
+    if row['Sex'] == 'female':
+        total += row['Survived']
+        count += 1
+print(total / count)</div><p>행을 <b>하나씩</b> 돌며 직접 센다.</p></div>
+      <div class="pane good"><h4>Pandas</h4><div class="mini">df[df['Sex'] == 'female']['Survived'].mean()</div><p>열 전체를 <b>한 번에</b> 다룬다. 내부는 C로 도는 배열 연산이다.</p></div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">→</span><div>CSV·엑셀·DB를 같은 방식으로 읽어 <b>DataFrame</b>이라는 한 가지 구조로 만든다.</div></div>
+      <div class="v"><span class="b">★</span><div>결측치·타입·그룹 집계처럼 <b>표에서 늘 하는 일</b>이 메서드 한 줄로 들어 있다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>행이 수만 줄을 넘어가면 반복문과 Pandas의 차이가 <b>초 단위와 밀리초 단위</b>로 갈린다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="Series와 DataFrame">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>구조</div>
+  <h2 class="s-title sm">열 하나가 Series, 여럿이 DataFrame</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <table class="ctable">
+          <thead><tr><th>index</th><th>Sex</th><th class="hl">Age</th><th>Fare</th><th>Survived</th></tr></thead>
+          <tbody>
+            <tr><td>0</td><td>male</td><td class="hl">22.0</td><td>7.25</td><td class="no">0</td></tr>
+            <tr><td>1</td><td>female</td><td class="hl">38.0</td><td>71.28</td><td class="yes">1</td></tr>
+            <tr><td>2</td><td>female</td><td class="hl">26.0</td><td>7.92</td><td class="yes">1</td></tr>
+            <tr><td>3</td><td>female</td><td class="hl">35.0</td><td>53.10</td><td class="yes">1</td></tr>
+          </tbody>
+        </table>
+        <div class="chips"><span class="chip">가로 한 줄 = <b>행 row</b></span><span class="chip">세로 한 줄 = <b>열 column</b></span><span class="chip">맨 왼쪽 = <b>인덱스</b></span></div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div><b>Series</b> — 인덱스가 붙은 <b>1차원</b> 값의 나열. 표에서 열 하나를 꺼내면 이것이다.</div></div>
+          <div class="v"><span class="b">→</span><div><b>DataFrame</b> — Series 여러 개가 <b>같은 인덱스를 공유</b>하며 붙은 2차원 표.</div></div>
+          <div class="v"><span class="b">★</span><div><b>딕셔너리의 리스트</b>가 정확히 이 구조다. Pandas는 그것을 감싸 빠르게 만든 것이다.</div></div>
+        </div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">꺼내면 자료형이 달라진다</span></div>
+          <pre><code><span class="fn2">type</span>(df[<span class="st">'Age'</span>])      <span class="cm"># Series</span>
+<span class="fn2">type</span>(df[[<span class="st">'Age'</span>]])    <span class="cm"># DataFrame</span></code></pre>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">정리</span><div>Pandas 에러의 상당수는 <b>Series를 기대한 자리에 DataFrame</b>이 왔거나 그 반대다. 대괄호 개수가 그것을 정한다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="데이터 불러오기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>읽기</div>
+  <h2 class="s-title sm">read_csv 한 줄이 만드는 표</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">확장자에 맞는 함수를 고른다</span></div>
+          <pre><code><span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+<span class="cm"># 인터넷에서 바로 읽을 수도 있다</span>
+url = <span class="st">'https://raw.githubusercontent.com/datasciencedojo'</span> \
+      <span class="st">'/datasets/master/titanic.csv'</span>
+df = pd.read_csv(url)
+
+<span class="cm"># 엑셀은 read_excel</span>
+df = pd.read_excel(<span class="st">'data/승객.xlsx'</span>, sheet_name=<span class="st">'1등석'</span>)</code></pre>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>첫 줄을 <b>열 이름</b>으로 읽는다. 아니면 <code>header=None</code>을 준다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">지저분한 CSV에서 쓰는 인자</span></div>
+          <pre><code>df = pd.read_csv(
+    <span class="st">'data.csv'</span>,
+    encoding=<span class="st">'cp949'</span>,     <span class="cm"># 한글 깨질 때</span>
+    thousands=<span class="st">','</span>,        <span class="cm"># 1,234 → 1234</span>
+    na_values=[<span class="st">'N/A'</span>, <span class="st">'-'</span>]  <span class="cm"># 결측 표기</span>
+)</code></pre>
+        </div>
+        <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>한글이 깨지면 인코딩</h4><p>국내 시스템에서 내려받은 CSV는 <code>cp949</code>인 경우가 많다. <code>UnicodeDecodeError</code>가 그 신호다.</p></div></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>읽는 단계에서 <code>thousands</code>·<code>na_values</code>를 지정하면 <b>뒤의 타입 변환 작업이 통째로 사라진다</b>.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="첫 확인">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>확인</div>
+  <h2 class="s-title sm">읽자마자 보는 네 줄</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">모양과 앞뒤</span></div>
+          <pre><code>df.shape          <span class="cm"># (행 수, 열 수)</span>
+df.head()         <span class="cm"># 위에서 5행</span>
+df.tail(<span class="nm">3</span>)        <span class="cm"># 아래에서 3행</span>
+df.columns        <span class="cm"># 열 이름 목록</span></code></pre>
+          <div class="out">(891, 12)</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div><code>tail()</code>은 <b>파일 끝의 합계 행·주석 행</b>을 잡아낸다. 이것이 섞이면 통계가 전부 틀어진다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">info() — 타입과 결측을 한 번에</span></div>
+          <pre><code>df.info()</code></pre>
+          <div class="out">RangeIndex: 891 entries, 0 to 890
+ #  Column    Non-Null Count  Dtype
+--- ------    --------------  -----
+ 1  Survived  891 non-null    int64
+ 2  Pclass    891 non-null    int64
+ 4  Sex       891 non-null    object
+ 5  Age       <span class="err">714 non-null</span>    float64
+ 9  Fare      891 non-null    float64
+10  Cabin     <span class="err">204 non-null</span>    object
+11  Embarked  <span class="err">889 non-null</span>    object</div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>891행인데 <code>Age</code>는 714개뿐이다. <b>Non-Null Count가 전체보다 작으면 결측</b>이 있다는 뜻이다. 이 표가 뒤의 전처리를 좌우한다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="열 선택과 행 필터링">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>선택</div>
+  <h2 class="s-title sm">대괄호 하나와 둘의 차이</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">대괄호 하나 → Series</span></div>
+          <pre><code>df[<span class="st">'Age'</span>]</code></pre>
+          <div class="out">0    22.0
+1    38.0
+2    26.0
+Name: Age, dtype: float64</div>
+        </div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">대괄호 둘 → DataFrame</span></div>
+          <pre><code>df[[<span class="st">'Sex'</span>, <span class="st">'Age'</span>]]</code></pre>
+          <div class="out">      Sex   Age
+0    male  22.0
+1  female  38.0</div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">조건으로 행 고르기</span></div>
+          <pre><code><span class="cm"># 조건식이 True/False 의 Series 를 만든다</span>
+df[<span class="st">'Age'</span>] &lt; <span class="nm">18</span>
+
+<span class="cm"># 그걸 대괄호에 넣으면 참인 행만 남는다</span>
+df[df[<span class="st">'Age'</span>] &lt; <span class="nm">18</span>]
+
+<span class="cm"># 조건 두 개는 괄호로 묶고 &amp; | 를 쓴다</span>
+df[(df[<span class="st">'Age'</span>] &lt; <span class="nm">18</span>) &amp; (df[<span class="st">'Pclass'</span>] == <span class="nm">1</span>)]</code></pre>
+        </div>
+        <div class="callout rose"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>and 가 아니라 &amp;</h4><p>Pandas 조건 결합은 <code>&amp;</code> <code>|</code>이고, <b>각 조건을 괄호로 묶어야</b> 한다. <code>and</code>를 쓰면 에러가 난다.</p></div></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>계산할 열 하나는 <b>대괄호 하나</b>, 표를 남겨야 하면 <b>대괄호 둘</b>이다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="값 세기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>확인</div>
+  <h2 class="s-title sm">범주형 열의 첫 점검</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">value_counts()</span></div>
+          <pre><code>df[<span class="st">'Embarked'</span>].value_counts()
+df[<span class="st">'Sex'</span>].value_counts(normalize=<span class="kw">True</span>)</code></pre>
+          <div class="out">Embarked
+S    644
+C    168
+Q     77
+
+Sex
+male      0.647587
+female    0.352413</div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>어떤 값이 <b>몇 종류, 몇 개씩</b> 있는지 한 줄로 나온다.</div></div>
+          <div class="v"><span class="b">→</span><div><code>normalize=True</code>를 주면 개수 대신 <b>비율</b>이 나온다.</div></div>
+          <div class="v"><span class="b">✕</span><div>결측은 기본적으로 <b>세지 않는다</b>. 644+168+77 = 889로, 891에서 2개가 빠져 있다.</div></div>
+          <div class="v"><span class="b">★</span><div>같은 값의 다른 표기(<code>Male</code> / <code>male</code> / <code> male </code>)가 섞이면 여기서 종류 수가 튄다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>범주 개수가 예상보다 많으면 <b>표기 흔들림</b>, 합계가 행 수보다 적으면 <b>결측</b>이다. 집계 전에 둘 다 본다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="object 타입">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>타입</div>
+  <h2 class="s-title sm">object 타입이 만드는 조용한 오답</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">Fare 가 문자열로 읽혔다면</span></div>
+          <pre><code>df[<span class="st">'Fare'</span>].dtype
+
+df[<span class="st">'Fare'</span>].sum()      <span class="cm"># 더해질까?</span>
+df[<span class="st">'Fare'</span>].max()      <span class="cm"># 최댓값은?</span></code></pre>
+          <div class="out">dtype('O')
+<span class="err">'7.2571.287.9253.10…'</span>   ← 이어 붙는다
+<span class="err">'9.8375'</span>                ← 사전 순 비교</div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">✕</span><div><code>sum()</code>이 <b>덧셈이 아니라 이어 붙이기</b>가 된다. 에러 없이 이상한 값이 나온다.</div></div>
+          <div class="v"><span class="b">✕</span><div><code>max()</code>는 사전 순으로 비교한다. <code>'9.8375'</code>가 <code>'512.33'</code>보다 크다고 나온다.</div></div>
+          <div class="v"><span class="b">★</span><div>그래서 <code>info()</code>로 <b>Dtype부터 확인</b>하는 것이 순서다.</div></div>
+        </div>
+        <div class="stat-row">
+          <div class="stat"><div class="num">object</div><div class="lab">문자열 — 계산 불가</div></div>
+          <div class="stat"><div class="num">float64</div><div class="lab">실수 — 계산 가능</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">함정</span><div>타입 문제는 <b>에러로 알려 주지 않는다</b>. 결과 숫자가 이상하면 가장 먼저 볼 곳이다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="타입 변환">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>타입</div>
+  <h2 class="s-title sm">타입을 지정하는 변환</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">astype() — 되돌려 담아야 반영된다</span></div>
+          <pre><code>df[<span class="st">'Fare'</span>] = df[<span class="st">'Fare'</span>].astype(<span class="st">'float64'</span>)
+
+<span class="cm"># 한꺼번에 — 딕셔너리로 열마다 지정</span>
+df = df.astype({
+    <span class="st">'Pclass'</span>: <span class="st">'category'</span>,
+    <span class="st">'Sex'</span>: <span class="st">'category'</span>,
+})</code></pre>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">✕</span><div>결측(<code>NaN</code>)이 있는 열은 <code>int</code>로 못 바꾼다. <code>float</code>이나 <code>'Int64'</code>를 쓴다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">to_numeric() — 실패한 값은 NaN 으로</span></div>
+          <pre><code>df[<span class="st">'Fare'</span>] = pd.to_numeric(
+    df[<span class="st">'Fare'</span>], errors=<span class="st">'coerce'</span>
+)
+
+<span class="cm"># 몇 개가 실패했는지 바로 센다</span>
+<span class="fn2">print</span>(df[<span class="st">'Fare'</span>].isna().sum())</code></pre>
+          <div class="out">0</div>
+        </div>
+        <table class="ctable">
+          <thead><tr><th>errors=</th><th>실패한 값을</th></tr></thead>
+          <tbody>
+            <tr><td><code>'raise'</code> (기본)</td><td>에러를 낸다 — 열 전체가 안 바뀐다</td></tr>
+            <tr><td><code>'coerce'</code></td><td><span class="hl">NaN으로 바꾼다</span> — 몇 개인지 셀 수 있다</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div><code>coerce</code>는 문제를 <b>숨기는 게 아니라 NaN으로 드러내는</b> 것이다. 센 다음 어떻게 할지는 사람이 정한다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="시리즈 연산">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>변환</div>
+  <h2 class="s-title sm">열 전체에 한 번에 걸리는 계산</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">반복문 없이</span></div>
+          <pre><code><span class="cm"># 열 하나에 상수 연산</span>
+df[<span class="st">'FareUSD'</span>] = df[<span class="st">'Fare'</span>] * <span class="nm">1.3</span>
+
+<span class="cm"># 열끼리 연산 — 같은 행끼리 짝지어진다</span>
+df[<span class="st">'Family'</span>] = df[<span class="st">'SibSp'</span>] + df[<span class="st">'Parch'</span>] + <span class="nm">1</span>
+
+<span class="cm"># 조건식도 열이 된다</span>
+df[<span class="st">'IsChild'</span>] = df[<span class="st">'Age'</span>] &lt; <span class="nm">18</span>
+
+<span class="cm"># 문자열 열은 .str 로 한꺼번에</span>
+df[<span class="st">'Sex'</span>] = df[<span class="st">'Sex'</span>].str.strip().str.lower()</code></pre>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>Series에 연산을 걸면 <b>모든 행에 동시에</b> 적용된다. 이것을 벡터 연산이라 한다.</div></div>
+          <div class="v"><span class="b">→</span><div>열끼리 연산은 <b>인덱스가 같은 행끼리</b> 짝지어진다.</div></div>
+          <div class="v"><span class="b">★</span><div>문자열 처리는 <code>.str</code>을 거친다. <code>.str.strip()</code> <code>.str.contains()</code> <code>.str.split()</code>.</div></div>
+        </div>
+        <div class="callout mint"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div class="ct"><h4>결측은 건너뛴다</h4><p><code>NaN</code>이 섞인 열도 <code>mean()</code>·<code>sum()</code>은 <b>결측을 빼고</b> 계산한다. 0으로 채울 필요가 없다.</p></div></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>Pandas에서 <code>for</code>로 행을 도는 코드를 보면 <b>벡터 연산으로 바꿀 자리</b>다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="map과 apply">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>변환</div>
+  <h2 class="s-title sm">값의 치환과 함수 적용</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">map() — 딕셔너리로 갈아 끼운다</span></div>
+          <pre><code>df[<span class="st">'SexCode'</span>] = df[<span class="st">'Sex'</span>].map({<span class="st">'male'</span>: <span class="nm">0</span>, <span class="st">'female'</span>: <span class="nm">1</span>})
+<span class="fn2">print</span>(df[<span class="st">'SexCode'</span>].head(<span class="nm">3</span>))</code></pre>
+          <div class="out">0    0
+1    1
+2    1</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">✕</span><div>대응표에 <b>없는 값은 NaN</b>이 된다. 범주를 먼저 <code>value_counts()</code>로 확인한다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">apply() — 직접 만든 함수를 태운다</span></div>
+          <pre><code><span class="kw">def</span> <span class="fn2">age_group</span>(a):
+    <span class="kw">if</span> a &lt; <span class="nm">13</span>:  <span class="kw">return</span> <span class="st">'child'</span>
+    <span class="kw">if</span> a &lt; <span class="nm">60</span>:  <span class="kw">return</span> <span class="st">'adult'</span>
+    <span class="kw">return</span> <span class="st">'senior'</span>
+
+df[<span class="st">'AgeGroup'</span>] = df[<span class="st">'Age'</span>].apply(age_group)
+
+<span class="cm"># 짧은 함수는 lambda 로 그 자리에서</span>
+df[<span class="st">'LogFare'</span>] = df[<span class="st">'Fare'</span>].apply(<span class="kw">lambda</span> f: f ** <span class="nm">0.5</span>)</code></pre>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div>태우는 함수에 <b><code>return</code>이 없으면</b> 열 전체가 <code>None</code>이 된다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>단순 치환은 <code>map()</code>, 조건 분기가 들어가면 <code>apply()</code>. 열끼리 계산으로 끝나면 <b>둘 다 쓰지 않는다</b>.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="통계 요약">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>요약</div>
+  <h2 class="s-title sm">숫자 열의 분포 요약</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">describe()</span></div>
+          <pre><code>df[[<span class="st">'Age'</span>, <span class="st">'Fare'</span>]].describe()</code></pre>
+          <div class="out">              Age        Fare
+count  <span class="err">714.0000</span>    891.0000
+mean    29.6991     32.2042
+std     14.5265     49.6934
+min      0.4200      <span class="err">0.0000</span>
+25%     20.1250      7.9104
+50%     28.0000     14.4542
+75%     38.0000     31.0000
+max     80.0000    <span class="err">512.3292</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div><b>숫자 열만</b> 대상이다. 문자열 열이 빠졌다면 타입을 의심한다.</div></div>
+          <div class="v"><span class="b">✕</span><div><code>Age</code>의 count가 714다. <b>177명의 나이가 비어 있다</b>.</div></div>
+          <div class="v"><span class="b">✕</span><div><code>Fare</code>의 max 512는 mean 32의 16배다. <b>이상치이거나 특급 객실</b>이다. 확인이 필요하다.</div></div>
+          <div class="v"><span class="b">→</span><div>mean 32와 median(50%) 14가 크게 벌어졌다. 분포가 <b>한쪽으로 쏠려</b> 있다.</div></div>
+        </div>
+        <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>평균만 보고하면 틀린다</h4><p>평균 요금 32달러는 <b>승객 대다수의 경험이 아니다</b>. 중앙값 14가 실제에 가깝다.</p></div></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div><code>describe()</code>는 요약이 아니라 <b>이상 탐지용</b>으로 먼저 본다. count · min · max가 첫 검문소다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="groupby">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>집계</div>
+  <h2 class="s-title sm">묶어서 접는 세 단계</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="pipe">
+      <div class="step"><div class="si">SPLIT</div><div class="sn">나눈다</div><div class="sd">'Sex' 값이 같은 행끼리</div></div>
+      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="step"><div class="si">APPLY</div><div class="sn">계산한다</div><div class="sd">각 묶음의 'Survived' 평균</div></div>
+      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="step"><div class="si">COMBINE</div><div class="sn">합친다</div><div class="sd">묶음마다 한 줄인 결과</div></div>
+    </div>
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">df.groupby("기준열")["대상열"].집계함수()</span></div>
+          <pre><code>df.groupby(<span class="st">'Sex'</span>)[<span class="st">'Survived'</span>].mean()
+df.groupby(<span class="st">'Pclass'</span>)[<span class="st">'Survived'</span>].mean()</code></pre>
+          <div class="out">Sex
+female    0.742038
+male      0.188908
+
+Pclass
+1    0.629630
+2    0.472826
+3    0.242363</div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>기준 열의 값이 <b>결과의 인덱스</b>가 된다.</div></div>
+          <div class="v"><span class="b">✕</span><div><code>groupby()</code>만 부르면 <code>DataFrameGroupBy</code> 객체다. <b>집계 함수를 붙여야</b> 표가 나온다.</div></div>
+          <div class="v"><span class="b">★</span><div>여성 74% 대 남성 19%. <b>Sex 하나가 생존을 4배 가른다</b> — 모델이 가장 먼저 잡을 신호다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">정리</span><div>모델을 만들기 전에 <code>groupby</code> 몇 줄로 <b>어떤 열이 답과 관계있는지</b> 먼저 본다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="groupby 심화">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>집계</div>
+  <h2 class="s-title sm">기준 여러 개, 집계 여러 개</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">기준 두 개 — 리스트로 넘긴다</span></div>
+          <pre><code>df.groupby([<span class="st">'Sex'</span>, <span class="st">'Pclass'</span>])[<span class="st">'Survived'</span>].mean()</code></pre>
+          <div class="out">Sex     Pclass
+female  1         0.968085
+        2         0.921053
+        3         0.500000
+male    1         0.368852
+        2         0.157407
+        3         0.135447</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>인덱스가 <b>두 단계</b>가 된다. <code>.reset_index()</code>를 붙이면 평범한 표로 펴진다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">agg() — 열마다 다른 집계</span></div>
+          <pre><code>df.groupby(<span class="st">'Pclass'</span>).agg({
+    <span class="st">'Survived'</span>: [<span class="st">'mean'</span>, <span class="st">'count'</span>],
+    <span class="st">'Fare'</span>: <span class="st">'median'</span>,
+})</code></pre>
+          <div class="out">        Survived         Fare
+            mean count median
+Pclass
+1       0.629630   216  60.29
+2       0.472826   184  14.25
+3       0.242363   491   8.05</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div><code>count</code>를 같이 낸다. <b>표본 수가 적은 그룹</b>의 평균은 근거가 약하다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">주의</span><div>1등석 여성 96.8%는 표본 94명에서 나왔다. 그룹별 평균을 보고할 때는 <b>그룹 크기를 같이</b> 낸다.</div></div>
+  </div>
+</section>
+
+<section class="slide section" data-title="[섹션] 전처리">
+  <div class="ghost">01</div>
+  <div class="seyebrow">CHAPTER 01</div>
+  <h2>전처리</h2>
+  <div class="agenda"><span>결측치</span><span>인코딩</span><span>스케일링</span><span>데이터 분할</span></div>
+</section>
+
+<section class="slide" data-title="전처리 네 단계">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>지도</div>
+  <h2 class="s-title sm">전처리 네 단계</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c4">
+      <div class="card"><span class="n">01</span><h3>결측치</h3><p>빈칸이 하나라도 있으면 <b>학습이 시작되지 않는다</b>.</p><div class="chips"><span class="chip">Age 177개</span></div></div>
+      <div class="card"><span class="n">02</span><h3>인코딩</h3><p>모델은 글자를 못 읽는다. <b>범주를 숫자로</b> 바꾼다.</p><div class="chips"><span class="chip">Sex · Embarked</span></div></div>
+      <div class="card"><span class="n">03</span><h3>스케일링</h3><p>단위가 다르면 <b>큰 숫자 열이 결과를 지배</b>한다.</p><div class="chips"><span class="chip">Age 0~80</span><span class="chip">Fare 0~512</span></div></div>
+      <div class="card"><span class="n">04</span><h3>분할</h3><p>성적을 잴 <b>안 본 데이터</b>를 미리 떼어 둔다.</p><div class="chips"><span class="chip">train / test</span></div></div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>실무에서 모델 성능을 실제로 움직이는 것은 알고리즘 교체보다 <b>이 네 단계의 품질</b>이다.</div></div>
+      <div class="v"><span class="b">→</span><div>새 데이터가 와도 이 순서를 그대로 밟는다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>모델이 먹는 것은 <b>결측 없고 · 전부 숫자이고 · 크기가 비슷한</b> 직사각형 표 하나다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="결측치 확인">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>결측</div>
+  <h2 class="s-title sm">비어 있는 칸의 정체</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">몇 개가 비었는지</span></div>
+          <pre><code>df.isna().sum()
+df.isna().mean().sort_values(ascending=<span class="kw">False</span>)</code></pre>
+          <div class="out">Cabin       687
+Age         177
+Embarked      2
+Survived      0
+
+Cabin       0.771044
+Age         0.198653
+Embarked    0.002245</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div><code>NaN</code>은 "값 없음"이다. <code>0</code>이나 빈 문자열과 <b>다른 것</b>이다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">비어 있는 행을 직접 본다</span></div>
+          <pre><code>df[df[<span class="st">'Age'</span>].isna()].head(<span class="nm">3</span>)
+
+<span class="cm"># 결측 여부가 답과 관계있는지 확인</span>
+df.groupby(df[<span class="st">'Age'</span>].isna())[<span class="st">'Survived'</span>].mean()</code></pre>
+          <div class="out">Age
+False    0.406162
+True     0.293785</div>
+        </div>
+        <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>결측 자체가 정보다</h4><p>나이가 비어 있는 승객의 생존율이 29%로 더 낮다. <b>무작위로 빈 것이 아니라</b>는 뜻이다.</p></div></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>메우기 전에 <b>왜 비었는지</b>를 먼저 본다. 결측 비율이 77%인 <code>Cabin</code>은 메울 것이 아니라 버릴 열이다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="결측치 처리">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>결측</div>
+  <h2 class="s-title sm">결측치를 메우는 세 갈래</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c3">
+      <div class="card"><span class="n">01</span><h3>버린다</h3>
+        <div class="code sm"><pre><code>df.dropna(subset=[<span class="st">'Embarked'</span>])
+df.drop(columns=[<span class="st">'Cabin'</span>])</code></pre></div>
+        <p>결측이 <b>몇 개뿐</b>이거나, <b>열 대부분이 비었을</b> 때.</p></div>
+      <div class="card"><span class="n">02</span><h3>대푯값으로 채운다</h3>
+        <div class="code sm"><pre><code>df[<span class="st">'Age'</span>] = df[<span class="st">'Age'</span>].fillna(
+    df[<span class="st">'Age'</span>].median())</code></pre></div>
+        <p>평균보다 <b>중앙값</b>이 안전하다. 이상치에 안 흔들린다.</p></div>
+      <div class="card"><span class="n">03</span><h3>그룹별로 채운다</h3>
+        <div class="code sm"><pre><code>df[<span class="st">'Age'</span>] = df.groupby(<span class="st">'Pclass'</span>)[<span class="st">'Age'</span>] \
+    .transform(<span class="kw">lambda</span> s: s.fillna(s.median()))</code></pre></div>
+        <p>등급마다 나이대가 다르면 <b>훨씬 정확하다</b>.</p></div>
+    </div>
+    <div class="twocol">
+      <div>
+        <div class="callout rose"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4><code>fillna(0)</code>은 답이 아니다</h4><p>앞서 본 그 사고다. 나이 0살 승객 177명이 생긴다. <b>0이 뜻을 갖는 열</b>에서만 쓴다.</p></div></div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div>채운 흔적을 남기려면 <code>df['AgeMissing'] = df['Age'].isna()</code> 열을 <b>먼저</b> 만든다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>결측 처리는 정답이 없다. <b>무엇으로 채웠는지 기록</b>하고, 채운 방식이 결과를 얼마나 바꾸는지 비교한다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="범주형 인코딩">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>인코딩</div>
+  <h2 class="s-title sm">글자를 숫자로 바꾸는 두 방식</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twopane">
+      <div class="pane bad"><h4>레이블 인코딩</h4><div class="mini">S → 0
+C → 1
+Q → 2</div><p>열 하나로 끝나지만, 모델이 <b>Q &gt; C &gt; S 라는 순서</b>가 있다고 오해한다.</p></div>
+      <div class="pane good"><h4>원-핫 인코딩</h4><div class="mini">        S   C   Q
+승객1    1   0   0
+승객2    0   1   0</div><p>열이 늘어나는 대신 <b>순서를 만들지 않는다</b>.</p></div>
+    </div>
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">get_dummies — 원-핫</span></div>
+          <pre><code>df = pd.get_dummies(
+    df, columns=[<span class="st">'Sex'</span>, <span class="st">'Embarked'</span>],
+    drop_first=<span class="kw">True</span>   <span class="cm"># 첫 범주는 뺀다</span>
+)
+<span class="fn2">print</span>(df.columns.tolist())</code></pre>
+          <div class="out">[..., 'Sex_male', 'Embarked_Q', 'Embarked_S']</div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div><b>순서가 있는 범주</b>(등급 1·2·3, 대·중·소)는 레이블 인코딩이 맞다.</div></div>
+          <div class="v"><span class="b">→</span><div><b>순서가 없는 범주</b>(성별, 도시, 색)는 원-핫이 맞다.</div></div>
+          <div class="v"><span class="b">✕</span><div>범주가 수백 개면 원-핫으로 열이 수백 개가 된다. 그때는 다른 방법을 쓴다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>범주에 <b>크고 작음이 있느냐</b>로 고른다. 없는데 숫자를 매기면 모델이 없는 순서를 학습한다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="스케일링의 필요성">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>스케일</div>
+  <h2 class="s-title sm">단위가 다른 열의 문제</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <table class="ctable">
+          <thead><tr><th>열</th><th>범위</th><th>평균</th></tr></thead>
+          <tbody>
+            <tr><td><code>Age</code></td><td>0.42 ~ 80</td><td>29.7</td></tr>
+            <tr><td><code>Fare</code></td><td>0 ~ <span class="hl">512.3</span></td><td>32.2</td></tr>
+            <tr><td><code>SibSp</code></td><td>0 ~ 8</td><td>0.52</td></tr>
+            <tr><td><code>Sex_male</code></td><td>0 ~ 1</td><td>0.65</td></tr>
+          </tbody>
+        </table>
+        <div class="vlist">
+          <div class="v"><span class="b">✕</span><div>거리로 판단하는 모델(KNN·SVM)과 신경망에서 <b>Fare가 다른 열을 눌러 버린다</b>.</div></div>
+          <div class="v"><span class="b">✕</span><div>신경망에서 스케일링을 빼면 <b>손실이 안 떨어지거나 발산</b>한다. 가장 흔한 실패 원인이다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="plot">
+          <svg viewBox="0 0 320 210">
+            <text x="10" y="16" font-size="11" fill="#8E8AAC">스케일링 전</text>
+            <line x1="12" y1="80" x2="308" y2="80" stroke="#E8E4F8" stroke-width="1.2"/>
+            <rect x="12" y="60" width="14" height="18" fill="#5B3DF5"/><text x="32" y="74" font-size="10" fill="#4A4766">Sex 0~1</text>
+            <rect x="12" y="38" width="46" height="18" fill="#0FB5A1"/><text x="64" y="52" font-size="10" fill="#4A4766">Age 0~80</text>
+            <rect x="12" y="24" width="290" height="10" fill="#E8537A"/><text x="228" y="20" font-size="10" fill="#4A4766">Fare 0~512</text>
+
+            <text x="10" y="126" font-size="11" fill="#8E8AAC">표준화 후</text>
+            <line x1="12" y1="190" x2="308" y2="190" stroke="#E8E4F8" stroke-width="1.2"/>
+            <rect x="12" y="170" width="96" height="18" fill="#5B3DF5"/><text x="114" y="184" font-size="10" fill="#4A4766">Sex</text>
+            <rect x="12" y="148" width="104" height="18" fill="#0FB5A1"/><text x="122" y="162" font-size="10" fill="#4A4766">Age</text>
+            <rect x="12" y="134" width="100" height="10" fill="#E8537A"/><text x="118" y="143" font-size="10" fill="#4A4766">Fare</text>
+          </svg>
+          <div class="cap">세 열의 값 범위 — 전과 후</div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>트리 계열은 스케일링이 필요 없다. <b>거리·기울기를 쓰는 모델</b>에는 반드시 필요하다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="표준화와 정규화">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>스케일</div>
+  <h2 class="s-title sm">표준화와 정규화</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="phase-label">표준화 StandardScaler<span class="ln"></span></div>
+        <div class="formula">
+          <div class="big">z = (x − 평균) / 표준편차</div>
+          <div class="cap">평균 0, 표준편차 1로 맞춘다</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>범위가 정해지지 않는다. <b>이상치가 있어도 덜 망가진다</b>.</div></div>
+          <div class="v"><span class="b">★</span><div>기본값으로 이것을 쓴다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="phase-label">정규화 MinMaxScaler<span class="ln"></span></div>
+        <div class="formula">
+          <div class="big">x' = (x − 최소) / (최대 − 최소)</div>
+          <div class="cap">모든 값을 0~1 사이로 밀어 넣는다</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>범위가 <b>0~1로 고정</b>된다. 이미지 픽셀처럼 상·하한이 분명할 때.</div></div>
+          <div class="v"><span class="b">✕</span><div>이상치 하나가 <b>나머지를 전부 0 근처로</b> 눌러 버린다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="code sm">
+      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">scikit-learn</span></div>
+      <pre><code><span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> StandardScaler
+
+scaler = StandardScaler()
+X_train_s = scaler.fit_transform(X_train)   <span class="cm"># 훈련셋으로 기준을 배운다</span>
+X_test_s  = scaler.transform(X_test)        <span class="cm"># 테스트셋은 그 기준을 쓰기만</span></code></pre>
+    </div>
+    <div class="keymsg"><span class="k">주의</span><div>테스트셋에 <code>fit_transform</code>을 쓰면 <b>테스트 정보가 새어 들어간다</b>. 다음 장이 그 이야기다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="데이터 분할">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>분할</div>
+  <h2 class="s-title sm">훈련·검증·테스트의 분리</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="pipe">
+      <div class="step"><div class="si">60~80%</div><div class="sn">훈련 Train</div><div class="sd">모델이 규칙을 찾는 데 쓴다</div></div>
+      <div class="step"><div class="si">10~20%</div><div class="sn">검증 Validation</div><div class="sd">설정을 고르고 멈출 시점을 잡는다</div></div>
+      <div class="step"><div class="si">10~20%</div><div class="sn">테스트 Test</div><div class="sd">최종 성적 — 딱 한 번만 본다</div></div>
+    </div>
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">train_test_split</span></div>
+          <pre><code><span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> train_test_split
+
+X = df.drop(columns=[<span class="st">'Survived'</span>])
+y = df[<span class="st">'Survived'</span>]
+
+X_tr, X_te, y_tr, y_te = train_test_split(
+    X, y, test_size=<span class="nm">0.2</span>,
+    random_state=<span class="nm">42</span>,   <span class="cm"># 재현 가능하게</span>
+    stratify=y         <span class="cm"># 생존 비율을 양쪽에 유지</span>
+)</code></pre>
+        </div>
+      </div>
+      <div>
+        <div class="callout rose"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>데이터 누수 — 가장 흔한 실수</h4><p>전체 데이터로 <code>fit_transform</code>을 하고 나서 쪼개면, 스케일러가 <b>테스트셋의 평균까지 이미 봤다</b>. 성적이 실제보다 좋게 나온다.</p></div></div>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div>순서는 <b>쪼개고 → 훈련셋으로 fit → 양쪽에 transform</b>이다. 결측 대치도 마찬가지다.</div></div>
+          <div class="v"><span class="b">✕</span><div>시계열은 무작위로 쪼개면 안 된다. <b>시점으로</b> 자른다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>테스트셋은 <b>마지막에 한 번</b> 쓴다. 여러 번 보고 모델을 고치면 그 숫자는 더 이상 실전 성능이 아니다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="전처리 순서">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>정리</div>
+  <h2 class="s-title sm">전처리의 순서</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">타이타닉 — 처음부터 끝까지</span></div>
+          <pre><code><span class="cm"># 1. 쓸모없는 열 제거</span>
+df = df.drop(columns=[<span class="st">'PassengerId'</span>, <span class="st">'Name'</span>,
+                      <span class="st">'Ticket'</span>, <span class="st">'Cabin'</span>])
+
+<span class="cm"># 2. 결측 처리</span>
+df[<span class="st">'Age'</span>] = df[<span class="st">'Age'</span>].fillna(df[<span class="st">'Age'</span>].median())
+df = df.dropna(subset=[<span class="st">'Embarked'</span>])
+
+<span class="cm"># 3. 범주형 인코딩</span>
+df = pd.get_dummies(df, columns=[<span class="st">'Sex'</span>, <span class="st">'Embarked'</span>],
+                    drop_first=<span class="kw">True</span>)
+
+<span class="cm"># 4. 분할 — 스케일링보다 먼저</span>
+X_tr, X_te, y_tr, y_te = train_test_split(...)
+
+<span class="cm"># 5. 스케일링 — 훈련셋 기준으로</span>
+X_tr = scaler.fit_transform(X_tr)
+X_te = scaler.transform(X_te)</code></pre>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>열 제거가 먼저다. 안 쓸 열을 손질하는 데 시간을 쓰지 않는다.</div></div>
+          <div class="v"><span class="b">★</span><div><b>분할이 스케일링보다 앞</b>이다. 순서를 바꾸면 누수가 생긴다.</div></div>
+          <div class="v"><span class="b">→</span><div>같은 처리를 새 데이터에도 해야 한다. 그래서 이 순서를 <b>함수로 묶어</b> 둔다.</div></div>
+        </div>
+        <div class="deliv"><div class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div><div class="dt"><b>실습 산출물</b><span>전처리를 끝낸 X_train · X_test · y_train · y_test</span></div></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>모델 학습은 <b>이 다섯 줄의 결과</b>에서 시작한다. 여기가 틀리면 뒤가 전부 틀린다.</div></div>
+  </div>
+</section>
+
+<section class="slide section" data-title="[섹션] 시각화">
+  <div class="ghost">02</div>
+  <div class="seyebrow">CHAPTER 02</div>
+  <h2>시각화</h2>
+  <div class="agenda"><span>Matplotlib</span><span>기본 네 그래프</span><span>subplot</span><span>seaborn</span></div>
+</section>
+
+<section class="slide" data-title="Matplotlib의 자리">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>배경</div>
+  <h2 class="s-title sm">선 하나로 드러나는 것</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">불러오기 — 관례상 plt</span></div>
+          <pre><code><span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+
+plt.plot(x, y)   <span class="cm"># 그리고</span>
+plt.show()       <span class="cm"># 화면에 내보낸다</span></code></pre>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div><code>plt.show()</code> 전까지는 <b>쌓아 두는 상태</b>다. 여러 명령이 한 그림에 겹쳐 쌓인다.</div></div>
+          <div class="v"><span class="b">★</span><div><b>손실 곡선</b>을 이걸로 그린다. 학습이 되고 있는지 보는 유일한 수단이다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="plot">
+          <svg viewBox="0 0 360 220">
+            <line x1="46" y1="180" x2="340" y2="180" stroke="#8E8AAC" stroke-width="1.2"/>
+            <line x1="46" y1="20" x2="46" y2="180" stroke="#8E8AAC" stroke-width="1.2"/>
+            <g stroke="#E8E4F8" stroke-width="1"><line x1="46" y1="140" x2="340" y2="140"/><line x1="46" y1="100" x2="340" y2="100"/><line x1="46" y1="60" x2="340" y2="60"/></g>
+            <polyline fill="none" stroke="#5B3DF5" stroke-width="2.6" stroke-linejoin="round"
+              points="60,40 106,86 152,118 198,138 244,150 290,156 336,159"/>
+            <g font-family="monospace" font-size="11" fill="#8E8AAC">
+              <text x="14" y="44">0.7</text><text x="14" y="104">0.4</text><text x="14" y="164">0.1</text>
+              <text x="52" y="198">0</text><text x="180" y="198">25</text><text x="320" y="198">50</text>
+            </g>
+            <text x="336" y="212" text-anchor="end" font-size="10.5" fill="#8E8AAC">epoch</text>
+          </svg>
+          <div class="cap">손실 곡선</div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div><code>describe()</code>가 놓치는 <b>추세 · 이상치 · 분포 모양</b>은 그래프에서만 보인다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="그래프 꾸미기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>꾸미기</div>
+  <h2 class="s-title sm">그림 안에 들어가야 할 것</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">제목 · 축 이름 · 범례</span></div>
+          <pre><code>plt.plot(x, train_loss, label=<span class="st">"train"</span>)
+plt.plot(x, val_loss,   label=<span class="st">"validation"</span>)
+
+plt.title(<span class="st">"학습 곡선"</span>, fontsize=<span class="nm">14</span>)
+plt.xlabel(<span class="st">"epoch"</span>)
+plt.ylabel(<span class="st">"loss"</span>)
+plt.legend()         <span class="cm"># 이 줄이 없으면 범례가 안 나온다</span>
+plt.grid(<span class="kw">True</span>, alpha=<span class="nm">0.3</span>)
+plt.show()</code></pre>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>축 이름에 <b>단위</b>를 적는다. 숫자만 있으면 읽는 사람이 되묻는다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">한글이 네모로 나올 때 — Colab</span></div>
+          <pre><code>!apt-get install -qq fonts-nanum
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+plt.rc(<span class="st">'font'</span>, family=<span class="st">'NanumBarunGothic'</span>)
+plt.rc(<span class="st">'axes'</span>, unicode_minus=<span class="kw">False</span>)  <span class="cm"># 음수 부호</span>
+
+<span class="cm"># 설치 후 런타임 다시 시작이 필요하다</span></code></pre>
+        </div>
+        <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>네모(□□□)의 정체</h4><p>기본 폰트에 한글 글리프가 없어서다. 그래프가 틀린 게 아니라 <b>글꼴이 없는 것</b>이다. 세션이 새로 뜨면 초기화되니 <b>맨 위 셀</b>에 둔다.</p></div></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>선이 둘 이상인 그래프에서 <b>범례가 없으면 그림이 아니라 낙서</b>다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="기본 그래프 네 가지">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>선택</div>
+  <h2 class="s-title sm">네 가지 기본 그래프</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c4">
+      <div class="card"><span class="n">plot</span><h3>선 그래프</h3>
+        <div class="plot"><svg viewBox="0 0 180 100"><line x1="14" y1="86" x2="172" y2="86" stroke="#E8E4F8"/><polyline fill="none" stroke="#5B3DF5" stroke-width="2.4" points="20,74 52,52 84,60 116,30 156,22"/></svg></div>
+        <p><b>순서·시간</b>에 따른 변화.</p></div>
+      <div class="card"><span class="n">bar</span><h3>막대 그래프</h3>
+        <div class="plot"><svg viewBox="0 0 180 100"><line x1="14" y1="86" x2="172" y2="86" stroke="#E8E4F8"/><rect x="26" y="30" width="26" height="56" fill="#5B3DF5"/><rect x="70" y="52" width="26" height="34" fill="#0FB5A1"/><rect x="114" y="64" width="26" height="22" fill="#F4A93C"/></svg></div>
+        <p><b>범주별</b> 크기 비교.</p></div>
+      <div class="card"><span class="n">scatter</span><h3>산점도</h3>
+        <div class="plot"><svg viewBox="0 0 180 100"><line x1="14" y1="86" x2="172" y2="86" stroke="#E8E4F8"/><g fill="#5B3DF5"><circle cx="34" cy="70" r="3.5"/><circle cx="56" cy="58" r="3.5"/><circle cx="72" cy="64" r="3.5"/><circle cx="94" cy="40" r="3.5"/><circle cx="118" cy="46" r="3.5"/><circle cx="140" cy="26" r="3.5"/><circle cx="156" cy="34" r="3.5"/></g></svg></div>
+        <p>두 열 사이의 <b>관계</b>.</p></div>
+      <div class="card"><span class="n">hist</span><h3>히스토그램</h3>
+        <div class="plot"><svg viewBox="0 0 180 100"><line x1="14" y1="86" x2="172" y2="86" stroke="#E8E4F8"/><g fill="#5B3DF5"><rect x="20" y="66" width="20" height="20"/><rect x="42" y="46" width="20" height="40"/><rect x="64" y="26" width="20" height="60"/><rect x="86" y="38" width="20" height="48"/><rect x="108" y="58" width="20" height="28"/><rect x="130" y="74" width="20" height="12"/></g></svg></div>
+        <p>한 열의 <b>분포 모양</b>.</p></div>
+    </div>
+    <div class="code sm">
+      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">타이타닉에 적용하면</span></div>
+      <pre><code>df[<span class="st">'Age'</span>].hist(bins=<span class="nm">30</span>)                        <span class="cm"># 나이 분포 — 어디에 몰렸나</span>
+df.groupby(<span class="st">'Pclass'</span>)[<span class="st">'Survived'</span>].mean().plot.bar()  <span class="cm"># 등급별 생존율</span>
+df.plot.scatter(x=<span class="st">'Age'</span>, y=<span class="st">'Fare'</span>)                 <span class="cm"># 나이와 요금의 관계</span></code></pre>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>한 열의 <b>분포</b>는 히스토그램, 두 열의 <b>관계</b>는 산점도, 범주별 <b>비교</b>는 막대다. 목적이 그래프를 정한다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="figure와 subplot">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>배치</div>
+  <h2 class="s-title sm">종이 한 장과 그 안의 칸</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div><b>figure</b> — 그림을 그리는 종이 한 장.</div></div>
+          <div class="v"><span class="b">→</span><div><b>subplot(ax)</b> — 그 종이를 나눈 칸. 각 칸이 독립된 축을 가진다.</div></div>
+          <div class="v"><span class="b">★</span><div>칸마다 <code>ax.plot()</code> <code>ax.set_title()</code>처럼 <b>ax에 붙여</b> 호출한다.</div></div>
+        </div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">1×2 로 나누기</span></div>
+          <pre><code>fig, ax = plt.subplots(<span class="nm">1</span>, <span class="nm">2</span>, figsize=(<span class="nm">10</span>, <span class="nm">4</span>),
+                       constrained_layout=<span class="kw">True</span>)
+
+ax[<span class="nm">0</span>].hist(df[<span class="st">'Age'</span>].dropna(), bins=<span class="nm">30</span>)
+ax[<span class="nm">0</span>].set_title(<span class="st">"Age"</span>)
+ax[<span class="nm">1</span>].hist(df[<span class="st">'Fare'</span>], bins=<span class="nm">30</span>)
+ax[<span class="nm">1</span>].set_title(<span class="st">"Fare"</span>)
+plt.show()</code></pre>
+        </div>
+      </div>
+      <div>
+        <div class="plot">
+          <svg viewBox="0 0 340 200">
+            <rect x="8" y="8" width="324" height="184" fill="#fff" stroke="#B7A9FF" stroke-dasharray="5 4"/>
+            <text x="14" y="24" font-family="monospace" font-size="10" fill="#8E8AAC">figure</text>
+            <g stroke="#E8E4F8" fill="#FAF9FF">
+              <rect x="24" y="36" width="140" height="140"/><rect x="180" y="36" width="140" height="140"/>
+            </g>
+            <g fill="#5B3DF5"><rect x="40" y="120" width="16" height="48"/><rect x="58" y="86" width="16" height="82"/><rect x="76" y="70" width="16" height="98"/><rect x="94" y="96" width="16" height="72"/><rect x="112" y="132" width="16" height="36"/><rect x="130" y="152" width="16" height="16"/></g>
+            <g fill="#0FB5A1"><rect x="196" y="60" width="16" height="108"/><rect x="214" y="112" width="16" height="56"/><rect x="232" y="140" width="16" height="28"/><rect x="250" y="152" width="16" height="16"/><rect x="268" y="158" width="16" height="10"/><rect x="286" y="162" width="16" height="6"/></g>
+            <text x="94" y="50" text-anchor="middle" font-size="11" fill="#4A4766">Age</text>
+            <text x="250" y="50" text-anchor="middle" font-size="11" fill="#4A4766">Fare</text>
+            <text x="28" y="190" font-family="monospace" font-size="9.5" fill="#8E8AAC">ax[0]</text>
+            <text x="184" y="190" font-family="monospace" font-size="9.5" fill="#8E8AAC">ax[1]</text>
+          </svg>
+          <div class="cap">Fare는 왼쪽으로 심하게 쏠려 있다</div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>같은 축으로 비교할 것은 <b>한 칸에 겹쳐</b>, 단위가 다른 것은 <b>칸을 나눠</b> 그린다. 겹침은 <code>constrained_layout</code>이 푼다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="seaborn">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>seaborn</div>
+  <h2 class="s-title sm">DataFrame을 그대로 받는 층</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twopane">
+      <div class="pane bad"><h4>Matplotlib</h4><div class="mini">for p in sorted(df['Pclass'].unique()):
+    sub = df[df['Pclass'] == p]
+    plt.hist(sub['Age'].dropna(), label=p, alpha=.5)
+plt.legend()</div><p>값을 <b>직접 꺼내</b> 넘긴다.</p></div>
+      <div class="pane good"><h4>seaborn</h4><div class="mini">import seaborn as sns
+
+sns.histplot(data=df, x='Age', hue='Pclass')</div><p>표와 <b>열 이름</b>만 알려 주면 나눠 그린다.</p></div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">→</span><div><code>hue</code>에 준 열의 <b>값마다 색이 갈리고 범례가 자동</b>으로 붙는다.</div></div>
+      <div class="v"><span class="b">→</span><div>seaborn은 Matplotlib <b>위에 얹힌 층</b>이다. <code>plt.title()</code> 같은 명령이 그대로 통한다.</div></div>
+      <div class="v"><span class="b">★</span><div>테마는 맨 위에서 한 번 건다. <code>sns.set_style("whitegrid")</code>.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>범주별로 갈라 그릴 일이면 seaborn이 짧다. 축을 세밀하게 통제할 일이면 Matplotlib이다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="탐색용 그래프">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>탐색</div>
+  <h2 class="s-title sm">모델 만들기 전에 보는 두 장</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="phase-label">상관 히트맵 — 어떤 열이 답과 붙어 있나<span class="ln"></span></div>
+        <div class="code sm"><pre><code>sns.heatmap(df.corr(numeric_only=<span class="kw">True</span>),
+            annot=<span class="kw">True</span>, fmt=<span class="st">'.2f'</span>, cmap=<span class="st">'coolwarm'</span>)</code></pre></div>
+        <div class="plot">
+          <svg viewBox="0 0 300 120">
+            <g font-size="9.5" font-family="monospace" fill="#8E8AAC">
+              <text x="4" y="30">Survived</text><text x="4" y="60">Pclass</text><text x="4" y="90">Fare</text>
+              <text x="72" y="14">Surv</text><text x="132" y="14">Pcls</text><text x="196" y="14">Fare</text>
+            </g>
+            <g><rect x="66" y="20" width="56" height="26" fill="#5B3DF5"/><rect x="128" y="20" width="56" height="26" fill="#7FA8E8"/><rect x="190" y="20" width="56" height="26" fill="#C8B4F0"/>
+               <rect x="66" y="50" width="56" height="26" fill="#7FA8E8"/><rect x="128" y="50" width="56" height="26" fill="#5B3DF5"/><rect x="190" y="50" width="56" height="26" fill="#8FBEEA"/>
+               <rect x="66" y="80" width="56" height="26" fill="#C8B4F0"/><rect x="128" y="80" width="56" height="26" fill="#8FBEEA"/><rect x="190" y="80" width="56" height="26" fill="#5B3DF5"/></g>
+            <g font-size="10" fill="#fff" text-anchor="middle">
+              <text x="94" y="38">1.00</text><text x="156" y="38">-.34</text><text x="218" y="38">.26</text>
+              <text x="94" y="68">-.34</text><text x="156" y="68">1.00</text><text x="218" y="68">-.55</text>
+              <text x="94" y="98">.26</text><text x="156" y="98">-.55</text><text x="218" y="98">1.00</text>
+            </g>
+          </svg>
+          <div class="cap">Pclass와 Survived는 −0.34 — 등급이 낮을수록 덜 살았다</div>
+        </div>
+      </div>
+      <div>
+        <div class="phase-label">박스플롯 — 분포와 이상치를 같이<span class="ln"></span></div>
+        <div class="code sm"><pre><code>sns.boxplot(data=df, x=<span class="st">'Pclass'</span>, y=<span class="st">'Fare'</span>)</code></pre></div>
+        <div class="plot">
+          <svg viewBox="0 0 300 140">
+            <line x1="34" y1="122" x2="288" y2="122" stroke="#8E8AAC" stroke-width="1.2"/>
+            <line x1="34" y1="10" x2="34" y2="122" stroke="#8E8AAC" stroke-width="1.2"/>
+            <g stroke="#5B3DF5" stroke-width="1.6" fill="#EFEAFF">
+              <line x1="86" y1="20" x2="86" y2="46"/><rect x="66" y="46" width="40" height="34"/><line x1="66" y1="62" x2="106" y2="62" stroke-width="2.4"/><line x1="86" y1="80" x2="86" y2="94"/>
+              <line x1="164" y1="72" x2="164" y2="86"/><rect x="144" y="86" width="40" height="18"/><line x1="144" y1="95" x2="184" y2="95" stroke-width="2.4"/><line x1="164" y1="104" x2="164" y2="112"/>
+              <line x1="242" y1="90" x2="242" y2="100"/><rect x="222" y="100" width="40" height="12"/><line x1="222" y1="106" x2="262" y2="106" stroke-width="2.4"/><line x1="242" y1="112" x2="242" y2="118"/>
+            </g>
+            <g fill="#E8537A"><circle cx="86" cy="14" r="3"/><circle cx="86" cy="24" r="3"/><circle cx="164" cy="60" r="3"/><circle cx="242" cy="78" r="3"/></g>
+            <g font-size="10" fill="#8E8AAC" text-anchor="middle"><text x="86" y="136">1등석</text><text x="164" y="136">2등석</text><text x="242" y="136">3등석</text></g>
+          </svg>
+          <div class="cap">점으로 튀어나온 것이 이상치다</div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>모델을 돌리기 전에 이 두 장을 본다. <b>답과 관계있는 열</b>과 <b>손봐야 할 이상치</b>가 여기서 정해진다.</div></div>
+  </div>
+</section>
+
+<section class="slide section" data-title="[섹션] NumPy">
+  <div class="ghost">03</div>
+  <div class="seyebrow">CHAPTER 03</div>
+  <h2>NumPy</h2>
+  <div class="agenda"><span>배열</span><span>shape</span><span>브로드캐스팅</span><span>행렬 곱</span></div>
+</section>
+
+<section class="slide" data-title="리스트와 배열">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>배경</div>
+  <h2 class="s-title sm">리스트와 배열의 차이</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twopane">
+      <div class="pane bad"><h4>파이썬 리스트</h4><div class="mini">a = [1, 2, 3]
+a * 2      → [1, 2, 3, 1, 2, 3]
+a + 1      → TypeError</div><p>아무 자료형이나 담는 대신, <b>수학 연산이 안 된다</b>.</p></div>
+      <div class="pane good"><h4>NumPy 배열</h4><div class="mini">a = np.array([1, 2, 3])
+a * 2      → [2, 4, 6]
+a + 1      → [2, 3, 4]</div><p>한 자료형만 담는 대신, <b>원소마다 연산이 걸린다</b>.</p></div>
+    </div>
+    <div class="twocol">
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>메모리에 값이 <b>한 덩어리로 붙어</b> 있어 계산이 훨씬 빠르다.</div></div>
+          <div class="v"><span class="b">★</span><div>Pandas의 Series 내부가 NumPy 배열이고, PyTorch 텐서도 같은 모양이다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">불러오기 — 관례상 np</span></div>
+          <pre><code><span class="kw">import</span> numpy <span class="kw">as</span> np
+
+X = df.values          <span class="cm"># DataFrame → NumPy 배열</span>
+<span class="fn2">print</span>(<span class="fn2">type</span>(X), X.shape)</code></pre>
+          <div class="out">&lt;class 'numpy.ndarray'&gt; (889, 8)</div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">정리</span><div>표를 다룰 때는 Pandas, <b>모델에 넣을 때는 NumPy 배열</b>로 바꾼다. 딥러닝 프레임워크의 텐서도 같은 모양이다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="배열 만들기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>생성</div>
+  <h2 class="s-title sm">배열 만들기와 dtype</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">리스트에서 · 규칙으로</span></div>
+          <pre><code>a = np.array([<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>])
+b = np.array([[<span class="nm">1</span>, <span class="nm">2</span>], [<span class="nm">3</span>, <span class="nm">4</span>]])   <span class="cm"># 2차원</span>
+
+np.zeros((<span class="nm">2</span>, <span class="nm">3</span>))       <span class="cm"># 0으로 채운 2×3</span>
+np.ones((<span class="nm">2</span>, <span class="nm">3</span>))
+np.arange(<span class="nm">0</span>, <span class="nm">10</span>, <span class="nm">2</span>)     <span class="cm"># [0 2 4 6 8]</span>
+np.linspace(<span class="nm">0</span>, <span class="nm">1</span>, <span class="nm">5</span>)    <span class="cm"># [0 .25 .5 .75 1]</span>
+
+np.random.seed(<span class="nm">42</span>)      <span class="cm"># 재현 가능하게</span>
+np.random.randn(<span class="nm">3</span>, <span class="nm">2</span>)   <span class="cm"># 정규분포 난수</span></code></pre>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">한 배열에는 한 자료형만</span></div>
+          <pre><code>a = np.array([<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>])
+<span class="fn2">print</span>(a.dtype)
+
+<span class="cm"># 정수와 실수를 섞으면 실수로 통일된다</span>
+b = np.array([<span class="nm">1</span>, <span class="nm">2.5</span>])
+<span class="fn2">print</span>(b.dtype)
+
+<span class="cm"># 문자열이 끼면 전부 문자열이 된다</span>
+c = np.array([<span class="nm">1</span>, <span class="st">'a'</span>])
+<span class="fn2">print</span>(c.dtype)</code></pre>
+          <div class="out">int64
+float64
+<span class="err">&lt;U21</span></div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">✕</span><div>문자열이 하나라도 남아 있으면 <b>배열 전체가 문자열</b>이 된다. 인코딩을 빠뜨렸다는 신호다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>모델에 넣기 전 <code>X.dtype</code>이 <code>float64</code>인지 확인한다. <code>&lt;U21</code>이면 <b>글자가 남아 있다</b>.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="차원과 모양">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>shape</div>
+  <h2 class="s-title sm">차원과 모양</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w2">
+      <div>
+        <table class="ctable">
+          <thead><tr><th>차원</th><th>이름</th><th>shape 예</th><th>무엇</th></tr></thead>
+          <tbody>
+            <tr><td>0D</td><td>스칼라</td><td><code>()</code></td><td>값 하나 — 손실값</td></tr>
+            <tr><td>1D</td><td>벡터</td><td><code>(8,)</code></td><td>승객 한 명의 특성 8개</td></tr>
+            <tr><td>2D</td><td>행렬</td><td><code>(889, 8)</code></td><td>표 한 장</td></tr>
+            <tr><td>3D+</td><td>텐서</td><td><code>(32, 28, 28)</code></td><td>이미지 32장</td></tr>
+          </tbody>
+        </table>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">확인하는 세 가지</span></div>
+          <pre><code><span class="fn2">print</span>(X.shape)   <span class="cm"># 각 축의 크기 — 튜플</span>
+<span class="fn2">print</span>(X.ndim)    <span class="cm"># 축이 몇 개</span>
+<span class="fn2">print</span>(X.size)    <span class="cm"># 원소 총 개수</span></code></pre>
+          <div class="out">(889, 8)
+2
+7112</div>
+        </div>
+      </div>
+      <div>
+        <div class="plot">
+          <svg viewBox="0 0 300 220">
+            <text x="8" y="18" font-size="11" fill="#8E8AAC">1D  (3,)</text>
+            <g fill="#EFEAFF" stroke="#B7A9FF"><rect x="8" y="26" width="30" height="30"/><rect x="40" y="26" width="30" height="30"/><rect x="72" y="26" width="30" height="30"/></g>
+
+            <text x="8" y="84" font-size="11" fill="#8E8AAC">2D  (2, 3)</text>
+            <g fill="#E4DDFF" stroke="#8E7BFF">
+              <rect x="8" y="92" width="30" height="30"/><rect x="40" y="92" width="30" height="30"/><rect x="72" y="92" width="30" height="30"/>
+              <rect x="8" y="124" width="30" height="30"/><rect x="40" y="124" width="30" height="30"/><rect x="72" y="124" width="30" height="30"/>
+            </g>
+            <text x="112" y="112" font-size="10" fill="#8E8AAC">행 2</text>
+            <text x="112" y="128" font-size="10" fill="#8E8AAC">열 3</text>
+
+            <text x="170" y="84" font-size="11" fill="#8E8AAC">3D  (2, 2, 3)</text>
+            <g fill="#D3C7FF" stroke="#7A5BFF">
+              <rect x="184" y="100" width="26" height="26"/><rect x="212" y="100" width="26" height="26"/><rect x="240" y="100" width="26" height="26"/>
+              <rect x="184" y="128" width="26" height="26"/><rect x="212" y="128" width="26" height="26"/><rect x="240" y="128" width="26" height="26"/>
+            </g>
+            <g fill="#5B3DF5" stroke="#3A1FC9" opacity="0.85">
+              <rect x="172" y="92" width="26" height="26"/><rect x="200" y="92" width="26" height="26"/><rect x="228" y="92" width="26" height="26"/>
+              <rect x="172" y="120" width="26" height="26"/><rect x="200" y="120" width="26" height="26"/><rect x="228" y="120" width="26" height="26"/>
+            </g>
+            <text x="8" y="184" font-size="10.5" fill="#4A4766">shape 는 언제나 <tspan font-family="monospace">튜플</tspan> 로 나온다</text>
+            <text x="8" y="202" font-size="10.5" fill="#4A4766">바뀌지 않는 자료 구조인 튜플이 여기 쓰인다</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>딥러닝 에러의 대부분은 shape 불일치다. <b>연산 전에 <code>.shape</code>를 찍어 보는 습관</b>이 시간을 아낀다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="reshape">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>shape</div>
+  <h2 class="s-title sm">같은 데이터 다른 모양</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">원소 수만 맞으면 된다</span></div>
+          <pre><code>a = np.arange(<span class="nm">6</span>)
+<span class="fn2">print</span>(a)
+<span class="fn2">print</span>(a.reshape(<span class="nm">2</span>, <span class="nm">3</span>))
+<span class="fn2">print</span>(a.reshape(<span class="nm">3</span>, <span class="nm">2</span>))</code></pre>
+          <div class="out">[0 1 2 3 4 5]
+[[0 1 2]
+ [3 4 5]]
+[[0 1]
+ [2 3]
+ [4 5]]</div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">-1 은 "알아서 계산" 이다</span></div>
+          <pre><code>a.reshape(<span class="nm">2</span>, -<span class="nm">1</span>)     <span class="cm"># (2, 3) 으로 맞춰 준다</span>
+a.reshape(-<span class="nm">1</span>, <span class="nm">1</span>)     <span class="cm"># (6, 1) 세로 벡터</span>
+
+a.reshape(<span class="nm">4</span>, <span class="nm">2</span>)      <span class="cm"># 6개를 8칸에?</span></code></pre>
+          <div class="out"><span class="err">ValueError: cannot reshape array of
+size 6 into shape (4,2)</span></div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div><code>y</code>를 <code>(n, 1)</code> 모양으로 맞출 때 <code>reshape(-1, 1)</code>을 자주 쓴다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>reshape는 <b>값을 바꾸지 않는다</b>. 같은 데이터를 다른 칸에 다시 담을 뿐이다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="인덱싱과 마스크">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>선택</div>
+  <h2 class="s-title sm">인덱싱과 불리언 마스크</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">축마다 쉼표로 나눈다</span></div>
+          <pre><code>X = np.arange(<span class="nm">12</span>).reshape(<span class="nm">3</span>, <span class="nm">4</span>)
+<span class="fn2">print</span>(X)
+
+<span class="fn2">print</span>(X[<span class="nm">0</span>, <span class="nm">2</span>])     <span class="cm"># 0행 2열</span>
+<span class="fn2">print</span>(X[<span class="nm">1</span>])        <span class="cm"># 1행 전체</span>
+<span class="fn2">print</span>(X[:, <span class="nm">0</span>])     <span class="cm"># 0열 전체</span></code></pre>
+          <div class="out">[[ 0  1  2  3]
+ [ 4  5  6  7]
+ [ 8  9 10 11]]
+2
+[4 5 6 7]
+[0 4 8]</div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">조건으로 고르기</span></div>
+          <pre><code>a = np.array([<span class="nm">22</span>, <span class="nm">38</span>, <span class="nm">4</span>, <span class="nm">35</span>])
+
+mask = a &gt;= <span class="nm">18</span>       <span class="cm"># True/False 배열</span>
+<span class="fn2">print</span>(mask)
+<span class="fn2">print</span>(a[mask])        <span class="cm"># 참인 자리만</span>
+<span class="fn2">print</span>(a[a &gt;= <span class="nm">18</span>].mean())</code></pre>
+          <div class="out">[ True  True False  True]
+[22 38 35]
+31.666666666666668</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div>Pandas의 <code>df[df['Age'] &lt; 18]</code>이 정확히 이 구조다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">정리</span><div>대괄호 안에 <b>숫자를 넣으면 위치</b>, <b>불리언 배열을 넣으면 조건</b>이다. Pandas가 이것을 그대로 물려받았다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="브로드캐스팅">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>연산</div>
+  <h2 class="s-title sm">모양이 다른 배열끼리의 연산</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">작은 쪽이 자동으로 늘어난다</span></div>
+          <pre><code>X = np.array([[<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>],
+              [<span class="nm">4</span>, <span class="nm">5</span>, <span class="nm">6</span>]])       <span class="cm"># (2, 3)</span>
+
+<span class="fn2">print</span>(X + <span class="nm">10</span>)                     <span class="cm"># 스칼라</span>
+<span class="fn2">print</span>(X + np.array([<span class="nm">10</span>, <span class="nm">20</span>, <span class="nm">30</span>]))  <span class="cm"># (3,) 행마다</span></code></pre>
+          <div class="out">[[11 12 13]
+ [14 15 16]]
+[[11 22 33]
+ [14 25 36]]</div>
+        </div>
+      </div>
+      <div>
+        <div class="plot">
+          <svg viewBox="0 0 300 150">
+            <g fill="#EFEAFF" stroke="#B7A9FF">
+              <rect x="10" y="30" width="28" height="26"/><rect x="40" y="30" width="28" height="26"/><rect x="70" y="30" width="28" height="26"/>
+              <rect x="10" y="58" width="28" height="26"/><rect x="40" y="58" width="28" height="26"/><rect x="70" y="58" width="28" height="26"/>
+            </g>
+            <text x="10" y="24" font-size="10" font-family="monospace" fill="#8E8AAC">X (2, 3)</text>
+            <text x="108" y="60" font-size="16" fill="#5B3DF5">+</text>
+            <g fill="#E4F8F4" stroke="#8AD7CC">
+              <rect x="128" y="30" width="28" height="26"/><rect x="158" y="30" width="28" height="26"/><rect x="188" y="30" width="28" height="26"/>
+            </g>
+            <g fill="#E4F8F4" stroke="#8AD7CC" stroke-dasharray="4 3" opacity="0.6">
+              <rect x="128" y="58" width="28" height="26"/><rect x="158" y="58" width="28" height="26"/><rect x="188" y="58" width="28" height="26"/>
+            </g>
+            <text x="128" y="24" font-size="10" font-family="monospace" fill="#8E8AAC">v (3,)</text>
+            <text x="128" y="104" font-size="10" fill="#0A7F70">점선 = 자동으로 복제된 행</text>
+            <text x="232" y="60" font-size="16" fill="#5B3DF5">=</text>
+            <g fill="#5B3DF5"><rect x="252" y="30" width="18" height="26"/><rect x="272" y="30" width="18" height="26"/>
+                               <rect x="252" y="58" width="18" height="26"/><rect x="272" y="58" width="18" height="26"/></g>
+            <text x="252" y="24" font-size="10" font-family="monospace" fill="#8E8AAC">(2, 3)</text>
+            <text x="10" y="130" font-size="10.5" fill="#4A4766">스케일링이 이 규칙으로 동작한다 — (n, 8) − (8,)</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">효과</span><div>열마다 평균을 빼는 표준화가 <code>(X - X.mean(axis=0)) / X.std(axis=0)</code> <b>한 줄</b>로 끝난다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="행렬 곱">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>연산</div>
+  <h2 class="s-title sm">행렬 곱의 의미</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w2">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">* 와 @ 는 다르다</span></div>
+          <pre><code>A = np.array([[<span class="nm">1</span>, <span class="nm">2</span>], [<span class="nm">3</span>, <span class="nm">4</span>]])
+B = np.array([[<span class="nm">10</span>, <span class="nm">20</span>], [<span class="nm">30</span>, <span class="nm">40</span>]])
+
+<span class="fn2">print</span>(A * B)    <span class="cm"># 같은 자리끼리</span>
+<span class="fn2">print</span>(A @ B)    <span class="cm"># 행렬 곱</span></code></pre>
+          <div class="out">[[ 10  40]
+ [ 90 160]]
+[[ 70 100]
+ [150 220]]</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>결과의 <code>(i, j)</code>는 <b>A의 i행과 B의 j열을 짝지어 곱해 더한 값</b>이다.</div></div>
+          <div class="v"><span class="b">★</span><div><b>앞의 열 수 = 뒤의 행 수</b>여야 계산된다. 이 조건이 딥러닝 에러의 원인 1위다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="plot">
+          <svg viewBox="0 0 300 190">
+            <text x="10" y="18" font-size="11" font-family="monospace" fill="#8E8AAC">(2, 3) @ (3, 2) = (2, 2)</text>
+            <g fill="#EFEAFF" stroke="#B7A9FF">
+              <rect x="10" y="30" width="24" height="24"/><rect x="36" y="30" width="24" height="24"/><rect x="62" y="30" width="24" height="24"/>
+              <rect x="10" y="56" width="24" height="24"/><rect x="36" y="56" width="24" height="24"/><rect x="62" y="56" width="24" height="24"/>
+            </g>
+            <text x="98" y="60" font-size="15" fill="#5B3DF5">@</text>
+            <g fill="#E4F8F4" stroke="#8AD7CC">
+              <rect x="124" y="18" width="24" height="24"/><rect x="150" y="18" width="24" height="24"/>
+              <rect x="124" y="44" width="24" height="24"/><rect x="150" y="44" width="24" height="24"/>
+              <rect x="124" y="70" width="24" height="24"/><rect x="150" y="70" width="24" height="24"/>
+            </g>
+            <text x="186" y="60" font-size="15" fill="#5B3DF5">=</text>
+            <g fill="#5B3DF5"><rect x="212" y="30" width="24" height="24"/><rect x="238" y="30" width="24" height="24"/>
+                               <rect x="212" y="56" width="24" height="24"/><rect x="238" y="56" width="24" height="24"/></g>
+            <path d="M48 92 L48 106 L200 106" stroke="#E8537A" stroke-width="1.6" fill="none" stroke-dasharray="4 3"/>
+            <text x="52" y="122" font-size="10" fill="#E8537A">가운데 3이 서로 맞아야 사라진다</text>
+            <rect x="10" y="140" width="280" height="40" rx="8" fill="#1C1933"/>
+            <text x="24" y="158" font-size="11" font-family="monospace" fill="#ECEAFF">신경망 한 층 =  y = X @ W + b</text>
+            <text x="24" y="174" font-size="10.5" font-family="monospace" fill="#9C97D6">(n,8) @ (8,16) + (16,)  →  (n,16)</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">의의</span><div>신경망 한 층은 <b>행렬 곱 한 번과 덧셈 한 번</b>이다. 뒤에서 이 식을 그대로 다시 만난다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="Day 2 정리">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>정리</div>
+  <h2 class="s-title sm">손에 남는 것</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="biglist">
+      <div class="li"><div class="num">1</div><div class="tx"><h4>읽은 다음 타입부터 본다</h4><p><code>info()</code>의 Dtype이 <code>object</code>면 계산이 조용히 틀어진다. <code>describe()</code>의 count·min·max가 두 번째 검문소다.</p></div></div>
+      <div class="li"><div class="num">2</div><div class="tx"><h4>집계는 groupby 한 줄</h4><p>모델을 만들기 전에 어떤 열이 답과 관계있는지 본다. 여성 74% 대 남성 19%.</p></div></div>
+      <div class="li"><div class="num">3</div><div class="tx"><h4>전처리는 네 단계</h4><p>결측 → 인코딩 → 분할 → 스케일링. <b>분할이 스케일링보다 앞</b>이어야 누수가 없다.</p></div></div>
+      <div class="li"><div class="num">4</div><div class="tx"><h4>그래프는 검증 도구다</h4><p>분포는 히스토그램, 관계는 산점도, 이상치는 박스플롯. 손실 곡선도 여기서 나온다.</p></div></div>
+      <div class="li"><div class="num">5</div><div class="tx"><h4>모델이 먹는 것은 배열이다</h4><p>결측 없고, 전부 숫자이고, 크기가 비슷한 <code>(행, 열)</code> 배열. shape 확인이 습관이 되어야 한다.</p></div></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>데이터 작업의 결과물은 표가 아니라 <b>모델에 넣을 수 있는 배열</b>이다.</div></div>
+  </div>
+</section>
+
+
+
+    </div>
+  </div>
+</main>
+<div class="overview" id="overview">
+  <div class="head"><h3>슬라이드 목차</h3><button id="ovClose">닫기 ✕</button></div>
+  <div class="ovgrid" id="ovgrid"></div>
+</div>
+
+<div class="controlbar">
+  <button class="ico" id="btnMenu" title="목차"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+  <span class="sep"></span>
+  <button class="ico" id="btnPrev" title="이전"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <span class="count"><b id="cur">1</b> / <span id="tot2">75</span></span>
+  <button class="ico" id="btnNext" title="다음"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 18l6-6-6-6"/></svg></button>
+  <span class="sep"></span>
+  <button class="zoom" id="btnOut" title="축소"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14"/></svg></button>
+  <button class="zoom" id="btnIn" title="확대"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></button>
+  <button class="zoom" id="btnFit" title="화면 맞춤"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 4H5a1 1 0 0 0-1 1v4M15 4h4a1 1 0 0 1 1 1v4M9 20H5a1 1 0 0 1-1-1v-4M15 20h4a1 1 0 0 0 1-1v-4"/></svg></button>
+  <button class="pdf" id="btnPdf" title="PDF로 저장 (인쇄 → PDF로 저장)">PDF</button>
+</div>
+
+<div class="hint">← → 또는 Space · 목차(≡) · 줌(−/+) · 숫자 입력 후 Enter로 이동</div>
+<div id="jumpHint"></div>
+<style>
+  #jumpHint{position:fixed; left:50%; bottom:74px; transform:translateX(-50%) translateY(6px); z-index:75;
+    background:#2B2B2E; color:#fff; font-family:Georgia,'Times New Roman',serif; font-style:italic;
+    font-size:20px; letter-spacing:.04em; padding:8px 20px; border-radius:999px;
+    box-shadow:0 12px 28px -10px rgba(0,0,0,.55); opacity:0; pointer-events:none;
+    transition:opacity .12s ease, transform .12s ease;}
+  #jumpHint.on{opacity:1; transform:translateX(-50%) translateY(0);}
+  @media print{ #jumpHint{display:none !important;} }
+</style>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const scaler = document.getElementById('scaler');
+  const sizer  = document.getElementById('sizer');
+  const stage  = document.getElementById('stage');
+  const total  = slides.length;
+  let idx = 0, userZoom = 1;
+  const BW = 1280, BH = 720;
+
+  document.getElementById('tot2').textContent = total;
+  slides.forEach((s, i) => {
+    const c = s.querySelector('.coord b');     if (c) c.textContent = String(i + 1).padStart(2, '0');
+    const t = s.querySelector('.coord .tot');  if (t) t.textContent = total;
+  });
+
+  const ovgrid = document.getElementById('ovgrid');
+  slides.forEach((s, i) => {
+    const b = document.createElement('button');
+    b.className = 'ovcard';
+    b.innerHTML = '<div class="ovn">' + String(i + 1).padStart(2, '0') + '</div><div class="ovt">' + (s.dataset.title || '') + '</div>';
+    b.addEventListener('click', () => { go(i); closeOverview(); });
+    ovgrid.appendChild(b);
+  });
+  const overview = document.getElementById('overview');
+  function openOverview(){ overview.classList.add('on'); }
+  function closeOverview(){ overview.classList.remove('on'); }
+  document.getElementById('btnMenu').addEventListener('click', openOverview);
+  document.getElementById('ovClose').addEventListener('click', closeOverview);
+  overview.addEventListener('click', (e) => { if (e.target === overview) closeOverview(); });
+
+  function fitScale(){
+    const availW = stage.clientWidth  - 60;
+    const availH = stage.clientHeight - 60;
+    return Math.min(availW / BW, availH / BH);
+  }
+  function applyScale(){
+    const eff = fitScale() * userZoom;
+    scaler.style.transform = 'scale(' + eff + ')';
+    sizer.style.width  = (BW * eff) + 'px';
+    sizer.style.height = (BH * eff) + 'px';
+  }
+  window.addEventListener('resize', applyScale);
+
+  function go(n){
+    idx = Math.max(0, Math.min(total - 1, n));
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    document.getElementById('cur').textContent = idx + 1;
+    document.getElementById('btnPrev').disabled = idx === 0;
+    document.getElementById('btnNext').disabled = idx === total - 1;
+    document.getElementById('pfill').style.width = (idx / (total - 1) * 100) + '%';
+    applyScale();
+    stage.scrollTop = 0; stage.scrollLeft = 0;
+  }
+  document.getElementById('btnPrev').addEventListener('click', () => go(idx - 1));
+  document.getElementById('btnNext').addEventListener('click', () => go(idx + 1));
+  document.getElementById('btnIn').addEventListener('click',  () => { userZoom = Math.min(2.4, userZoom + 0.15); applyScale(); });
+  document.getElementById('btnOut').addEventListener('click', () => { userZoom = Math.max(0.5, userZoom - 0.15); applyScale(); });
+  document.getElementById('btnFit').addEventListener('click', () => { userZoom = 1; applyScale(); });
+  document.getElementById('btnPdf').addEventListener('click', () => window.print());
+
+  // ---- 슬라이드 번호 입력 → Enter 로 점프 ----
+  let jumpBuf = '', jumpTimer = null;
+  const jumpHint = document.getElementById('jumpHint');
+  function showJump(){
+    if (!jumpHint) return;
+    if (jumpBuf){ jumpHint.textContent = '→ ' + jumpBuf; jumpHint.classList.add('on'); }
+    else { jumpHint.classList.remove('on'); }
+  }
+  function clearJump(){ jumpBuf = ''; if (jumpTimer) clearTimeout(jumpTimer); showJump(); }
+  function commitJump(){
+    if (jumpBuf){ const n = parseInt(jumpBuf, 10); if (!isNaN(n)) go(n - 1); }
+    clearJump();
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (overview.classList.contains('on')) { if (e.key === 'Escape') closeOverview(); return; }
+    if (/^[0-9]$/.test(e.key)){
+      e.preventDefault();
+      jumpBuf = (jumpBuf + e.key).slice(0, 3);
+      showJump();
+      if (jumpTimer) clearTimeout(jumpTimer);
+      jumpTimer = setTimeout(clearJump, 1600);
+      return;
+    }
+    if (e.key === 'Enter'){ e.preventDefault(); commitJump(); return; }
+    if (e.key === 'Escape'){ clearJump(); }
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown'){ e.preventDefault(); clearJump(); go(idx + 1); }
+    if (e.key === 'ArrowLeft'  || e.key === 'PageUp'){ e.preventDefault(); clearJump(); go(idx - 1); }
+    if (e.key === 'Home'){ clearJump(); go(0); } if (e.key === 'End'){ clearJump(); go(total - 1); }
+    if (e.key === '+' || e.key === '='){ userZoom = Math.min(2.4, userZoom + 0.15); applyScale(); }
+    if (e.key === '-'){ userZoom = Math.max(0.5, userZoom - 0.15); applyScale(); }
+  });
+
+  applyScale(); go(0);
+</script>
+</body>
+</html>
