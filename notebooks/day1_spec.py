@@ -564,19 +564,19 @@ except AttributeError as e:
 """),
 ]
 
-# 문제별 진행 방식 — 종합과 어려운 문제는 조별, 나머지는 스스로
+# 문제별 진행 방식 — 섹션 첫 문제는 수업 중에 같이, 종합·어려운 것은 조별
 MODES = {
     # 1. 값과 변수
-    ("ex", 1): "solo",   ("ex", 5): "solo",
+    ("ex", 1): "together",   ("ex", 5): "together",
     ("task", 1): "solo",     ("task", 2): "team",
     # 2. 자료 구조
-    ("ex", 7): "solo",   ("ex", 10): "solo",
+    ("ex", 7): "together",   ("ex", 10): "together",
     ("task", 3): "solo",     ("task", 4): "team",
     # 3. 흐름 제어
-    ("ex", 12): "solo",  ("ex", 14): "solo",  ("ex", 17): "solo",
+    ("ex", 12): "together",  ("ex", 14): "together",  ("ex", 17): "together",
     ("task", 5): "solo",     ("task", 6): "team",     ("task", 7): "team",
     # 4. 함수
-    ("ex", 20): "solo",
+    ("ex", 20): "together",
     ("task", 8): "team",     ("task", 9): "team",
     # 5. 종합 — 전부 조별
     ("ex", 23): "team",  ("ex", 24): "team",  ("ex", 25): "team",  ("ex", 26): "team",

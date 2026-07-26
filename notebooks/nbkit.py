@@ -24,9 +24,17 @@ def lab(text):
     """따라 해 보는 실습 안내"""
     return md(f"**실습.** {text}")
 
+MODES = {
+    "together": "같이 풀기",
+    "solo":     "스스로",
+    "team":     "조별로",
+}
+
+
 GROUPS = [
-    ("solo", "스스로 풀기", "각자 푼다. 막히면 위 실습 셀로 돌아가 확인한다."),
-    ("team", "조별 과제",   "2~3명이 한 조로 상의하며 푼다."),
+    ("together", "같이 풀기",  "수업 중에 같이 푼다."),
+    ("solo",     "스스로 풀기", "각자 푼다. 막히면 손을 든다."),
+    ("team",     "조별 과제",   "2~3명이 한 조로 상의하며 푼다."),
 ]
 
 
@@ -67,17 +75,23 @@ class Ex:
 
 
 VARIANTS = {
-    # 파일 이름         (설명,    담을 문제 모드,     정답 여부)
-    "practice": ("실습",   ("solo", "team"),  False),
-    "solution": ("정답",   ("solo", "team"),  True),
+    # 파일 이름         (설명,                       담을 문제 모드,      정답 여부)
+    "lecture":  ("강의",         ("together",),        False),
+    "practice": ("수강생끼리",    ("solo", "team"),     False),
+    "solution": ("정답",          ("together", "solo", "team"), True),
 }
 
 INTRO = {
-    "practice": """각 절은 **실습 → 스스로 풀기 → 조별 과제** 순으로 이어진다.
+    "lecture": """수업을 따라가며 진행한다.
 
 **실습** 셀은 그대로 실행해 결과를 눈으로 확인한다.
-`스스로 풀기` 는 각자, `조별 과제` 는 2~3명이 한 조로 상의하며 푼다.""",
-    "solution": """`practice` 의 정답본이다. 먼저 스스로 풀어 본 뒤에 연다.""",
+**문제** 셀은 수업 중에 같이 푼다.""",
+    "practice": """강의가 끝난 뒤 **수강생끼리** 푼다.
+
+`스스로 풀기` 는 각자, `조별 과제` 는 2~3명이 한 조로 상의하며 푼다.
+막히면 강의 노트북(`lecture`)의 실습 셀로 돌아가 확인한다.""",
+    "solution": """`lecture` 와 `practice` 의 모든 문제에 대한 정답본이다.
+수강생은 먼저 스스로 풀어 본 뒤에 연다.""",
 }
 
 
@@ -133,8 +147,8 @@ def build(day, title, subtitle, spec, variant, modes=None):
             section_open = item
             cells.append(item)
         else:
-            # 데모·설명 셀은 실습본에만 담는다
-            if variant == "practice":
+            # 데모·설명 셀은 lecture 에만 담는다
+            if variant == "lecture":
                 cells.append(item)
     flush()
 
