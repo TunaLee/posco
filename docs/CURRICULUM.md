@@ -6,9 +6,9 @@
 | 덱 | 파일 | 슬라이드 |
 |---|---|---|
 | Day 1 · 파이썬 문법 | [day1/index.html](day1/index.html) | 50 |
-| Day 2 · Pandas · 전처리 · 시각화 · NumPy | [day2/index.html](day2/index.html) | 41 |
+| Day 2 · 데이터 다루기 | [day2/index.html](day2/index.html) | 41 |
 | Day 3 · 머신러닝 | [day3/index.html](day3/index.html) | 29 |
-| Day 4 · 딥러닝 · PyTorch · 미니 프로젝트 | [day4/index.html](day4/index.html) | 26 |
+| Day 4 · 딥러닝 | [day4/index.html](day4/index.html) | 26 |
 
 조작: `← →` 또는 Space · 숫자 입력 후 Enter로 점프 · `≡` 목차 · `−/+` 줌 · PDF 버튼(인쇄).
 
