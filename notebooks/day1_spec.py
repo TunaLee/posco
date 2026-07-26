@@ -1,5 +1,5 @@
 """Day 1 — 파이썬 문법 실습 스펙"""
-from nbkit import md, code, h, lab, Ex
+from nbkit import md, code, h, lab, Ex, Task
 
 CELLS = [
     # ══════════════════════════════════════════════════════════════════
@@ -107,6 +107,18 @@ print("깊은 복사 후 원본:", rows[0]["age"])   # 22 — 그대로
        answer="safe = copy.deepcopy(origin)\nsafe[0][0] = 99",
        check='assert origin == [[1, 2], [3, 4]], f"원본이 바뀌었다: {origin}"\nprint("통과")'),
 
+    Task(1, "이름과 나이를 받아 `\"Owen(22세)\"` 형태의 문자열을 돌려주는 코드를 쓴다.\n"
+            "> `label` 변수에 담는다. f-string 을 쓰면 짧다.",
+         setup='name = "Owen"\nage = 22',
+         answer='label = f"{name}({age}세)"',
+         check='assert label == "Owen(22세)", f"기대 Owen(22세), 실제 {label!r}"\nprint("통과")'),
+
+    Task(2, "`price` 를 천 단위 쉼표가 붙은 문자열로 만든다. 결과는 `'1,234,567원'` 이다.\n"
+            "> `f\"{값:,}\"` 형식을 쓰면 쉼표가 붙는다.",
+         setup="price = 1234567",
+         answer='text = f"{price:,}원"',
+         check='assert text == "1,234,567원", f"기대 1,234,567원, 실제 {text!r}"\nprint("통과")'),
+
     # ══════════════════════════════════════════════════════════════════
     h(2, "2. 자료 구조"),
 
@@ -190,6 +202,16 @@ print(len(rows))
         blank="alive = 0\nfor r in rows:\n    ___",
         answer="alive = 0\nfor r in rows:\n    if r['survived'] == 1:\n        alive = alive + 1",
         check='assert alive == 2, f"기대 2, 실제 {alive}"\nprint("통과")'),
+
+    Task(3, "`rows` 에서 **이름만 모은 리스트**를 `names` 에 만든다.",
+         setup="",
+         answer='names = [r["name"] for r in rows]',
+         check='assert names == ["Owen", "Florence", "Laina"], f"실제 {names}"\nprint("통과")'),
+
+    Task(4, "`stock` 에서 **수량이 0인 품목의 이름**만 골라 `sold_out` 에 담는다.",
+         setup='stock = {"연필": 12, "지우개": 0, "자": 5, "컴퍼스": 0}',
+         answer='sold_out = [k for k, v in stock.items() if v == 0]',
+         check='assert sold_out == ["지우개", "컴퍼스"], f"기대 [\'지우개\', \'컴퍼스\'], 실제 {sold_out}"\nprint("통과")'),
 
     # ══════════════════════════════════════════════════════════════════
     h(2, "3. 흐름 제어"),
@@ -319,6 +341,23 @@ print([a for a in ages if a >= 26])                      # 조건으로 거르�
         answer="mapping = {v: i for i, v in enumerate(ports)}",
         check='assert mapping == {"S": 0, "C": 1, "Q": 2}, f"기대 {{\'S\':0,\'C\':1,\'Q\':2}}, 실제 {mapping}"\nprint("통과")'),
 
+    Task(5, "1부터 30까지 중 **3의 배수만** 골라 `triples` 에 담는다.",
+         setup="",
+         answer="triples = [n for n in range(1, 31) if n % 3 == 0]",
+         check='assert triples == [3,6,9,12,15,18,21,24,27,30], f"실제 {triples}"\nprint("통과")'),
+
+    Task(6, "구구단 3단을 `\"3 x 1 = 3\"` 형태의 문자열 목록으로 만들어 `lines` 에 담는다.",
+         setup="",
+         answer='lines = [f"3 x {i} = {3 * i}" for i in range(1, 10)]',
+         check='assert len(lines) == 9, f"9줄이어야 한다. 실제 {len(lines)}줄"\n'
+               'assert lines[0] == "3 x 1 = 3", f"첫 줄 기대 \'3 x 1 = 3\', 실제 {lines[0]!r}"\n'
+               'assert lines[-1] == "3 x 9 = 27", f"끝 줄 기대 \'3 x 9 = 27\', 실제 {lines[-1]!r}"\nprint("통과")'),
+
+    Task(7, "`nums` 를 앞에서부터 더하다가 **합이 100을 넘으면 멈추고**, 그때까지의 합을 `total` 에 담는다.",
+         setup="nums = [30, 25, 40, 50, 10]\ntotal = 0",
+         answer="for n in nums:\n    total = total + n\n    if total > 100:\n        break",
+         check='assert total == 145, f"기대 145, 실제 {total}"\nprint("통과")'),
+
     # ══════════════════════════════════════════════════════════════════
     h(2, "4. 함수"),
 
@@ -411,6 +450,25 @@ except AttributeError as e:
     print("에러:", e)
 """),
 
+    Task(8, "숫자 목록을 받아 **최댓값과 최솟값을 뺀 나머지의 평균**을 돌려주는 함수를 만든다.\n"
+            "> 값이 두 개 이하면 `0` 을 돌려준다.",
+         setup="",
+         answer="def trimmed_mean(values):\n"
+                "    if len(values) <= 2:\n        return 0\n"
+                "    rest = sorted(values)[1:-1]\n"
+                "    return sum(rest) / len(rest)",
+         check='assert trimmed_mean([1, 5, 6, 7, 100]) == 6, f"실제 {trimmed_mean([1,5,6,7,100])}"\n'
+               'assert trimmed_mean([3, 9]) == 0, "값이 둘이면 0 이어야 한다"\nprint("통과")'),
+
+    Task(9, "문자열을 받아 **거꾸로 읽어도 같은지** 판정하는 함수를 만든다.\n"
+            "> 공백과 대소문자는 무시한다. `\"Never odd or even\"` 은 True 다.",
+         setup="",
+         answer='def is_palindrome(text):\n'
+                '    s = text.replace(" ", "").lower()\n'
+                '    return s == s[::-1]',
+         check='assert is_palindrome("Never odd or even") is True, "True 여야 한다"\n'
+               'assert is_palindrome("hello") is False, "False 여야 한다"\nprint("통과")'),
+
     # ══════════════════════════════════════════════════════════════════
     h(2, "5. 종합 문제"),
     md("앞의 내용을 섞어서 푼다. 막히면 위 실습 셀로 돌아가 확인한다."),
@@ -456,6 +514,34 @@ except AttributeError as e:
         check='out = grade_counts([95, 82, 71, 64, 88, 91])\n'
               'assert out == {"A": 2, "B": 2, "C": 1, "D": 1}, f"실제 {out}"\n'
               'assert grade_counts([]) == {}, "빈 목록은 빈 딕셔너리여야 한다"\nprint("통과")'),
+
+    Task(10, "승객 목록을 받아 **성별 생존율 딕셔너리**를 돌려주는 함수를 만든다.\n"
+             "> 결과는 `{\"male\": 0.0, \"female\": 0.666…}` 형태다.",
+         setup="",
+         answer='def survival_by_sex(rows):\n'
+                '    result = {}\n'
+                '    for sex in set(r["sex"] for r in rows):\n'
+                '        group = [r for r in rows if r["sex"] == sex]\n'
+                '        result[sex] = sum(r["survived"] for r in group) / len(group)\n'
+                '    return result',
+         check='out = survival_by_sex(passengers)\n'
+               'assert set(out.keys()) == {"male", "female"}, f"키가 다르다: {out.keys()}"\n'
+               'assert out["male"] == 0.0, f"male 기대 0.0, 실제 {out[\'male\']}"\n'
+               'assert abs(out["female"] - 2/3) < 1e-9, f"female 기대 0.666…, 실제 {out[\'female\']}"\nprint("통과")'),
+
+    Task(11, "나이 목록을 받아 **연령대별 인원수**를 돌려주는 함수를 만든다.\n"
+             "> `[22, 38, 26, 35, 41]` → `{20: 2, 30: 2, 40: 1}`. 결측(`None`)은 건너뛴다.",
+         setup="",
+         answer="def by_decade(ages):\n"
+                "    result = {}\n"
+                "    for a in ages:\n"
+                "        if a is None:\n            continue\n"
+                "        d = a // 10 * 10\n"
+                "        result[d] = result.get(d, 0) + 1\n"
+                "    return result",
+         check='assert by_decade([22, 38, 26, 35, 41]) == {20: 2, 30: 2, 40: 1}, f"실제 {by_decade([22,38,26,35,41])}"\n'
+               'assert by_decade([22, None, 25]) == {20: 3} or by_decade([22, None, 25]) == {20: 2}, "결측을 건너뛰어야 한다"\n'
+               'assert by_decade([22, None, 25]) == {20: 2}, f"결측 제외 후 기대 {{20: 2}}, 실제 {by_decade([22, None, 25])}"\nprint("통과")'),
 
     md("""
 ---

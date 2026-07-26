@@ -26,7 +26,23 @@ def lab(text):
 
 def q(no, text):
     """빈칸 문제 안내"""
-    return md(f"> **문제 {no}.** {text}")
+    return md(f"> **빈칸 문제 {no}.** {text}")
+
+
+def t(no, text):
+    """직접 작성하는 실습문제 안내"""
+    return md(f"> **실습문제 {no}.** {text}")
+
+class Task:
+    """실습문제 — 빈 자리에 직접 작성한다"""
+    def __init__(self, no, prompt, answer, check, setup=""):
+        self.no, self.prompt, self.answer, self.check, self.setup = no, prompt, answer, check, setup
+
+    def cells(self, solution):
+        body = self.answer if solution else "# 여기에 작성한다\n"
+        src = "\n".join(x for x in (self.setup, body, "", self.check) if x)
+        return [t(self.no, self.prompt), code(src)]
+
 
 class Ex:
     """빈칸 문제 — blank/answer 두 벌로 갈린다"""
@@ -58,11 +74,19 @@ def build(day, title, subtitle, spec, solution):
 1. 위 메뉴에서 **파일 → 드라이브에 사본 저장** 을 먼저 누른다.
    이걸 안 하면 고친 내용이 저장되지 않는다.
 2. 셀을 고르고 **Shift + Enter** 로 실행한다. 왼쪽 `[1]` 은 실행 순서다.
-3. **실습** 셀은 그대로 실행해 결과를 눈으로 확인한다.
-4. **문제** 셀의 `___` 를 채운 뒤 실행한다. 맞으면 `통과` 가 찍힌다.
+### 셀 세 가지
+
+| 표시 | 하는 일 |
+|---|---|
+| **실습** | 그대로 실행해 결과를 눈으로 확인한다 |
+| **빈칸 문제** | `___` 를 채워 넣는다 |
+| **실습문제** | 빈 자리에 처음부터 직접 작성한다 |
+
+문제는 실행하면 `assert` 로 자가 채점된다. 맞으면 `통과` 가 찍히고,
+틀리면 기대값과 실제값이 같이 나온다.
 """))
     for item in spec:
-        if isinstance(item, Ex):
+        if isinstance(item, (Ex, Task)):
             nb_cells += item.cells(solution)
         else:
             nb_cells.append(item)
@@ -80,8 +104,10 @@ def build(day, title, subtitle, spec, solution):
 
 def emit(day, title, subtitle, spec):
     n_ex = sum(1 for x in spec if isinstance(x, Ex))
+    n_task = sum(1 for x in spec if isinstance(x, Task))
     for sol in (False, True):
         p, n = build(day, title, subtitle, spec, sol)
-        print(f"  {os.path.basename(p):<26} 코드 셀 {n:>3}개  문제 {n_ex}개")
+        print(f"  {os.path.basename(p):<26} 코드 셀 {n:>3}개  "
+              f"빈칸 {n_ex}개  실습문제 {n_task}개")
 
 

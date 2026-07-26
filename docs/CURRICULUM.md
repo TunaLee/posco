@@ -82,7 +82,7 @@ Day 4  딥러닝
 |---|---|---|
 | 역전파 이론 3h + Autograd 2h | **1.5h** — 연쇄 법칙 그림 1장 + `backward()` 3줄 | 이 청중은 역전파를 직접 구현하지 않는다. SGD/Adam 비교도 한 장으로 줄였다 |
 | 수학 3h 연속 강의 | **2h, 코드 확인형** | 기울기를 수치미분 코드로 직접 재 본다 |
-| Colab + VS Code | **Colab만** | 사내망·설치 권한으로 1.5시간이 날아갈 수 있다. 로컬은 2주차 Docker 때 |
+| Colab + VS Code | **Anaconda + Jupyter · Colab 둘 다** | VS Code 는 뺐다. 로컬(Anaconda·Jupyter)과 클라우드(Colab)를 양쪽 다 다룬다 |
 | 입과식 1.5h | **1h** | |
 
 ### 뺀 것 — 커리큘럼 안내
