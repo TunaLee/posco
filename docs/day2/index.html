@@ -270,6 +270,17 @@
   .shot .sbar .t{margin-left:6px; font-family:var(--mono); font-size:11px; color:var(--mut);}
   .shot img{display:block; width:100%; height:auto; max-height:400px; object-fit:contain; min-height:0;}
 
+  /* 도구 두 가지를 나란히 처음 보여줄 때 — 그림과 한 줄만 */
+  .duo{display:grid; grid-template-columns:1fr 1fr; gap:30px;}
+  .duo .side{border:1px solid var(--line); border-radius:18px; background:var(--wash-2);
+    padding:34px 30px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:20px; text-align:center;}
+  .duo .side img{max-height:92px; max-width:78%; width:auto; display:block;}
+  .duo .side .tagline{font-family:var(--mono); font-size:11.5px; letter-spacing:.12em;
+    color:var(--violet); text-transform:uppercase; font-weight:700;}
+  .duo .side h3{margin:0; font-size:23px; font-weight:800; letter-spacing:-.02em;}
+  .duo .side p{margin:0; font-size:15px; color:var(--ink-soft); line-height:1.55; max-width:30ch;}
+
   /* 제품·도구 로고 — 작은 브랜드 마크 */
   .brandmark{display:flex; align-items:center; gap:15px; margin-bottom:18px;}
   .brandmark img{height:46px; width:auto; display:block;}
@@ -282,6 +293,7 @@
   .need-img .nk{font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:.1em; color:var(--violet); text-transform:uppercase;}
   .need-img .nd{font-size:14px; font-weight:700; color:var(--ink); line-height:1.4;}
   .need-img .nm2{font-family:var(--mono); font-size:11.5px; color:var(--mut);}
+  .need-img.sm{min-height:92px; padding:14px 16px; align-items:center; text-align:center;}
 
   /* 코드 실행 결과 */
   .code .out{border-top:1px dashed #38325C; background:#141127; padding:11px 18px; font-family:var(--mono); font-size:12.5px; line-height:1.55; color:#9DE39A; white-space:pre; overflow:auto;}
