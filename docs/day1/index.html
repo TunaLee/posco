@@ -1013,22 +1013,22 @@ b.append(<span class="nm">3</span>)    <span class="cm"># 그 리스트를 직�
   </div>
 </section>
 
-<section class="slide" data-title="같이 바뀌는 이유">
+<section class="slide" data-title="대입과 복사">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>변수</div>
-  <h2 class="s-title sm">한 값을 가리키는 이름 두 개</h2>
+  <h2 class="s-title sm">대입과 복사의 차이</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twocol w">
       <div>
-        <div class="phase-label">가변 — 이름 둘, 값 하나<span class="ln"></span></div>
+        <div class="phase-label">가변 — 이름 둘, 객체 하나<span class="ln"></span></div>
         <div class="slots">
           <div class="slot"><div class="adr">이름</div><div class="val">a</div></div>
           <div class="slot"><div class="adr">이름</div><div class="val">b</div></div>
           <div class="ptr">→</div>
-          <div class="slot ref"><div class="adr">list 객체 하나</div><div class="val">[1, 2, 3]</div><div class="nm">append가 여기를 고친다</div></div>
+          <div class="slot ref"><div class="adr">list 객체</div><div class="val">[1, 2, 3]</div><div class="nm">append가 여기를 고친다</div></div>
         </div>
-        <div class="phase-label">불변 — 값이 갈라진다<span class="ln"></span></div>
+        <div class="phase-label">불변 — 객체가 갈라진다<span class="ln"></span></div>
         <div class="slots">
           <div class="slot"><div class="adr">이름</div><div class="val">a</div></div>
           <div class="ptr">→</div>
