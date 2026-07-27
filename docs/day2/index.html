@@ -98,6 +98,7 @@
 
   .cards{display:grid; gap:16px;}
   .cards.c2{grid-template-columns:repeat(2,1fr);} .cards.c3{grid-template-columns:repeat(3,1fr);} .cards.c4{grid-template-columns:repeat(4,1fr);}
+  .cards.c5{grid-template-columns:repeat(5,1fr);} .cards.c5 .card{padding:16px 14px;} .cards.c5 .card h3{font-size:16px;} .cards.c5 .card p{font-size:12.5px;}
   .card{background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:17px 19px; display:flex; flex-direction:column; gap:7px; position:relative;}
   .card .ic{width:38px; height:38px; border-radius:4px; display:grid; place-items:center; background:transparent; border:1.5px solid var(--violet-300); color:var(--violet); margin-bottom:3px;}
   .card .ic svg{width:20px;height:20px;}
@@ -357,1121 +358,31 @@
     <h1>데이터 다루기</h1>
   </div>
 </section>
-
 <section class="slide" data-title="오늘의 일정">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">AGENDA</span><span class="dot"></span>일정</div>
   <h2 class="s-title sm">오늘의 일정</h2>
   <div class="rule"></div>
   <div class="body">
-    <div class="cards c4">
-      <div class="card"><span class="n">CH0</span><h3>Pandas</h3><p>DataFrame · 타입 · 결측 · 집계.</p></div>
-      <div class="card"><span class="n">CH1</span><h3>전처리</h3><p>결측 처리 · 인코딩 · 스케일링 · 데이터 분할.</p></div>
-      <div class="card"><span class="n">CH2</span><h3>시각화</h3><p>Matplotlib · seaborn · 탐색용 그래프.</p></div>
-      <div class="card"><span class="n">CH3</span><h3>NumPy</h3><p>배열 · shape · 브로드캐스팅 · 행렬 곱.</p></div>
+    <div class="cards c5">
+      <div class="card"><span class="n">CH0</span><h3>NumPy</h3><p>배열 · shape · 인덱싱.</p></div>
+      <div class="card"><span class="n">CH1</span><h3>Pandas</h3><p>DataFrame · 타입 · 결측 · 집계.</p></div>
+      <div class="card"><span class="n">CH2</span><h3>전처리</h3><p>결측 처리 · 인코딩 · 스케일링 · 분할.</p></div>
+      <div class="card"><span class="n">CH3</span><h3>시각화</h3><p>Matplotlib · seaborn.</p></div>
+      <div class="card"><span class="n">CH4</span><h3>배열 연산</h3><p>reshape · 브로드캐스팅 · 행렬 곱.</p></div>
     </div>
-    <div class="keymsg"><span class="k">기준</span><div>모델은 <b>숫자로 된 직사각형 배열</b>만 먹는다. 표 한 장을 그 모양으로 바꾸는 과정이 아래 네 챕터다.</div></div>
+    <div class="keymsg"><span class="k">기준</span><div>모델은 <b>숫자로 된 직사각형 배열</b>만 먹는다. 표 한 장을 그 모양으로 바꾸는 과정이다.</div></div>
   </div>
 </section>
-
-<section class="slide section" data-title="[섹션] Pandas">
+<section class="slide section" data-title="[섹션] NumPy">
   <div class="ghost">00</div>
   <div class="seyebrow">CHAPTER 00</div>
-  <h2>Pandas</h2>
-  <div class="agenda"><span>DataFrame</span><span>타입 변환</span><span>map · apply</span><span>groupby</span></div>
-</section>
-
-<section class="slide" data-title="Pandas">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>배경</div>
-  <h2 class="s-title sm">표 한 장을 통째로 다루는 도구</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twopane">
-      <div class="pane bad"><h4>순수 파이썬</h4><div class="mini">total = 0
-count = 0
-for row in rows:
-    if row['Sex'] == 'female':
-        total += row['Survived']
-        count += 1
-print(total / count)</div><p>행을 <b>하나씩</b> 돌며 직접 센다.</p></div>
-      <div class="pane good"><h4>Pandas</h4><div class="mini">df[df['Sex'] == 'female']['Survived'].mean()</div><p>열 전체를 <b>한 번에</b> 다룬다. 내부는 C로 도는 배열 연산이다.</p></div>
-    </div>
-    <div class="vlist">
-      <div class="v"><span class="b">→</span><div>CSV·엑셀·DB를 같은 방식으로 읽어 <b>DataFrame</b>이라는 한 가지 구조로 만든다.</div></div>
-      <div class="v"><span class="b">★</span><div>결측치·타입·그룹 집계처럼 <b>표에서 늘 하는 일</b>이 메서드 한 줄로 들어 있다.</div></div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>행이 수만 줄을 넘어가면 반복문과 Pandas의 차이가 <b>초 단위와 밀리초 단위</b>로 갈린다.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="Series와 DataFrame">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>구조</div>
-  <h2 class="s-title sm">열 하나가 Series, 여럿이 DataFrame</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol w">
-      <div>
-        <table class="ctable">
-          <thead><tr><th>index</th><th>Sex</th><th class="hl">Age</th><th>Fare</th><th>Survived</th></tr></thead>
-          <tbody>
-            <tr><td>0</td><td>male</td><td class="hl">22.0</td><td>7.25</td><td class="no">0</td></tr>
-            <tr><td>1</td><td>female</td><td class="hl">38.0</td><td>71.28</td><td class="yes">1</td></tr>
-            <tr><td>2</td><td>female</td><td class="hl">26.0</td><td>7.92</td><td class="yes">1</td></tr>
-            <tr><td>3</td><td>female</td><td class="hl">35.0</td><td>53.10</td><td class="yes">1</td></tr>
-          </tbody>
-        </table>
-        <div class="chips"><span class="chip">가로 한 줄 = <b>행 row</b></span><span class="chip">세로 한 줄 = <b>열 column</b></span><span class="chip">맨 왼쪽 = <b>인덱스</b></span></div>
-      </div>
-      <div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div><b>Series</b> — 인덱스가 붙은 <b>1차원</b> 값의 나열. 표에서 열 하나를 꺼내면 이것이다.</div></div>
-          <div class="v"><span class="b">→</span><div><b>DataFrame</b> — Series 여러 개가 <b>같은 인덱스를 공유</b>하며 붙은 2차원 표.</div></div>
-          <div class="v"><span class="b">★</span><div><b>딕셔너리의 리스트</b>가 정확히 이 구조다. Pandas는 그것을 감싸 빠르게 만든 것이다.</div></div>
-        </div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">꺼내면 자료형이 달라진다</span></div>
-          <pre><code><span class="fn2">type</span>(df[<span class="st">'Age'</span>])      <span class="cm"># Series</span>
-<span class="fn2">type</span>(df[[<span class="st">'Age'</span>]])    <span class="cm"># DataFrame</span></code></pre>
-        </div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">정리</span><div>Pandas 에러의 상당수는 <b>Series를 기대한 곳에 DataFrame</b>이 왔거나 그 반대다. 대괄호 개수가 그것을 정한다.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="데이터 불러오기">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>읽기</div>
-  <h2 class="s-title sm">read_csv 한 줄이 만드는 표</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">확장자에 맞는 함수를 고른다</span></div>
-          <pre><code><span class="kw">import</span> pandas <span class="kw">as</span> pd
-
-<span class="cm"># 인터넷에서 바로 읽을 수도 있다</span>
-url = <span class="st">'https://raw.githubusercontent.com/datasciencedojo'</span> \
-      <span class="st">'/datasets/master/titanic.csv'</span>
-df = pd.read_csv(url)
-
-<span class="cm"># 엑셀은 read_excel</span>
-df = pd.read_excel(<span class="st">'data/승객.xlsx'</span>, sheet_name=<span class="st">'1등석'</span>)</code></pre>
-        </div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div>첫 줄을 <b>열 이름</b>으로 읽는다. 아니면 <code>header=None</code>을 준다.</div></div>
-        </div>
-      </div>
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">지저분한 CSV에서 쓰는 인자</span></div>
-          <pre><code>df = pd.read_csv(
-    <span class="st">'data.csv'</span>,
-    encoding=<span class="st">'cp949'</span>,     <span class="cm"># 한글 깨질 때</span>
-    thousands=<span class="st">','</span>,        <span class="cm"># 1,234 → 1234</span>
-    na_values=[<span class="st">'N/A'</span>, <span class="st">'-'</span>]  <span class="cm"># 결측 표기</span>
-)</code></pre>
-        </div>
-        <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>한글이 깨지면 인코딩</h4><p>국내 시스템에서 내려받은 CSV는 <code>cp949</code>인 경우가 많다. <code>UnicodeDecodeError</code>가 그 신호다.</p></div></div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>읽는 단계에서 <code>thousands</code>·<code>na_values</code>를 지정하면 <b>뒤의 타입 변환 작업이 통째로 사라진다</b>.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="첫 확인">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>확인</div>
-  <h2 class="s-title sm">읽자마자 보는 네 줄</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">모양과 앞뒤</span></div>
-          <pre><code>df.shape          <span class="cm"># (행 수, 열 수)</span>
-df.head()         <span class="cm"># 위에서 5행</span>
-df.tail(<span class="nm">3</span>)        <span class="cm"># 아래에서 3행</span>
-df.columns        <span class="cm"># 열 이름 목록</span></code></pre>
-          <div class="out">(891, 12)</div>
-        </div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div><code>tail()</code>은 <b>파일 끝의 합계 행·주석 행</b>을 잡아낸다. 이것이 섞이면 통계가 전부 틀어진다.</div></div>
-        </div>
-      </div>
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">info() — 타입과 결측을 한 번에</span></div>
-          <pre><code>df.info()</code></pre>
-          <div class="out">RangeIndex: 891 entries, 0 to 890
- #  Column    Non-Null Count  Dtype
---- ------    --------------  -----
- 1  Survived  891 non-null    int64
- 2  Pclass    891 non-null    int64
- 4  Sex       891 non-null    object
- 5  Age       <span class="err">714 non-null</span>    float64
- 9  Fare      891 non-null    float64
-10  Cabin     <span class="err">204 non-null</span>    object
-11  Embarked  <span class="err">889 non-null</span>    object</div>
-        </div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>891행인데 <code>Age</code>는 714개뿐이다. <b>Non-Null Count가 전체보다 작으면 결측</b>이 있다는 뜻이다. 이 표가 뒤의 전처리를 좌우한다.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="열 선택과 행 필터링">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>선택</div>
-  <h2 class="s-title sm">대괄호 하나와 둘의 차이</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">대괄호 하나 → Series</span></div>
-          <pre><code>df[<span class="st">'Age'</span>]</code></pre>
-          <div class="out">0    22.0
-1    38.0
-2    26.0
-Name: Age, dtype: float64</div>
-        </div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">대괄호 둘 → DataFrame</span></div>
-          <pre><code>df[[<span class="st">'Sex'</span>, <span class="st">'Age'</span>]]</code></pre>
-          <div class="out">      Sex   Age
-0    male  22.0
-1  female  38.0</div>
-        </div>
-      </div>
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">조건으로 행 고르기</span></div>
-          <pre><code><span class="cm"># 조건식이 True/False 의 Series 를 만든다</span>
-df[<span class="st">'Age'</span>] &lt; <span class="nm">18</span>
-
-<span class="cm"># 그걸 대괄호에 넣으면 참인 행만 남는다</span>
-df[df[<span class="st">'Age'</span>] &lt; <span class="nm">18</span>]
-
-<span class="cm"># 조건 두 개는 괄호로 묶고 &amp; | 를 쓴다</span>
-df[(df[<span class="st">'Age'</span>] &lt; <span class="nm">18</span>) &amp; (df[<span class="st">'Pclass'</span>] == <span class="nm">1</span>)]</code></pre>
-        </div>
-        <div class="callout rose"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>and 가 아니라 &amp;</h4><p>Pandas 조건 결합은 <code>&amp;</code> <code>|</code>이고, <b>각 조건을 괄호로 묶어야</b> 한다. <code>and</code>를 쓰면 에러가 난다.</p></div></div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>계산할 열 하나는 <b>대괄호 하나</b>, 표를 남겨야 하면 <b>대괄호 둘</b>이다.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="값 세기">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>확인</div>
-  <h2 class="s-title sm">범주형 열의 첫 점검</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">value_counts()</span></div>
-          <pre><code>df[<span class="st">'Embarked'</span>].value_counts()
-df[<span class="st">'Sex'</span>].value_counts(normalize=<span class="kw">True</span>)</code></pre>
-          <div class="out">Embarked
-S    644
-C    168
-Q     77
-
-Sex
-male      0.647587
-female    0.352413</div>
-        </div>
-      </div>
-      <div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div>어떤 값이 <b>몇 종류, 몇 개씩</b> 있는지 한 줄로 나온다.</div></div>
-          <div class="v"><span class="b">→</span><div><code>normalize=True</code>를 주면 개수 대신 <b>비율</b>이 나온다.</div></div>
-          <div class="v"><span class="b">✕</span><div>결측은 기본적으로 <b>세지 않는다</b>. 644+168+77 = 889로, 891에서 2개가 빠져 있다.</div></div>
-          <div class="v"><span class="b">★</span><div>같은 값의 다른 표기(<code>Male</code> / <code>male</code> / <code> male </code>)가 섞이면 여기서 종류 수가 튄다.</div></div>
-        </div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>범주 개수가 예상보다 많으면 <b>표기 흔들림</b>, 합계가 행 수보다 적으면 <b>결측</b>이다. 집계 전에 둘 다 본다.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="object 타입">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>타입</div>
-  <h2 class="s-title sm">object 타입이 만드는 조용한 오답</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">Fare 가 문자열로 읽혔다면</span></div>
-          <pre><code>df[<span class="st">'Fare'</span>].dtype
-
-df[<span class="st">'Fare'</span>].sum()      <span class="cm"># 더해질까?</span>
-df[<span class="st">'Fare'</span>].max()      <span class="cm"># 최댓값은?</span></code></pre>
-          <div class="out">dtype('O')
-<span class="err">'7.2571.287.9253.10…'</span>   ← 이어 붙는다
-<span class="err">'9.8375'</span>                ← 사전 순 비교</div>
-        </div>
-      </div>
-      <div>
-        <div class="vlist">
-          <div class="v"><span class="b">✕</span><div><code>sum()</code>이 <b>덧셈이 아니라 이어 붙이기</b>가 된다. 에러 없이 이상한 값이 나온다.</div></div>
-          <div class="v"><span class="b">✕</span><div><code>max()</code>는 사전 순으로 비교한다. <code>'9.8375'</code>가 <code>'512.33'</code>보다 크다고 나온다.</div></div>
-          <div class="v"><span class="b">★</span><div>그래서 <code>info()</code>로 <b>Dtype부터 확인</b>하는 것이 순서다.</div></div>
-        </div>
-        <div class="stat-row">
-          <div class="stat"><div class="num">object</div><div class="lab">문자열 — 계산 불가</div></div>
-          <div class="stat"><div class="num">float64</div><div class="lab">실수 — 계산 가능</div></div>
-        </div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">함정</span><div>타입 문제는 <b>에러로 알려 주지 않는다</b>. 결과 숫자가 이상하면 가장 먼저 볼 곳이다.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="타입 변환">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>타입</div>
-  <h2 class="s-title sm">타입을 지정하는 변환</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">astype() — 되돌려 담아야 반영된다</span></div>
-          <pre><code>df[<span class="st">'Fare'</span>] = df[<span class="st">'Fare'</span>].astype(<span class="st">'float64'</span>)
-
-<span class="cm"># 한꺼번에 — 딕셔너리로 열마다 지정</span>
-df = df.astype({
-    <span class="st">'Pclass'</span>: <span class="st">'category'</span>,
-    <span class="st">'Sex'</span>: <span class="st">'category'</span>,
-})</code></pre>
-        </div>
-        <div class="vlist">
-          <div class="v"><span class="b">✕</span><div>결측(<code>NaN</code>)이 있는 열은 <code>int</code>로 못 바꾼다. <code>float</code>이나 <code>'Int64'</code>를 쓴다.</div></div>
-        </div>
-      </div>
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">to_numeric() — 실패한 값은 NaN 으로</span></div>
-          <pre><code>df[<span class="st">'Fare'</span>] = pd.to_numeric(
-    df[<span class="st">'Fare'</span>], errors=<span class="st">'coerce'</span>
-)
-
-<span class="cm"># 몇 개가 실패했는지 바로 센다</span>
-<span class="fn2">print</span>(df[<span class="st">'Fare'</span>].isna().sum())</code></pre>
-          <div class="out">0</div>
-        </div>
-        <table class="ctable">
-          <thead><tr><th>errors=</th><th>실패한 값을</th></tr></thead>
-          <tbody>
-            <tr><td><code>'raise'</code> (기본)</td><td>에러를 낸다 — 열 전체가 안 바뀐다</td></tr>
-            <tr><td><code>'coerce'</code></td><td><span class="hl">NaN으로 바꾼다</span> — 몇 개인지 셀 수 있다</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div><code>coerce</code>는 문제를 <b>숨기는 게 아니라 NaN으로 드러내는</b> 것이다. 센 다음 어떻게 할지는 사람이 정한다.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="시리즈 연산">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>변환</div>
-  <h2 class="s-title sm">열 전체에 한 번에 걸리는 계산</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">반복문 없이</span></div>
-          <pre><code><span class="cm"># 열 하나에 상수 연산</span>
-df[<span class="st">'FareUSD'</span>] = df[<span class="st">'Fare'</span>] * <span class="nm">1.3</span>
-
-<span class="cm"># 열끼리 연산 — 같은 행끼리 짝지어진다</span>
-df[<span class="st">'Family'</span>] = df[<span class="st">'SibSp'</span>] + df[<span class="st">'Parch'</span>] + <span class="nm">1</span>
-
-<span class="cm"># 조건식도 열이 된다</span>
-df[<span class="st">'IsChild'</span>] = df[<span class="st">'Age'</span>] &lt; <span class="nm">18</span>
-
-<span class="cm"># 문자열 열은 .str 로 한꺼번에</span>
-df[<span class="st">'Sex'</span>] = df[<span class="st">'Sex'</span>].str.strip().str.lower()</code></pre>
-        </div>
-      </div>
-      <div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div>Series에 연산을 걸면 <b>모든 행에 동시에</b> 적용된다. 이것을 벡터 연산이라 한다.</div></div>
-          <div class="v"><span class="b">→</span><div>열끼리 연산은 <b>인덱스가 같은 행끼리</b> 짝지어진다.</div></div>
-          <div class="v"><span class="b">★</span><div>문자열 처리는 <code>.str</code>을 거친다. <code>.str.strip()</code> <code>.str.contains()</code> <code>.str.split()</code>.</div></div>
-        </div>
-        <div class="callout mint"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div class="ct"><h4>결측은 건너뛴다</h4><p><code>NaN</code>이 섞인 열도 <code>mean()</code>·<code>sum()</code>은 <b>결측을 빼고</b> 계산한다. 0으로 채울 필요가 없다.</p></div></div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>Pandas에서 <code>for</code>로 행을 도는 코드를 보면 <b>벡터 연산으로 바꾼다</b>.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="map과 apply">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>변환</div>
-  <h2 class="s-title sm">값의 치환과 함수 적용</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">map() — 딕셔너리로 갈아 끼운다</span></div>
-          <pre><code>df[<span class="st">'SexCode'</span>] = df[<span class="st">'Sex'</span>].map({<span class="st">'male'</span>: <span class="nm">0</span>, <span class="st">'female'</span>: <span class="nm">1</span>})
-<span class="fn2">print</span>(df[<span class="st">'SexCode'</span>].head(<span class="nm">3</span>))</code></pre>
-          <div class="out">0    0
-1    1
-2    1</div>
-        </div>
-        <div class="vlist">
-          <div class="v"><span class="b">✕</span><div>대응표에 <b>없는 값은 NaN</b>이 된다. 범주를 먼저 <code>value_counts()</code>로 확인한다.</div></div>
-        </div>
-      </div>
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">apply() — 직접 만든 함수를 태운다</span></div>
-          <pre><code><span class="kw">def</span> <span class="fn2">age_group</span>(a):
-    <span class="kw">if</span> a &lt; <span class="nm">13</span>:  <span class="kw">return</span> <span class="st">'child'</span>
-    <span class="kw">if</span> a &lt; <span class="nm">60</span>:  <span class="kw">return</span> <span class="st">'adult'</span>
-    <span class="kw">return</span> <span class="st">'senior'</span>
-
-df[<span class="st">'AgeGroup'</span>] = df[<span class="st">'Age'</span>].apply(age_group)
-
-<span class="cm"># 짧은 함수는 lambda 로 그 자리에서</span>
-df[<span class="st">'LogFare'</span>] = df[<span class="st">'Fare'</span>].apply(<span class="kw">lambda</span> f: f ** <span class="nm">0.5</span>)</code></pre>
-        </div>
-        <div class="vlist">
-          <div class="v"><span class="b">★</span><div>태우는 함수에 <b><code>return</code>이 없으면</b> 열 전체가 <code>None</code>이 된다.</div></div>
-        </div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>단순 치환은 <code>map()</code>, 조건 분기가 들어가면 <code>apply()</code>. 열끼리 계산으로 끝나면 <b>둘 다 쓰지 않는다</b>.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="통계 요약">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>요약</div>
-  <h2 class="s-title sm">숫자 열의 분포 요약</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol w">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">describe()</span></div>
-          <pre><code>df[[<span class="st">'Age'</span>, <span class="st">'Fare'</span>]].describe()</code></pre>
-          <div class="out">              Age        Fare
-count  <span class="err">714.0000</span>    891.0000
-mean    29.6991     32.2042
-std     14.5265     49.6934
-min      0.4200      <span class="err">0.0000</span>
-25%     20.1250      7.9104
-50%     28.0000     14.4542
-75%     38.0000     31.0000
-max     80.0000    <span class="err">512.3292</span></div>
-        </div>
-      </div>
-      <div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div><b>숫자 열만</b> 대상이다. 문자열 열이 빠졌다면 타입을 의심한다.</div></div>
-          <div class="v"><span class="b">✕</span><div><code>Age</code>의 count가 714다. <b>177명의 나이가 비어 있다</b>.</div></div>
-          <div class="v"><span class="b">✕</span><div><code>Fare</code>의 max 512는 mean 32의 16배다. <b>이상치이거나 특급 객실</b>이다. 확인이 필요하다.</div></div>
-          <div class="v"><span class="b">→</span><div>mean 32와 median(50%) 14가 크게 벌어졌다. 분포가 <b>한쪽으로 쏠려</b> 있다.</div></div>
-        </div>
-        <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>평균만 보고하면 틀린다</h4><p>평균 요금 32달러는 <b>승객 대다수의 경험이 아니다</b>. 중앙값 14가 실제에 가깝다.</p></div></div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div><code>describe()</code>는 요약이 아니라 <b>이상 탐지용</b>으로 먼저 본다. count · min · max가 첫 검문소다.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="groupby">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>집계</div>
-  <h2 class="s-title sm">묶어서 접는 세 단계</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="pipe">
-      <div class="step"><div class="si">SPLIT</div><div class="sn">나눈다</div><div class="sd">'Sex' 값이 같은 행끼리</div></div>
-      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
-      <div class="step"><div class="si">APPLY</div><div class="sn">계산한다</div><div class="sd">각 묶음의 'Survived' 평균</div></div>
-      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
-      <div class="step"><div class="si">COMBINE</div><div class="sn">합친다</div><div class="sd">묶음마다 한 줄인 결과</div></div>
-    </div>
-    <div class="twocol">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">df.groupby("기준열")["대상열"].집계함수()</span></div>
-          <pre><code>df.groupby(<span class="st">'Sex'</span>)[<span class="st">'Survived'</span>].mean()
-df.groupby(<span class="st">'Pclass'</span>)[<span class="st">'Survived'</span>].mean()</code></pre>
-          <div class="out">Sex
-female    0.742038
-male      0.188908
-
-Pclass
-1    0.629630
-2    0.472826
-3    0.242363</div>
-        </div>
-      </div>
-      <div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div>기준 열의 값이 <b>결과의 인덱스</b>가 된다.</div></div>
-          <div class="v"><span class="b">✕</span><div><code>groupby()</code>만 부르면 <code>DataFrameGroupBy</code> 객체다. <b>집계 함수를 붙여야</b> 표가 나온다.</div></div>
-          <div class="v"><span class="b">★</span><div>여성 74% 대 남성 19%. <b>Sex 하나가 생존을 4배 가른다</b> — 모델이 가장 먼저 잡을 신호다.</div></div>
-        </div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">정리</span><div>모델을 만들기 전에 <code>groupby</code> 몇 줄로 <b>어떤 열이 답과 관계있는지</b> 먼저 본다.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="groupby 심화">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>집계</div>
-  <h2 class="s-title sm">기준 여러 개, 집계 여러 개</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">기준 두 개 — 리스트로 넘긴다</span></div>
-          <pre><code>df.groupby([<span class="st">'Sex'</span>, <span class="st">'Pclass'</span>])[<span class="st">'Survived'</span>].mean()</code></pre>
-          <div class="out">Sex     Pclass
-female  1         0.968085
-        2         0.921053
-        3         0.500000
-male    1         0.368852
-        2         0.157407
-        3         0.135447</div>
-        </div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div>인덱스가 <b>두 단계</b>가 된다. <code>.reset_index()</code>를 붙이면 평범한 표로 펴진다.</div></div>
-        </div>
-      </div>
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">agg() — 열마다 다른 집계</span></div>
-          <pre><code>df.groupby(<span class="st">'Pclass'</span>).agg({
-    <span class="st">'Survived'</span>: [<span class="st">'mean'</span>, <span class="st">'count'</span>],
-    <span class="st">'Fare'</span>: <span class="st">'median'</span>,
-})</code></pre>
-          <div class="out">        Survived         Fare
-            mean count median
-Pclass
-1       0.629630   216  60.29
-2       0.472826   184  14.25
-3       0.242363   491   8.05</div>
-        </div>
-        <div class="vlist">
-          <div class="v"><span class="b">★</span><div><code>count</code>를 같이 낸다. <b>표본 수가 적은 그룹</b>의 평균은 근거가 약하다.</div></div>
-        </div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">주의</span><div>1등석 여성 96.8%는 표본 94명에서 나왔다. 그룹별 평균을 보고할 때는 <b>그룹 크기를 같이</b> 낸다.</div></div>
-  </div>
-</section>
-
-<section class="slide section" data-title="[섹션] 전처리">
-  <div class="ghost">01</div>
-  <div class="seyebrow">CHAPTER 01</div>
-  <h2>전처리</h2>
-  <div class="agenda"><span>결측치</span><span>인코딩</span><span>스케일링</span><span>데이터 분할</span></div>
-</section>
-
-<section class="slide" data-title="손대기 전의 표">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>현장</div>
-  <h2 class="s-title sm">손대기 전의 표</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <table class="ctable">
-      <thead><tr><th>lot_id</th><th>소성온도</th><th>체류시간</th><th>D50</th><th>산소농도</th><th>판정</th></tr></thead>
-      <tbody>
-        <tr><td>A-2401</td><td>945</td><td>6.5</td><td>11.2</td><td>19.8</td><td>양품</td></tr>
-        <tr><td>A-2402</td><td class="no">1,010</td><td class="no">(빈칸)</td><td>12.8</td><td>19.5</td><td>불량</td></tr>
-        <tr><td>A-2403</td><td class="no">948℃</td><td>6.0</td><td>11.5</td><td class="no">N/A</td><td>양품</td></tr>
-        <tr><td class="no">a-2404</td><td>952</td><td>6.2</td><td>11.9</td><td>19.9</td><td class="no">양 품</td></tr>
-      </tbody>
-    </table>
-    <div class="vlist">
-      <div class="v"><span class="b">✕</span><div><code>1,010</code> 의 쉼표와 <code>948℃</code> 의 단위 때문에 <b>열 전체가 문자열</b>로 읽힌다.</div></div>
-      <div class="v"><span class="b">✕</span><div>빈칸과 <code>N/A</code> 는 <b>같은 결측인데 표기가 다르다</b>. 한쪽만 걸러진다.</div></div>
-      <div class="v"><span class="b">✕</span><div><code>a-2404</code> 와 <code>양 품</code> — 대소문자와 공백이 흔들리면 <b>다른 값으로 세어진다</b>.</div></div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>표를 받으면 계산부터 하지 않는다. <b>타입 · 결측 · 표기</b> 세 가지를 먼저 확인한다.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="전처리 네 단계">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>지도</div>
-  <h2 class="s-title sm">전처리 네 단계</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="cards c4">
-      <div class="card"><span class="n">01</span><h3>결측치</h3><p>빈칸이 하나라도 있으면 <b>학습이 시작되지 않는다</b>.</p><div class="chips"><span class="chip">Age 177개</span></div></div>
-      <div class="card"><span class="n">02</span><h3>인코딩</h3><p>모델은 글자를 못 읽는다. <b>범주를 숫자로</b> 바꾼다.</p><div class="chips"><span class="chip">Sex · Embarked</span></div></div>
-      <div class="card"><span class="n">03</span><h3>스케일링</h3><p>단위가 다르면 <b>큰 숫자 열이 결과를 지배</b>한다.</p><div class="chips"><span class="chip">Age 0~80</span><span class="chip">Fare 0~512</span></div></div>
-      <div class="card"><span class="n">04</span><h3>분할</h3><p>성적을 잴 <b>안 본 데이터</b>를 미리 떼어 둔다.</p><div class="chips"><span class="chip">train / test</span></div></div>
-    </div>
-    <div class="vlist">
-      <div class="v"><span class="b">★</span><div>실무에서 모델 성능을 실제로 움직이는 것은 알고리즘 교체보다 <b>이 네 단계의 품질</b>이다.</div></div>
-      <div class="v"><span class="b">→</span><div>새 데이터가 와도 이 순서를 그대로 밟는다.</div></div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>모델이 먹는 것은 <b>결측 없고 · 전부 숫자이고 · 크기가 비슷한</b> 직사각형 표 하나다.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="결측치 확인">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>결측</div>
-  <h2 class="s-title sm">비어 있는 칸의 정체</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">몇 개가 비었는지</span></div>
-          <pre><code>df.isna().sum()
-df.isna().mean().sort_values(ascending=<span class="kw">False</span>)</code></pre>
-          <div class="out">Cabin       687
-Age         177
-Embarked      2
-Survived      0
-
-Cabin       0.771044
-Age         0.198653
-Embarked    0.002245</div>
-        </div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div><code>NaN</code>은 "값 없음"이다. <code>0</code>이나 빈 문자열과 <b>다른 것</b>이다.</div></div>
-        </div>
-      </div>
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">비어 있는 행을 직접 본다</span></div>
-          <pre><code>df[df[<span class="st">'Age'</span>].isna()].head(<span class="nm">3</span>)
-
-<span class="cm"># 결측 여부가 답과 관계있는지 확인</span>
-df.groupby(df[<span class="st">'Age'</span>].isna())[<span class="st">'Survived'</span>].mean()</code></pre>
-          <div class="out">Age
-False    0.406162
-True     0.293785</div>
-        </div>
-        <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>결측 자체가 정보다</h4><p>나이가 비어 있는 승객의 생존율이 29%로 더 낮다. <b>무작위로 빈 것이 아니라</b>는 뜻이다.</p></div></div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>메우기 전에 <b>왜 비었는지</b>를 먼저 본다. 결측 비율이 77%인 <code>Cabin</code>은 메울 것이 아니라 버릴 열이다.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="결측치 처리">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>결측</div>
-  <h2 class="s-title sm">결측치를 메우는 세 갈래</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="cards c3">
-      <div class="card"><span class="n">01</span><h3>버린다</h3>
-        <div class="code sm"><pre><code>df.dropna(subset=[<span class="st">'Embarked'</span>])
-df.drop(columns=[<span class="st">'Cabin'</span>])</code></pre></div>
-        <p>결측이 <b>몇 개뿐</b>이거나, <b>열 대부분이 비었을</b> 때.</p></div>
-      <div class="card"><span class="n">02</span><h3>대푯값으로 채운다</h3>
-        <div class="code sm"><pre><code>df[<span class="st">'Age'</span>] = df[<span class="st">'Age'</span>].fillna(
-    df[<span class="st">'Age'</span>].median())</code></pre></div>
-        <p>평균보다 <b>중앙값</b>이 안전하다. 이상치에 안 흔들린다.</p></div>
-      <div class="card"><span class="n">03</span><h3>그룹별로 채운다</h3>
-        <div class="code sm"><pre><code>df[<span class="st">'Age'</span>] = df.groupby(<span class="st">'Pclass'</span>)[<span class="st">'Age'</span>] \
-    .transform(<span class="kw">lambda</span> s: s.fillna(s.median()))</code></pre></div>
-        <p>등급마다 나이대가 다르면 <b>훨씬 정확하다</b>.</p></div>
-    </div>
-    <div class="twocol">
-      <div>
-        <div class="callout rose"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4><code>fillna(0)</code>은 답이 아니다</h4><p>앞서 본 그 사고다. 나이 0살 승객 177명이 생긴다. <b>0이 뜻을 갖는 열</b>에서만 쓴다.</p></div></div>
-      </div>
-      <div>
-        <div class="vlist">
-          <div class="v"><span class="b">★</span><div>채운 흔적을 남기려면 <code>df['AgeMissing'] = df['Age'].isna()</code> 열을 <b>먼저</b> 만든다.</div></div>
-        </div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>결측 처리는 정답이 없다. <b>무엇으로 채웠는지 기록</b>하고, 채운 방식이 결과를 얼마나 바꾸는지 비교한다.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="범주형 인코딩">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>인코딩</div>
-  <h2 class="s-title sm">글자를 숫자로 바꾸는 두 방식</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twopane">
-      <div class="pane bad"><h4>레이블 인코딩</h4><div class="mini">S → 0
-C → 1
-Q → 2</div><p>열 하나로 끝나지만, 모델이 <b>Q &gt; C &gt; S 라는 순서</b>가 있다고 오해한다.</p></div>
-      <div class="pane good"><h4>원-핫 인코딩</h4><div class="mini">        S   C   Q
-승객1    1   0   0
-승객2    0   1   0</div><p>열이 늘어나는 대신 <b>순서를 만들지 않는다</b>.</p></div>
-    </div>
-    <div class="twocol">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">get_dummies — 원-핫</span></div>
-          <pre><code>df = pd.get_dummies(
-    df, columns=[<span class="st">'Sex'</span>, <span class="st">'Embarked'</span>],
-    drop_first=<span class="kw">True</span>   <span class="cm"># 첫 범주는 뺀다</span>
-)
-<span class="fn2">print</span>(df.columns.tolist())</code></pre>
-          <div class="out">[..., 'Sex_male', 'Embarked_Q', 'Embarked_S']</div>
-        </div>
-      </div>
-      <div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div><b>순서가 있는 범주</b>(등급 1·2·3, 대·중·소)는 레이블 인코딩이 맞다.</div></div>
-          <div class="v"><span class="b">→</span><div><b>순서가 없는 범주</b>(성별, 도시, 색)는 원-핫이 맞다.</div></div>
-          <div class="v"><span class="b">✕</span><div>범주가 수백 개면 원-핫으로 열이 수백 개가 된다. 그때는 다른 방법을 쓴다.</div></div>
-        </div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>범주에 <b>크고 작음이 있느냐</b>로 고른다. 없는데 숫자를 매기면 모델이 없는 순서를 학습한다.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="스케일링의 필요성">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>스케일</div>
-  <h2 class="s-title sm">단위가 다른 열의 문제</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol w">
-      <div>
-        <table class="ctable">
-          <thead><tr><th>열</th><th>범위</th><th>평균</th></tr></thead>
-          <tbody>
-            <tr><td><code>Age</code></td><td>0.42 ~ 80</td><td>29.7</td></tr>
-            <tr><td><code>Fare</code></td><td>0 ~ <span class="hl">512.3</span></td><td>32.2</td></tr>
-            <tr><td><code>SibSp</code></td><td>0 ~ 8</td><td>0.52</td></tr>
-            <tr><td><code>Sex_male</code></td><td>0 ~ 1</td><td>0.65</td></tr>
-          </tbody>
-        </table>
-        <div class="vlist">
-          <div class="v"><span class="b">✕</span><div>거리로 판단하는 모델(KNN·SVM)과 신경망에서 <b>Fare가 다른 열을 눌러 버린다</b>.</div></div>
-          <div class="v"><span class="b">✕</span><div>신경망에서 스케일링을 빼면 <b>손실이 안 떨어지거나 발산</b>한다. 가장 흔한 실패 원인이다.</div></div>
-        </div>
-      </div>
-      <div>
-        <div class="plot">
-          <svg viewBox="0 0 320 210">
-            <text x="10" y="16" font-size="11" fill="#8E8AAC">스케일링 전</text>
-            <line x1="12" y1="80" x2="308" y2="80" stroke="#E8E4F8" stroke-width="1.2"/>
-            <rect x="12" y="60" width="14" height="18" fill="#5B3DF5"/><text x="32" y="74" font-size="10" fill="#4A4766">Sex 0~1</text>
-            <rect x="12" y="38" width="46" height="18" fill="#0FB5A1"/><text x="64" y="52" font-size="10" fill="#4A4766">Age 0~80</text>
-            <rect x="12" y="24" width="290" height="10" fill="#E8537A"/><text x="228" y="20" font-size="10" fill="#4A4766">Fare 0~512</text>
-
-            <text x="10" y="126" font-size="11" fill="#8E8AAC">표준화 후</text>
-            <line x1="12" y1="190" x2="308" y2="190" stroke="#E8E4F8" stroke-width="1.2"/>
-            <rect x="12" y="170" width="96" height="18" fill="#5B3DF5"/><text x="114" y="184" font-size="10" fill="#4A4766">Sex</text>
-            <rect x="12" y="148" width="104" height="18" fill="#0FB5A1"/><text x="122" y="162" font-size="10" fill="#4A4766">Age</text>
-            <rect x="12" y="134" width="100" height="10" fill="#E8537A"/><text x="118" y="143" font-size="10" fill="#4A4766">Fare</text>
-          </svg>
-          <div class="cap">세 열의 값 범위 — 전과 후</div>
-        </div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>트리 계열은 스케일링이 필요 없다. <b>거리·기울기를 쓰는 모델</b>에는 반드시 필요하다.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="표준화와 정규화">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>스케일</div>
-  <h2 class="s-title sm">표준화와 정규화</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol">
-      <div>
-        <div class="phase-label">표준화 StandardScaler<span class="ln"></span></div>
-        <div class="formula">
-          <div class="big">z = (x − 평균) / 표준편차</div>
-          <div class="cap">평균 0, 표준편차 1로 맞춘다</div>
-        </div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div>범위가 정해지지 않는다. <b>이상치가 있어도 덜 망가진다</b>.</div></div>
-          <div class="v"><span class="b">★</span><div>기본값으로 이것을 쓴다.</div></div>
-        </div>
-      </div>
-      <div>
-        <div class="phase-label">정규화 MinMaxScaler<span class="ln"></span></div>
-        <div class="formula">
-          <div class="big">x' = (x − 최소) / (최대 − 최소)</div>
-          <div class="cap">모든 값을 0~1 사이로 밀어 넣는다</div>
-        </div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div>범위가 <b>0~1로 고정</b>된다. 이미지 픽셀처럼 상·하한이 분명할 때.</div></div>
-          <div class="v"><span class="b">✕</span><div>이상치 하나가 <b>나머지를 전부 0 근처로</b> 눌러 버린다.</div></div>
-        </div>
-      </div>
-    </div>
-    <div class="code sm">
-      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">scikit-learn</span></div>
-      <pre><code><span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> StandardScaler
-
-scaler = StandardScaler()
-X_train_s = scaler.fit_transform(X_train)   <span class="cm"># 훈련셋으로 기준을 배운다</span>
-X_test_s  = scaler.transform(X_test)        <span class="cm"># 테스트셋은 그 기준을 쓰기만</span></code></pre>
-    </div>
-    <div class="keymsg"><span class="k">주의</span><div>테스트셋에 <code>fit_transform</code>을 쓰면 <b>테스트 정보가 새어 들어간다</b>. 다음 장이 그 이야기다.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="데이터 분할">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>분할</div>
-  <h2 class="s-title sm">훈련·검증·테스트의 분리</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="pipe">
-      <div class="step"><div class="si">60~80%</div><div class="sn">훈련 Train</div><div class="sd">모델이 규칙을 찾는 데 쓴다</div></div>
-      <div class="step"><div class="si">10~20%</div><div class="sn">검증 Validation</div><div class="sd">설정을 고르고 멈출 시점을 잡는다</div></div>
-      <div class="step"><div class="si">10~20%</div><div class="sn">테스트 Test</div><div class="sd">최종 성적 — 딱 한 번만 본다</div></div>
-    </div>
-    <div class="twocol">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">train_test_split</span></div>
-          <pre><code><span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> train_test_split
-
-X = df.drop(columns=[<span class="st">'Survived'</span>])
-y = df[<span class="st">'Survived'</span>]
-
-X_tr, X_te, y_tr, y_te = train_test_split(
-    X, y, test_size=<span class="nm">0.2</span>,
-    random_state=<span class="nm">42</span>,   <span class="cm"># 재현 가능하게</span>
-    stratify=y         <span class="cm"># 생존 비율을 양쪽에 유지</span>
-)</code></pre>
-        </div>
-      </div>
-      <div>
-        <div class="callout rose"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>데이터 누수 — 가장 흔한 실수</h4><p>전체 데이터로 <code>fit_transform</code>을 하고 나서 쪼개면, 스케일러가 <b>테스트셋의 평균까지 이미 봤다</b>. 성적이 실제보다 좋게 나온다.</p></div></div>
-        <div class="vlist">
-          <div class="v"><span class="b">★</span><div>순서는 <b>쪼개고 → 훈련셋으로 fit → 양쪽에 transform</b>이다. 결측 대치도 마찬가지다.</div></div>
-          <div class="v"><span class="b">✕</span><div>시계열은 무작위로 쪼개면 안 된다. <b>시점으로</b> 자른다.</div></div>
-        </div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>테스트셋은 <b>마지막에 한 번</b> 쓴다. 여러 번 보고 모델을 고치면 그 숫자는 더 이상 실전 성능이 아니다.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="전처리 순서">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>정리</div>
-  <h2 class="s-title sm">전처리의 순서</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol w">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">타이타닉 — 처음부터 끝까지</span></div>
-          <pre><code><span class="cm"># 1. 쓸모없는 열 제거</span>
-df = df.drop(columns=[<span class="st">'PassengerId'</span>, <span class="st">'Name'</span>,
-                      <span class="st">'Ticket'</span>, <span class="st">'Cabin'</span>])
-
-<span class="cm"># 2. 결측 처리</span>
-df[<span class="st">'Age'</span>] = df[<span class="st">'Age'</span>].fillna(df[<span class="st">'Age'</span>].median())
-df = df.dropna(subset=[<span class="st">'Embarked'</span>])
-
-<span class="cm"># 3. 범주형 인코딩</span>
-df = pd.get_dummies(df, columns=[<span class="st">'Sex'</span>, <span class="st">'Embarked'</span>],
-                    drop_first=<span class="kw">True</span>)
-
-<span class="cm"># 4. 분할 — 스케일링보다 먼저</span>
-X_tr, X_te, y_tr, y_te = train_test_split(...)
-
-<span class="cm"># 5. 스케일링 — 훈련셋 기준으로</span>
-X_tr = scaler.fit_transform(X_tr)
-X_te = scaler.transform(X_te)</code></pre>
-        </div>
-      </div>
-      <div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div>열 제거가 먼저다. 안 쓸 열을 손질하는 데 시간을 쓰지 않는다.</div></div>
-          <div class="v"><span class="b">★</span><div><b>분할이 스케일링보다 앞</b>이다. 순서를 바꾸면 누수가 생긴다.</div></div>
-          <div class="v"><span class="b">→</span><div>같은 처리를 새 데이터에도 해야 한다. 그래서 이 순서를 <b>함수로 묶어</b> 둔다.</div></div>
-        </div>
-        <div class="deliv"><div class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div><div class="dt"><b>실습 산출물</b><span>전처리를 끝낸 X_train · X_test · y_train · y_test</span></div></div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>모델 학습은 <b>이 다섯 줄의 결과</b>에서 시작한다. 여기가 틀리면 뒤가 전부 틀린다.</div></div>
-  </div>
-</section>
-
-<section class="slide section" data-title="[섹션] 시각화">
-  <div class="ghost">02</div>
-  <div class="seyebrow">CHAPTER 02</div>
-  <h2>시각화</h2>
-  <div class="agenda"><span>Matplotlib</span><span>기본 네 그래프</span><span>subplot</span><span>seaborn</span></div>
-</section>
-
-<section class="slide" data-title="Matplotlib">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>배경</div>
-  <h2 class="s-title sm">선 하나로 드러나는 것</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">불러오기 — 관례상 plt</span></div>
-          <pre><code><span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
-
-plt.plot(x, y)   <span class="cm"># 그리고</span>
-plt.show()       <span class="cm"># 화면에 내보낸다</span></code></pre>
-        </div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div><code>plt.show()</code> 전까지는 <b>쌓아 두는 상태</b>다. 여러 명령이 한 그림에 겹쳐 쌓인다.</div></div>
-          <div class="v"><span class="b">★</span><div><b>손실 곡선</b>을 이걸로 그린다. 학습이 되고 있는지 보는 유일한 수단이다.</div></div>
-        </div>
-      </div>
-      <div>
-        <div class="plot">
-          <svg viewBox="0 0 360 220">
-            <line x1="46" y1="180" x2="340" y2="180" stroke="#8E8AAC" stroke-width="1.2"/>
-            <line x1="46" y1="20" x2="46" y2="180" stroke="#8E8AAC" stroke-width="1.2"/>
-            <g stroke="#E8E4F8" stroke-width="1"><line x1="46" y1="140" x2="340" y2="140"/><line x1="46" y1="100" x2="340" y2="100"/><line x1="46" y1="60" x2="340" y2="60"/></g>
-            <polyline fill="none" stroke="#5B3DF5" stroke-width="2.6" stroke-linejoin="round"
-              points="60,40 106,86 152,118 198,138 244,150 290,156 336,159"/>
-            <g font-family="monospace" font-size="11" fill="#8E8AAC">
-              <text x="14" y="44">0.7</text><text x="14" y="104">0.4</text><text x="14" y="164">0.1</text>
-              <text x="52" y="198">0</text><text x="180" y="198">25</text><text x="320" y="198">50</text>
-            </g>
-            <text x="336" y="212" text-anchor="end" font-size="10.5" fill="#8E8AAC">epoch</text>
-          </svg>
-          <div class="cap">손실 곡선</div>
-        </div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div><code>describe()</code>가 놓치는 <b>추세 · 이상치 · 분포 모양</b>은 그래프에서만 보인다.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="그래프 꾸미기">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>꾸미기</div>
-  <h2 class="s-title sm">그림 안에 들어가야 할 것</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">제목 · 축 이름 · 범례</span></div>
-          <pre><code>plt.plot(x, train_loss, label=<span class="st">"train"</span>)
-plt.plot(x, val_loss,   label=<span class="st">"validation"</span>)
-
-plt.title(<span class="st">"학습 곡선"</span>, fontsize=<span class="nm">14</span>)
-plt.xlabel(<span class="st">"epoch"</span>)
-plt.ylabel(<span class="st">"loss"</span>)
-plt.legend()         <span class="cm"># 이 줄이 없으면 범례가 안 나온다</span>
-plt.grid(<span class="kw">True</span>, alpha=<span class="nm">0.3</span>)
-plt.show()</code></pre>
-        </div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div>축 이름에 <b>단위</b>를 적는다. 숫자만 있으면 읽는 사람이 되묻는다.</div></div>
-        </div>
-      </div>
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">한글이 네모로 나올 때 — Colab</span></div>
-          <pre><code>!apt-get install -qq fonts-nanum
-<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
-plt.rc(<span class="st">'font'</span>, family=<span class="st">'NanumBarunGothic'</span>)
-plt.rc(<span class="st">'axes'</span>, unicode_minus=<span class="kw">False</span>)  <span class="cm"># 음수 부호</span>
-
-<span class="cm"># 설치 후 런타임 다시 시작이 필요하다</span></code></pre>
-        </div>
-        <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>네모(□□□)의 정체</h4><p>기본 폰트에 한글 글리프가 없어서다. 그래프가 틀린 게 아니라 <b>글꼴이 없는 것</b>이다. 세션이 새로 뜨면 초기화되니 <b>맨 위 셀</b>에 둔다.</p></div></div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>선이 둘 이상인 그래프에서 <b>범례가 없으면 그림이 아니라 낙서</b>다.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="기본 그래프 네 가지">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>선택</div>
-  <h2 class="s-title sm">네 가지 기본 그래프</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="cards c4">
-      <div class="card"><span class="n">plot</span><h3>선 그래프</h3>
-        <div class="plot"><svg viewBox="0 0 180 100"><line x1="14" y1="86" x2="172" y2="86" stroke="#E8E4F8"/><polyline fill="none" stroke="#5B3DF5" stroke-width="2.4" points="20,74 52,52 84,60 116,30 156,22"/></svg></div>
-        <p><b>순서·시간</b>에 따른 변화.</p></div>
-      <div class="card"><span class="n">bar</span><h3>막대 그래프</h3>
-        <div class="plot"><svg viewBox="0 0 180 100"><line x1="14" y1="86" x2="172" y2="86" stroke="#E8E4F8"/><rect x="26" y="30" width="26" height="56" fill="#5B3DF5"/><rect x="70" y="52" width="26" height="34" fill="#0FB5A1"/><rect x="114" y="64" width="26" height="22" fill="#F4A93C"/></svg></div>
-        <p><b>범주별</b> 크기 비교.</p></div>
-      <div class="card"><span class="n">scatter</span><h3>산점도</h3>
-        <div class="plot"><svg viewBox="0 0 180 100"><line x1="14" y1="86" x2="172" y2="86" stroke="#E8E4F8"/><g fill="#5B3DF5"><circle cx="34" cy="70" r="3.5"/><circle cx="56" cy="58" r="3.5"/><circle cx="72" cy="64" r="3.5"/><circle cx="94" cy="40" r="3.5"/><circle cx="118" cy="46" r="3.5"/><circle cx="140" cy="26" r="3.5"/><circle cx="156" cy="34" r="3.5"/></g></svg></div>
-        <p>두 열 사이의 <b>관계</b>.</p></div>
-      <div class="card"><span class="n">hist</span><h3>히스토그램</h3>
-        <div class="plot"><svg viewBox="0 0 180 100"><line x1="14" y1="86" x2="172" y2="86" stroke="#E8E4F8"/><g fill="#5B3DF5"><rect x="20" y="66" width="20" height="20"/><rect x="42" y="46" width="20" height="40"/><rect x="64" y="26" width="20" height="60"/><rect x="86" y="38" width="20" height="48"/><rect x="108" y="58" width="20" height="28"/><rect x="130" y="74" width="20" height="12"/></g></svg></div>
-        <p>한 열의 <b>분포 모양</b>.</p></div>
-    </div>
-    <div class="code sm">
-      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">타이타닉에 적용하면</span></div>
-      <pre><code>df[<span class="st">'Age'</span>].hist(bins=<span class="nm">30</span>)                        <span class="cm"># 나이 분포 — 어디에 몰렸나</span>
-df.groupby(<span class="st">'Pclass'</span>)[<span class="st">'Survived'</span>].mean().plot.bar()  <span class="cm"># 등급별 생존율</span>
-df.plot.scatter(x=<span class="st">'Age'</span>, y=<span class="st">'Fare'</span>)                 <span class="cm"># 나이와 요금의 관계</span></code></pre>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>한 열의 <b>분포</b>는 히스토그램, 두 열의 <b>관계</b>는 산점도, 범주별 <b>비교</b>는 막대다. 목적이 그래프를 정한다.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="figure와 subplot">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>배치</div>
-  <h2 class="s-title sm">종이 한 장과 그 안의 칸</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol">
-      <div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div><b>figure</b> — 그림을 그리는 종이 한 장.</div></div>
-          <div class="v"><span class="b">→</span><div><b>subplot(ax)</b> — 그 종이를 나눈 칸. 각 칸이 독립된 축을 가진다.</div></div>
-          <div class="v"><span class="b">★</span><div>칸마다 <code>ax.plot()</code> <code>ax.set_title()</code>처럼 <b>ax에 붙여</b> 호출한다.</div></div>
-        </div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">1×2 로 나누기</span></div>
-          <pre><code>fig, ax = plt.subplots(<span class="nm">1</span>, <span class="nm">2</span>, figsize=(<span class="nm">10</span>, <span class="nm">4</span>),
-                       constrained_layout=<span class="kw">True</span>)
-
-ax[<span class="nm">0</span>].hist(df[<span class="st">'Age'</span>].dropna(), bins=<span class="nm">30</span>)
-ax[<span class="nm">0</span>].set_title(<span class="st">"Age"</span>)
-ax[<span class="nm">1</span>].hist(df[<span class="st">'Fare'</span>], bins=<span class="nm">30</span>)
-ax[<span class="nm">1</span>].set_title(<span class="st">"Fare"</span>)
-plt.show()</code></pre>
-        </div>
-      </div>
-      <div>
-        <div class="plot">
-          <svg viewBox="0 0 340 200">
-            <rect x="8" y="8" width="324" height="184" fill="#fff" stroke="#B7A9FF" stroke-dasharray="5 4"/>
-            <text x="14" y="24" font-family="monospace" font-size="10" fill="#8E8AAC">figure</text>
-            <g stroke="#E8E4F8" fill="#FAF9FF">
-              <rect x="24" y="36" width="140" height="140"/><rect x="180" y="36" width="140" height="140"/>
-            </g>
-            <g fill="#5B3DF5"><rect x="40" y="120" width="16" height="48"/><rect x="58" y="86" width="16" height="82"/><rect x="76" y="70" width="16" height="98"/><rect x="94" y="96" width="16" height="72"/><rect x="112" y="132" width="16" height="36"/><rect x="130" y="152" width="16" height="16"/></g>
-            <g fill="#0FB5A1"><rect x="196" y="60" width="16" height="108"/><rect x="214" y="112" width="16" height="56"/><rect x="232" y="140" width="16" height="28"/><rect x="250" y="152" width="16" height="16"/><rect x="268" y="158" width="16" height="10"/><rect x="286" y="162" width="16" height="6"/></g>
-            <text x="94" y="50" text-anchor="middle" font-size="11" fill="#4A4766">Age</text>
-            <text x="250" y="50" text-anchor="middle" font-size="11" fill="#4A4766">Fare</text>
-            <text x="28" y="190" font-family="monospace" font-size="9.5" fill="#8E8AAC">ax[0]</text>
-            <text x="184" y="190" font-family="monospace" font-size="9.5" fill="#8E8AAC">ax[1]</text>
-          </svg>
-          <div class="cap">Fare는 왼쪽으로 심하게 쏠려 있다</div>
-        </div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>같은 축으로 비교할 것은 <b>한 칸에 겹쳐</b>, 단위가 다른 것은 <b>칸을 나눠</b> 그린다. 겹침은 <code>constrained_layout</code>이 푼다.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="seaborn">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>seaborn</div>
-  <h2 class="s-title sm">DataFrame을 그대로 받는 층</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twopane">
-      <div class="pane bad"><h4>Matplotlib</h4><div class="mini">for p in sorted(df['Pclass'].unique()):
-    sub = df[df['Pclass'] == p]
-    plt.hist(sub['Age'].dropna(), label=p, alpha=.5)
-plt.legend()</div><p>값을 <b>직접 꺼내</b> 넘긴다.</p></div>
-      <div class="pane good"><h4>seaborn</h4><div class="mini">import seaborn as sns
-
-sns.histplot(data=df, x='Age', hue='Pclass')</div><p>표와 <b>열 이름</b>만 알려 주면 나눠 그린다.</p></div>
-    </div>
-    <div class="vlist">
-      <div class="v"><span class="b">→</span><div><code>hue</code>에 준 열의 <b>값마다 색이 갈리고 범례가 자동</b>으로 붙는다.</div></div>
-      <div class="v"><span class="b">→</span><div>seaborn은 Matplotlib <b>위에 얹힌 층</b>이다. <code>plt.title()</code> 같은 명령이 그대로 통한다.</div></div>
-      <div class="v"><span class="b">★</span><div>테마는 맨 위에서 한 번 건다. <code>sns.set_style("whitegrid")</code>.</div></div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>범주별로 갈라 그릴 일이면 seaborn이 짧다. 축을 세밀하게 통제할 일이면 Matplotlib이다.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="탐색용 그래프">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>탐색</div>
-  <h2 class="s-title sm">모델 만들기 전에 보는 두 장</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol">
-      <div>
-        <div class="phase-label">상관 히트맵 — 어떤 열이 답과 붙어 있나<span class="ln"></span></div>
-        <div class="code sm"><pre><code>sns.heatmap(df.corr(numeric_only=<span class="kw">True</span>),
-            annot=<span class="kw">True</span>, fmt=<span class="st">'.2f'</span>, cmap=<span class="st">'coolwarm'</span>)</code></pre></div>
-        <div class="plot">
-          <svg viewBox="0 0 300 120">
-            <g font-size="9.5" font-family="monospace" fill="#8E8AAC">
-              <text x="4" y="30">Survived</text><text x="4" y="60">Pclass</text><text x="4" y="90">Fare</text>
-              <text x="72" y="14">Surv</text><text x="132" y="14">Pcls</text><text x="196" y="14">Fare</text>
-            </g>
-            <g><rect x="66" y="20" width="56" height="26" fill="#5B3DF5"/><rect x="128" y="20" width="56" height="26" fill="#7FA8E8"/><rect x="190" y="20" width="56" height="26" fill="#C8B4F0"/>
-               <rect x="66" y="50" width="56" height="26" fill="#7FA8E8"/><rect x="128" y="50" width="56" height="26" fill="#5B3DF5"/><rect x="190" y="50" width="56" height="26" fill="#8FBEEA"/>
-               <rect x="66" y="80" width="56" height="26" fill="#C8B4F0"/><rect x="128" y="80" width="56" height="26" fill="#8FBEEA"/><rect x="190" y="80" width="56" height="26" fill="#5B3DF5"/></g>
-            <g font-size="10" fill="#fff" text-anchor="middle">
-              <text x="94" y="38">1.00</text><text x="156" y="38">-.34</text><text x="218" y="38">.26</text>
-              <text x="94" y="68">-.34</text><text x="156" y="68">1.00</text><text x="218" y="68">-.55</text>
-              <text x="94" y="98">.26</text><text x="156" y="98">-.55</text><text x="218" y="98">1.00</text>
-            </g>
-          </svg>
-          <div class="cap">Pclass와 Survived는 −0.34 — 등급이 낮을수록 덜 살았다</div>
-        </div>
-      </div>
-      <div>
-        <div class="phase-label">박스플롯 — 분포와 이상치를 같이<span class="ln"></span></div>
-        <div class="code sm"><pre><code>sns.boxplot(data=df, x=<span class="st">'Pclass'</span>, y=<span class="st">'Fare'</span>)</code></pre></div>
-        <div class="plot">
-          <svg viewBox="0 0 300 140">
-            <line x1="34" y1="122" x2="288" y2="122" stroke="#8E8AAC" stroke-width="1.2"/>
-            <line x1="34" y1="10" x2="34" y2="122" stroke="#8E8AAC" stroke-width="1.2"/>
-            <g stroke="#5B3DF5" stroke-width="1.6" fill="#EFEAFF">
-              <line x1="86" y1="20" x2="86" y2="46"/><rect x="66" y="46" width="40" height="34"/><line x1="66" y1="62" x2="106" y2="62" stroke-width="2.4"/><line x1="86" y1="80" x2="86" y2="94"/>
-              <line x1="164" y1="72" x2="164" y2="86"/><rect x="144" y="86" width="40" height="18"/><line x1="144" y1="95" x2="184" y2="95" stroke-width="2.4"/><line x1="164" y1="104" x2="164" y2="112"/>
-              <line x1="242" y1="90" x2="242" y2="100"/><rect x="222" y="100" width="40" height="12"/><line x1="222" y1="106" x2="262" y2="106" stroke-width="2.4"/><line x1="242" y1="112" x2="242" y2="118"/>
-            </g>
-            <g fill="#E8537A"><circle cx="86" cy="14" r="3"/><circle cx="86" cy="24" r="3"/><circle cx="164" cy="60" r="3"/><circle cx="242" cy="78" r="3"/></g>
-            <g font-size="10" fill="#8E8AAC" text-anchor="middle"><text x="86" y="136">1등석</text><text x="164" y="136">2등석</text><text x="242" y="136">3등석</text></g>
-          </svg>
-          <div class="cap">점으로 튀어나온 것이 이상치다</div>
-        </div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>모델을 돌리기 전에 이 두 장을 본다. <b>답과 관계있는 열</b>과 <b>손봐야 할 이상치</b>가 여기서 정해진다.</div></div>
-  </div>
-</section>
-
-<section class="slide section" data-title="[섹션] NumPy">
-  <div class="ghost">03</div>
-  <div class="seyebrow">CHAPTER 03</div>
   <h2>NumPy</h2>
-  <div class="agenda"><span>배열</span><span>shape</span><span>브로드캐스팅</span><span>행렬 곱</span></div>
+  <div class="agenda"><span>배열</span><span>shape</span><span>인덱싱</span></div>
 </section>
-
 <section class="slide" data-title="리스트와 배열">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>배경</div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>배경</div>
   <h2 class="s-title sm">리스트와 배열의 차이</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1495,67 +406,83 @@ a + 1      → [2, 3, 4]</div><p>한 자료형만 담는 대신, <b>원소마다
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">불러오기 — 관례상 np</span></div>
           <pre><code><span class="kw">import</span> numpy <span class="kw">as</span> np
 
-X = df.values          <span class="cm"># DataFrame → NumPy 배열</span>
-<span class="fn2">print</span>(<span class="fn2">type</span>(X), X.shape)</code></pre>
-          <div class="out">&lt;class 'numpy.ndarray'&gt; (889, 8)</div>
+a = np.array([<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>])
+<span class="fn2">print</span>(<span class="fn2">type</span>(a))</code></pre>
+          <div class="out">&lt;class 'numpy.ndarray'&gt;</div>
         </div>
       </div>
     </div>
-    <div class="keymsg"><span class="k">정리</span><div>표를 다룰 때는 Pandas, <b>모델에 넣을 때는 NumPy 배열</b>로 바꾼다. 딥러닝 프레임워크의 텐서도 같은 모양이다.</div></div>
+    <div class="keymsg"><span class="k">기준</span><div>배열은 <b>한 자료형만 담는 대신 원소마다 연산이 걸린다</b>. 숫자 계산은 전부 이 구조 위에서 돈다.</div></div>
   </div>
 </section>
-
 <section class="slide" data-title="배열 만들기">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>생성</div>
-  <h2 class="s-title sm">배열 만들기와 dtype</h2>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>생성</div>
+  <h2 class="s-title sm">배열 만들기</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twocol">
       <div>
         <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">리스트에서 · 규칙으로</span></div>
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">리스트를 감싼다</span></div>
           <pre><code>a = np.array([<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>])
-b = np.array([[<span class="nm">1</span>, <span class="nm">2</span>], [<span class="nm">3</span>, <span class="nm">4</span>]])   <span class="cm"># 2차원</span>
+b = np.array([[<span class="nm">1</span>, <span class="nm">2</span>], [<span class="nm">3</span>, <span class="nm">4</span>]])
 
-np.zeros((<span class="nm">2</span>, <span class="nm">3</span>))       <span class="cm"># 0으로 채운 2×3</span>
-np.ones((<span class="nm">2</span>, <span class="nm">3</span>))
-np.arange(<span class="nm">0</span>, <span class="nm">10</span>, <span class="nm">2</span>)     <span class="cm"># [0 2 4 6 8]</span>
-np.linspace(<span class="nm">0</span>, <span class="nm">1</span>, <span class="nm">5</span>)    <span class="cm"># [0 .25 .5 .75 1]</span>
-
-np.random.seed(<span class="nm">42</span>)      <span class="cm"># 재현 가능하게</span>
-np.random.randn(<span class="nm">3</span>, <span class="nm">2</span>)   <span class="cm"># 정규분포 난수</span></code></pre>
+<span class="fn2">print</span>(b)</code></pre>
+          <div class="out">[[1 2]
+ [3 4]]</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>대괄호가 <b>한 겹이면 1차원</b>, 두 겹이면 2차원이다.</div></div>
         </div>
       </div>
       <div>
+        <table class="ctable">
+          <thead><tr><th>규칙으로 만들기</th><th>결과</th></tr></thead>
+          <tbody>
+            <tr><td><code>np.zeros((2,3))</code></td><td>0으로 채운 2×3</td></tr>
+            <tr><td><code>np.ones((2,3))</code></td><td>1로 채운 2×3</td></tr>
+            <tr><td><code>np.arange(0,10,2)</code></td><td>[0 2 4 6 8]</td></tr>
+            <tr><td><code>np.linspace(0,1,5)</code></td><td>[0 .25 .5 .75 1]</td></tr>
+            <tr><td><code>np.random.randn(3,2)</code></td><td>정규분포 난수 3×2</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">주의</span><div>난수를 쓰기 전에 <code>np.random.seed(42)</code>를 부른다. 매번 <b>같은 결과가 나와야</b> 비교할 수 있다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="dtype">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>dtype</div>
+  <h2 class="s-title sm">한 배열에 한 자료형</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
         <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">한 배열에는 한 자료형만</span></div>
-          <pre><code>a = np.array([<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>])
-<span class="fn2">print</span>(a.dtype)
-
-<span class="cm"># 정수와 실수를 섞으면 실수로 통일된다</span>
-b = np.array([<span class="nm">1</span>, <span class="nm">2.5</span>])
-<span class="fn2">print</span>(b.dtype)
-
-<span class="cm"># 문자열이 끼면 전부 문자열이 된다</span>
-c = np.array([<span class="nm">1</span>, <span class="st">'a'</span>])
-<span class="fn2">print</span>(c.dtype)</code></pre>
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">섞으면 하나로 통일된다</span></div>
+          <pre><code><span class="fn2">print</span>(np.array([<span class="nm">1</span>, <span class="nm">2</span>]).dtype)
+<span class="fn2">print</span>(np.array([<span class="nm">1</span>, <span class="nm">2.5</span>]).dtype)
+<span class="fn2">print</span>(np.array([<span class="nm">1</span>, <span class="st">'a'</span>]).dtype)</code></pre>
           <div class="out">int64
 float64
 <span class="err">&lt;U21</span></div>
         </div>
+      </div>
+      <div>
         <div class="vlist">
-          <div class="v"><span class="b">✕</span><div>문자열이 하나라도 남아 있으면 <b>배열 전체가 문자열</b>이 된다. 인코딩을 빠뜨렸다는 신호다.</div></div>
+          <div class="v"><span class="b">→</span><div>정수와 실수가 섞이면 <b>실수로</b> 맞춰진다.</div></div>
+          <div class="v"><span class="b">✕</span><div>문자열이 하나라도 끼면 <b>배열 전체가 문자열</b>이 된다. <code>&lt;U21</code>은 최대 21글자 문자열이라는 뜻이다.</div></div>
         </div>
       </div>
     </div>
     <div class="keymsg"><span class="k">기준</span><div>모델에 넣기 전 <code>X.dtype</code>이 <code>float64</code>인지 확인한다. <code>&lt;U21</code>이면 <b>글자가 남아 있다</b>.</div></div>
   </div>
 </section>
-
 <section class="slide" data-title="차원과 모양">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>shape</div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>shape</div>
   <h2 class="s-title sm">차원과 모양</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1612,10 +539,1128 @@ float64
     <div class="keymsg"><span class="k">기준</span><div>딥러닝 에러의 대부분은 shape 불일치다. <b>연산 전에 <code>.shape</code>를 찍어 보는 습관</b>이 시간을 아낀다.</div></div>
   </div>
 </section>
+<section class="slide" data-title="인덱싱과 마스크">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>선택</div>
+  <h2 class="s-title sm">인덱싱과 불리언 마스크</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">축마다 쉼표로 나눈다</span></div>
+          <pre><code>X = np.arange(<span class="nm">12</span>).reshape(<span class="nm">3</span>, <span class="nm">4</span>)
+<span class="fn2">print</span>(X)
 
+<span class="fn2">print</span>(X[<span class="nm">0</span>, <span class="nm">2</span>])     <span class="cm"># 0행 2열</span>
+<span class="fn2">print</span>(X[<span class="nm">1</span>])        <span class="cm"># 1행 전체</span>
+<span class="fn2">print</span>(X[:, <span class="nm">0</span>])     <span class="cm"># 0열 전체</span></code></pre>
+          <div class="out">[[ 0  1  2  3]
+ [ 4  5  6  7]
+ [ 8  9 10 11]]
+2
+[4 5 6 7]
+[0 4 8]</div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">조건으로 고르기</span></div>
+          <pre><code>a = np.array([<span class="nm">22</span>, <span class="nm">38</span>, <span class="nm">4</span>, <span class="nm">35</span>])
+
+mask = a &gt;= <span class="nm">18</span>       <span class="cm"># True/False 배열</span>
+<span class="fn2">print</span>(mask)
+<span class="fn2">print</span>(a[mask])        <span class="cm"># 참인 자리만</span>
+<span class="fn2">print</span>(a[a &gt;= <span class="nm">18</span>].mean())</code></pre>
+          <div class="out">[ True  True False  True]
+[22 38 35]
+31.666666666666668</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div>표를 조건으로 거르는 <code>df[df['Age'] &lt; 18]</code>도 같은 구조다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>대괄호 안에 <b>숫자를 넣으면 위치</b>, <b>불리언 배열을 넣으면 조건</b>이다.</div></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] Pandas">
+  <div class="ghost">01</div>
+  <div class="seyebrow">CHAPTER 01</div>
+  <h2>Pandas</h2>
+  <div class="agenda"><span>Series</span><span>DataFrame</span><span>groupby</span></div>
+</section>
+<section class="slide" data-title="Pandas">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>배경</div>
+  <h2 class="s-title sm">표 한 장을 통째로 다루는 도구</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twopane">
+      <div class="pane bad"><h4>순수 파이썬</h4><div class="mini">total = 0
+count = 0
+for row in rows:
+    if row['Sex'] == 'female':
+        total += row['Survived']
+        count += 1
+print(total / count)</div><p>행을 <b>하나씩</b> 돌며 직접 센다.</p></div>
+      <div class="pane good"><h4>Pandas</h4><div class="mini">df[df['Sex'] == 'female']['Survived'].mean()</div><p>열 전체를 <b>한 번에</b> 다룬다. 내부는 C로 도는 배열 연산이다.</p></div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">→</span><div>CSV·엑셀·DB를 같은 방식으로 읽어 <b>DataFrame</b>이라는 한 가지 구조로 만든다.</div></div>
+      <div class="v"><span class="b">★</span><div>결측치·타입·그룹 집계처럼 <b>표에서 늘 하는 일</b>이 메서드 한 줄로 들어 있다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>행이 수만 줄을 넘어가면 반복문과 Pandas의 차이가 <b>초 단위와 밀리초 단위</b>로 갈린다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="Series와 DataFrame">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>구조</div>
+  <h2 class="s-title sm">열 하나가 Series, 여럿이 DataFrame</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <table class="ctable">
+          <thead><tr><th>index</th><th>Sex</th><th class="hl">Age</th><th>Fare</th><th>Survived</th></tr></thead>
+          <tbody>
+            <tr><td>0</td><td>male</td><td class="hl">22.0</td><td>7.25</td><td class="no">0</td></tr>
+            <tr><td>1</td><td>female</td><td class="hl">38.0</td><td>71.28</td><td class="yes">1</td></tr>
+            <tr><td>2</td><td>female</td><td class="hl">26.0</td><td>7.92</td><td class="yes">1</td></tr>
+            <tr><td>3</td><td>female</td><td class="hl">35.0</td><td>53.10</td><td class="yes">1</td></tr>
+          </tbody>
+        </table>
+        <div class="chips"><span class="chip">가로 한 줄 = <b>행 row</b></span><span class="chip">세로 한 줄 = <b>열 column</b></span><span class="chip">맨 왼쪽 = <b>인덱스</b></span></div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div><b>Series</b> — 인덱스가 붙은 <b>1차원</b> 값의 나열. 표에서 열 하나를 꺼내면 이것이다.</div></div>
+          <div class="v"><span class="b">→</span><div><b>DataFrame</b> — Series 여러 개가 <b>같은 인덱스를 공유</b>하며 붙은 2차원 표.</div></div>
+          <div class="v"><span class="b">★</span><div><b>딕셔너리의 리스트</b>가 정확히 이 구조다. Pandas는 그것을 감싸 빠르게 만든 것이다.</div></div>
+        </div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">꺼내면 자료형이 달라진다</span></div>
+          <pre><code><span class="fn2">type</span>(df[<span class="st">'Age'</span>])      <span class="cm"># Series</span>
+<span class="fn2">type</span>(df[[<span class="st">'Age'</span>]])    <span class="cm"># DataFrame</span></code></pre>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">정리</span><div>Pandas 에러의 상당수는 <b>Series를 기대한 곳에 DataFrame</b>이 왔거나 그 반대다. 대괄호 개수가 그것을 정한다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="데이터 불러오기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>읽기</div>
+  <h2 class="s-title sm">read_csv 한 줄이 만드는 표</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">확장자에 맞는 함수를 고른다</span></div>
+          <pre><code><span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+<span class="cm"># 인터넷 주소도 경로처럼 넣는다</span>
+url = <span class="st">'https://raw.githubusercontent.com/datasciencedojo'</span> \
+      <span class="st">'/datasets/master/titanic.csv'</span>
+df = pd.read_csv(url)</code></pre>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>첫 줄을 <b>열 이름</b>으로 읽는다. 아니면 <code>header=None</code>을 준다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">지저분한 CSV에서 쓰는 인자</span></div>
+          <pre><code>df = pd.read_csv(
+    <span class="st">'data.csv'</span>,
+    encoding=<span class="st">'cp949'</span>,     <span class="cm"># 한글 깨질 때</span>
+    thousands=<span class="st">','</span>,        <span class="cm"># 1,234 → 1234</span>
+    na_values=[<span class="st">'N/A'</span>, <span class="st">'-'</span>]  <span class="cm"># 결측 표기</span>
+)</code></pre>
+        </div>
+        <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>한글이 깨지면 인코딩</h4><p>국내 시스템에서 내려받은 CSV는 <code>cp949</code>인 경우가 많다. <code>UnicodeDecodeError</code>가 그 신호다.</p></div></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>읽는 단계에서 <code>thousands</code>·<code>na_values</code>를 지정하면 <b>뒤의 타입 변환 작업이 통째로 사라진다</b>.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="첫 확인">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>확인</div>
+  <h2 class="s-title sm">읽자마자 보는 네 줄</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">모양과 앞뒤</span></div>
+          <pre><code>df.shape          <span class="cm"># (행 수, 열 수)</span>
+df.head()         <span class="cm"># 위에서 5행</span>
+df.tail(<span class="nm">3</span>)        <span class="cm"># 아래에서 3행</span>
+df.columns        <span class="cm"># 열 이름 목록</span></code></pre>
+          <div class="out">(891, 12)</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div><code>tail()</code>은 <b>파일 끝의 합계 행·주석 행</b>을 잡아낸다. 이것이 섞이면 통계가 전부 틀어진다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">info() — 타입과 결측을 한 번에</span></div>
+          <pre><code>df.info()</code></pre>
+          <div class="out">RangeIndex: 891 entries, 0 to 890
+ #  Column    Non-Null Count  Dtype
+--- ------    --------------  -----
+ 1  Survived  891 non-null    int64
+ 2  Pclass    891 non-null    int64
+ 4  Sex       891 non-null    object
+ 5  Age       <span class="err">714 non-null</span>    float64
+ 9  Fare      891 non-null    float64
+10  Cabin     <span class="err">204 non-null</span>    object
+11  Embarked  <span class="err">889 non-null</span>    object</div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>891행인데 <code>Age</code>는 714개뿐이다. <b>Non-Null Count가 전체보다 작으면 결측</b>이 있다는 뜻이다. 이 표가 뒤의 전처리를 좌우한다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="열 선택과 행 필터링">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>선택</div>
+  <h2 class="s-title sm">대괄호 하나와 둘의 차이</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">대괄호 하나 → Series</span></div>
+          <pre><code>df[<span class="st">'Age'</span>]</code></pre>
+          <div class="out">0    22.0
+1    38.0
+2    26.0
+Name: Age, dtype: float64</div>
+        </div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">대괄호 둘 → DataFrame</span></div>
+          <pre><code>df[[<span class="st">'Sex'</span>, <span class="st">'Age'</span>]]</code></pre>
+          <div class="out">      Sex   Age
+0    male  22.0
+1  female  38.0</div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">조건으로 행 고르기</span></div>
+          <pre><code><span class="cm"># 조건식이 True/False 의 Series 를 만든다</span>
+df[<span class="st">'Age'</span>] &lt; <span class="nm">18</span>
+
+<span class="cm"># 그걸 대괄호에 넣으면 참인 행만 남는다</span>
+df[df[<span class="st">'Age'</span>] &lt; <span class="nm">18</span>]
+
+<span class="cm"># 조건 두 개는 괄호로 묶고 &amp; | 를 쓴다</span>
+df[(df[<span class="st">'Age'</span>] &lt; <span class="nm">18</span>) &amp; (df[<span class="st">'Pclass'</span>] == <span class="nm">1</span>)]</code></pre>
+        </div>
+        <div class="callout rose"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>and 가 아니라 &amp;</h4><p>Pandas 조건 결합은 <code>&amp;</code> <code>|</code>이고, <b>각 조건을 괄호로 묶어야</b> 한다. <code>and</code>를 쓰면 에러가 난다.</p></div></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>계산할 열 하나는 <b>대괄호 하나</b>, 표를 남겨야 하면 <b>대괄호 둘</b>이다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="값 세기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>확인</div>
+  <h2 class="s-title sm">범주형 열의 첫 점검</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">value_counts()</span></div>
+          <pre><code>df[<span class="st">'Embarked'</span>].value_counts()
+df[<span class="st">'Sex'</span>].value_counts(normalize=<span class="kw">True</span>)</code></pre>
+          <div class="out">Embarked
+S    644
+C    168
+Q     77
+
+Sex
+male      0.647587
+female    0.352413</div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>어떤 값이 <b>몇 종류, 몇 개씩</b> 있는지 한 줄로 나온다.</div></div>
+          <div class="v"><span class="b">→</span><div><code>normalize=True</code>를 주면 개수 대신 <b>비율</b>이 나온다.</div></div>
+          <div class="v"><span class="b">✕</span><div>결측은 기본적으로 <b>세지 않는다</b>. 644+168+77 = 889로, 891에서 2개가 빠져 있다.</div></div>
+          <div class="v"><span class="b">★</span><div>같은 값의 다른 표기(<code>Male</code> / <code>male</code> / <code> male </code>)가 섞이면 여기서 종류 수가 튄다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>범주 개수가 예상보다 많으면 <b>표기 흔들림</b>, 합계가 행 수보다 적으면 <b>결측</b>이다. 집계 전에 둘 다 본다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="object 타입">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>타입</div>
+  <h2 class="s-title sm">object 타입이 만드는 조용한 오답</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">Fare 가 문자열로 읽혔다면</span></div>
+          <pre><code>df[<span class="st">'Fare'</span>].dtype
+
+df[<span class="st">'Fare'</span>].sum()      <span class="cm"># 더해질까?</span>
+df[<span class="st">'Fare'</span>].max()      <span class="cm"># 최댓값은?</span></code></pre>
+          <div class="out">dtype('O')
+<span class="err">'7.2571.287.9253.10…'</span>   ← 이어 붙는다
+<span class="err">'9.8375'</span>                ← 사전 순 비교</div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">✕</span><div><code>sum()</code>이 <b>덧셈이 아니라 이어 붙이기</b>가 된다. 에러 없이 이상한 값이 나온다.</div></div>
+          <div class="v"><span class="b">✕</span><div><code>max()</code>는 사전 순으로 비교한다. <code>'9.8375'</code>가 <code>'512.33'</code>보다 크다고 나온다.</div></div>
+          <div class="v"><span class="b">★</span><div>그래서 <code>info()</code>로 <b>Dtype부터 확인</b>하는 것이 순서다.</div></div>
+        </div>
+        <div class="stat-row">
+          <div class="stat"><div class="num">object</div><div class="lab">문자열 — 계산 불가</div></div>
+          <div class="stat"><div class="num">float64</div><div class="lab">실수 — 계산 가능</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">함정</span><div>타입 문제는 <b>에러로 알려 주지 않는다</b>. 결과 숫자가 이상하면 가장 먼저 볼 곳이다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="타입 변환">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>타입</div>
+  <h2 class="s-title sm">타입을 지정하는 변환</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">astype() — 되돌려 담아야 반영된다</span></div>
+          <pre><code>df[<span class="st">'Fare'</span>] = df[<span class="st">'Fare'</span>].astype(<span class="st">'float64'</span>)
+
+<span class="cm"># 한꺼번에 — 딕셔너리로 열마다 지정</span>
+df = df.astype({
+    <span class="st">'Pclass'</span>: <span class="st">'category'</span>,
+    <span class="st">'Sex'</span>: <span class="st">'category'</span>,
+})</code></pre>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">✕</span><div>결측(<code>NaN</code>)이 있는 열은 <code>int</code>로 못 바꾼다. <code>float</code>이나 <code>'Int64'</code>를 쓴다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">to_numeric() — 실패한 값은 NaN 으로</span></div>
+          <pre><code>df[<span class="st">'Fare'</span>] = pd.to_numeric(
+    df[<span class="st">'Fare'</span>], errors=<span class="st">'coerce'</span>
+)
+
+<span class="cm"># 몇 개가 실패했는지 바로 센다</span>
+<span class="fn2">print</span>(df[<span class="st">'Fare'</span>].isna().sum())</code></pre>
+          <div class="out">0</div>
+        </div>
+        <table class="ctable">
+          <thead><tr><th>errors=</th><th>실패한 값을</th></tr></thead>
+          <tbody>
+            <tr><td><code>'raise'</code> (기본)</td><td>에러를 낸다 — 열 전체가 안 바뀐다</td></tr>
+            <tr><td><code>'coerce'</code></td><td><span class="hl">NaN으로 바꾼다</span> — 몇 개인지 셀 수 있다</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div><code>coerce</code>는 문제를 <b>숨기는 게 아니라 NaN으로 드러내는</b> 것이다. 센 다음 어떻게 할지는 사람이 정한다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="시리즈 연산">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>변환</div>
+  <h2 class="s-title sm">열 전체에 한 번에 걸리는 계산</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">반복문 없이</span></div>
+          <pre><code><span class="cm"># 열 하나에 상수 연산</span>
+df[<span class="st">'FareUSD'</span>] = df[<span class="st">'Fare'</span>] * <span class="nm">1.3</span>
+
+<span class="cm"># 열끼리 연산 — 같은 행끼리 짝지어진다</span>
+df[<span class="st">'Family'</span>] = df[<span class="st">'SibSp'</span>] + df[<span class="st">'Parch'</span>] + <span class="nm">1</span>
+
+<span class="cm"># 조건식도 열이 된다</span>
+df[<span class="st">'IsChild'</span>] = df[<span class="st">'Age'</span>] &lt; <span class="nm">18</span>
+
+<span class="cm"># 문자열 열은 .str 로 한꺼번에</span>
+df[<span class="st">'Sex'</span>] = df[<span class="st">'Sex'</span>].str.strip().str.lower()</code></pre>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>Series에 연산을 걸면 <b>모든 행에 동시에</b> 적용된다. 이것을 벡터 연산이라 한다.</div></div>
+          <div class="v"><span class="b">→</span><div>열끼리 연산은 <b>인덱스가 같은 행끼리</b> 짝지어진다.</div></div>
+          <div class="v"><span class="b">★</span><div>문자열 처리는 <code>.str</code>을 거친다. <code>.str.strip()</code> <code>.str.contains()</code> <code>.str.split()</code>.</div></div>
+        </div>
+        <div class="callout mint"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div class="ct"><h4>결측은 건너뛴다</h4><p><code>NaN</code>이 섞인 열도 <code>mean()</code>·<code>sum()</code>은 <b>결측을 빼고</b> 계산한다. 0으로 채울 필요가 없다.</p></div></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>Pandas에서 <code>for</code>로 행을 도는 코드를 보면 <b>벡터 연산으로 바꾼다</b>.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="map과 apply">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>변환</div>
+  <h2 class="s-title sm">값의 치환과 함수 적용</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">map() — 딕셔너리로 갈아 끼운다</span></div>
+          <pre><code>df[<span class="st">'SexCode'</span>] = df[<span class="st">'Sex'</span>].map({<span class="st">'male'</span>: <span class="nm">0</span>, <span class="st">'female'</span>: <span class="nm">1</span>})
+<span class="fn2">print</span>(df[<span class="st">'SexCode'</span>].head(<span class="nm">3</span>))</code></pre>
+          <div class="out">0    0
+1    1
+2    1</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">✕</span><div>대응표에 <b>없는 값은 NaN</b>이 된다. 범주를 먼저 <code>value_counts()</code>로 확인한다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">apply() — 직접 만든 함수를 태운다</span></div>
+          <pre><code><span class="kw">def</span> <span class="fn2">age_group</span>(a):
+    <span class="kw">if</span> a &lt; <span class="nm">13</span>:  <span class="kw">return</span> <span class="st">'child'</span>
+    <span class="kw">if</span> a &lt; <span class="nm">60</span>:  <span class="kw">return</span> <span class="st">'adult'</span>
+    <span class="kw">return</span> <span class="st">'senior'</span>
+
+df[<span class="st">'AgeGroup'</span>] = df[<span class="st">'Age'</span>].apply(age_group)
+
+<span class="cm"># 짧은 함수는 lambda 로 그 자리에서</span>
+df[<span class="st">'LogFare'</span>] = df[<span class="st">'Fare'</span>].apply(<span class="kw">lambda</span> f: f ** <span class="nm">0.5</span>)</code></pre>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div>태우는 함수에 <b><code>return</code>이 없으면</b> 열 전체가 <code>None</code>이 된다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>단순 치환은 <code>map()</code>, 조건 분기가 들어가면 <code>apply()</code>. 열끼리 계산으로 끝나면 <b>둘 다 쓰지 않는다</b>.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="통계 요약">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>요약</div>
+  <h2 class="s-title sm">숫자 열의 분포 요약</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">describe()</span></div>
+          <pre><code>df[[<span class="st">'Age'</span>, <span class="st">'Fare'</span>]].describe()</code></pre>
+          <div class="out">              Age        Fare
+count  <span class="err">714.0000</span>    891.0000
+mean    29.6991     32.2042
+std     14.5265     49.6934
+min      0.4200      <span class="err">0.0000</span>
+25%     20.1250      7.9104
+50%     28.0000     14.4542
+75%     38.0000     31.0000
+max     80.0000    <span class="err">512.3292</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div><b>숫자 열만</b> 대상이다. 문자열 열이 빠졌다면 타입을 의심한다.</div></div>
+          <div class="v"><span class="b">✕</span><div><code>Age</code>의 count가 714다. <b>177명의 나이가 비어 있다</b>.</div></div>
+          <div class="v"><span class="b">✕</span><div><code>Fare</code>의 max 512는 mean 32의 16배다. <b>이상치이거나 특급 객실</b>이다. 확인이 필요하다.</div></div>
+          <div class="v"><span class="b">→</span><div>mean 32와 median(50%) 14가 크게 벌어졌다. 분포가 <b>한쪽으로 쏠려</b> 있다.</div></div>
+        </div>
+        <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>평균만 보고하면 틀린다</h4><p>평균 요금 32달러는 <b>승객 대다수의 경험이 아니다</b>. 중앙값 14가 실제에 가깝다.</p></div></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div><code>describe()</code>는 요약이 아니라 <b>이상 탐지용</b>으로 먼저 본다. count · min · max가 첫 검문소다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="groupby">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>집계</div>
+  <h2 class="s-title sm">묶어서 접는 세 단계</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="pipe">
+      <div class="step"><div class="si">SPLIT</div><div class="sn">나눈다</div><div class="sd">'Sex' 값이 같은 행끼리</div></div>
+      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="step"><div class="si">APPLY</div><div class="sn">계산한다</div><div class="sd">각 묶음의 'Survived' 평균</div></div>
+      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="step"><div class="si">COMBINE</div><div class="sn">합친다</div><div class="sd">묶음마다 한 줄인 결과</div></div>
+    </div>
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">df.groupby("기준열")["대상열"].집계함수()</span></div>
+          <pre><code>df.groupby(<span class="st">'Sex'</span>)[<span class="st">'Survived'</span>].mean()
+df.groupby(<span class="st">'Pclass'</span>)[<span class="st">'Survived'</span>].mean()</code></pre>
+          <div class="out">Sex
+female    0.742038
+male      0.188908
+
+Pclass
+1    0.629630
+2    0.472826
+3    0.242363</div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>기준 열의 값이 <b>결과의 인덱스</b>가 된다.</div></div>
+          <div class="v"><span class="b">✕</span><div><code>groupby()</code>만 부르면 <code>DataFrameGroupBy</code> 객체다. <b>집계 함수를 붙여야</b> 표가 나온다.</div></div>
+          <div class="v"><span class="b">★</span><div>여성 74% 대 남성 19%. <b>Sex 하나가 생존을 4배 가른다</b> — 모델이 가장 먼저 잡을 신호다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">정리</span><div>모델을 만들기 전에 <code>groupby</code> 몇 줄로 <b>어떤 열이 답과 관계있는지</b> 먼저 본다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="groupby 심화">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>집계</div>
+  <h2 class="s-title sm">기준 여러 개, 집계 여러 개</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">기준 두 개 — 리스트로 넘긴다</span></div>
+          <pre><code>df.groupby([<span class="st">'Sex'</span>, <span class="st">'Pclass'</span>])[<span class="st">'Survived'</span>].mean()</code></pre>
+          <div class="out">Sex     Pclass
+female  1         0.968085
+        2         0.921053
+        3         0.500000
+male    1         0.368852
+        2         0.157407
+        3         0.135447</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>인덱스가 <b>두 단계</b>가 된다. <code>.reset_index()</code>를 붙이면 평범한 표로 펴진다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">agg() — 열마다 다른 집계</span></div>
+          <pre><code>df.groupby(<span class="st">'Pclass'</span>).agg({
+    <span class="st">'Survived'</span>: [<span class="st">'mean'</span>, <span class="st">'count'</span>],
+    <span class="st">'Fare'</span>: <span class="st">'median'</span>,
+})</code></pre>
+          <div class="out">        Survived         Fare
+            mean count median
+Pclass
+1       0.629630   216  60.29
+2       0.472826   184  14.25
+3       0.242363   491   8.05</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div><code>count</code>를 같이 낸다. <b>표본 수가 적은 그룹</b>의 평균은 근거가 약하다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">주의</span><div>1등석 여성 96.8%는 표본 94명에서 나왔다. 그룹별 평균을 보고할 때는 <b>그룹 크기를 같이</b> 낸다.</div></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 전처리">
+  <div class="ghost">02</div>
+  <div class="seyebrow">CHAPTER 02</div>
+  <h2>전처리</h2>
+  <div class="agenda"><span>결측치</span><span>인코딩</span><span>스케일링</span></div>
+</section>
+<section class="slide" data-title="손대기 전의 표">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>현장</div>
+  <h2 class="s-title sm">손대기 전의 표</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable">
+      <thead><tr><th>lot_id</th><th>소성온도</th><th>체류시간</th><th>D50</th><th>산소농도</th><th>판정</th></tr></thead>
+      <tbody>
+        <tr><td>A-2401</td><td>945</td><td>6.5</td><td>11.2</td><td>19.8</td><td>양품</td></tr>
+        <tr><td>A-2402</td><td class="no">1,010</td><td class="no">(빈칸)</td><td>12.8</td><td>19.5</td><td>불량</td></tr>
+        <tr><td>A-2403</td><td class="no">948℃</td><td>6.0</td><td>11.5</td><td class="no">N/A</td><td>양품</td></tr>
+        <tr><td class="no">a-2404</td><td>952</td><td>6.2</td><td>11.9</td><td>19.9</td><td class="no">양 품</td></tr>
+      </tbody>
+    </table>
+    <div class="vlist">
+      <div class="v"><span class="b">✕</span><div><code>1,010</code> 의 쉼표와 <code>948℃</code> 의 단위 때문에 <b>열 전체가 문자열</b>로 읽힌다.</div></div>
+      <div class="v"><span class="b">✕</span><div>빈칸과 <code>N/A</code> 는 <b>같은 결측인데 표기가 다르다</b>. 한쪽만 걸러진다.</div></div>
+      <div class="v"><span class="b">✕</span><div><code>a-2404</code> 와 <code>양 품</code> — 대소문자와 공백이 흔들리면 <b>다른 값으로 세어진다</b>.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>표를 받으면 계산부터 하지 않는다. <b>타입 · 결측 · 표기</b> 세 가지를 먼저 확인한다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="전처리 네 단계">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>지도</div>
+  <h2 class="s-title sm">전처리 네 단계</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c4">
+      <div class="card"><span class="n">01</span><h3>결측치</h3><p>빈칸이 하나라도 있으면 <b>학습이 시작되지 않는다</b>.</p><div class="chips"><span class="chip">Age 177개</span></div></div>
+      <div class="card"><span class="n">02</span><h3>인코딩</h3><p>모델은 글자를 못 읽는다. <b>범주를 숫자로</b> 바꾼다.</p><div class="chips"><span class="chip">Sex · Embarked</span></div></div>
+      <div class="card"><span class="n">03</span><h3>스케일링</h3><p>단위가 다르면 <b>큰 숫자 열이 결과를 지배</b>한다.</p><div class="chips"><span class="chip">Age 0~80</span><span class="chip">Fare 0~512</span></div></div>
+      <div class="card"><span class="n">04</span><h3>분할</h3><p>성적을 잴 <b>안 본 데이터</b>를 미리 떼어 둔다.</p><div class="chips"><span class="chip">train / test</span></div></div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>실무에서 모델 성능을 실제로 움직이는 것은 알고리즘 교체보다 <b>이 네 단계의 품질</b>이다.</div></div>
+      <div class="v"><span class="b">→</span><div>새 데이터가 와도 이 순서를 그대로 밟는다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>모델이 먹는 것은 <b>결측 없고 · 전부 숫자이고 · 크기가 비슷한</b> 직사각형 표 하나다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="결측치 확인">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>결측</div>
+  <h2 class="s-title sm">비어 있는 칸의 정체</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">몇 개가 비었는지</span></div>
+          <pre><code>df.isna().sum()
+df.isna().mean().sort_values(ascending=<span class="kw">False</span>)</code></pre>
+          <div class="out">Cabin       687
+Age         177
+Embarked      2
+Survived      0
+
+Cabin       0.771044
+Age         0.198653
+Embarked    0.002245</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div><code>NaN</code>은 "값 없음"이다. <code>0</code>이나 빈 문자열과 <b>다른 것</b>이다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">비어 있는 행을 직접 본다</span></div>
+          <pre><code>df[df[<span class="st">'Age'</span>].isna()].head(<span class="nm">3</span>)
+
+<span class="cm"># 결측 여부가 답과 관계있는지 확인</span>
+df.groupby(df[<span class="st">'Age'</span>].isna())[<span class="st">'Survived'</span>].mean()</code></pre>
+          <div class="out">Age
+False    0.406162
+True     0.293785</div>
+        </div>
+        <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>결측 자체가 정보다</h4><p>나이가 비어 있는 승객의 생존율이 29%로 더 낮다. <b>무작위로 빈 것이 아니라</b>는 뜻이다.</p></div></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>메우기 전에 <b>왜 비었는지</b>를 먼저 본다. 결측 비율이 77%인 <code>Cabin</code>은 메울 것이 아니라 버릴 열이다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="결측치 처리">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>결측</div>
+  <h2 class="s-title sm">결측치를 메우는 세 갈래</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c3">
+      <div class="card"><span class="n">01</span><h3>버린다</h3>
+        <div class="code sm"><pre><code>df.dropna(subset=[<span class="st">'Embarked'</span>])
+df.drop(columns=[<span class="st">'Cabin'</span>])</code></pre></div>
+        <p>결측이 <b>몇 개뿐</b>이거나, <b>열 대부분이 비었을</b> 때.</p></div>
+      <div class="card"><span class="n">02</span><h3>대푯값으로 채운다</h3>
+        <div class="code sm"><pre><code>df[<span class="st">'Age'</span>] = df[<span class="st">'Age'</span>].fillna(
+    df[<span class="st">'Age'</span>].median())</code></pre></div>
+        <p>평균보다 <b>중앙값</b>이 안전하다. 이상치에 안 흔들린다.</p></div>
+      <div class="card"><span class="n">03</span><h3>그룹별로 채운다</h3>
+        <div class="code sm"><pre><code>df[<span class="st">'Age'</span>] = df.groupby(<span class="st">'Pclass'</span>)[<span class="st">'Age'</span>] \
+    .transform(<span class="kw">lambda</span> s: s.fillna(s.median()))</code></pre></div>
+        <p>등급마다 나이대가 다르면 <b>훨씬 정확하다</b>.</p></div>
+    </div>
+    <div class="twocol">
+      <div>
+        <div class="callout rose"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4><code>fillna(0)</code>은 답이 아니다</h4><p>앞서 본 그 사고다. 나이 0살 승객 177명이 생긴다. <b>0이 뜻을 갖는 열</b>에서만 쓴다.</p></div></div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div>채운 흔적을 남기려면 <code>df['AgeMissing'] = df['Age'].isna()</code> 열을 <b>먼저</b> 만든다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>결측 처리는 정답이 없다. <b>무엇으로 채웠는지 기록</b>하고, 채운 방식이 결과를 얼마나 바꾸는지 비교한다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="범주형 인코딩">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>인코딩</div>
+  <h2 class="s-title sm">글자를 숫자로 바꾸는 두 방식</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twopane">
+      <div class="pane bad"><h4>레이블 인코딩</h4><div class="mini">S → 0
+C → 1
+Q → 2</div><p>열 하나로 끝나지만, 모델이 <b>Q &gt; C &gt; S 라는 순서</b>가 있다고 오해한다.</p></div>
+      <div class="pane good"><h4>원-핫 인코딩</h4><div class="mini">        S   C   Q
+승객1    1   0   0
+승객2    0   1   0</div><p>열이 늘어나는 대신 <b>순서를 만들지 않는다</b>.</p></div>
+    </div>
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">get_dummies — 원-핫</span></div>
+          <pre><code>df = pd.get_dummies(
+    df, columns=[<span class="st">'Sex'</span>, <span class="st">'Embarked'</span>],
+    drop_first=<span class="kw">True</span>   <span class="cm"># 첫 범주는 뺀다</span>
+)
+<span class="fn2">print</span>(df.columns.tolist())</code></pre>
+          <div class="out">[..., 'Sex_male', 'Embarked_Q', 'Embarked_S']</div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div><b>순서가 있는 범주</b>(등급 1·2·3, 대·중·소)는 레이블 인코딩이 맞다.</div></div>
+          <div class="v"><span class="b">→</span><div><b>순서가 없는 범주</b>(성별, 도시, 색)는 원-핫이 맞다.</div></div>
+          <div class="v"><span class="b">✕</span><div>범주가 수백 개면 원-핫으로 열이 수백 개가 된다. 그때는 다른 방법을 쓴다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>범주에 <b>크고 작음이 있느냐</b>로 고른다. 없는데 숫자를 매기면 모델이 없는 순서를 학습한다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="스케일링의 필요성">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>스케일</div>
+  <h2 class="s-title sm">단위가 다른 열의 문제</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <table class="ctable">
+          <thead><tr><th>열</th><th>범위</th><th>평균</th></tr></thead>
+          <tbody>
+            <tr><td><code>Age</code></td><td>0.42 ~ 80</td><td>29.7</td></tr>
+            <tr><td><code>Fare</code></td><td>0 ~ <span class="hl">512.3</span></td><td>32.2</td></tr>
+            <tr><td><code>SibSp</code></td><td>0 ~ 8</td><td>0.52</td></tr>
+            <tr><td><code>Sex_male</code></td><td>0 ~ 1</td><td>0.65</td></tr>
+          </tbody>
+        </table>
+        <div class="vlist">
+          <div class="v"><span class="b">✕</span><div>거리로 판단하는 모델(KNN·SVM)과 신경망에서 <b>Fare가 다른 열을 눌러 버린다</b>.</div></div>
+          <div class="v"><span class="b">✕</span><div>신경망에서 스케일링을 빼면 <b>손실이 안 떨어지거나 발산</b>한다. 가장 흔한 실패 원인이다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="plot">
+          <svg viewBox="0 0 320 210">
+            <text x="10" y="16" font-size="11" fill="#8E8AAC">스케일링 전</text>
+            <line x1="12" y1="80" x2="308" y2="80" stroke="#E8E4F8" stroke-width="1.2"/>
+            <rect x="12" y="60" width="14" height="18" fill="#5B3DF5"/><text x="32" y="74" font-size="10" fill="#4A4766">Sex 0~1</text>
+            <rect x="12" y="38" width="46" height="18" fill="#0FB5A1"/><text x="64" y="52" font-size="10" fill="#4A4766">Age 0~80</text>
+            <rect x="12" y="24" width="290" height="10" fill="#E8537A"/><text x="228" y="20" font-size="10" fill="#4A4766">Fare 0~512</text>
+
+            <text x="10" y="126" font-size="11" fill="#8E8AAC">표준화 후</text>
+            <line x1="12" y1="190" x2="308" y2="190" stroke="#E8E4F8" stroke-width="1.2"/>
+            <rect x="12" y="170" width="96" height="18" fill="#5B3DF5"/><text x="114" y="184" font-size="10" fill="#4A4766">Sex</text>
+            <rect x="12" y="148" width="104" height="18" fill="#0FB5A1"/><text x="122" y="162" font-size="10" fill="#4A4766">Age</text>
+            <rect x="12" y="134" width="100" height="10" fill="#E8537A"/><text x="118" y="143" font-size="10" fill="#4A4766">Fare</text>
+          </svg>
+          <div class="cap">세 열의 값 범위 — 전과 후</div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>트리 계열은 스케일링이 필요 없다. <b>거리·기울기를 쓰는 모델</b>에는 반드시 필요하다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="표준화와 정규화">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>스케일</div>
+  <h2 class="s-title sm">표준화와 정규화</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="phase-label">표준화 StandardScaler<span class="ln"></span></div>
+        <div class="formula">
+          <div class="big">z = (x − 평균) / 표준편차</div>
+          <div class="cap">평균 0, 표준편차 1로 맞춘다</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>범위가 정해지지 않는다. <b>이상치가 있어도 덜 망가진다</b>.</div></div>
+          <div class="v"><span class="b">★</span><div>기본값으로 이것을 쓴다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="phase-label">정규화 MinMaxScaler<span class="ln"></span></div>
+        <div class="formula">
+          <div class="big">x' = (x − 최소) / (최대 − 최소)</div>
+          <div class="cap">모든 값을 0~1 사이로 밀어 넣는다</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>범위가 <b>0~1로 고정</b>된다. 이미지 픽셀처럼 상·하한이 분명할 때.</div></div>
+          <div class="v"><span class="b">✕</span><div>이상치 하나가 <b>나머지를 전부 0 근처로</b> 눌러 버린다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="code sm">
+      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">scikit-learn</span></div>
+      <pre><code><span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> StandardScaler
+
+scaler = StandardScaler()
+X_train_s = scaler.fit_transform(X_train)   <span class="cm"># 훈련셋으로 기준을 배운다</span>
+X_test_s  = scaler.transform(X_test)        <span class="cm"># 테스트셋은 그 기준을 쓰기만</span></code></pre>
+    </div>
+    <div class="keymsg"><span class="k">주의</span><div>테스트셋에 <code>fit_transform</code>을 쓰면 <b>테스트 정보가 새어 들어간다</b>. 다음 장이 그 이야기다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="데이터 분할">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>분할</div>
+  <h2 class="s-title sm">훈련·검증·테스트의 분리</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="pipe">
+      <div class="step"><div class="si">60~80%</div><div class="sn">훈련 Train</div><div class="sd">모델이 규칙을 찾는 데 쓴다</div></div>
+      <div class="step"><div class="si">10~20%</div><div class="sn">검증 Validation</div><div class="sd">설정을 고르고 멈출 시점을 잡는다</div></div>
+      <div class="step"><div class="si">10~20%</div><div class="sn">테스트 Test</div><div class="sd">최종 성적 — 딱 한 번만 본다</div></div>
+    </div>
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">train_test_split</span></div>
+          <pre><code><span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> train_test_split
+
+X = df.drop(columns=[<span class="st">'Survived'</span>])
+y = df[<span class="st">'Survived'</span>]
+
+X_tr, X_te, y_tr, y_te = train_test_split(
+    X, y, test_size=<span class="nm">0.2</span>,
+    random_state=<span class="nm">42</span>,   <span class="cm"># 재현 가능하게</span>
+    stratify=y         <span class="cm"># 생존 비율을 양쪽에 유지</span>
+)</code></pre>
+        </div>
+      </div>
+      <div>
+        <div class="callout rose"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>데이터 누수 — 가장 흔한 실수</h4><p>전체 데이터로 <code>fit_transform</code>을 하고 나서 쪼개면, 스케일러가 <b>테스트셋의 평균까지 이미 봤다</b>. 성적이 실제보다 좋게 나온다.</p></div></div>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div>순서는 <b>쪼개고 → 훈련셋으로 fit → 양쪽에 transform</b>이다. 결측 대치도 마찬가지다.</div></div>
+          <div class="v"><span class="b">✕</span><div>시계열은 무작위로 쪼개면 안 된다. <b>시점으로</b> 자른다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>테스트셋은 <b>마지막에 한 번</b> 쓴다. 여러 번 보고 모델을 고치면 그 숫자는 더 이상 실전 성능이 아니다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="전처리 순서">
+  <!-- lint:code-ok 다섯 단계를 순서대로 한 화면에 보이는 것이 이 슬라이드의 내용이다 -->
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>정리</div>
+  <h2 class="s-title sm">전처리의 순서</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">타이타닉 — 처음부터 끝까지</span></div>
+          <pre><code><span class="cm"># 1. 쓸모없는 열 제거</span>
+df = df.drop(columns=[<span class="st">'PassengerId'</span>, <span class="st">'Name'</span>,
+                      <span class="st">'Ticket'</span>, <span class="st">'Cabin'</span>])
+
+<span class="cm"># 2. 결측 처리</span>
+df[<span class="st">'Age'</span>] = df[<span class="st">'Age'</span>].fillna(df[<span class="st">'Age'</span>].median())
+df = df.dropna(subset=[<span class="st">'Embarked'</span>])
+
+<span class="cm"># 3. 범주형 인코딩</span>
+df = pd.get_dummies(df, columns=[<span class="st">'Sex'</span>, <span class="st">'Embarked'</span>],
+                    drop_first=<span class="kw">True</span>)
+
+<span class="cm"># 4. 분할 — 스케일링보다 먼저</span>
+X_tr, X_te, y_tr, y_te = train_test_split(...)
+
+<span class="cm"># 5. 스케일링 — 훈련셋 기준으로</span>
+X_tr = scaler.fit_transform(X_tr)
+X_te = scaler.transform(X_te)</code></pre>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>열 제거가 먼저다. 안 쓸 열을 손질하는 데 시간을 쓰지 않는다.</div></div>
+          <div class="v"><span class="b">★</span><div><b>분할이 스케일링보다 앞</b>이다. 순서를 바꾸면 누수가 생긴다.</div></div>
+          <div class="v"><span class="b">→</span><div>같은 처리를 새 데이터에도 해야 한다. 그래서 이 순서를 <b>함수로 묶어</b> 둔다.</div></div>
+        </div>
+        <div class="deliv"><div class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div><div class="dt"><b>실습 산출물</b><span>전처리를 끝낸 X_train · X_test · y_train · y_test</span></div></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>모델 학습은 <b>이 다섯 줄의 결과</b>에서 시작한다. 여기가 틀리면 뒤가 전부 틀린다.</div></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 시각화">
+  <div class="ghost">03</div>
+  <div class="seyebrow">CHAPTER 03</div>
+  <h2>시각화</h2>
+  <div class="agenda"><span>Matplotlib</span><span>seaborn</span></div>
+</section>
+<section class="slide" data-title="Matplotlib">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>배경</div>
+  <h2 class="s-title sm">선 하나로 드러나는 것</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">불러오기 — 관례상 plt</span></div>
+          <pre><code><span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+
+plt.plot(x, y)   <span class="cm"># 그리고</span>
+plt.show()       <span class="cm"># 화면에 내보낸다</span></code></pre>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div><code>plt.show()</code> 전까지는 <b>쌓아 두는 상태</b>다. 여러 명령이 한 그림에 겹쳐 쌓인다.</div></div>
+          <div class="v"><span class="b">★</span><div><b>손실 곡선</b>을 이걸로 그린다. 학습이 되고 있는지 보는 유일한 수단이다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="plot">
+          <svg viewBox="0 0 360 220">
+            <line x1="46" y1="180" x2="340" y2="180" stroke="#8E8AAC" stroke-width="1.2"/>
+            <line x1="46" y1="20" x2="46" y2="180" stroke="#8E8AAC" stroke-width="1.2"/>
+            <g stroke="#E8E4F8" stroke-width="1"><line x1="46" y1="140" x2="340" y2="140"/><line x1="46" y1="100" x2="340" y2="100"/><line x1="46" y1="60" x2="340" y2="60"/></g>
+            <polyline fill="none" stroke="#5B3DF5" stroke-width="2.6" stroke-linejoin="round"
+              points="60,40 106,86 152,118 198,138 244,150 290,156 336,159"/>
+            <g font-family="monospace" font-size="11" fill="#8E8AAC">
+              <text x="14" y="44">0.7</text><text x="14" y="104">0.4</text><text x="14" y="164">0.1</text>
+              <text x="52" y="198">0</text><text x="180" y="198">25</text><text x="320" y="198">50</text>
+            </g>
+            <text x="336" y="212" text-anchor="end" font-size="10.5" fill="#8E8AAC">epoch</text>
+          </svg>
+          <div class="cap">손실 곡선</div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div><code>describe()</code>가 놓치는 <b>추세 · 이상치 · 분포 모양</b>은 그래프에서만 보인다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="그래프 꾸미기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>꾸미기</div>
+  <h2 class="s-title sm">그림 안에 들어가야 할 것</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">제목 · 축 이름 · 범례</span></div>
+          <pre><code>plt.plot(x, train_loss, label=<span class="st">"train"</span>)
+plt.plot(x, val_loss,   label=<span class="st">"validation"</span>)
+
+plt.xlabel(<span class="st">"epoch"</span>)
+plt.ylabel(<span class="st">"loss"</span>)
+plt.legend()
+plt.show()</code></pre>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div><code>label=</code>을 적어 두고 <code>legend()</code>를 불러야 범례가 뜬다. 둘 중 하나만 있으면 안 나온다.</div></div>
+          <div class="v"><span class="b">→</span><div>축 이름에 <b>단위</b>를 적는다. 숫자만 있으면 읽는 사람이 되묻는다.</div></div>
+          <div class="v"><span class="b">→</span><div><code>title()</code> <code>grid(True)</code>로 제목과 눈금선을 더한다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>선이 둘 이상인 그래프에서 <b>범례가 없으면 그림이 아니라 낙서</b>다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="한글 폰트">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>폰트</div>
+  <h2 class="s-title sm">한글 폰트 설정</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">Colab — 맨 위 셀에 둔다</span></div>
+          <pre><code>!apt-get install -qq fonts-nanum
+
+plt.rc(<span class="st">'font'</span>, family=<span class="st">'NanumBarunGothic'</span>)
+plt.rc(<span class="st">'axes'</span>, unicode_minus=<span class="kw">False</span>)</code></pre>
+        </div>
+      </div>
+      <div>
+        <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>네모(□□□)의 정체</h4><p>기본 폰트에 한글 글리프가 없어서다. 그래프가 틀린 게 아니라 <b>글꼴이 없는 것</b>이다. 설치 후 <b>런타임을 다시 시작</b>해야 잡히고, 세션이 새로 뜨면 초기화된다.</p></div></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">주의</span><div><code>unicode_minus=False</code>를 빼면 <b>음수 부호가 네모</b>로 남는다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="기본 그래프 네 가지">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>선택</div>
+  <h2 class="s-title sm">네 가지 기본 그래프</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c4">
+      <div class="card"><span class="n">plot</span><h3>선 그래프</h3>
+        <div class="plot"><svg viewBox="0 0 180 100"><line x1="14" y1="86" x2="172" y2="86" stroke="#E8E4F8"/><polyline fill="none" stroke="#5B3DF5" stroke-width="2.4" points="20,74 52,52 84,60 116,30 156,22"/></svg></div>
+        <p><b>순서·시간</b>에 따른 변화.</p></div>
+      <div class="card"><span class="n">bar</span><h3>막대 그래프</h3>
+        <div class="plot"><svg viewBox="0 0 180 100"><line x1="14" y1="86" x2="172" y2="86" stroke="#E8E4F8"/><rect x="26" y="30" width="26" height="56" fill="#5B3DF5"/><rect x="70" y="52" width="26" height="34" fill="#0FB5A1"/><rect x="114" y="64" width="26" height="22" fill="#F4A93C"/></svg></div>
+        <p><b>범주별</b> 크기 비교.</p></div>
+      <div class="card"><span class="n">scatter</span><h3>산점도</h3>
+        <div class="plot"><svg viewBox="0 0 180 100"><line x1="14" y1="86" x2="172" y2="86" stroke="#E8E4F8"/><g fill="#5B3DF5"><circle cx="34" cy="70" r="3.5"/><circle cx="56" cy="58" r="3.5"/><circle cx="72" cy="64" r="3.5"/><circle cx="94" cy="40" r="3.5"/><circle cx="118" cy="46" r="3.5"/><circle cx="140" cy="26" r="3.5"/><circle cx="156" cy="34" r="3.5"/></g></svg></div>
+        <p>두 열 사이의 <b>관계</b>.</p></div>
+      <div class="card"><span class="n">hist</span><h3>히스토그램</h3>
+        <div class="plot"><svg viewBox="0 0 180 100"><line x1="14" y1="86" x2="172" y2="86" stroke="#E8E4F8"/><g fill="#5B3DF5"><rect x="20" y="66" width="20" height="20"/><rect x="42" y="46" width="20" height="40"/><rect x="64" y="26" width="20" height="60"/><rect x="86" y="38" width="20" height="48"/><rect x="108" y="58" width="20" height="28"/><rect x="130" y="74" width="20" height="12"/></g></svg></div>
+        <p>한 열의 <b>분포 모양</b>.</p></div>
+    </div>
+    <div class="code sm">
+      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">타이타닉에 적용하면</span></div>
+      <pre><code>df[<span class="st">'Age'</span>].hist(bins=<span class="nm">30</span>)                        <span class="cm"># 나이 분포 — 어디에 몰렸나</span>
+df.groupby(<span class="st">'Pclass'</span>)[<span class="st">'Survived'</span>].mean().plot.bar()  <span class="cm"># 등급별 생존율</span>
+df.plot.scatter(x=<span class="st">'Age'</span>, y=<span class="st">'Fare'</span>)                 <span class="cm"># 나이와 요금의 관계</span></code></pre>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>한 열의 <b>분포</b>는 히스토그램, 두 열의 <b>관계</b>는 산점도, 범주별 <b>비교</b>는 막대다. 목적이 그래프를 정한다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="figure와 subplot">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>배치</div>
+  <h2 class="s-title sm">종이 한 장과 그 안의 칸</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div><b>figure</b> — 그림을 그리는 종이 한 장.</div></div>
+          <div class="v"><span class="b">→</span><div><b>subplot(ax)</b> — 그 종이를 나눈 칸. 각 칸이 독립된 축을 가진다.</div></div>
+          <div class="v"><span class="b">★</span><div>칸마다 <code>ax.plot()</code> <code>ax.set_title()</code>처럼 <b>ax에 붙여</b> 호출한다.</div></div>
+        </div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">1×2 로 나누기</span></div>
+          <pre><code>fig, ax = plt.subplots(<span class="nm">1</span>, <span class="nm">2</span>, figsize=(<span class="nm">10</span>, <span class="nm">4</span>),
+                       constrained_layout=<span class="kw">True</span>)
+
+ax[<span class="nm">0</span>].hist(df[<span class="st">'Age'</span>].dropna(), bins=<span class="nm">30</span>)
+ax[<span class="nm">0</span>].set_title(<span class="st">"Age"</span>)
+ax[<span class="nm">1</span>].hist(df[<span class="st">'Fare'</span>], bins=<span class="nm">30</span>)
+ax[<span class="nm">1</span>].set_title(<span class="st">"Fare"</span>)
+plt.show()</code></pre>
+        </div>
+      </div>
+      <div>
+        <div class="plot">
+          <svg viewBox="0 0 340 200">
+            <rect x="8" y="8" width="324" height="184" fill="#fff" stroke="#B7A9FF" stroke-dasharray="5 4"/>
+            <text x="14" y="24" font-family="monospace" font-size="10" fill="#8E8AAC">figure</text>
+            <g stroke="#E8E4F8" fill="#FAF9FF">
+              <rect x="24" y="36" width="140" height="140"/><rect x="180" y="36" width="140" height="140"/>
+            </g>
+            <g fill="#5B3DF5"><rect x="40" y="120" width="16" height="48"/><rect x="58" y="86" width="16" height="82"/><rect x="76" y="70" width="16" height="98"/><rect x="94" y="96" width="16" height="72"/><rect x="112" y="132" width="16" height="36"/><rect x="130" y="152" width="16" height="16"/></g>
+            <g fill="#0FB5A1"><rect x="196" y="60" width="16" height="108"/><rect x="214" y="112" width="16" height="56"/><rect x="232" y="140" width="16" height="28"/><rect x="250" y="152" width="16" height="16"/><rect x="268" y="158" width="16" height="10"/><rect x="286" y="162" width="16" height="6"/></g>
+            <text x="94" y="50" text-anchor="middle" font-size="11" fill="#4A4766">Age</text>
+            <text x="250" y="50" text-anchor="middle" font-size="11" fill="#4A4766">Fare</text>
+            <text x="28" y="190" font-family="monospace" font-size="9.5" fill="#8E8AAC">ax[0]</text>
+            <text x="184" y="190" font-family="monospace" font-size="9.5" fill="#8E8AAC">ax[1]</text>
+          </svg>
+          <div class="cap">Fare는 왼쪽으로 심하게 쏠려 있다</div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>같은 축으로 비교할 것은 <b>한 칸에 겹쳐</b>, 단위가 다른 것은 <b>칸을 나눠</b> 그린다. 겹침은 <code>constrained_layout</code>이 푼다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="seaborn">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>seaborn</div>
+  <h2 class="s-title sm">DataFrame을 그대로 받는 층</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twopane">
+      <div class="pane bad"><h4>Matplotlib</h4><div class="mini">for p in sorted(df['Pclass'].unique()):
+    sub = df[df['Pclass'] == p]
+    plt.hist(sub['Age'].dropna(), label=p, alpha=.5)
+plt.legend()</div><p>값을 <b>직접 꺼내</b> 넘긴다.</p></div>
+      <div class="pane good"><h4>seaborn</h4><div class="mini">import seaborn as sns
+
+sns.histplot(data=df, x='Age', hue='Pclass')</div><p>표와 <b>열 이름</b>만 알려 주면 나눠 그린다.</p></div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">→</span><div><code>hue</code>에 준 열의 <b>값마다 색이 갈리고 범례가 자동</b>으로 붙는다.</div></div>
+      <div class="v"><span class="b">→</span><div>seaborn은 Matplotlib <b>위에 얹힌 층</b>이다. <code>plt.title()</code> 같은 명령이 그대로 통한다.</div></div>
+      <div class="v"><span class="b">★</span><div>테마는 맨 위에서 한 번 건다. <code>sns.set_style("whitegrid")</code>.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>범주별로 갈라 그릴 일이면 seaborn이 짧다. 축을 세밀하게 통제할 일이면 Matplotlib이다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="탐색용 그래프">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>탐색</div>
+  <h2 class="s-title sm">모델 만들기 전에 보는 두 장</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="phase-label">상관 히트맵 — 어떤 열이 답과 붙어 있나<span class="ln"></span></div>
+        <div class="code sm"><pre><code>sns.heatmap(df.corr(numeric_only=<span class="kw">True</span>),
+            annot=<span class="kw">True</span>, fmt=<span class="st">'.2f'</span>, cmap=<span class="st">'coolwarm'</span>)</code></pre></div>
+        <div class="plot">
+          <svg viewBox="0 0 300 120">
+            <g font-size="9.5" font-family="monospace" fill="#8E8AAC">
+              <text x="4" y="30">Survived</text><text x="4" y="60">Pclass</text><text x="4" y="90">Fare</text>
+              <text x="72" y="14">Surv</text><text x="132" y="14">Pcls</text><text x="196" y="14">Fare</text>
+            </g>
+            <g><rect x="66" y="20" width="56" height="26" fill="#5B3DF5"/><rect x="128" y="20" width="56" height="26" fill="#7FA8E8"/><rect x="190" y="20" width="56" height="26" fill="#C8B4F0"/>
+               <rect x="66" y="50" width="56" height="26" fill="#7FA8E8"/><rect x="128" y="50" width="56" height="26" fill="#5B3DF5"/><rect x="190" y="50" width="56" height="26" fill="#8FBEEA"/>
+               <rect x="66" y="80" width="56" height="26" fill="#C8B4F0"/><rect x="128" y="80" width="56" height="26" fill="#8FBEEA"/><rect x="190" y="80" width="56" height="26" fill="#5B3DF5"/></g>
+            <g font-size="10" fill="#fff" text-anchor="middle">
+              <text x="94" y="38">1.00</text><text x="156" y="38">-.34</text><text x="218" y="38">.26</text>
+              <text x="94" y="68">-.34</text><text x="156" y="68">1.00</text><text x="218" y="68">-.55</text>
+              <text x="94" y="98">.26</text><text x="156" y="98">-.55</text><text x="218" y="98">1.00</text>
+            </g>
+          </svg>
+          <div class="cap">Pclass와 Survived는 −0.34 — 등급이 낮을수록 덜 살았다</div>
+        </div>
+      </div>
+      <div>
+        <div class="phase-label">박스플롯 — 분포와 이상치를 같이<span class="ln"></span></div>
+        <div class="code sm"><pre><code>sns.boxplot(data=df, x=<span class="st">'Pclass'</span>, y=<span class="st">'Fare'</span>)</code></pre></div>
+        <div class="plot">
+          <svg viewBox="0 0 300 140">
+            <line x1="34" y1="122" x2="288" y2="122" stroke="#8E8AAC" stroke-width="1.2"/>
+            <line x1="34" y1="10" x2="34" y2="122" stroke="#8E8AAC" stroke-width="1.2"/>
+            <g stroke="#5B3DF5" stroke-width="1.6" fill="#EFEAFF">
+              <line x1="86" y1="20" x2="86" y2="46"/><rect x="66" y="46" width="40" height="34"/><line x1="66" y1="62" x2="106" y2="62" stroke-width="2.4"/><line x1="86" y1="80" x2="86" y2="94"/>
+              <line x1="164" y1="72" x2="164" y2="86"/><rect x="144" y="86" width="40" height="18"/><line x1="144" y1="95" x2="184" y2="95" stroke-width="2.4"/><line x1="164" y1="104" x2="164" y2="112"/>
+              <line x1="242" y1="90" x2="242" y2="100"/><rect x="222" y="100" width="40" height="12"/><line x1="222" y1="106" x2="262" y2="106" stroke-width="2.4"/><line x1="242" y1="112" x2="242" y2="118"/>
+            </g>
+            <g fill="#E8537A"><circle cx="86" cy="14" r="3"/><circle cx="86" cy="24" r="3"/><circle cx="164" cy="60" r="3"/><circle cx="242" cy="78" r="3"/></g>
+            <g font-size="10" fill="#8E8AAC" text-anchor="middle"><text x="86" y="136">1등석</text><text x="164" y="136">2등석</text><text x="242" y="136">3등석</text></g>
+          </svg>
+          <div class="cap">점으로 튀어나온 것이 이상치다</div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>모델을 돌리기 전에 이 두 장을 본다. <b>답과 관계있는 열</b>과 <b>손봐야 할 이상치</b>가 여기서 정해진다.</div></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 배열 연산">
+  <div class="ghost">04</div>
+  <div class="seyebrow">CHAPTER 04</div>
+  <h2>배열 연산</h2>
+  <div class="agenda"><span>reshape</span><span>브로드캐스팅</span><span>행렬 곱</span></div>
+</section>
 <section class="slide" data-title="reshape">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>shape</div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>shape</div>
   <h2 class="s-title sm">같은 데이터 다른 모양</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1653,56 +1698,9 @@ size 6 into shape (4,2)</span></div>
     <div class="keymsg"><span class="k">기준</span><div>reshape는 <b>값을 바꾸지 않는다</b>. 같은 데이터를 다른 칸에 다시 담을 뿐이다.</div></div>
   </div>
 </section>
-
-<section class="slide" data-title="인덱싱과 마스크">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>선택</div>
-  <h2 class="s-title sm">인덱싱과 불리언 마스크</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">축마다 쉼표로 나눈다</span></div>
-          <pre><code>X = np.arange(<span class="nm">12</span>).reshape(<span class="nm">3</span>, <span class="nm">4</span>)
-<span class="fn2">print</span>(X)
-
-<span class="fn2">print</span>(X[<span class="nm">0</span>, <span class="nm">2</span>])     <span class="cm"># 0행 2열</span>
-<span class="fn2">print</span>(X[<span class="nm">1</span>])        <span class="cm"># 1행 전체</span>
-<span class="fn2">print</span>(X[:, <span class="nm">0</span>])     <span class="cm"># 0열 전체</span></code></pre>
-          <div class="out">[[ 0  1  2  3]
- [ 4  5  6  7]
- [ 8  9 10 11]]
-2
-[4 5 6 7]
-[0 4 8]</div>
-        </div>
-      </div>
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">조건으로 고르기</span></div>
-          <pre><code>a = np.array([<span class="nm">22</span>, <span class="nm">38</span>, <span class="nm">4</span>, <span class="nm">35</span>])
-
-mask = a &gt;= <span class="nm">18</span>       <span class="cm"># True/False 배열</span>
-<span class="fn2">print</span>(mask)
-<span class="fn2">print</span>(a[mask])        <span class="cm"># 참인 자리만</span>
-<span class="fn2">print</span>(a[a &gt;= <span class="nm">18</span>].mean())</code></pre>
-          <div class="out">[ True  True False  True]
-[22 38 35]
-31.666666666666668</div>
-        </div>
-        <div class="vlist">
-          <div class="v"><span class="b">★</span><div>Pandas의 <code>df[df['Age'] &lt; 18]</code>이 정확히 이 구조다.</div></div>
-        </div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">정리</span><div>대괄호 안에 <b>숫자를 넣으면 위치</b>, <b>불리언 배열을 넣으면 조건</b>이다. Pandas가 이것을 그대로 물려받았다.</div></div>
-  </div>
-</section>
-
 <section class="slide" data-title="브로드캐스팅">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>연산</div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>연산</div>
   <h2 class="s-title sm">모양이 다른 배열끼리의 연산</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1750,10 +1748,9 @@ mask = a &gt;= <span class="nm">18</span>       <span class="cm"># True/False �
     <div class="keymsg"><span class="k">효과</span><div>열마다 평균을 빼는 표준화가 <code>(X - X.mean(axis=0)) / X.std(axis=0)</code> <b>한 줄</b>로 끝난다.</div></div>
   </div>
 </section>
-
 <section class="slide" data-title="행렬 곱">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>연산</div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>연산</div>
   <h2 class="s-title sm">행렬 곱의 의미</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1805,10 +1802,9 @@ B = np.array([[<span class="nm">10</span>, <span class="nm">20</span>], [<span c
     <div class="keymsg"><span class="k">의의</span><div>신경망 한 층은 <b>행렬 곱 한 번과 덧셈 한 번</b>이다. 뒤에서 이 식을 그대로 다시 만난다.</div></div>
   </div>
 </section>
-
 <section class="slide" data-title="Day 2 정리">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>정리</div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>정리</div>
   <h2 class="s-title sm">손에 남는 것</h2>
   <div class="rule"></div>
   <div class="body">

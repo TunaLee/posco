@@ -754,27 +754,20 @@ tensor([[ 7., 10.],
     <div class="twocol">
       <div>
         <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">앞 장에서 배운 상속 그대로</span></div>
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">nn.Module 을 상속한다</span></div>
           <pre><code><span class="kw">import</span> torch.nn <span class="kw">as</span> nn
 
 <span class="kw">class</span> <span class="fn2">MLP</span>(nn.Module):
-    <span class="kw">def</span> <span class="fn2">__init__</span>(self, n_in, n_hidden=<span class="nm">16</span>):
-        <span class="fn2">super</span>().<span class="fn2">__init__</span>()              <span class="cm"># 부모 초기화</span>
-        self.fc1 = nn.Linear(n_in, n_hidden)
-        self.fc2 = nn.Linear(n_hidden, <span class="nm">1</span>)
-        self.act = nn.ReLU()
+    <span class="kw">def</span> <span class="fn2">__init__</span>(self, n_in):
+        <span class="fn2">super</span>().<span class="fn2">__init__</span>()          <span class="cm"># 부모 초기화</span>
+        self.fc1 = nn.Linear(n_in, <span class="nm">16</span>)
+        self.fc2 = nn.Linear(<span class="nm">16</span>, <span class="nm">1</span>)
 
-    <span class="kw">def</span> <span class="fn2">forward</span>(self, x):            <span class="cm"># 재정의</span>
-        h = self.act(self.fc1(x))
+    <span class="kw">def</span> <span class="fn2">forward</span>(self, x):        <span class="cm"># 재정의</span>
+        h = torch.relu(self.fc1(x))
         <span class="kw">return</span> self.fc2(h)
 
-model = <span class="fn2">MLP</span>(n_in=<span class="nm">8</span>)
-<span class="fn2">print</span>(model)</code></pre>
-          <div class="out">MLP(
-  (fc1): Linear(in_features=8, out_features=16)
-  (fc2): Linear(in_features=16, out_features=1)
-  (act): ReLU()
-)</div>
+model = <span class="fn2">MLP</span>(n_in=<span class="nm">8</span>)</code></pre>
         </div>
       </div>
       <div>
@@ -783,12 +776,7 @@ model = <span class="fn2">MLP</span>(n_in=<span class="nm">8</span>)
           <div class="v"><span class="b">→</span><div><code>forward()</code>에 <b>데이터가 흐르는 순서</b>를 적는다. 앞 장의 식 그대로다.</div></div>
           <div class="v"><span class="b">★</span><div>호출은 <code>model(x)</code>로 한다. <code>model.forward(x)</code>를 직접 부르지 않는다.</div></div>
           <div class="v"><span class="b">✕</span><div><code>super().__init__()</code>을 빠뜨리면 파라미터가 등록되지 않아 <b>학습이 안 된다</b>.</div></div>
-        </div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">shape 를 먼저 확인한다</span></div>
-          <pre><code>out = model(torch.randn(<span class="nm">4</span>, <span class="nm">8</span>))
-<span class="fn2">print</span>(out.shape)</code></pre>
-          <div class="out">torch.Size([4, 1])</div>
+          <div class="v"><span class="b">→</span><div><code>print(model)</code>로 층 구성을, <code>model(torch.randn(4, 8)).shape</code>로 출력 모양을 확인한다.</div></div>
         </div>
       </div>
     </div>
