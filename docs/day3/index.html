@@ -428,7 +428,7 @@ elif d50 &gt; 12.5 and o2 &lt; 18:
     <table class="ctable">
       <thead><tr><th>갈래</th><th>주는 것</th><th>얻는 것</th><th>예</th></tr></thead>
       <tbody>
-        <tr><td><b>지도</b></td><td>입력 + 정답</td><td>새 입력의 예측값</td><td>승객 정보 → 생존 여부</td></tr>
+        <tr><td><b>지도</b></td><td>입력 + 정답</td><td>새 입력의 예측값</td><td>공정 조건 → 양품 여부</td></tr>
         <tr><td><b>비지도</b></td><td>입력만</td><td>묶음 · 압축된 축</td><td>고객이 몇 유형으로 나뉘는지 탐색</td></tr>
         <tr><td><b>강화</b></td><td>환경 + 보상</td><td>행동 규칙</td><td>게임 플레이 · 로봇 제어</td></tr>
       </tbody>
@@ -545,7 +545,7 @@ elif d50 &gt; 12.5 and o2 &lt; 18:
             <tr><td><b>다중 분류</b></td><td>Cross-Entropy</td><td>다중 분류에 쓴다</td></tr>
           </tbody>
         </table>
-        <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>이상치가 잦은 데이터</h4><p>Fare 512처럼 튀는 값 하나가 MSE를 통째로 끌어올린다. 그럴 때는 <b>MAE</b>를 쓴다.</p></div></div>
+        <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>이상치가 잦은 데이터</h4><p>press 999처럼 튀는 값 하나가 MSE를 통째로 끌어올린다. 그럴 때는 <b>MAE</b>를 쓴다.</p></div></div>
       </div>
     </div>
     <div class="keymsg"><span class="k">기준</span><div>손실 함수를 고르는 일은 <b>어떤 오차를 더 미워할지</b> 정하는 일이다. 과제 종류가 후보를 좁힌다.</div></div>
@@ -749,15 +749,15 @@ pred = model.predict(X_test)      <span class="cm"># 3. 예측하고</span>
       <div>
         <div class="vlist">
           <div class="v"><span class="b">→</span><div>직선의 출력값을 <b>시그모이드 함수</b>에 통과시켜 0~1 사이로 눌러 담는다.</div></div>
-          <div class="v"><span class="b">→</span><div>그 결과를 <b>확률</b>로 읽는다. 0.82면 "생존 확률 82%"다.</div></div>
+          <div class="v"><span class="b">→</span><div>그 결과를 <b>확률</b>로 읽는다. 0.82면 "양품 확률 82%"다.</div></div>
           <div class="v"><span class="b">★</span><div><b>임계값</b>을 넘으면 양성으로 판정한다. 기본은 0.5지만 고정된 값이 아니다.</div></div>
         </div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">어떤 열이 얼마나 작용했나</span></div>
           <pre><code><span class="fn2">print</span>(<span class="fn2">dict</span>(<span class="fn2">zip</span>(X.columns,
     model.coef_[<span class="nm">0</span>].round(<span class="nm">2</span>))))</code></pre>
-          <div class="out">{'Pclass': -0.94, 'Age': -0.55,
- 'Fare': 0.12, 'Sex_male': -1.28}</div>
+          <div class="out">{'calc_temp': 3.40, 'impurity': -1.22,
+ 'moisture': -0.45, 'line_F': 0.41}</div>
         </div>
       </div>
       <div>
@@ -770,13 +770,13 @@ pred = model.predict(X_test)      <span class="cm"># 3. 예측하고</span>
             <text x="300" y="86" text-anchor="end" font-size="10.5" fill="#E8537A">임계값 0.5</text>
             <text x="12" y="22" font-size="11" fill="#8E8AAC">1.0</text>
             <text x="12" y="172" font-size="11" fill="#8E8AAC">0.0</text>
-            <text x="60" y="140" font-size="10.5" fill="#4A4766">사망 판정</text>
-            <text x="230" y="52" font-size="10.5" fill="#4A4766">생존 판정</text>
+            <text x="60" y="140" font-size="10.5" fill="#4A4766">불량 판정</text>
+            <text x="230" y="52" font-size="10.5" fill="#4A4766">양품 판정</text>
           </svg>
           <div class="cap">시그모이드 — 어떤 값이 들어와도 0~1로</div>
         </div>
         <div class="vlist">
-          <div class="v"><span class="b">→</span><div>계수가 음수인 <code>Sex_male</code>은 <b>남성일수록 생존 확률을 낮춘다</b>는 뜻이다.</div></div>
+          <div class="v"><span class="b">→</span><div>계수가 음수인 <code>impurity</code>는 <b>불순물이 많을수록 양품 확률을 낮춘다</b>는 뜻이다.</div></div>
         </div>
       </div>
     </div>
@@ -803,20 +803,20 @@ pred = model.predict(X_test)      <span class="cm"># 3. 예측하고</span>
         <div class="plot">
           <svg viewBox="0 0 330 200">
             <rect x="102" y="6" width="128" height="28" rx="6" fill="#5B3DF5"/>
-            <text x="166" y="25" text-anchor="middle" font-size="11.5" fill="#fff">Sex_male &lt;= 0.5 ?</text>
+            <text x="166" y="25" text-anchor="middle" font-size="11.5" fill="#fff">calc_temp &lt;= 821 ?</text>
             <line x1="140" y1="34" x2="80" y2="66" stroke="#B7A9FF" stroke-width="1.8"/>
             <line x1="192" y1="34" x2="252" y2="66" stroke="#B7A9FF" stroke-width="1.8"/>
-            <text x="96" y="56" font-size="10" fill="#8E8AAC">예(여성)</text><text x="228" y="56" font-size="10" fill="#8E8AAC">아니오</text>
+            <text x="96" y="56" font-size="10" fill="#8E8AAC">예</text><text x="228" y="56" font-size="10" fill="#8E8AAC">아니오</text>
             <rect x="14" y="66" width="128" height="28" rx="6" fill="#EFEAFF" stroke="#B7A9FF"/>
-            <text x="78" y="85" text-anchor="middle" font-size="11.5" fill="#3A1FC9">Pclass &lt;= 2.5 ?</text>
+            <text x="78" y="85" text-anchor="middle" font-size="11.5" fill="#3A1FC9">impurity &lt;= 1502 ?</text>
             <rect x="192" y="66" width="122" height="28" rx="6" fill="#FDE8EE" stroke="#F0A9BC"/>
             <text x="253" y="85" text-anchor="middle" font-size="11.5" fill="#C9405B">사망 (81%)</text>
             <line x1="48" y1="94" x2="34" y2="130" stroke="#B7A9FF" stroke-width="1.8"/>
             <line x1="108" y1="94" x2="126" y2="130" stroke="#B7A9FF" stroke-width="1.8"/>
             <rect x="0" y="130" width="86" height="28" rx="6" fill="#E4F8F4" stroke="#8AD7CC"/>
-            <text x="43" y="149" text-anchor="middle" font-size="11.5" fill="#0A7F70">생존 (95%)</text>
+            <text x="43" y="149" text-anchor="middle" font-size="11.5" fill="#0A7F70">양품 (95%)</text>
             <rect x="90" y="130" width="98" height="28" rx="6" fill="#F4F1FF" stroke="#B7A9FF"/>
-            <text x="139" y="149" text-anchor="middle" font-size="11.5" fill="#3A1FC9">생존 (50%)</text>
+            <text x="139" y="149" text-anchor="middle" font-size="11.5" fill="#3A1FC9">양품 (50%)</text>
             <text x="8" y="186" font-size="10.5" fill="#8E8AAC">groupby 결과가 그대로 트리가 됐다</text>
           </svg>
         </div>
@@ -854,8 +854,8 @@ model.fit(X_train, y_train)
 
 <span class="fn2">print</span>(<span class="fn2">sorted</span>(<span class="fn2">zip</span>(model.feature_importances_.round(<span class="nm">3</span>),
                   X.columns), reverse=<span class="kw">True</span>))</code></pre>
-          <div class="out">[(0.31, 'Sex_male'), (0.27, 'Fare'),
- (0.22, 'Age'), (0.11, 'Pclass'), ...]</div>
+          <div class="out">[(0.55, 'calc_temp'), (0.17, 'impurity'),
+ (0.07, 'particle_size'), (0.07, 'moisture'), ...]</div>
         </div>
       </div>
     </div>

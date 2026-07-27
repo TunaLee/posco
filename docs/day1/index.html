@@ -564,7 +564,7 @@ http://localhost:8888/lab</div>
             <rect x="8" y="30" width="92" height="192" fill="#FAF9FF" stroke="#E8E4F8"/>
             <text x="18" y="46" font-size="10" fill="#5B3DF5" font-weight="700">파일 브라우저</text>
             <g font-family="monospace" font-size="9.5" fill="#4A4766">
-              <text x="18" y="66">data/</text><text x="18" y="82">  titanic.csv</text>
+              <text x="18" y="66">data/</text><text x="18" y="82">  batch.csv</text>
               <text x="18" y="100">day1.ipynb</text><text x="18" y="116">day2.ipynb</text>
             </g>
             <text x="18" y="146" font-size="9.5" fill="#8E8AAC">← 실행한 폴더가</text>
@@ -574,7 +574,7 @@ http://localhost:8888/lab</div>
               <rect x="108" y="40" width="196" height="40" rx="4" fill="#F4F1FF" stroke="#B7A9FF"/>
               <text x="116" y="56" font-family="monospace" font-size="9.5" fill="#8E8AAC">[1]</text>
               <text x="140" y="56" font-family="monospace" font-size="10" fill="#3A1FC9">import pandas as pd</text>
-              <text x="140" y="72" font-family="monospace" font-size="10" fill="#3A1FC9">df = pd.read_csv('data/titanic.csv')</text>
+              <text x="140" y="72" font-family="monospace" font-size="10" fill="#3A1FC9">df = pd.read_csv('data/batch.csv')</text>
               <rect x="108" y="86" width="196" height="26" rx="4" fill="#fff" stroke="#E8E4F8"/>
               <text x="140" y="103" font-family="monospace" font-size="10" fill="#4A4766">(891, 12)</text>
               <rect x="108" y="120" width="196" height="26" rx="4" fill="#F4F1FF" stroke="#B7A9FF" stroke-dasharray="4 3"/>
@@ -793,7 +793,7 @@ Tesla T4, 15360 MiB</div>
 <span class="kw">True</span>    <span class="cm"># 참·거짓 bool</span></code></pre></div>
         <p>숫자끼리 사칙연산이 된다.</p></div>
       <div class="card"><span class="n">문자형</span><h3>str</h3>
-        <div class="code sm"><pre><code><span class="st">'Braund, Mr. Owen'</span>
+        <div class="code sm"><pre><code><span class="st">'B00115'</span>
 <span class="st">"1234"</span>   <span class="cm"># 숫자처럼 보여도 문자</span>
 <span class="st">''</span>       <span class="cm"># 빈 문자열</span></code></pre></div>
         <p>따옴표 안은 전부 글자다.</p></div>
@@ -858,16 +858,16 @@ True</div>
       <div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">인덱싱과 슬라이싱</span></div>
-          <pre><code>name = <span class="st">"Braund, Mr. Owen"</span>
+          <pre><code>batch = <span class="st">"B00115"</span>
 
-<span class="fn2">print</span>(name[<span class="nm">0</span>])       <span class="cm"># 0부터 센다</span>
-<span class="fn2">print</span>(name[-<span class="nm">1</span>])      <span class="cm"># 뒤에서 한 칸</span>
-<span class="fn2">print</span>(name[<span class="nm">8</span>:<span class="nm">11</span>])    <span class="cm"># 8 이상 11 미만</span>
-<span class="fn2">print</span>(<span class="fn2">len</span>(name))</code></pre>
+<span class="fn2">print</span>(batch[<span class="nm">0</span>])       <span class="cm"># 0부터 센다</span>
+<span class="fn2">print</span>(batch[-<span class="nm">1</span>])      <span class="cm"># 뒤에서 한 칸</span>
+<span class="fn2">print</span>(batch[<span class="nm">2</span>:<span class="nm">5</span>])    <span class="cm"># 2 이상 5 미만</span>
+<span class="fn2">print</span>(<span class="fn2">len</span>(batch))</code></pre>
           <div class="out">B
-n
-Mr.
-16</div>
+5
+011
+6</div>
         </div>
       </div>
       <div>
@@ -878,8 +878,8 @@ Mr.
               <rect x="148" y="44" width="42" height="42"/><rect x="192" y="44" width="42" height="42"/><rect x="236" y="44" width="42" height="42"/>
             </g>
             <g font-family="ui-monospace,monospace" font-size="19" font-weight="700" fill="#16142B" text-anchor="middle">
-              <text x="37" y="72">B</text><text x="81" y="72">r</text><text x="125" y="72">a</text>
-              <text x="169" y="72">u</text><text x="213" y="72">n</text><text x="257" y="72">d</text>
+              <text x="37" y="72">B</text><text x="81" y="72">0</text><text x="125" y="72">0</text>
+              <text x="169" y="72">1</text><text x="213" y="72">1</text><text x="257" y="72">5</text>
             </g>
             <g font-family="ui-monospace,monospace" font-size="12" fill="#5B3DF5" text-anchor="middle">
               <text x="37" y="34">0</text><text x="81" y="34">1</text><text x="125" y="34">2</text>
@@ -909,11 +909,11 @@ Mr.
       <div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">따옴표 앞에 f 를 붙인다</span></div>
-          <pre><code>name = <span class="st">"Owen"</span>
-age = <span class="nm">22</span>
+          <pre><code>batch = <span class="st">"B00115"</span>
+temp = <span class="nm">898.9</span>
 
-<span class="fn2">print</span>(<span class="st">f"{name}({age}세)"</span>)</code></pre>
-          <div class="out">Owen(22세)</div>
+<span class="fn2">print</span>(<span class="st">f"{batch} — {temp}°C"</span>)</code></pre>
+          <div class="out">B00115 — 898.9°C</div>
         </div>
         <div class="vlist">
           <div class="v"><span class="b">→</span><div>중괄호 안에 <b>이름이나 식</b>을 그대로 쓴다. <code>str()</code>로 바꿔 이어 붙이지 않아도 된다.</div></div>
@@ -987,8 +987,8 @@ lot, temp = raw.strip().split(<span class="st">","</span>)
       <div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">변수에 값을 붙인다</span></div>
-          <pre><code>age   = <span class="nm">22</span>                    <span class="cm"># 숫자</span>
-name  = <span class="st">"Owen"</span>                <span class="cm"># 문자열</span>
+          <pre><code>temp  = <span class="nm">898.9</span>                 <span class="cm"># 숫자</span>
+batch = <span class="st">"B00115"</span>              <span class="cm"># 문자열</span>
 fares = [<span class="nm">7.25</span>, <span class="nm">71.28</span>, <span class="nm">7.92</span>]  <span class="cm"># 리스트</span>
 
 <span class="cm"># 자료형은 값이 정한다 — 선언하지 않는다</span>
@@ -1011,7 +1011,7 @@ fares = [<span class="nm">7.25</span>, <span class="nm">71.28</span>, <span clas
         <div class="slots">
           <div class="slot"><div class="adr">이름</div><div class="val">name</div></div>
           <div class="ptr">→</div>
-          <div class="slot ref"><div class="adr">str 객체</div><div class="val">"Owen"</div></div>
+          <div class="slot ref"><div class="adr">str 객체</div><div class="val">"B00115"</div></div>
         </div>
       </div>
     </div>
@@ -1114,13 +1114,13 @@ c.append(<span class="nm">99</span>)
       <div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">얕은 복사 — 안쪽은 그대로 공유된다</span></div>
-          <pre><code>rows = [{<span class="st">'name'</span>: <span class="st">'Owen'</span>,  <span class="st">'age'</span>: <span class="nm">22</span>},
-        {<span class="st">'name'</span>: <span class="st">'Laina'</span>, <span class="st">'age'</span>: <span class="nm">26</span>}]
+          <pre><code>rows = [{<span class="st">'line'</span>: <span class="st">'A'</span>, <span class="st">'temp'</span>: <span class="nm">898</span>},
+        {<span class="st">'line'</span>: <span class="st">'E'</span>, <span class="st">'temp'</span>: <span class="nm">829</span>}]
 
 shallow = rows.copy()      <span class="cm"># 바깥 리스트만 새로</span>
-shallow[<span class="nm">0</span>][<span class="st">'age'</span>] = <span class="nm">99</span>     <span class="cm"># 안쪽 딕셔너리를 고친다</span>
+shallow[<span class="nm">0</span>][<span class="st">'temp'</span>] = <span class="nm">99</span>     <span class="cm"># 안쪽 딕셔너리를 고친다</span>
 
-<span class="fn2">print</span>(rows[<span class="nm">0</span>][<span class="st">'age'</span>])</code></pre>
+<span class="fn2">print</span>(rows[<span class="nm">0</span>][<span class="st">'temp'</span>])</code></pre>
           <div class="out"><span class="err">99</span>   ← 원본도 바뀌었다</div>
         </div>
       </div>
@@ -1130,10 +1130,10 @@ shallow[<span class="nm">0</span>][<span class="st">'age'</span>] = <span class=
           <pre><code><span class="kw">import</span> copy
 
 deep = copy.deepcopy(rows)
-deep[<span class="nm">0</span>][<span class="st">'age'</span>] = <span class="nm">99</span>
+deep[<span class="nm">0</span>][<span class="st">'temp'</span>] = <span class="nm">99</span>
 
-<span class="fn2">print</span>(rows[<span class="nm">0</span>][<span class="st">'age'</span>])</code></pre>
-          <div class="out">22   ← 원본은 그대로</div>
+<span class="fn2">print</span>(rows[<span class="nm">0</span>][<span class="st">'temp'</span>])</code></pre>
+          <div class="out">898   ← 원본은 그대로</div>
         </div>
       </div>
     </div>
@@ -1286,13 +1286,13 @@ True</div>
       <div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">키: 값 을 중괄호로 묶는다</span></div>
-          <pre><code>row = {<span class="st">'name'</span>: <span class="st">'Owen'</span>, <span class="st">'age'</span>: <span class="nm">22</span>}
+          <pre><code>row = {<span class="st">'line'</span>: <span class="st">'A'</span>, <span class="st">'temp'</span>: <span class="nm">898</span>}
 
-<span class="fn2">print</span>(row[<span class="st">'age'</span>])
-row[<span class="st">'survived'</span>] = <span class="nm">0</span>   <span class="cm"># 키 추가</span>
+<span class="fn2">print</span>(row[<span class="st">'temp'</span>])
+row[<span class="st">'passed'</span>] = <span class="nm">1</span>   <span class="cm"># 키 추가</span>
 <span class="fn2">print</span>(row)</code></pre>
-          <div class="out">22
-{'name': 'Owen', 'age': 22, 'survived': 0}</div>
+          <div class="out">898
+{'line': 'A', 'temp': 898, 'passed': 1}</div>
         </div>
       </div>
       <div>
@@ -1345,11 +1345,11 @@ row[<span class="st">'survived'</span>] = <span class="nm">0</span>   <span clas
     <div class="twocol">
       <div>
         <table class="ctable">
-          <thead><tr><th>name</th><th>age</th><th>survived</th></tr></thead>
+          <thead><tr><th>line</th><th>temp</th><th>passed</th></tr></thead>
           <tbody>
-            <tr><td>Owen</td><td>22</td><td class="no">0</td></tr>
-            <tr><td>Florence</td><td>38</td><td class="yes">1</td></tr>
-            <tr><td>Laina</td><td>26</td><td class="yes">1</td></tr>
+            <tr><td>A</td><td>898</td><td class="yes">1</td></tr>
+            <tr><td>C</td><td>835</td><td class="yes">1</td></tr>
+            <tr><td>E</td><td>829</td><td class="no">0</td></tr>
           </tbody>
         </table>
         <div class="vlist">
@@ -1361,14 +1361,14 @@ row[<span class="st">'survived'</span>] = <span class="nm">0</span>   <span clas
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">같은 표, 파이썬으로</span></div>
           <pre><code>rows = [
-    {<span class="st">'name'</span>: <span class="st">'Owen'</span>,     <span class="st">'age'</span>: <span class="nm">22</span>, <span class="st">'survived'</span>: <span class="nm">0</span>},
-    {<span class="st">'name'</span>: <span class="st">'Florence'</span>, <span class="st">'age'</span>: <span class="nm">38</span>, <span class="st">'survived'</span>: <span class="nm">1</span>},
-    {<span class="st">'name'</span>: <span class="st">'Laina'</span>,    <span class="st">'age'</span>: <span class="nm">26</span>, <span class="st">'survived'</span>: <span class="nm">1</span>},
+    {<span class="st">'line'</span>: <span class="st">'A'</span>, <span class="st">'temp'</span>: <span class="nm">898</span>, <span class="st">'passed'</span>: <span class="nm">1</span>},
+    {<span class="st">'line'</span>: <span class="st">'C'</span>, <span class="st">'temp'</span>: <span class="nm">835</span>, <span class="st">'passed'</span>: <span class="nm">1</span>},
+    {<span class="st">'line'</span>: <span class="st">'E'</span>, <span class="st">'temp'</span>: <span class="nm">829</span>, <span class="st">'passed'</span>: <span class="nm">0</span>},
 ]
 
-<span class="fn2">print</span>(rows[<span class="nm">1</span>][<span class="st">'name'</span>])   <span class="cm"># 2행의 name</span>
+<span class="fn2">print</span>(rows[<span class="nm">1</span>][<span class="st">'line'</span>])   <span class="cm"># 2행의 line</span>
 <span class="fn2">print</span>(<span class="fn2">len</span>(rows))          <span class="cm"># 행 수</span></code></pre>
-          <div class="out">Florence
+          <div class="out">C
 3</div>
         </div>
       </div>
@@ -1434,11 +1434,11 @@ row[<span class="st">'survived'</span>] = <span class="nm">0</span>   <span clas
       <div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">변수 = input()</span></div>
-          <pre><code>var = <span class="fn2">input</span>(<span class="st">"나이: "</span>)
+          <pre><code>var = <span class="fn2">input</span>(<span class="st">"온도: "</span>)
 <span class="fn2">print</span>(var)
 <span class="fn2">print</span>(<span class="fn2">type</span>(var))</code></pre>
-          <div class="out"><span class="ol">나이: </span>22
-22
+          <div class="out"><span class="ol">온도: </span>898
+898
 &lt;class 'str'&gt;</div>
         </div>
         <div class="vlist">
@@ -1480,10 +1480,10 @@ row[<span class="st">'survived'</span>] = <span class="nm">0</span>   <span clas
 <span class="err">ValueError</span></div></div>
       </div>
       <div class="card"><span class="n">str()</span><h3>문자열로</h3>
-        <div class="code sm"><pre><code>n = <span class="nm">891</span>
-<span class="fn2">print</span>(<span class="st">"승객 "</span> + <span class="fn2">str</span>(n) + <span class="st">"명"</span>)
-<span class="fn2">print</span>(<span class="st">f"승객 {n}명"</span>)</code></pre><div class="out">승객 891명
-승객 891명</div></div>
+        <div class="code sm"><pre><code>n = <span class="nm">1412</span>
+<span class="fn2">print</span>(<span class="st">"배치 "</span> + <span class="fn2">str</span>(n) + <span class="st">"건"</span>)
+<span class="fn2">print</span>(<span class="st">f"배치 {n}건"</span>)</code></pre><div class="out">배치 1412건
+배치 1412건</div></div>
       </div>
     </div>
     <div class="vlist">
@@ -1559,7 +1559,7 @@ raw = <span class="st">"12.0"</span>
 <span class="fn2">print</span>(<span class="fn2">type</span>(age &lt; <span class="nm">18</span>))
 
 <span class="cm"># 문자열도 비교된다 — 대소문자 구분</span>
-<span class="fn2">print</span>(<span class="st">"Male"</span> == <span class="st">"male"</span>)</code></pre>
+<span class="fn2">print</span>(<span class="st">"A"</span> == <span class="st">"a"</span>)</code></pre>
           <div class="out">False
 &lt;class 'bool'&gt;
 False</div>
@@ -1648,7 +1648,7 @@ True</div>
     <span class="fn2">print</span>(<span class="st">"비어 있음"</span>)</code></pre>
           <div class="out">비어 있음</div>
         </div>
-        <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>값 0이 걸러진다</h4><p><code>if fare:</code>는 <b>요금이 0일 때 거짓</b>이 된다. 값의 유무를 볼 때는 <code>if fare is not None:</code>을 쓴다.</p></div></div>
+        <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>값 0이 걸러진다</h4><p><code>if press:</code>는 <b>압력이 0일 때 거짓</b>이 된다. 값의 유무를 볼 때는 <code>if press is not None:</code>을 쓴다.</p></div></div>
       </div>
     </div>
     <div class="keymsg"><span class="k">함정</span><div>"비었는가"와 "값이 0인가"는 다른 질문이다. 데이터에서 이 둘을 섞으면 <b>정상값이 결측으로 처리</b>된다.</div></div>
@@ -1787,7 +1787,7 @@ indented block after 'if' statement</span></div>
 print(ages[1])
 print(ages[2])
 print(ages[3])
-    ⋮  승객 891명이면 891줄</div></div>
+    ⋮  배치 1412건이면 1412줄</div></div>
       <div class="pane good"><h4>묶으면</h4><div class="mini">for age in ages:
     print(age)</div><p>같은 명령이 반복되는 코드를 <b>한 덩어리</b>로 표현한다.</p></div>
     </div>
@@ -1812,10 +1812,10 @@ print(ages[3])
           <pre><code>ages = [<span class="nm">22</span>, <span class="nm">38</span>, <span class="nm">26</span>]
 
 <span class="kw">for</span> a <span class="kw">in</span> ages:
-    <span class="fn2">print</span>(<span class="st">"나이:"</span>, a)</code></pre>
-          <div class="out">나이: 22
-나이: 38
-나이: 26</div>
+    <span class="fn2">print</span>(<span class="st">"온도:"</span>, a)</code></pre>
+          <div class="out">온도: 898
+온도: 835
+온도: 829</div>
         </div>
       </div>
       <div>
@@ -1847,7 +1847,7 @@ print(ages[3])
         </div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">딕셔너리의 키와 값</span></div>
-          <pre><code>row = {<span class="st">'age'</span>: <span class="nm">22</span>, <span class="st">'fare'</span>: <span class="nm">7.25</span>}
+          <pre><code>row = {<span class="st">'temp'</span>: <span class="nm">22</span>, <span class="st">'fare'</span>: <span class="nm">7.25</span>}
 
 <span class="kw">for</span> k, v <span class="kw">in</span> row.items():
     <span class="fn2">print</span>(k, v)</code></pre>
@@ -2058,17 +2058,17 @@ labels = [<span class="st">"성인"</span> <span class="kw">if</span> a &gt;= <s
       <div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">같은 데이터, 네 가지 결과</span></div>
-          <pre><code>names = [<span class="st">'Owen'</span>, <span class="st">'Florence'</span>, <span class="st">'Laina'</span>]
-ages  = [<span class="nm">22</span>, <span class="nm">38</span>, <span class="nm">26</span>]
+          <pre><code>lines = [<span class="st">'A'</span>, <span class="st">'C'</span>, <span class="st">'E'</span>]
+temps = [<span class="nm">898</span>, <span class="nm">835</span>, <span class="nm">829</span>]
 
-<span class="fn2">print</span>([n.upper() <span class="kw">for</span> n <span class="kw">in</span> names])
-<span class="fn2">print</span>({n: a <span class="kw">for</span> n, a <span class="kw">in</span> <span class="fn2">zip</span>(names, ages)})
-<span class="fn2">print</span>({a // <span class="nm">10</span> * <span class="nm">10</span> <span class="kw">for</span> a <span class="kw">in</span> [<span class="nm">22</span>, <span class="nm">38</span>, <span class="nm">26</span>, <span class="nm">25</span>]})
-<span class="fn2">print</span>(<span class="fn2">sum</span>(a * <span class="nm">12</span> <span class="kw">for</span> a <span class="kw">in</span> ages))</code></pre>
-          <div class="out">['OWEN', 'FLORENCE', 'LAINA']
-{'Owen': 22, 'Florence': 38, 'Laina': 26}
-{20, 30}
-1032</div>
+<span class="fn2">print</span>([L.lower() <span class="kw">for</span> L <span class="kw">in</span> lines])
+<span class="fn2">print</span>({L: t <span class="kw">for</span> L, t <span class="kw">in</span> <span class="fn2">zip</span>(lines, temps)})
+<span class="fn2">print</span>({t // <span class="nm">10</span> * <span class="nm">10</span> <span class="kw">for</span> t <span class="kw">in</span> temps})
+<span class="fn2">print</span>(<span class="fn2">sum</span>(t <span class="kw">for</span> t <span class="kw">in</span> temps))</code></pre>
+          <div class="out">['a', 'c', 'e']
+{'A': 898, 'C': 835, 'E': 829}
+{890, 820, 830}
+2562</div>
         </div>
       </div>
     </div>

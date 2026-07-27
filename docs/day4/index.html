@@ -626,7 +626,7 @@ c.tick(); c.tick()
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">NumPy로 직접 한 층</span></div>
           <pre><code><span class="kw">import</span> numpy <span class="kw">as</span> np
 
-x  = np.random.randn(<span class="nm">4</span>, <span class="nm">8</span>)    <span class="cm"># 승객 4명, 특성 8개</span>
+x  = np.random.randn(<span class="nm">4</span>, <span class="nm">8</span>)    <span class="cm"># 배치 4건, 특성 8개</span>
 W1 = np.random.randn(<span class="nm">8</span>, <span class="nm">16</span>)   <span class="cm"># 8 → 16</span>
 b1 = np.zeros(<span class="nm">16</span>)
 
@@ -1027,7 +1027,7 @@ Linear(in_features=10, out_features=16)</div>
     <div class="twocol w">
       <div>
         <div class="vlist">
-          <div class="v"><span class="b">→</span><div>과제는 <b>타이타닉 생존 예측</b>이다. 앞서 전처리해 둔 그 표를 그대로 쓴다.</div></div>
+          <div class="v"><span class="b">→</span><div>과제는 <b>공정 배치의 양품 예측</b>이다. 앞서 전처리해 둔 그 표를 그대로 쓴다.</div></div>
           <div class="v"><span class="b">★</span><div>목표는 최고 점수가 아니라 <b>파이프라인을 끝까지 한 번 통과</b>시키는 것이다.</div></div>
           <div class="v"><span class="b">→</span><div>스켈레톤 노트북을 받아 <code># TODO</code> 여덟 곳을 채운다.</div></div>
         </div>
@@ -1054,12 +1054,12 @@ Linear(in_features=10, out_features=16)</div>
 df = ...
 
 <span class="cm"># TODO 2: 안 쓸 열을 지운다</span>
-<span class="cm">#   PassengerId, Name, Ticket, Cabin</span>
+<span class="cm">#   batch_id, capacity</span>
 
-<span class="cm"># TODO 3: Age 결측을 중앙값으로 채운다</span>
-<span class="cm">#   Embarked 결측 행은 지운다</span>
+<span class="cm"># TODO 3: particle_size 결측을 중앙값으로 채운다</span>
+<span class="cm">#   moisture 결측 행은 지운다</span>
 
-<span class="cm"># TODO 4: Sex, Embarked 를 원-핫 인코딩</span>
+<span class="cm"># TODO 4: line, shift 를 원-핫 인코딩</span>
 
 <span class="cm"># TODO 5: X, y 로 나누고 train_test_split</span>
 <span class="cm">#   test_size=0.2, stratify=y, random_state=42</span></code></pre>
