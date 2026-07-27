@@ -783,7 +783,7 @@ Tesla T4, 15360 MiB</div>
 <section class="slide" data-title="자료형 세 가지">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>자료형</div>
-  <h2 class="s-title sm">값의 종류와 연산 규칙</h2>
+  <h2 class="s-title sm">값의 세 가지 종류</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="cards c3">
@@ -1020,6 +1020,7 @@ fares = [<span class="nm">7.25</span>, <span class="nm">71.28</span>, <span clas
 </section>
 
 <section class="slide" data-title="불변과 가변">
+  <!-- lint:topic-ok 불변과 가변은 한 원리의 두 면이다 -->
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>변수</div>
   <h2 class="s-title sm">값이 바뀌는 자료형과 바뀌지 않는 자료형</h2>
@@ -1103,6 +1104,7 @@ c.append(<span class="nm">99</span>)
 </section>
 
 <section class="slide" data-title="얕은 복사와 깊은 복사">
+  <!-- lint:topic-ok 같은 동작의 두 결과를 대비시킨다 -->
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>복사</div>
   <h2 class="s-title sm">얕은 복사와 깊은 복사</h2>
@@ -1190,6 +1192,71 @@ ages.append(<span class="nm">54</span>)
   </div>
 </section>
 
+<section class="slide" data-title="튜플">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>tuple</div>
+  <h2 class="s-title sm">고쳐지지 않는 나열</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">소괄호로 묶는다</span></div>
+          <pre><code>shape = (<span class="nm">891</span>, <span class="nm">12</span>)
+
+<span class="fn2">print</span>(shape[<span class="nm">0</span>])
+rows, cols = shape      <span class="cm"># 한 번에 풀기</span>
+<span class="fn2">print</span>(cols)
+
+shape[<span class="nm">0</span>] = <span class="nm">100</span></code></pre>
+          <div class="out">891
+12
+<span class="err">TypeError: 'tuple' object does not
+support item assignment</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>꺼내는 방법은 리스트와 <b>똑같다</b>. 바꾸는 것만 막힌다.</div></div>
+          <div class="v"><span class="b">→</span><div>변수 여러 개에 <b>한 번에 풀어 담는다</b>. 함수가 값 두 개를 돌려줄 때 이 모양이다.</div></div>
+          <div class="v"><span class="b">★</span><div>배열과 텐서의 <code>.shape</code>는 <b>늘 튜플</b>로 나온다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>값이 <b>바뀌면 안 되는 묶음</b>에 쓴다. 좌표·크기·설정처럼 한번 정해지면 끝인 것들이다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="집합">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>set</div>
+  <h2 class="s-title sm">중복이 없는 모음</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">중괄호로 묶거나 set() 으로 만든다</span></div>
+          <pre><code>ports = [<span class="st">'S'</span>, <span class="st">'C'</span>, <span class="st">'S'</span>, <span class="st">'Q'</span>, <span class="st">'S'</span>]
+
+<span class="fn2">print</span>(<span class="fn2">set</span>(ports))
+<span class="fn2">print</span>(<span class="fn2">len</span>(<span class="fn2">set</span>(ports)))
+<span class="fn2">print</span>(<span class="st">'C'</span> <span class="kw">in</span> <span class="fn2">set</span>(ports))</code></pre>
+          <div class="out">{'S', 'C', 'Q'}
+3
+True</div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>같은 값을 여러 번 넣어도 <b>하나만 남는다</b>. 열에 어떤 값들이 있는지 볼 때 쓴다.</div></div>
+          <div class="v"><span class="b">→</span><div><b>순서가 없다</b>. <code>s[0]</code>으로 꺼낼 수 없다.</div></div>
+          <div class="v"><span class="b">★</span><div>들어 있는지 확인하는 <code>in</code>이 <b>리스트보다 훨씬 빠르다</b>.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>쓰는 데는 둘이다 — <b>중복 제거</b>와 <b>포함 여부 검사</b>.</div></div>
+  </div>
+</section>
 <section class="slide" data-title="네 가지 자료 구조">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>비교</div>
@@ -1205,43 +1272,20 @@ ages.append(<span class="nm">54</span>)
         <tr><td><b>집합</b> set</td><td><code>{'S', 'C', 'Q'}</code></td><td class="no">없음</td><td class="yes">가능</td><td>중복 제거 · 포함 여부 검사</td></tr>
       </tbody>
     </table>
-    <div class="twocol">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">튜플 — 고쳐지지 않는다</span></div>
-          <pre><code>shape = (<span class="nm">891</span>, <span class="nm">12</span>)   <span class="cm"># 행 891, 열 12</span>
-<span class="fn2">print</span>(shape[<span class="nm">0</span>])
-shape[<span class="nm">0</span>] = <span class="nm">100</span></code></pre>
-          <div class="out">891
-<span class="err">TypeError: 'tuple' object does not
-support item assignment</span></div>
-        </div>
-      </div>
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">집합 — 중복이 사라진다</span></div>
-          <pre><code>ports = [<span class="st">'S'</span>, <span class="st">'C'</span>, <span class="st">'S'</span>, <span class="st">'Q'</span>, <span class="st">'S'</span>]
-<span class="fn2">print</span>(<span class="fn2">set</span>(ports))
-<span class="fn2">print</span>(<span class="fn2">len</span>(<span class="fn2">set</span>(ports)))</code></pre>
-          <div class="out">{'S', 'C', 'Q'}
-3</div>
-        </div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>값을 바꿔야 하면 리스트, 절대 안 바뀌어야 하면 튜플이다. <b>텐서 shape도 늘 튜플</b>로 나온다.</div></div>
+    <div class="keymsg"><span class="k">기준</span><div>값을 바꿔야 하면 리스트, 절대 안 바뀌어야 하면 튜플이다. <b>이름으로 찾으면 딕셔너리</b>다.</div></div>
   </div>
 </section>
 
 <section class="slide" data-title="딕셔너리">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>dict</div>
-  <h2 class="s-title sm">설정과 JSON의 모양</h2>
+  <h2 class="s-title sm">이름으로 꺼내는 값</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twocol">
       <div>
         <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">이름으로 꺼낸다</span></div>
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">키: 값 을 중괄호로 묶는다</span></div>
           <pre><code>row = {<span class="st">'name'</span>: <span class="st">'Owen'</span>, <span class="st">'age'</span>: <span class="nm">22</span>}
 
 <span class="fn2">print</span>(row[<span class="st">'age'</span>])
@@ -1250,25 +1294,45 @@ row[<span class="st">'survived'</span>] = <span class="nm">0</span>   <span clas
           <div class="out">22
 {'name': 'Owen', 'age': 22, 'survived': 0}</div>
         </div>
+      </div>
+      <div>
         <div class="vlist">
+          <div class="v"><span class="b">→</span><div>순서가 아니라 <b>이름(키)</b>으로 꺼낸다. 열 이름이 있는 데이터에 맞는 구조다.</div></div>
+          <div class="v"><span class="b">→</span><div>없는 키에 넣으면 <b>추가</b>, 있는 키에 넣으면 <b>덮어쓰기</b>다.</div></div>
           <div class="v"><span class="b">✕</span><div>없는 키를 <code>row['cabin']</code>으로 부르면 <code>KeyError</code>다. <code>.get()</code>은 대신 기본값을 준다.</div></div>
         </div>
       </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>키는 <b>겹치지 않는다</b>. 같은 키를 두 번 쓰면 뒤엣것만 남는다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="중첩 딕셔너리">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>dict</div>
+  <h2 class="s-title sm">설정과 JSON의 모양</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
       <div>
         <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">모델 설정도 딕셔너리다</span></div>
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">값 자리에 리스트나 딕셔너리가 온다</span></div>
           <pre><code>config = {
     <span class="st">'lr'</span>: <span class="nm">0.001</span>,
-    <span class="st">'epochs'</span>: <span class="nm">50</span>,
     <span class="st">'hidden'</span>: [<span class="nm">64</span>, <span class="nm">32</span>],
 }
+
 <span class="fn2">print</span>(config[<span class="st">'hidden'</span>][<span class="nm">0</span>])</code></pre>
           <div class="out">64</div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>대괄호를 <b>이어 붙여</b> 안쪽으로 들어간다. 왼쪽부터 차례로 읽는다.</div></div>
         </div>
         <div class="callout"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 15l4-6 4 3 5-8"/></svg></div><div class="ct"><h4>JSON과 같은 모양</h4><p>API 응답과 설정 파일이 이 구조다. <code>{ }</code>는 딕셔너리, <code>[ ]</code>는 리스트로 읽으면 그대로 파이썬이 된다.</p></div></div>
       </div>
     </div>
-    <div class="keymsg"><span class="k">정리</span><div>딕셔너리는 <b>순서가 아니라 이름으로</b> 값을 꺼낸다. 열 이름이 있는 데이터에 맞는 구조다.</div></div>
+    <div class="keymsg"><span class="k">기준</span><div>깊이가 몇 단이든 <b>한 겹씩 벗겨 가며</b> 읽는다.</div></div>
   </div>
 </section>
 
@@ -1753,28 +1817,53 @@ print(ages[3])
 나이: 38
 나이: 26</div>
         </div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div><code>a</code>는 반복할 때마다 <b>다음 값으로 바뀌는</b> 이름이다. 아무 이름이나 써도 된다.</div></div>
-        </div>
       </div>
       <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">순번과 딕셔너리</span></div>
-          <pre><code><span class="kw">for</span> i, a <span class="kw">in</span> <span class="fn2">enumerate</span>(ages, start=<span class="nm">1</span>):
-    <span class="fn2">print</span>(i, a)
-
-row = {<span class="st">'age'</span>: <span class="nm">22</span>, <span class="st">'fare'</span>: <span class="nm">7.25</span>}
-<span class="kw">for</span> k, v <span class="kw">in</span> row.items():
-    <span class="fn2">print</span>(k, v)</code></pre>
-          <div class="out">1 22
-2 38
-3 26
-age 22
-fare 7.25</div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div><code>a</code>는 반복할 때마다 <b>다음 값으로 바뀌는</b> 이름이다. 아무 이름이나 써도 된다.</div></div>
+          <div class="v"><span class="b">→</span><div>꺼낼 대상은 리스트·문자열·딕셔너리·파일 모두 된다.</div></div>
+          <div class="v"><span class="b">→</span><div>횟수만 필요하면 <code>for i in range(3):</code></div></div>
         </div>
       </div>
     </div>
-    <div class="keymsg"><span class="k">정리</span><div><code>for</code>는 <b>꺼낼 대상이 있을 때</b> 쓴다. 리스트·문자열·딕셔너리·파일 모두 대상이 된다.</div></div>
+    <div class="keymsg"><span class="k">기준</span><div><code>for</code>는 <b>꺼낼 대상이 있을 때</b> 쓴다. 몇 번 도는지는 대상이 정한다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="enumerate와 items">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>반복문</div>
+  <h2 class="s-title sm">한 번에 값 두 개 꺼내기</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">순번이 같이 필요할 때</span></div>
+          <pre><code><span class="kw">for</span> i, a <span class="kw">in</span> <span class="fn2">enumerate</span>(ages, start=<span class="nm">1</span>):
+    <span class="fn2">print</span>(i, a)</code></pre>
+          <div class="out">1 22
+2 38
+3 26</div>
+        </div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">딕셔너리의 키와 값</span></div>
+          <pre><code>row = {<span class="st">'age'</span>: <span class="nm">22</span>, <span class="st">'fare'</span>: <span class="nm">7.25</span>}
+
+<span class="kw">for</span> k, v <span class="kw">in</span> row.items():
+    <span class="fn2">print</span>(k, v)</code></pre>
+          <div class="out">age 22
+fare 7.25</div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>둘 다 <b>값 두 개를 한 묶음으로</b> 내놓는다. 쉼표로 받는 이름 두 개에 나눠 담긴다.</div></div>
+          <div class="v"><span class="b">→</span><div><code>start=1</code>을 빼면 <b>0부터</b> 센다.</div></div>
+          <div class="v"><span class="b">✕</span><div>딕셔너리를 그냥 돌리면 <b>키만</b> 나온다. 값이 필요하면 <code>.items()</code>를 붙인다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>이름 두 개로 받으면 <b>묶음이 풀려서</b> 담긴다. 튜플을 풀어 담는 것과 같은 문법이다.</div></div>
   </div>
 </section>
 
@@ -1859,6 +1948,7 @@ epoch 3 학습 중</div>
 </section>
 
 <section class="slide" data-title="break와 continue">
+  <!-- lint:topic-ok 한 반복문에서 갈리는 두 동작을 대비시킨다 -->
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>반복문</div>
   <h2 class="s-title sm">반복 도중의 탈출과 건너뜀</h2>
@@ -2151,6 +2241,7 @@ print(r)        → <b>성인</b></div><p>결과를 변수에 담고 <b>다음 �
 </section>
 
 <section class="slide" data-title="함수 인자와 가변성">
+  <!-- lint:topic-ok 불변 인자와 가변 인자를 대비시킨다 -->
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>범위</div>
   <h2 class="s-title sm">함수 인자와 가변성</h2>
