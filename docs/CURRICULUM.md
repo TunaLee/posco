@@ -5,7 +5,7 @@
 
 | 덱 | 파일 | 슬라이드 |
 |---|---|---|
-| Day 1 · 파이썬 문법 | [day1/index.html](day1/index.html) | 52 |
+| Day 1 · 파이썬 문법 | [day1/index.html](day1/index.html) | 54 |
 | Day 2 · 데이터 다루기 | [day2/index.html](day2/index.html) | 42 |
 | Day 3 · 머신러닝 | [day3/index.html](day3/index.html) | 29 |
 | Day 4 · 딥러닝 | [day4/index.html](day4/index.html) | 26 |
@@ -19,8 +19,8 @@
 ```
 Day 1  파이썬 문법
   CH0 작업 환경         로컬(Anaconda·가상환경·Jupyter) · 클라우드(Colab·세션·GPU) · 셀 실행 · 결과 남기기
-  CH1 값과 변수         자료형 · 연산자 · 문자열 · 불변과 가변 · 얕은 복사와 깊은 복사
-  CH2 자료 구조         리스트 · 튜플 · 딕셔너리 · 집합 · 표의 파이썬 표현
+  CH1 값과 변수         자료형 · 연산자 · 문자열(+메서드 표) · 불변과 가변 · 얕은 복사와 깊은 복사
+  CH2 자료 구조         리스트 · 튜플 · 딕셔너리 · 집합 · 표의 파이썬 표현 · 메서드 표
   CH3 흐름 제어         입력 · 형변환 · 비교와 논리 · 조건문 · 반복문 · 컴프리헨션 4종
   CH4 함수              입력·처리·출력 · 내장 함수 · def · 반환 · 인자의 가변성 · 메서드
 

@@ -891,6 +891,48 @@ FEMALE
   </div>
 </section>
 
+<section class="slide" data-title="문자열 메서드">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>문자열</div>
+  <h2 class="s-title sm">문자열에서 자주 쓰는 메서드</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <table class="ctable">
+          <thead><tr><th>메서드</th><th>하는 일</th><th>예</th></tr></thead>
+          <tbody>
+            <tr><td><code>.strip()</code></td><td>양끝 공백 제거</td><td><code>" a " → "a"</code></td></tr>
+            <tr><td><code>.lower()</code> &nbsp;·&nbsp; <code>.upper()</code></td><td>대소문자 통일</td><td><code>"Ab" → "ab"</code></td></tr>
+            <tr><td><code>.replace(a, b)</code></td><td>바꾸기</td><td><code>"1,0" → "10"</code></td></tr>
+            <tr><td><code>.split(sep)</code></td><td>쪼개 리스트로</td><td><code>"a,b" → ['a','b']</code></td></tr>
+            <tr><td><code>sep.join(lst)</code></td><td>리스트를 이어 붙임</td><td><code>['a','b'] → "a,b"</code></td></tr>
+            <tr><td><code>.startswith(s)</code></td><td>시작 확인</td><td><code>True / False</code></td></tr>
+            <tr><td><code>.zfill(n)</code></td><td>앞을 0으로 채움</td><td><code>"7" → "007"</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">이어 붙여 쓴다</span></div>
+          <pre><code>raw = <span class="st">"  A-2401 , 945℃ "</span>
+
+lot, temp = raw.strip().split(<span class="st">","</span>)
+<span class="fn2">print</span>(lot.strip())
+<span class="fn2">print</span>(temp.strip().replace(<span class="st">"℃"</span>, <span class="st">""</span>))
+
+<span class="cm"># 원본은 그대로다 — 새 문자열을 돌려준다</span>
+<span class="fn2">print</span>(<span class="fn2">repr</span>(raw))</code></pre>
+          <div class="out">A-2401
+945
+'  A-2401 , 945℃ '</div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>문자열 메서드는 <b>원본을 고치지 않는다</b>. 늘 새 문자열을 돌려주므로 결과를 받아 담아야 한다.</div></div>
+  </div>
+</section>
+
 <section class="slide" data-title="변수">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>변수</div>
@@ -1235,6 +1277,46 @@ dict_keys(['name', 'age', 'fare', 'survived'])
       </div>
     </div>
     <div class="keymsg"><span class="k">기준</span><div>대괄호가 겹쳐 나오면 <b>바깥부터 안으로</b> 읽는다. <code>rows[1]['name']</code>은 "2번째 행의 name"이다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="자료 구조 메서드">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>정리</div>
+  <h2 class="s-title sm">자료 구조에서 자주 쓰는 메서드</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="phase-label">리스트 list<span class="ln"></span></div>
+        <table class="ctable">
+          <tbody>
+            <tr><td><code>.append(x)</code></td><td>뒤에 하나 추가</td></tr>
+            <tr><td><code>.extend(xs)</code></td><td>여러 개 이어 붙임</td></tr>
+            <tr><td><code>.insert(i, x)</code></td><td><code>i</code> 자리에 끼움</td></tr>
+            <tr><td><code>.remove(x)</code></td><td>그 <b>값</b>을 지움</td></tr>
+            <tr><td><code>.pop(i)</code></td><td>꺼내면서 지움</td></tr>
+            <tr><td><code>.sort()</code></td><td class="no">제자리 정렬 — 원본이 바뀐다</td></tr>
+            <tr><td><code>.count(x)</code> &nbsp;·&nbsp; <code>.index(x)</code></td><td>개수 · 위치</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="phase-label">딕셔너리 dict · 집합 set<span class="ln"></span></div>
+        <table class="ctable">
+          <tbody>
+            <tr><td><code>.keys()</code> &nbsp;·&nbsp; <code>.values()</code></td><td>키 목록 · 값 목록</td></tr>
+            <tr><td><code>.items()</code></td><td>키와 값을 쌍으로</td></tr>
+            <tr><td><code>.get(k, 기본값)</code></td><td class="yes">없어도 에러가 안 난다</td></tr>
+            <tr><td><code>.update(d)</code></td><td>여러 개를 한 번에</td></tr>
+            <tr><td><code>.add(x)</code></td><td>집합에 하나 추가</td></tr>
+            <tr><td><code>a | b</code> &nbsp;·&nbsp; <code>a &amp; b</code></td><td>합집합 · 교집합</td></tr>
+            <tr><td><code>a - b</code></td><td>차집합 — 빠진 항목 찾기</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">함정</span><div><code>.sort()</code> 는 원본을 고치고 <b>아무것도 돌려주지 않는다</b>. <code>x = lst.sort()</code> 로 받으면 <code>None</code> 이다.</div></div>
   </div>
 </section>
 
