@@ -830,6 +830,20 @@ print(total / count)</div><p>행을 <b>하나씩</b> 돌며 직접 센다.</p></
     <div class="keymsg"><span class="k">기준</span><div>행이 수만 줄을 넘어가면 반복문과 Pandas의 차이가 <b>초 단위와 밀리초 단위</b>로 갈린다.</div></div>
   </div>
 </section>
+<section class="slide" data-title="Pandas를 쓰는 이유">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>배경</div>
+  <h2 class="s-title sm">Pandas를 쓰는 이유</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c3">
+      <div class="card"><span class="n">01</span><h3>큰 표를 견딘다</h3><p>엑셀이 버거워하는 <b>수십만 행</b>도 초 단위로 다룬다.</p></div>
+      <div class="card"><span class="n">02</span><h3>같은 일을 다시 한다</h3><p>이번 달에 쓴 코드를 <b>다음 달 파일에 그대로</b> 돌린다. 손으로 다시 하지 않는다.</p></div>
+      <div class="card"><span class="n">03</span><h3>모델에 넣을 모양으로 바꾼다</h3><p>결측·글자·단위를 정리해 <b>숫자 배열</b>로 만든다. 모델은 이 모양만 받는다.</p></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>엑셀로 되는 일이면 엑셀이 낫다. <b>같은 작업을 반복하거나 표가 커지면</b> 코드가 이긴다.</div></div>
+  </div>
+</section>
 <section class="slide" data-title="Series와 DataFrame">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>구조</div>
@@ -982,6 +996,26 @@ df.columns        <span class="cm"># 열 이름 목록</span></code></pre>
   <div class="body">
     <div class="flow"><div><div class="cap2">df</div><table class="dft"><thead><tr><th class="s"></th><th class="s">line</th><th class="s">shift</th><th>calc_temp</th><th>capacity</th></tr></thead><tbody><tr><td>0</td><td class="s">B</td><td class="s">day</td><td>898.9</td><td>178.9</td></tr><tr><td>1</td><td class="s">C</td><td class="s">day</td><td>835.0</td><td class="on">170.5</td></tr><tr><td>2</td><td class="s">F</td><td class="s">night</td><td>829.3</td><td class="on">172.5</td></tr><tr><td>3</td><td class="s">B</td><td class="s">day</td><td>855.1</td><td>178.1</td></tr><tr><td>4</td><td class="s">C</td><td class="s">night</td><td>875.7</td><td>180.1</td></tr><tr><td>5</td><td class="s">D</td><td class="s">day</td><td>832.7</td><td class="on">172.5</td></tr></tbody></table></div><div class="arw">→</div><div><div class="cap2">참인 행만 남는다</div><div class="code sm" style="margin-bottom:10px"><pre><code>df[df[<span class="st">'capacity'</span>] &lt; <span class="nm">175</span>]</code></pre></div><table class="dft"><thead><tr><th class="s"></th><th class="s">line</th><th class="s">shift</th><th>calc_temp</th><th>capacity</th></tr></thead><tbody><tr><td>1</td><td class="s">C</td><td class="s">day</td><td>835.0</td><td class="on">170.5</td></tr><tr><td>2</td><td class="s">F</td><td class="s">night</td><td>829.3</td><td class="on">172.5</td></tr><tr><td>5</td><td class="s">D</td><td class="s">day</td><td>832.7</td><td class="on">172.5</td></tr></tbody></table></div></div>
     <div class="keymsg"><span class="k">기준</span><div>대괄호에 <b>이름을 넣으면 열</b>, <b>조건식을 넣으면 행</b>이 걸러진다. 인덱스 번호는 그대로 따라온다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="loc">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>선택</div>
+  <h2 class="s-title sm">이름으로 고르기</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="flow"><div><div class="cap2">df</div><table class="dft"><thead><tr><th class="s"></th><th class="s">line</th><th class="s">shift</th><th>calc_temp</th><th>capacity</th></tr></thead><tbody><tr><td>0</td><td class="s">B</td><td class="s">day</td><td>898.9</td><td>178.9</td></tr><tr><td>1</td><td class="s">C</td><td class="s">day</td><td>835.0</td><td>170.5</td></tr><tr><td>2</td><td class="s">F</td><td class="s">night</td><td>829.3</td><td>172.5</td></tr><tr><td>3</td><td class="s">B</td><td class="s">day</td><td>855.1</td><td>178.1</td></tr></tbody></table></div><div class="arw">→</div><div><div class="cap2">0·1·2 — <b>끝을 포함</b>한다</div><div class="code sm" style="margin-bottom:10px"><pre><code>df.loc[<span class='nm'>0</span>:<span class='nm'>2</span>, [<span class="st">'line'</span>, <span class="st">'calc_temp'</span>]]</code></pre></div><table class="dft"><thead><tr><th class="s"></th><th class="s">line</th><th>calc_temp</th></tr></thead><tbody><tr><td>0</td><td class="s">B</td><td class="on">898.9</td></tr><tr><td>1</td><td class="s">C</td><td class="on">835.0</td></tr><tr><td>2</td><td class="s">F</td><td class="on">829.3</td></tr></tbody></table></div></div>
+    <div class="keymsg"><span class="k">기준</span><div><code>loc</code>은 <b>이름</b>으로 찾는다. 인덱스가 숫자면 그 숫자가 곧 이름이라 <b>끝까지 포함</b>된다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="iloc">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>선택</div>
+  <h2 class="s-title sm">번호로 고르기</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="flow"><div><div class="cap2">df</div><table class="dft"><thead><tr><th class="s"></th><th class="s">line</th><th class="s">shift</th><th>calc_temp</th><th>capacity</th></tr></thead><tbody><tr><td>0</td><td class="s">B</td><td class="s">day</td><td>898.9</td><td>178.9</td></tr><tr><td>1</td><td class="s">C</td><td class="s">day</td><td>835.0</td><td>170.5</td></tr><tr><td>2</td><td class="s">F</td><td class="s">night</td><td>829.3</td><td>172.5</td></tr><tr><td>3</td><td class="s">B</td><td class="s">day</td><td>855.1</td><td>178.1</td></tr></tbody></table></div><div class="arw">→</div><div><div class="cap2">0·1 — <b>끝을 제외</b>한다</div><div class="code sm" style="margin-bottom:10px"><pre><code>df.iloc[<span class='nm'>0</span>:<span class='nm'>2</span>, <span class='nm'>1</span>:<span class='nm'>4</span>]</code></pre></div><table class="dft"><thead><tr><th class="s"></th><th class="s">line</th><th class="s">shift</th><th>calc_temp</th></tr></thead><tbody><tr><td>0</td><td class="s">B</td><td class="s">day</td><td class="on">898.9</td></tr><tr><td>1</td><td class="s">C</td><td class="s">day</td><td class="on">835.0</td></tr></tbody></table></div></div>
+    <div class="keymsg"><span class="k">기준</span><div>끝 포함이 <code>loc</code>, 끝 제외가 <code>iloc</code>다. <b>이름은 포함, 번호는 제외</b>로 외운다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="값 세기">
@@ -1522,31 +1556,60 @@ plt.show()       <span class="cm"># 화면에 내보낸다</span></code></pre>
     <div class="keymsg"><span class="k">기준</span><div><code>describe()</code>가 놓치는 <b>추세 · 이상치 · 분포 모양</b>은 그래프에서만 보인다.</div></div>
   </div>
 </section>
-<section class="slide" data-title="그래프 꾸미기">
+<section class="slide" data-title="그래프 제목과 축 이름">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>꾸미기</div>
-  <h2 class="s-title sm">그림 안에 들어가야 할 것</h2>
+  <h2 class="s-title sm">제목과 축 이름 붙이기</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twocol">
       <div>
         <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">제목 · 축 이름 · 범례</span></div>
-          <pre><code>plt.plot(x, train_loss, label=<span class="st">"train"</span>)
-plt.plot(x, val_loss,   label=<span class="st">"validation"</span>)
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">세 줄을 더한다</span></div>
+          <pre><code>plt.plot(band, cap)
 
-plt.xlabel(<span class="st">"epoch"</span>)
-plt.ylabel(<span class="st">"loss"</span>)
-plt.legend()
+plt.title(<span class="st">"소성 온도별 평균 용량"</span>)
+plt.xlabel(<span class="st">"calc_temp"</span>)
+plt.ylabel(<span class="st">"capacity"</span>)
 plt.show()</code></pre>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div><code>title</code>은 위, <code>xlabel</code>은 아래, <code>ylabel</code>은 왼쪽에 붙는다.</div></div>
+          <div class="v"><span class="b">★</span><div>축 이름에 <b>단위</b>를 적는다. 숫자만 있으면 읽는 사람이 되묻는다.</div></div>
         </div>
       </div>
       <div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div><code>label=</code>을 적어 두고 <code>legend()</code>를 불러야 범례가 뜬다. 둘 중 하나만 있으면 안 나온다.</div></div>
-          <div class="v"><span class="b">→</span><div>축 이름에 <b>단위</b>를 적는다. 숫자만 있으면 읽는 사람이 되묻는다.</div></div>
-          <div class="v"><span class="b">→</span><div><code>title()</code> <code>grid(True)</code>로 제목과 눈금선을 더한다.</div></div>
+        <div class="plot"><svg viewBox="0 0 330 200"><rect x="46" y="32" width="270" height="136" fill="#fff" stroke="#DCD6F0"/><line x1="46" y1="140.8" x2="316" y2="140.8" stroke="#F0EDFA"/><text x="41" y="143.8" font-size="8.5" fill="#8E8AAC" text-anchor="end" font-family="ui-monospace,monospace">160</text><line x1="46" y1="86.4" x2="316" y2="86.4" stroke="#F0EDFA"/><text x="41" y="89.4" font-size="8.5" fill="#8E8AAC" text-anchor="end" font-family="ui-monospace,monospace">170</text><line x1="46" y1="32.0" x2="316" y2="32.0" stroke="#F0EDFA"/><text x="41" y="35.0" font-size="8.5" fill="#8E8AAC" text-anchor="end" font-family="ui-monospace,monospace">180</text><polyline points="46.0,151.1 91.0,109.8 136.0,82.6 181.0,59.7 226.0,46.1 271.0,46.7 316.0,46.1" fill="none" stroke="#5B3DF5" stroke-width="2.2"/><circle cx="46.0" cy="151.1" r="2.6" fill="#5B3DF5"/><circle cx="91.0" cy="109.8" r="2.6" fill="#5B3DF5"/><circle cx="136.0" cy="82.6" r="2.6" fill="#5B3DF5"/><circle cx="181.0" cy="59.7" r="2.6" fill="#5B3DF5"/><circle cx="226.0" cy="46.1" r="2.6" fill="#5B3DF5"/><circle cx="271.0" cy="46.7" r="2.6" fill="#5B3DF5"/><circle cx="316.0" cy="46.1" r="2.6" fill="#5B3DF5"/><text x="46.0" y="180" font-size="8.5" fill="#8E8AAC" text-anchor="middle" font-family="ui-monospace,monospace">780</text><text x="181.0" y="180" font-size="8.5" fill="#8E8AAC" text-anchor="middle" font-family="ui-monospace,monospace">840</text><text x="316.0" y="180" font-size="8.5" fill="#8E8AAC" text-anchor="middle" font-family="ui-monospace,monospace">900</text><text x="181" y="22" font-size="11" font-weight="700" fill="#16142B" text-anchor="middle">소성 온도별 평균 용량</text><text x="181" y="194" font-size="9.5" fill="#4A4766" text-anchor="middle">calc_temp (°C)</text><text x="12" y="100" font-size="9.5" fill="#4A4766" text-anchor="middle" transform="rotate(-90 12 100)">capacity</text></svg>
+          <div class="cap">890 °C 부근에서 평평해진다 — 더 올려도 용량이 안 는다</div></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>그림 하나가 <b>혼자 설명되게</b> 만든다. 제목과 축 이름이 없으면 옆에서 말로 채워야 한다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="범례">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>꾸미기</div>
+  <h2 class="s-title sm">선이 여럿일 때의 범례</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">label 을 적고 legend 를 부른다</span></div>
+          <pre><code>plt.plot(band, cap, label=<span class="st">"실측"</span>)
+plt.plot(band, ref, label=<span class="st">"기준선"</span>)
+
+plt.legend()
+plt.show()</code></pre>
         </div>
+        <div class="vlist">
+          <div class="v"><span class="b">✕</span><div><code>label=</code>만 적고 <code>legend()</code>를 안 부르면 <b>범례가 안 나온다</b>. 둘 다 있어야 한다.</div></div>
+          <div class="v"><span class="b">→</span><div><code>plt.plot()</code>을 부를 때마다 선이 <b>한 개씩 쌓인다</b>.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="plot"><svg viewBox="0 0 330 200"><rect x="46" y="14" width="270" height="166" fill="#fff" stroke="#DCD6F0"/><line x1="46" y1="146.8" x2="316" y2="146.8" stroke="#F0EDFA"/><text x="41" y="149.8" font-size="8.5" fill="#8E8AAC" text-anchor="end" font-family="ui-monospace,monospace">160</text><line x1="46" y1="80.4" x2="316" y2="80.4" stroke="#F0EDFA"/><text x="41" y="83.4" font-size="8.5" fill="#8E8AAC" text-anchor="end" font-family="ui-monospace,monospace">170</text><line x1="46" y1="14.0" x2="316" y2="14.0" stroke="#F0EDFA"/><text x="41" y="17.0" font-size="8.5" fill="#8E8AAC" text-anchor="end" font-family="ui-monospace,monospace">180</text><polyline points="46.0,159.4 91.0,109.0 136.0,75.8 181.0,47.9 226.0,31.3 271.0,31.9 316.0,31.3" fill="none" stroke="#5B3DF5" stroke-width="2.2"/><circle cx="46.0" cy="159.4" r="2.6" fill="#5B3DF5"/><circle cx="91.0" cy="109.0" r="2.6" fill="#5B3DF5"/><circle cx="136.0" cy="75.8" r="2.6" fill="#5B3DF5"/><circle cx="181.0" cy="47.9" r="2.6" fill="#5B3DF5"/><circle cx="226.0" cy="31.3" r="2.6" fill="#5B3DF5"/><circle cx="271.0" cy="31.9" r="2.6" fill="#5B3DF5"/><circle cx="316.0" cy="31.3" r="2.6" fill="#5B3DF5"/><text x="46.0" y="192" font-size="8.5" fill="#8E8AAC" text-anchor="middle" font-family="ui-monospace,monospace">780</text><text x="181.0" y="192" font-size="8.5" fill="#8E8AAC" text-anchor="middle" font-family="ui-monospace,monospace">840</text><text x="316.0" y="192" font-size="8.5" fill="#8E8AAC" text-anchor="middle" font-family="ui-monospace,monospace">900</text><rect x="232" y="20" width="76" height="20" fill="#fff" stroke="#DCD6F0"/><line x1="238" y1="30" x2="254" y2="30" stroke="#5B3DF5" stroke-width="2.2"/><text x="258" y="33" font-size="9" fill="#16142B" font-family="ui-monospace,monospace">capacity</text></svg>
+          <div class="cap">선마다 이름이 붙는다</div></div>
       </div>
     </div>
     <div class="keymsg"><span class="k">기준</span><div>선이 둘 이상인 그래프에서 <b>범례가 없으면 그림이 아니라 낙서</b>다.</div></div>
@@ -1730,71 +1793,6 @@ sns.histplot(data=df, x='capacity', hue='line')</div><p>표와 <b>열 이름</b>
   <div class="seyebrow">CHAPTER 04</div>
   <h2>더 볼 것</h2>
   <div class="agenda"><span>loc·iloc</span><span>결합</span><span>집계</span></div>
-</section>
-<section class="slide" data-title="loc">    <div class="keymsg"><span class="k">기준</span><div><code>loc</code>은 <b>이름</b>으로 찾는다. 인덱스가 숫자면 그 숫자가 곧 이름이다.</div></div>
-
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>선택</div>
-  <h2 class="s-title sm">이름으로 고르기</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">행 이름, 열 이름을 쉼표로</span></div>
-          <pre><code>df.loc[<span class="nm">0</span>, <span class="st">'calc_temp'</span>]
-
-df.loc[<span class="nm">0</span>:<span class="nm">2</span>, [<span class="st">'line'</span>, <span class="st">'calc_temp'</span>]]
-
-df.loc[df[<span class="st">'passed'</span>] == <span class="nm">0</span>, <span class="st">'capacity'</span>]</code></pre>
-          <div class="out">898.9
-  line  calc_temp
-0    B      898.9
-1    C      835.0
-2    F      829.3</div>
-        </div>
-      </div>
-      <div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div>쉼표 앞이 <b>행</b>, 뒤가 <b>열</b>이다. NumPy 인덱싱과 같은 모양이다.</div></div>
-          <div class="v"><span class="b">★</span><div><code>0:2</code>가 <b>0·1·2</b>다. 대괄호 슬라이스와 달리 <code>loc</code>은 <b>끝을 포함한다</b>.</div></div>
-          <div class="v"><span class="b">→</span><div>조건과 열을 한 번에 준다 — 걸러진 행에서 그 열만 꺼낸다.</div></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-<section class="slide" data-title="iloc">    <div class="keymsg"><span class="k">기준</span><div>끝 포함이 <code>loc</code>, 끝 제외가 <code>iloc</code>다. 헷갈리면 <b>이름은 포함, 번호는 제외</b>로 외운다.</div></div>
-
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>선택</div>
-  <h2 class="s-title sm">번호로 고르기</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">몇 번째인지로 센다</span></div>
-          <pre><code>df.iloc[<span class="nm">0</span>, <span class="nm">3</span>]
-
-df.iloc[<span class="nm">0</span>:<span class="nm">2</span>, <span class="nm">1</span>:<span class="nm">4</span>]
-
-df.iloc[-<span class="nm">1</span>]</code></pre>
-          <div class="out">898.9
-  line shift  calc_temp
-0    B   day      898.9
-1    C   day      835.0</div>
-        </div>
-      </div>
-      <div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div>열 이름을 몰라도 <b>위치만으로</b> 꺼낸다. 앞 세 행만 보고 싶을 때 쓴다.</div></div>
-          <div class="v"><span class="b">★</span><div><code>0:2</code>가 <b>0·1</b>이다. <code>iloc</code>은 <b>끝을 제외한다</b>.</div></div>
-          <div class="v"><span class="b">✕</span><div>이름과 번호를 <b>섞어 쓰면 에러</b>다. <code>df.iloc[0, 'calc_temp']</code>는 안 된다.</div></div>
-        </div>
-      </div>
-    </div>
-  </div>
 </section>
 <section class="slide" data-title="정렬">    <div class="keymsg"><span class="k">기준</span><div>이상치를 찾는 가장 빠른 방법이다. <b>양 끝</b>을 보면 잘못 들어온 값이 드러난다.</div></div>
 
