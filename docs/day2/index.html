@@ -890,6 +890,30 @@ Pclass
   <div class="agenda"><span>결측치</span><span>인코딩</span><span>스케일링</span><span>데이터 분할</span></div>
 </section>
 
+<section class="slide" data-title="손대기 전의 표">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>현장</div>
+  <h2 class="s-title sm">손대기 전의 표</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable">
+      <thead><tr><th>lot_id</th><th>소성온도</th><th>체류시간</th><th>D50</th><th>산소농도</th><th>판정</th></tr></thead>
+      <tbody>
+        <tr><td>A-2401</td><td>945</td><td>6.5</td><td>11.2</td><td>19.8</td><td>양품</td></tr>
+        <tr><td>A-2402</td><td class="no">1,010</td><td class="no">(빈칸)</td><td>12.8</td><td>19.5</td><td>불량</td></tr>
+        <tr><td>A-2403</td><td class="no">948℃</td><td>6.0</td><td>11.5</td><td class="no">N/A</td><td>양품</td></tr>
+        <tr><td class="no">a-2404</td><td>952</td><td>6.2</td><td>11.9</td><td>19.9</td><td class="no">양 품</td></tr>
+      </tbody>
+    </table>
+    <div class="vlist">
+      <div class="v"><span class="b">✕</span><div><code>1,010</code> 의 쉼표와 <code>948℃</code> 의 단위 때문에 <b>열 전체가 문자열</b>로 읽힌다.</div></div>
+      <div class="v"><span class="b">✕</span><div>빈칸과 <code>N/A</code> 는 <b>같은 결측인데 표기가 다르다</b>. 한쪽만 걸러진다.</div></div>
+      <div class="v"><span class="b">✕</span><div><code>a-2404</code> 와 <code>양 품</code> — 대소문자와 공백이 흔들리면 <b>다른 값으로 세어진다</b>.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>표를 받으면 계산부터 하지 않는다. <b>타입 · 결측 · 표기</b> 세 가지를 먼저 확인한다.</div></div>
+  </div>
+</section>
+
 <section class="slide" data-title="전처리 네 단계">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>지도</div>

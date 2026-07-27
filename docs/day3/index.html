@@ -388,13 +388,13 @@
   <div class="rule"></div>
   <div class="body">
     <div class="twopane">
-      <div class="pane bad"><h4>전통 프로그래밍</h4><div class="mini">if sex == 'female' and pclass &lt;= 2:
-    survived = 1
-elif age &lt; 10 and pclass == 3:
-    survived = 1
+      <div class="pane bad"><h4>전통 프로그래밍</h4><div class="mini">if temp &gt; 950 and dwell &lt; 6:
+    defect = True
+elif d50 &gt; 12.5 and o2 &lt; 18:
+    defect = True
 ...</div><p>사람이 규칙을 쓴다. 조건이 늘어날수록 <b>손으로 감당이 안 된다</b>.</p></div>
-      <div class="pane good"><h4>머신러닝</h4><div class="mini">입력: Sex · Age · Pclass · Fare (891행)
-정답: 그 승객이 살았는지
+      <div class="pane good"><h4>머신러닝</h4><div class="mini">입력: 소성온도 · 체류시간 · 입도 · 산소농도 (과거 3만 로트)
+정답: 그 로트가 불량이었는지
 
 → 모델이 경계선을 스스로 찾는다</div><p>사람은 <b>데이터와 정답</b>만 준다. 규칙은 학습 결과로 나온다.</p></div>
     </div>
@@ -451,9 +451,9 @@ elif age &lt; 10 and pclass == 3:
           <line x1="30" y1="12" x2="30" y2="130" stroke="#8E8AAC" stroke-width="1.2"/>
           <line x1="42" y1="118" x2="300" y2="26" stroke="#5B3DF5" stroke-width="2.6"/>
           <g fill="#8E8AAC"><circle cx="60" cy="116" r="4"/><circle cx="98" cy="102" r="4"/><circle cx="136" cy="88" r="4"/><circle cx="174" cy="78" r="4"/><circle cx="212" cy="56" r="4"/><circle cx="250" cy="50" r="4"/><circle cx="288" cy="30" r="4"/></g>
-          <text x="14" y="20" font-size="10" fill="#8E8AAC">가격</text><text x="300" y="146" text-anchor="end" font-size="10" fill="#8E8AAC">면적</text>
-        </svg><div class="cap">면적 → 주택 가격</div></div>
-        <div class="vlist"><div class="v"><span class="b">→</span><div>출력이 <b>실수</b>다. 3.2도 3.27도 가능하다.</div></div></div>
+          <text x="14" y="20" font-size="10" fill="#8E8AAC">용량</text><text x="300" y="146" text-anchor="end" font-size="10" fill="#8E8AAC">온도</text>
+        </svg><div class="cap">소성 온도 → 방전 용량</div></div>
+        <div class="vlist"><div class="v"><span class="b">→</span><div>출력이 <b>실수</b>다. 182.4도 182.47도 가능하다.</div></div></div>
       </div>
       <div>
         <div class="phase-label">분류 Classification<span class="ln"></span></div>
@@ -463,7 +463,7 @@ elif age &lt; 10 and pclass == 3:
           <line x1="52" y1="18" x2="290" y2="126" stroke="#16142B" stroke-width="2" stroke-dasharray="6 5"/>
           <g fill="#5B3DF5"><circle cx="72" cy="88" r="5"/><circle cx="98" cy="106" r="5"/><circle cx="64" cy="114" r="5"/><circle cx="126" cy="118" r="5"/></g>
           <g fill="#0FB5A1"><rect x="196" y="32" width="9" height="9"/><rect x="230" y="50" width="9" height="9"/><rect x="206" y="66" width="9" height="9"/><rect x="256" y="28" width="9" height="9"/></g>
-        </svg><div class="cap">승객 정보 → 생존 / 사망</div></div>
+        </svg><div class="cap">입도 · 이물 수 → 양품 / 불량</div></div>
         <div class="vlist"><div class="v"><span class="b">→</span><div>출력이 <b>라벨</b>이다. 중간값이 없다.</div></div></div>
       </div>
     </div>
@@ -1074,26 +1074,26 @@ s = cross_val_score(model, X, y, cv=<span class="nm">5</span>)
     <div class="twocol w">
       <div>
         <table class="ctable">
-          <thead><tr><th></th><th>예측: 스팸</th><th>예측: 정상</th></tr></thead>
+          <thead><tr><th></th><th>예측: 불량</th><th>예측: 양품</th></tr></thead>
           <tbody>
-            <tr><td><b>실제 스팸</b></td><td class="yes">TP<br/>진짜 양성 — 제대로 잡음</td><td class="no">FN<br/>거짓 음성 — <b>놓침</b></td></tr>
-            <tr><td><b>실제 정상</b></td><td class="no">FP<br/>거짓 양성 — <b>헛경보</b></td><td class="yes">TN<br/>진짜 음성 — 제대로 통과</td></tr>
+            <tr><td><b>실제 불량</b></td><td class="yes">TP<br/>진짜 양성 — 제대로 걸러냄</td><td class="no">FN<br/>거짓 음성 — <b>놓쳐서 출하</b></td></tr>
+            <tr><td><b>실제 양품</b></td><td class="no">FP<br/>거짓 양성 — <b>멀쩡한 걸 재검사</b></td><td class="yes">TN<br/>진짜 음성 — 제대로 통과</td></tr>
           </tbody>
         </table>
         <div class="refbox"><div class="ri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div><div><div class="rk">TERM</div><h4>Type I · Type II Error</h4><p>FP가 <b>1종 오류</b>, FN이 <b>2종 오류</b>다. 통계 문헌에서 이 이름으로 나온다.</p></div></div>
       </div>
       <div>
         <div class="vlist">
-          <div class="v"><span class="b">→</span><div><b>양성(Positive)</b>은 찾으려는 쪽이다. 스팸 필터라면 스팸이 양성이다.</div></div>
-          <div class="v"><span class="b">★</span><div>FN(놓친 스팸)과 FP(정상 메일을 스팸함으로)는 <b>비용이 전혀 다르다</b>.</div></div>
+          <div class="v"><span class="b">→</span><div><b>양성(Positive)</b>은 찾으려는 쪽이다. 불량 검사라면 불량이 양성이다.</div></div>
+          <div class="v"><span class="b">★</span><div>FN(놓친 불량)과 FP(양품을 재검사로 돌림)는 <b>비용이 전혀 다르다</b>.</div></div>
         </div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">scikit-learn</span></div>
           <pre><code><span class="kw">from</span> sklearn.metrics <span class="kw">import</span> confusion_matrix
 
 <span class="fn2">print</span>(confusion_matrix(y_test, pred))</code></pre>
-          <div class="out">[[ 18  12]     ← 실제 스팸 30건
- [ 40 930]]    ← 실제 정상 970건</div>
+          <div class="out">[[ 18  12]     ← 실제 불량 30건
+ [ 40 930]]    ← 실제 양품 970건</div>
         </div>
       </div>
     </div>
@@ -1110,23 +1110,23 @@ s = cross_val_score(model, X, y, cv=<span class="nm">5</span>)
     <div class="twocol">
       <div>
         <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">스팸 비율 3%인 메일함 · 1,000건</span></div>
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">불량률 3%인 라인 · 검사 1,000건</span></div>
           <pre><code><span class="cm"># 아무 학습도 하지 않고</span>
-<span class="cm"># 전부 "정상"이라고만 답하는 모델</span>
-pred = [<span class="st">"정상"</span>] * <span class="nm">1000</span>
+<span class="cm"># 전부 "양품"이라고만 답하는 모델</span>
+pred = [<span class="st">"양품"</span>] * <span class="nm">1000</span>
 
 accuracy = <span class="nm">970</span> / <span class="nm">1000</span></code></pre>
           <div class="out">0.97</div>
         </div>
         <div class="stat-row">
           <div class="stat"><div class="num">97%</div><div class="lab">정확도</div></div>
-          <div class="stat"><div class="num">0</div><div class="lab">잡아낸 스팸</div></div>
+          <div class="stat"><div class="num">0</div><div class="lab">걸러낸 불량</div></div>
         </div>
       </div>
       <div>
         <div class="vlist">
           <div class="v"><span class="b">✕</span><div>정확도는 <b>TP와 TN을 합쳐</b> 센다. 다수 클래스가 압도하면 숫자가 부풀려진다.</div></div>
-          <div class="v"><span class="b">→</span><div>스팸 탐지·이상 탐지·질병 진단·부도 예측은 전부 <b>불균형 데이터</b>다.</div></div>
+          <div class="v"><span class="b">→</span><div>불량 검출·설비 이상 탐지·이물 혼입 판정은 전부 <b>불균형 데이터</b>다.</div></div>
           <div class="v"><span class="b">★</span><div>찾으려는 쪽만 따로 재는 지표가 필요하다 — <b>정밀도와 재현율</b>이다.</div></div>
         </div>
         <div class="callout rose"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>보고서에서 걸러낼 신호</h4><p>정확도만 적혀 있고 <b>클래스 비율이 없는</b> 결과는 다시 물어봐야 한다.</p></div></div>
@@ -1145,12 +1145,12 @@ accuracy = <span class="nm">970</span> / <span class="nm">1000</span></code></pr
     <div class="twopane">
       <div class="pane good"><h4>정밀도 Precision</h4><div class="mini">TP / (TP + FP)
 
-스팸이라고 <b>말한 것</b> 중
-진짜 스팸의 비율</div><p>낮으면 <b>헛경보</b>가 많다. 정상 메일이 스팸함으로 간다.</p></div>
+불량이라고 <b>판정한 것</b> 중
+진짜 불량의 비율</div><p>낮으면 <b>헛경보</b>가 많다. 멀쩡한 로트가 재검사로 돌아간다.</p></div>
       <div class="pane good"><h4>재현율 Recall</h4><div class="mini">TP / (TP + FN)
 
-<b>진짜 스팸</b> 중
-잡아낸 것의 비율</div><p>낮으면 <b>놓친다</b>. 스팸이 받은편지함에 남는다.</p></div>
+<b>진짜 불량</b> 중
+걸러낸 것의 비율</div><p>낮으면 <b>놓친다</b>. 불량이 그대로 출하된다.</p></div>
     </div>
     <div class="twocol">
       <div>
@@ -1188,9 +1188,9 @@ recall    = <span class="nm">18</span> / (<span class="nm">18</span> + <span cla
         <table class="ctable">
           <thead><tr><th>상황</th><th>더 아픈 실수</th><th>우선 지표</th></tr></thead>
           <tbody>
-            <tr><td>암 검진</td><td>놓침 (FN) — 치료 시기를 놓친다</td><td class="hl">재현율</td></tr>
-            <tr><td>스팸 필터</td><td>헛경보 (FP) — 중요 메일이 사라진다</td><td class="hl">정밀도</td></tr>
-            <tr><td>부정 거래 탐지</td><td>놓침 (FN) — 금전 손실</td><td class="hl">재현율</td></tr>
+            <tr><td>출하 전 불량 검사</td><td>놓침 (FN) — 고객 클레임</td><td class="hl">재현율</td></tr>
+            <tr><td>재검사 비용이 큰 공정</td><td>헛경보 (FP) — 라인이 멈춘다</td><td class="hl">정밀도</td></tr>
+            <tr><td>설비 이상 예지</td><td>놓침 (FN) — 설비 손상</td><td class="hl">재현율</td></tr>
             <tr><td>둘 다 비슷할 때</td><td>—</td><td class="hl">F1</td></tr>
           </tbody>
         </table>
@@ -1220,7 +1220,7 @@ recall    = <span class="nm">18</span> / (<span class="nm">18</span> + <span cla
     <table class="ctable">
       <thead><tr><th>지표</th><th>뜻</th><th>단위</th><th>읽는 법</th></tr></thead>
       <tbody>
-        <tr><td><b>MAE</b></td><td>오차 절댓값의 평균</td><td>원래 값과 같음</td><td>"평균 <span class="hl">3,200만 원</span> 틀린다"</td></tr>
+        <tr><td><b>MAE</b></td><td>오차 절댓값의 평균</td><td>원래 값과 같음</td><td>"평균 <span class="hl">2.4도</span> 틀린다"</td></tr>
         <tr><td><b>MSE</b></td><td>오차 제곱의 평균</td><td>제곱된 단위</td><td>모델끼리 비교용. 해석은 어렵다</td></tr>
         <tr><td><b>RMSE</b></td><td>√MSE</td><td>원래 값과 같음</td><td>MAE보다 <span class="hl">큰 오차를 더 반영</span></td></tr>
         <tr><td><b>R²</b></td><td>설명된 분산의 비율</td><td>0~1 (음수 가능)</td><td>1에 가까울수록 좋음</td></tr>
@@ -1234,7 +1234,7 @@ recall    = <span class="nm">18</span> / (<span class="nm">18</span> + <span cla
 
 <span class="fn2">print</span>(mean_absolute_error(y_test, pred))
 <span class="fn2">print</span>(r2_score(y_test, pred))</code></pre>
-          <div class="out">3216.4
+          <div class="out">2.41
 0.687</div>
         </div>
       </div>
@@ -1245,7 +1245,7 @@ recall    = <span class="nm">18</span> / (<span class="nm">18</span> + <span cla
         </div>
       </div>
     </div>
-    <div class="keymsg"><span class="k">기준</span><div>"R² 0.69"보다 <b>"평균 3,200만 원 틀린다"</b>가 통한다. 허용 오차와 바로 비교되기 때문이다.</div></div>
+    <div class="keymsg"><span class="k">기준</span><div>"R² 0.69"보다 <b>"평균 2.4도 틀린다"</b>가 통한다. 공정 허용 오차와 바로 비교되기 때문이다.</div></div>
   </div>
 </section>
 
