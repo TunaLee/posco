@@ -9,7 +9,7 @@ CELLS = [
     code("""
 print(22,      type(22))
 print(7.25,    type(7.25))
-print("Owen",  type("Owen"))
+print("B00115", type("B00115"))
 print(True,    type(True))
 print([22, 38], type([22, 38]))
 """),
@@ -43,7 +43,7 @@ print(2 ** 10)  # 거듭제곱
 
     lab("문자열도 순서를 가진다. 인덱스는 0부터, 마지막은 -1이다."),
     code("""
-name = "Braund, Mr. Owen"
+batch = "B00115"
 print(name[0], name[-1])
 print(name[8:11])       # 8 이상 11 미만
 print(len(name))
@@ -89,7 +89,7 @@ print("같은 객체인가:", id(a) == id(b))
     code("""
 import copy
 
-rows = [{"name": "Owen", "age": 22}, {"name": "Laina", "age": 26}]
+rows = [{"line": "A", "temp": 898}, {"line": "E", "temp": 829}]
 
 shallow = rows.copy()
 shallow[0]["age"] = 99
@@ -107,11 +107,11 @@ print("깊은 복사 후 원본:", rows[0]["age"])   # 22 — 그대로
        answer="safe = copy.deepcopy(origin)\nsafe[0][0] = 99",
        check='assert origin == [[1, 2], [3, 4]], f"원본이 바뀌었다: {origin}"\nprint("통과")'),
 
-    Task(1, "이름과 나이를 받아 `\"Owen(22세)\"` 형태의 문자열을 돌려주는 코드를 쓴다.\n"
+    Task(1, "배치 번호와 온도를 받아 `\"B00115(898.9°C)\"` 형태의 문자열을 돌려주는 코드를 쓴다.\n"
             "> `label` 변수에 담는다. f-string 을 쓰면 짧다.",
-         setup='name = "Owen"\nage = 22',
-         answer='label = f"{name}({age}세)"',
-         check='assert label == "Owen(22세)", f"기대 Owen(22세), 실제 {label!r}"\nprint("통과")'),
+         setup='batch = "B00115"\ntemp = 898.9',
+         answer='label = f"{batch}({temp}°C)"',
+         check='assert label == "B00115(898.9°C)", f"기대 B00115(898.9°C), 실제 {label!r}"\nprint("통과")'),
 
     Task(2, "`price` 를 천 단위 쉼표가 붙은 문자열로 만든다. 결과는 `'1,234,567원'` 이다.\n"
             "> `f\"{값:,}\"` 형식을 쓰면 쉼표가 붙는다.",
@@ -124,15 +124,15 @@ print("깊은 복사 후 원본:", rows[0]["age"])   # 22 — 그대로
 
     lab("리스트는 순서가 있고 나중에 고칠 수 있다."),
     code("""
-ages = [22, 38, 26, 35]
+temps = [898, 835, 829, 860]
 
-print(ages[0], ages[-1])
-print(ages[1:3])
-ages.append(54)
-ages[1] = 39
-ages.remove(26)
-ages.sort()
-print(ages, len(ages), 22 in ages)
+print(temps[0], temps[-1])
+print(temps[1:3])
+temps.append(872)
+temps[1] = 840
+temps.remove(829)
+temps.sort()
+print(temps, len(temps), 898 in temps)
 """),
 
     Ex(7, "`scores` 에서 가장 큰 값과 가장 작은 값의 차이를 `gap` 에 담는다.",
@@ -169,10 +169,10 @@ print(set(ports), len(set(ports)))
 
     lab("딕셔너리는 순서가 아니라 이름으로 값을 꺼낸다."),
     code("""
-row = {"name": "Owen", "age": 22, "fare": 7.25}
+row = {"line": "A", "temp": 898, "impurity": 1024}
 
 print(row["age"])
-row["survived"] = 0
+row["passed"] = 1
 print(list(row.keys()))
 print(row.get("cabin", "미상"))     # 없는 키는 기본값으로
 
@@ -189,32 +189,32 @@ for k, v in row.items():
     lab("표 한 장은 딕셔너리의 리스트로 표현된다. Pandas 의 DataFrame 이 이 구조를 감싼 것이다."),
     code("""
 rows = [
-    {"name": "Owen",     "age": 22, "survived": 0},
-    {"name": "Florence", "age": 38, "survived": 1},
-    {"name": "Laina",    "age": 26, "survived": 1},
+    {"line": "A", "temp": 898, "passed": 1},
+    {"line": "C", "temp": 835, "passed": 0},
+    {"line": "E", "temp": 829, "passed": 1},
 ]
-print(rows[1]["name"])
+print(rows[1]["line"])
 print(len(rows))
 """),
 
-    Ex(11, "`rows` 에서 생존자(`survived == 1`)가 몇 명인지 세어 `alive` 에 담는다.",
+    Ex(11, "`rows` 에서 양품(`passed == 1`)이 몇 건인지 세어 `good` 에 담는다.",
         setup="""rows = [
-    {"name": "Owen",     "age": 22, "survived": 0},
-    {"name": "Florence", "age": 38, "survived": 1},
-    {"name": "Laina",    "age": 26, "survived": 1},
+    {"line": "A", "temp": 898, "passed": 1},
+    {"line": "C", "temp": 835, "passed": 0},
+    {"line": "E", "temp": 829, "passed": 1},
 ]""",
-        blank="alive = 0\nfor r in rows:\n    ___",
-        answer="alive = 0\nfor r in rows:\n    if r['survived'] == 1:\n        alive = alive + 1",
-        check='assert alive == 2, f"기대 2, 실제 {alive}"\nprint("통과")'),
+        blank="good = 0\nfor r in rows:\n    ___",
+        answer="good = 0\nfor r in rows:\n    if r['passed'] == 1:\n        good = good + 1",
+        check='assert good == 2, f"기대 2, 실제 {good}"\nprint("통과")'),
 
-    Task(3, "`rows` 에서 **이름만 모은 리스트**를 `names` 에 만든다.",
+    Task(3, "`rows` 에서 **설비 호기만 모은 리스트**를 `lines` 에 만든다.",
          setup="""rows = [
-    {"name": "Owen",     "age": 22, "survived": 0},
-    {"name": "Florence", "age": 38, "survived": 1},
-    {"name": "Laina",    "age": 26, "survived": 1},
+    {"line": "A", "temp": 898, "passed": 1},
+    {"line": "C", "temp": 835, "passed": 0},
+    {"line": "E", "temp": 829, "passed": 1},
 ]""",
-         answer='names = [r["name"] for r in rows]',
-         check='assert names == ["Owen", "Florence", "Laina"], f"실제 {names}"\nprint("통과")'),
+         answer='lines = [r["line"] for r in rows]',
+         check='assert lines == ["A", "C", "E"], f"실제 {lines}"\nprint("통과")'),
 
     Task(4, "`stock` 에서 **수량이 0인 품목의 이름**만 골라 `sold_out` 에 담는다.",
          setup='stock = {"연필": 12, "지우개": 0, "자": 5, "컴퍼스": 0}',
@@ -235,12 +235,12 @@ print(age < 18 or age > 60)
 print(not (age < 18))
 """),
 
-    Ex(12, "나이가 18 이상 65 미만이면 True 가 되도록 `is_adult` 를 만든다.",
-        setup="age = 42",
-        blank="is_adult = ___",
-        answer="is_adult = 18 <= age < 65",
-        check='assert is_adult is True, f"기대 True, 실제 {is_adult}"\n'
-              'age = 70\nassert not (18 <= age < 65), "조건식을 다시 확인한다"\nprint("통과")'),
+    Ex(12, "온도가 820 이상 880 미만이면 True 가 되도록 `in_range` 를 만든다.",
+        setup="temp = 855",
+        blank="in_range = ___",
+        answer="in_range = 820 <= temp < 880",
+        check='assert in_range is True, f"기대 True, 실제 {in_range}"\n'
+              'temp = 910\nassert not (820 <= temp < 880), "조건식을 다시 확인한다"\nprint("통과")'),
 
     lab("0, 빈 문자열, 빈 리스트는 거짓으로 취급된다."),
     code("""
@@ -271,13 +271,13 @@ for a in [7, 15, 42, 70]:
 
     lab("반복문은 꺼낼 대상이 있을 때 for, 끝을 조건이 정할 때 while 이다."),
     code("""
-ages = [22, 38, 26]
+temps = [898, 835, 829]
 
-for a in ages:
-    print("나이:", a)
+for t in temps:
+    print("온도:", t)
 
-for i, a in enumerate(ages, start=1):
-    print(i, a)
+for i, t in enumerate(temps, start=1):
+    print(i, t)
 
 for i in range(1, 6):
     print("*" * i)
@@ -297,19 +297,19 @@ for i in range(1, 6):
 
     lab("break 는 반복 자체를 끝내고, continue 는 이번 회차만 건너뛴다."),
     code("""
-ages = [22, 38, 4, 35]
+temps = [898, 835, 760, 860]
 
-for a in ages:
-    if a < 18:
-        print("미성년 발견:", a)
+for t in temps:
+    if t < 800:
+        print("저온 발견:", t)
         break
-    print("확인:", a)
+    print("확인:", t)
 
 print("---")
-for a in ages:
-    if a < 18:
+for t in temps:
+    if t < 800:
         continue
-    print("집계:", a)
+    print("집계:", t)
 """),
 
     Ex(16, "`nums` 를 앞에서부터 보다가 **처음 만나는 음수**를 `found` 에 담고 멈춘다.",
@@ -321,14 +321,14 @@ for a in ages:
     md("### 컴프리헨션"),
     lab("반복문을 한 줄로 접는다. 괄호가 결과 자료형을 정한다."),
     code("""
-names = ["Owen", "Florence", "Laina"]
-ages  = [22, 38, 26]
+lines = ["A", "C", "E"]
+temps = [898, 835, 829]
 
-print([n.upper() for n in names])                        # list
-print({n: a for n, a in zip(names, ages)})               # dict
-print({a // 10 * 10 for a in [22, 38, 26, 25, 31]})      # set
-print(sum(a * 12 for a in ages))                         # generator
-print([a for a in ages if a >= 26])                      # 조건으로 거르기
+print([L.lower() for L in lines])                        # list
+print({L: t for L, t in zip(lines, temps)})              # dict
+print({t // 10 * 10 for t in temps})                     # set
+print(sum(t for t in temps))                             # generator
+print([t for t in temps if t >= 850])                    # 조건으로 거르기
 """),
 
     Ex(17, "`nums` 의 각 값을 제곱한 리스트를 컴프리헨션으로 `squares` 에 담는다.",
@@ -371,11 +371,11 @@ print([a for a in ages if a >= 26])                      # 조건으로 거르�
 
     lab("내장 함수는 가져오지 않고 바로 쓴다."),
     code("""
-ages = [22, 38, 26, 35]
+temps = [898, 835, 829, 860]
 
-print(len(ages), max(ages), min(ages), sum(ages))
-print(sum(ages) / len(ages))     # 평균 — 내장 함수에는 없다
-print(sorted(ages, reverse=True))
+print(len(temps), max(temps), min(temps), sum(temps))
+print(sum(temps) / len(temps))     # 평균 — 내장 함수에는 없다
+print(sorted(temps, reverse=True))
 """),
 
     lab("def 로 만든 함수는 호출해야 실행된다. return 이 값을 돌려준다."),
@@ -445,12 +445,12 @@ print("가변 인자:", nums)       # [0, 1] — 바뀐다
 
     lab("메서드는 자료형에 속한 함수다. 점 앞의 값이 첫 인자로 들어간다."),
     code("""
-ages = [22, 38]
-ages.append(54)          # 사실상 list.append(ages, 54)
-print(ages)
+temps = [898, 835]
+temps.append(872)        # 사실상 list.append(temps, 872)
+print(temps)
 
-name = "owen"
-print(name.upper())      # 문자열에는 append 가 없다
+line = "a"
+print(line.upper())      # 문자열에는 append 가 없다
 
 try:
     name.append("!")
@@ -481,24 +481,24 @@ except AttributeError as e:
     h(2, "5. 종합 문제"),
     md("앞의 내용을 섞어서 푼다. 막히면 위 실습 셀로 돌아가 확인한다."),
 
-    Ex(23, "승객 목록에서 **여성 생존율**을 구해 `rate` 에 담는다. 소수 그대로 둔다.",
-        setup="""passengers = [
-    {"name": "Owen",     "sex": "male",   "survived": 0},
-    {"name": "Florence", "sex": "female", "survived": 1},
-    {"name": "Laina",    "sex": "female", "survived": 1},
-    {"name": "William",  "sex": "male",   "survived": 0},
-    {"name": "Lily",     "sex": "female", "survived": 0},
+    Ex(23, "배치 목록에서 **야간조 양품률**을 구해 `rate` 에 담는다. 소수 그대로 둔다.",
+        setup="""batches = [
+    {"line": "A", "shift": "day",   "passed": 1},
+    {"line": "C", "shift": "night", "passed": 0},
+    {"line": "E", "shift": "night", "passed": 1},
+    {"line": "B", "shift": "day",   "passed": 1},
+    {"line": "D", "shift": "night", "passed": 1},
 ]""",
-        blank="females = ___\nrate = ___",
-        answer='females = [p for p in passengers if p["sex"] == "female"]\n'
-               'rate = sum(p["survived"] for p in females) / len(females)',
+        blank="night = ___\nrate = ___",
+        answer='night = [b for b in batches if b["shift"] == "night"]\n'
+               'rate = sum(b["passed"] for b in night) / len(night)',
         check='assert abs(rate - 2/3) < 1e-9, f"기대 0.666…, 실제 {rate}"\nprint("통과")'),
 
-    Ex(24, "나이 목록에서 결측(`None`)을 뺀 나머지의 평균을 `avg` 에 담는다.",
-        setup="raw_ages = [22, None, 38, 26, None, 35]",
+    Ex(24, "온도 목록에서 결측(`None`)을 뺀 나머지의 평균을 `avg` 에 담는다.",
+        setup="raw_temps = [898, None, 835, 829, None, 860]",
         blank="valid = ___\navg = ___",
-        answer="valid = [a for a in raw_ages if a is not None]\navg = sum(valid) / len(valid)",
-        check='assert avg == 30.25, f"기대 30.25, 실제 {avg}"\nprint("통과")'),
+        answer="valid = [t for t in raw_temps if t is not None]\navg = sum(valid) / len(valid)",
+        check='assert avg == 855.5, f"기대 855.5, 실제 {avg}"\nprint("통과")'),
 
     Ex(25, "단어 목록에서 **각 단어가 몇 번 나왔는지** 세어 딕셔너리 `counts` 를 만든다.",
         setup='words = ["red", "blue", "red", "green", "blue", "red"]\ncounts = {}',
@@ -523,39 +523,38 @@ except AttributeError as e:
               'assert out == {"A": 2, "B": 2, "C": 1, "D": 1}, f"실제 {out}"\n'
               'assert grade_counts([]) == {}, "빈 목록은 빈 딕셔너리여야 한다"\nprint("통과")'),
 
-    Task(10, "승객 목록을 받아 **성별 생존율 딕셔너리**를 돌려주는 함수를 만든다.\n"
-             "> 결과는 `{\"male\": 0.0, \"female\": 0.666…}` 형태다.",
-         setup="""passengers = [
-    {"name": "Owen",     "sex": "male",   "survived": 0},
-    {"name": "Florence", "sex": "female", "survived": 1},
-    {"name": "Laina",    "sex": "female", "survived": 1},
-    {"name": "William",  "sex": "male",   "survived": 0},
-    {"name": "Lily",     "sex": "female", "survived": 0},
+    Task(10, "배치 목록을 받아 **교대조별 양품률 딕셔너리**를 돌려주는 함수를 만든다.\n"
+             "> 결과는 `{\"day\": 1.0, \"night\": 0.666…}` 형태다.",
+         setup="""batches = [
+    {"line": "A", "shift": "day",   "passed": 1},
+    {"line": "C", "shift": "night", "passed": 0},
+    {"line": "E", "shift": "night", "passed": 1},
+    {"line": "B", "shift": "day",   "passed": 1},
+    {"line": "D", "shift": "night", "passed": 1},
 ]""",
-         answer='def survival_by_sex(rows):\n'
+         answer='def pass_rate_by_shift(rows):\n'
                 '    result = {}\n'
-                '    for sex in set(r["sex"] for r in rows):\n'
-                '        group = [r for r in rows if r["sex"] == sex]\n'
-                '        result[sex] = sum(r["survived"] for r in group) / len(group)\n'
+                '    for sh in set(r["shift"] for r in rows):\n'
+                '        group = [r for r in rows if r["shift"] == sh]\n'
+                '        result[sh] = sum(r["passed"] for r in group) / len(group)\n'
                 '    return result',
-         check='out = survival_by_sex(passengers)\n'
-               'assert set(out.keys()) == {"male", "female"}, f"키가 다르다: {out.keys()}"\n'
-               'assert out["male"] == 0.0, f"male 기대 0.0, 실제 {out[\'male\']}"\n'
-               'assert abs(out["female"] - 2/3) < 1e-9, f"female 기대 0.666…, 실제 {out[\'female\']}"\nprint("통과")'),
+         check='out = pass_rate_by_shift(batches)\n'
+               'assert set(out.keys()) == {"day", "night"}, f"키가 다르다: {out.keys()}"\n'
+               'assert out["day"] == 1.0, f"day 기대 1.0, 실제 {out[\'day\']}"\n'
+               'assert abs(out["night"] - 2/3) < 1e-9, f"night 기대 0.666…, 실제 {out[\'night\']}"\nprint("통과")'),
 
-    Task(11, "나이 목록을 받아 **연령대별 인원수**를 돌려주는 함수를 만든다.\n"
-             "> `[22, 38, 26, 35, 41]` → `{20: 2, 30: 2, 40: 1}`. 결측(`None`)은 건너뛴다.",
+    Task(11, "온도 목록을 받아 **10도 구간별 배치 수**를 돌려주는 함수를 만든다.\n"
+             "> `[898, 835, 829, 860]` → `{890: 1, 830: 1, 820: 1, 860: 1}`. 결측(`None`)은 건너뛴다.",
          setup="",
-         answer="def by_decade(ages):\n"
+         answer="def by_band(temps):\n"
                 "    result = {}\n"
-                "    for a in ages:\n"
-                "        if a is None:\n            continue\n"
-                "        d = a // 10 * 10\n"
-                "        result[d] = result.get(d, 0) + 1\n"
+                "    for t in temps:\n"
+                "        if t is None:\n            continue\n"
+                "        b = t // 10 * 10\n"
+                "        result[b] = result.get(b, 0) + 1\n"
                 "    return result",
-         check='assert by_decade([22, 38, 26, 35, 41]) == {20: 2, 30: 2, 40: 1}, f"실제 {by_decade([22,38,26,35,41])}"\n'
-               'assert by_decade([22, None, 25]) == {20: 3} or by_decade([22, None, 25]) == {20: 2}, "결측을 건너뛰어야 한다"\n'
-               'assert by_decade([22, None, 25]) == {20: 2}, f"결측 제외 후 기대 {{20: 2}}, 실제 {by_decade([22, None, 25])}"\nprint("통과")'),
+         check='assert by_band([898, 835, 829, 860]) == {890: 1, 830: 1, 820: 1, 860: 1}, f"실제 {by_band([898,835,829,860])}"\n'
+               'assert by_band([898, None, 895]) == {890: 2}, f"결측 제외 후 기대 {{890: 2}}, 실제 {by_band([898, None, 895])}"\nprint("통과")'),
 
     md("""
 ---
