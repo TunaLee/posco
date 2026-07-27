@@ -386,7 +386,7 @@
 <section class="slide" data-title="Jupyter와 Colab">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag mint">CH0</span><span class="dot"></span>선택</div>
-  <h2 class="s-title sm">파이썬을 돌리는 두 자리</h2>
+  <h2 class="s-title sm">두 가지 실행 환경</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="duo">
@@ -486,7 +486,7 @@ Python 3.12.7</div>
 <section class="slide" data-title="가상 환경">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag mint">CH0</span><span class="dot"></span>로컬 3</div>
-  <h2 class="s-title sm">패키지 버전이 부딪히는 자리</h2>
+  <h2 class="s-title sm">가상 환경이 필요한 이유</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twocol">
@@ -686,7 +686,7 @@ Tesla T4, 15360 MiB</div>
 <section class="slide" data-title="셀 실행과 출력">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag mint">CH0</span><span class="dot"></span>클라우드 4</div>
-  <h2 class="s-title sm">실행 순서라는 상태</h2>
+  <h2 class="s-title sm">실행 순서와 셀 번호</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twocol">
@@ -844,7 +844,7 @@ True</div>
         <div class="vlist"><div class="v"><span class="b">✕</span><div><code>/</code>는 <b>나누어 떨어져도 float</b>를 준다. 인덱스 계산에 쓰면 에러가 난다.</div></div></div>
       </div>
     </div>
-    <div class="keymsg"><span class="k">기준</span><div>개수·인덱스처럼 <b>정수여야 하는 자리</b>에는 <code>//</code>를 쓴다. <code>%</code>는 짝수 판별과 주기 처리의 기본 도구다.</div></div>
+    <div class="keymsg"><span class="k">기준</span><div>개수나 인덱스처럼 <b>정수가 필요할 때</b>는 <code>//</code>를 쓴다. <code>%</code>는 짝수 판별과 주기 처리의 기본 도구다.</div></div>
   </div>
 </section>
 
@@ -1157,11 +1157,11 @@ True</div>
 <section class="slide" data-title="네 가지 자료 구조">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>비교</div>
-  <h2 class="s-title sm">네 가지 자료 구조의 쓰임</h2>
+  <h2 class="s-title sm">네 가지 자료 구조 비교</h2>
   <div class="rule"></div>
   <div class="body">
     <table class="ctable">
-      <thead><tr><th>자료 구조</th><th>표기</th><th>순서</th><th>수정</th><th>쓰는 자리</th></tr></thead>
+      <thead><tr><th>자료 구조</th><th>표기</th><th>순서</th><th>수정</th><th>쓰는 곳</th></tr></thead>
       <tbody>
         <tr><td><b>리스트</b> list</td><td><code>[22, 38, 26]</code></td><td class="yes">있음</td><td class="yes">가능</td><td>순서대로 쌓고 바꾸는 값</td></tr>
         <tr><td><b>튜플</b> tuple</td><td><code>(891, 12)</code></td><td class="yes">있음</td><td class="no">불가</td><td>바뀌면 안 되는 좌표 · <b>텐서 shape</b></td></tr>
@@ -1662,7 +1662,7 @@ print(ages[3])
       <div class="v"><span class="b">→</span><div>행 수가 바뀌어도 <b>코드는 그대로</b>다.</div></div>
       <div class="v"><span class="b">★</span><div>데이터 처리는 <b>행이 몇 개인지 모르는 채</b> 시작한다. 반복문 없이는 쓸 수 없다.</div></div>
     </div>
-    <div class="keymsg"><span class="k">기준</span><div>같은 코드가 <b>두 번 넘게</b> 반복되면 반복문으로 바꿀 자리다.</div></div>
+    <div class="keymsg"><span class="k">기준</span><div>같은 코드가 <b>두 번 넘게</b> 반복되면 반복문으로 바꾼다.</div></div>
   </div>
 </section>
 
@@ -1712,7 +1712,7 @@ fare 7.25</div>
 <section class="slide" data-title="range()">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>반복문</div>
-  <h2 class="s-title sm">횟수만 필요할 때 쓰는 숫자 공급기</h2>
+  <h2 class="s-title sm">range() 로 횟수 정하기</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twocol">
@@ -1880,7 +1880,7 @@ labels = [<span class="st">"성인"</span> <span class="kw">if</span> a &gt;= <s
   <div class="rule"></div>
   <div class="body">
     <table class="ctable">
-      <thead><tr><th>표기</th><th>결과</th><th>예</th><th>쓰는 자리</th></tr></thead>
+      <thead><tr><th>표기</th><th>결과</th><th>예</th><th>쓰는 곳</th></tr></thead>
       <tbody>
         <tr><td><code>[ x <span class="hl">for</span> … ]</code></td><td><b>list</b></td><td><code>[n.upper() for n in names]</code></td><td>값을 하나씩 바꿔 담을 때</td></tr>
         <tr><td><code>{ k<span class="hl">:</span> v for … }</code></td><td><b>dict</b></td><td><code>{n: a for n, a in zip(…)}</code></td><td>범주 → 숫자 <b>대응표</b></td></tr>
@@ -1948,7 +1948,7 @@ ages  = [<span class="nm">22</span>, <span class="nm">38</span>, <span class="nm
 <section class="slide" data-title="내장 함수">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>내장</div>
-  <h2 class="s-title sm">이미 만들어져 있는 것들</h2>
+  <h2 class="s-title sm">내장 함수</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twocol">
