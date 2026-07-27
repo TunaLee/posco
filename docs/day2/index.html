@@ -491,8 +491,8 @@ float64
           <thead><tr><th>차원</th><th>이름</th><th>shape 예</th><th>무엇</th></tr></thead>
           <tbody>
             <tr><td>0D</td><td>스칼라</td><td><code>()</code></td><td>값 하나 — 손실값</td></tr>
-            <tr><td>1D</td><td>벡터</td><td><code>(8,)</code></td><td>승객 한 명의 특성 8개</td></tr>
-            <tr><td>2D</td><td>행렬</td><td><code>(889, 8)</code></td><td>표 한 장</td></tr>
+            <tr><td>1D</td><td>벡터</td><td><code>(8,)</code></td><td>배치 하나의 특성 8개</td></tr>
+            <tr><td>2D</td><td>행렬</td><td><code>(1412, 8)</code></td><td>표 한 장</td></tr>
             <tr><td>3D+</td><td>텐서</td><td><code>(32, 28, 28)</code></td><td>이미지 32장</td></tr>
           </tbody>
         </table>
@@ -501,7 +501,7 @@ float64
           <pre><code><span class="fn2">print</span>(X.shape)   <span class="cm"># 각 축의 크기 — 튜플</span>
 <span class="fn2">print</span>(X.ndim)    <span class="cm"># 축이 몇 개</span>
 <span class="fn2">print</span>(X.size)    <span class="cm"># 원소 총 개수</span></code></pre>
-          <div class="out">(889, 8)
+          <div class="out">(1412, 8)
 2
 7112</div>
         </div>
@@ -639,7 +639,7 @@ mask = a &gt;= <span class="nm">18</span>
           </svg>
         </div>
         <div class="vlist">
-          <div class="v"><span class="b">★</span><div>표를 거르는 <code>df[df['Age'] &lt; 18]</code>도 같은 구조다.</div></div>
+          <div class="v"><span class="b">★</span><div>표를 거르는 <code>df[df['capacity'] &lt; 168]</code>도 같은 구조다.</div></div>
         </div>
       </div>
     </div>
@@ -806,11 +806,11 @@ B = np.array([[<span class="nm">10</span>, <span class="nm">20</span>], [<span c
       <div class="pane bad"><h4>순수 파이썬</h4><div class="mini">total = 0
 count = 0
 for row in rows:
-    if row['Sex'] == 'female':
-        total += row['Survived']
+    if row['line'] == 'A':
+        total += row['passed']
         count += 1
 print(total / count)</div><p>행을 <b>하나씩</b> 돌며 직접 센다.</p></div>
-      <div class="pane good"><h4>Pandas</h4><div class="mini">df[df['Sex'] == 'female']['Survived'].mean()</div><p>열 전체를 <b>한 번에</b> 다룬다. 내부는 C로 도는 배열 연산이다.</p></div>
+      <div class="pane good"><h4>Pandas</h4><div class="mini">df[df['line'] == 'A']['passed'].mean()</div><p>열 전체를 <b>한 번에</b> 다룬다. 내부는 C로 도는 배열 연산이다.</p></div>
     </div>
     <div class="vlist">
       <div class="v"><span class="b">→</span><div>CSV·엑셀·DB를 같은 방식으로 읽어 <b>DataFrame</b>이라는 한 가지 구조로 만든다.</div></div>
@@ -828,12 +828,12 @@ print(total / count)</div><p>행을 <b>하나씩</b> 돌며 직접 센다.</p></
     <div class="twocol w">
       <div>
         <table class="ctable">
-          <thead><tr><th>index</th><th>Sex</th><th class="hl">Age</th><th>Fare</th><th>Survived</th></tr></thead>
+          <thead><tr><th>index</th><th>line</th><th class="hl">calc_temp</th><th>capacity</th><th>passed</th></tr></thead>
           <tbody>
-            <tr><td>0</td><td>male</td><td class="hl">22.0</td><td>7.25</td><td class="no">0</td></tr>
-            <tr><td>1</td><td>female</td><td class="hl">38.0</td><td>71.28</td><td class="yes">1</td></tr>
-            <tr><td>2</td><td>female</td><td class="hl">26.0</td><td>7.92</td><td class="yes">1</td></tr>
-            <tr><td>3</td><td>female</td><td class="hl">35.0</td><td>53.10</td><td class="yes">1</td></tr>
+            <tr><td>0</td><td>B</td><td class="hl">898.9</td><td>178.9</td><td class="yes">1</td></tr>
+            <tr><td>1</td><td>C</td><td class="hl">835.0</td><td>170.5</td><td class="yes">1</td></tr>
+            <tr><td>2</td><td>F</td><td class="hl">829.3</td><td>172.5</td><td class="yes">1</td></tr>
+            <tr><td>3</td><td>A</td><td class="hl">753.9</td><td>140.5</td><td class="no">0</td></tr>
           </tbody>
         </table>
         <div class="chips"><span class="chip">가로 한 줄 = <b>행 row</b></span><span class="chip">세로 한 줄 = <b>열 column</b></span><span class="chip">맨 왼쪽 = <b>인덱스</b></span></div>
@@ -846,8 +846,8 @@ print(total / count)</div><p>행을 <b>하나씩</b> 돌며 직접 센다.</p></
         </div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">꺼내면 자료형이 달라진다</span></div>
-          <pre><code><span class="fn2">type</span>(df[<span class="st">'Age'</span>])      <span class="cm"># Series</span>
-<span class="fn2">type</span>(df[[<span class="st">'Age'</span>]])    <span class="cm"># DataFrame</span></code></pre>
+          <pre><code><span class="fn2">type</span>(df[<span class="st">'calc_temp'</span>])      <span class="cm"># Series</span>
+<span class="fn2">type</span>(df[[<span class="st">'calc_temp'</span>]])    <span class="cm"># DataFrame</span></code></pre>
         </div>
       </div>
     </div>
@@ -867,8 +867,8 @@ print(total / count)</div><p>행을 <b>하나씩</b> 돌며 직접 센다.</p></
           <pre><code><span class="kw">import</span> pandas <span class="kw">as</span> pd
 
 <span class="cm"># 인터넷 주소도 경로처럼 넣는다</span>
-url = <span class="st">'https://raw.githubusercontent.com/datasciencedojo'</span> \
-      <span class="st">'/datasets/master/titanic.csv'</span>
+url = <span class="st">'https://tunalee.github.io/posco'</span> \
+      <span class="st">'/data/batch_quality.csv'</span>
 df = pd.read_csv(url)</code></pre>
         </div>
         <div class="vlist">
@@ -879,10 +879,10 @@ df = pd.read_csv(url)</code></pre>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">지저분한 CSV에서 쓰는 인자</span></div>
           <pre><code>df = pd.read_csv(
-    <span class="st">'data.csv'</span>,
-    encoding=<span class="st">'cp949'</span>,     <span class="cm"># 한글 깨질 때</span>
-    thousands=<span class="st">','</span>,        <span class="cm"># 1,234 → 1234</span>
-    na_values=[<span class="st">'N/A'</span>, <span class="st">'-'</span>]  <span class="cm"># 결측 표기</span>
+    url,
+    thousands=<span class="st">','</span>,          <span class="cm"># 1,024 → 1024</span>
+    na_values=[<span class="st">'N/A'</span>, <span class="st">'-'</span>],  <span class="cm"># 결측 표기</span>
+    encoding=<span class="st">'utf-8'</span>,       <span class="cm"># 한글 깨질 땐 cp949</span>
 )</code></pre>
         </div>
         <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>한글이 깨지면 인코딩</h4><p>국내 시스템에서 내려받은 CSV는 <code>cp949</code>인 경우가 많다. <code>UnicodeDecodeError</code>가 그 신호다.</p></div></div>
@@ -905,7 +905,7 @@ df = pd.read_csv(url)</code></pre>
 df.head()         <span class="cm"># 위에서 5행</span>
 df.tail(<span class="nm">3</span>)        <span class="cm"># 아래에서 3행</span>
 df.columns        <span class="cm"># 열 이름 목록</span></code></pre>
-          <div class="out">(891, 12)</div>
+          <div class="out">(1412, 11)</div>
         </div>
         <div class="vlist">
           <div class="v"><span class="b">→</span><div><code>tail()</code>은 <b>파일 끝의 합계 행·주석 행</b>을 잡아낸다. 이것이 섞이면 통계가 전부 틀어진다.</div></div>
@@ -915,20 +915,20 @@ df.columns        <span class="cm"># 열 이름 목록</span></code></pre>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">info() — 타입과 결측을 한 번에</span></div>
           <pre><code>df.info()</code></pre>
-          <div class="out">RangeIndex: 891 entries, 0 to 890
- #  Column    Non-Null Count  Dtype
---- ------    --------------  -----
- 1  Survived  891 non-null    int64
- 2  Pclass    891 non-null    int64
- 4  Sex       891 non-null    object
- 5  Age       <span class="err">714 non-null</span>    float64
- 9  Fare      891 non-null    float64
-10  Cabin     <span class="err">204 non-null</span>    object
-11  Embarked  <span class="err">889 non-null</span>    object</div>
+          <div class="out">RangeIndex: 1412 entries, 0 to 1411
+ #  Column         Non-Null  Dtype
+--- ------         --------  -----
+ 1  line           1412      object
+ 3  calc_temp      1412      float64
+ 5  particle_size  <span class="err">1345</span>      <span class="err">object</span>
+ 6  moisture       <span class="err">1370</span>      <span class="err">object</span>
+ 7  impurity       1412      <span class="err">object</span>
+ 9  capacity       1412      float64
+10  passed         1412      int64</div>
         </div>
       </div>
     </div>
-    <div class="keymsg"><span class="k">기준</span><div>891행인데 <code>Age</code>는 714개뿐이다. <b>Non-Null Count가 전체보다 작으면 결측</b>이 있다는 뜻이다. 이 표가 뒤의 전처리를 좌우한다.</div></div>
+    <div class="keymsg"><span class="k">기준</span><div>1412행인데 <code>particle_size</code>는 1345개뿐이다. <b>Non-Null Count가 전체보다 작으면 결측</b>이 있다는 뜻이다. 이 표가 뒤의 전처리를 좌우한다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="열 선택">
@@ -942,23 +942,23 @@ df.columns        <span class="cm"># 열 이름 목록</span></code></pre>
       <div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">대괄호 하나 → Series</span></div>
-          <pre><code>df[<span class="st">'Age'</span>]</code></pre>
-          <div class="out">0    22.0
-1    38.0
-2    26.0
-Name: Age, dtype: float64</div>
+          <pre><code>df[<span class="st">'calc_temp'</span>]</code></pre>
+          <div class="out">0    898.9
+1    835.0
+2    829.3
+Name: calc_temp, dtype: float64</div>
         </div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">대괄호 둘 → DataFrame</span></div>
-          <pre><code>df[[<span class="st">'Sex'</span>, <span class="st">'Age'</span>]]</code></pre>
-          <div class="out">      Sex   Age
-0    male  22.0
-1  female  38.0</div>
+          <pre><code>df[[<span class="st">'line'</span>, <span class="st">'calc_temp'</span>]]</code></pre>
+          <div class="out">  line  calc_temp
+0    B      898.9
+1    C      835.0</div>
         </div>
       </div>
       <div>
         <div class="vlist">
-          <div class="v"><span class="b">→</span><div>안쪽 대괄호는 <b>열 이름의 리스트</b>다. 하나만 넣어도 <code>df[['Age']]</code>는 표로 나온다.</div></div>
+          <div class="v"><span class="b">→</span><div>안쪽 대괄호는 <b>열 이름의 리스트</b>다. 하나만 넣어도 <code>df[['calc_temp']]</code>는 표로 나온다.</div></div>
           <div class="v"><span class="b">→</span><div>Series 에는 <code>.mean()</code> <code>.value_counts()</code>가 바로 붙는다.</div></div>
           <div class="v"><span class="b">✕</span><div>순서를 바꿔 쓰면 <code>KeyError</code>다. 열 이름은 <b>대소문자까지</b> 정확해야 한다.</div></div>
         </div>
@@ -978,13 +978,13 @@ Name: Age, dtype: float64</div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">조건식을 대괄호에 넣는다</span></div>
           <pre><code><span class="cm"># 조건식은 True/False 의 Series 다</span>
-df[<span class="st">'Age'</span>] &lt; <span class="nm">18</span>
+df[<span class="st">'capacity'</span>] &lt; <span class="nm">168</span>
 
 <span class="cm"># 대괄호에 넣으면 참인 행만 남는다</span>
-df[df[<span class="st">'Age'</span>] &lt; <span class="nm">18</span>]
+df[df[<span class="st">'capacity'</span>] &lt; <span class="nm">168</span>]
 
 <span class="cm"># 조건 두 개는 괄호로 묶고 &amp; | 를 쓴다</span>
-df[(df[<span class="st">'Age'</span>] &lt; <span class="nm">18</span>) &amp; (df[<span class="st">'Pclass'</span>] == <span class="nm">1</span>)]</code></pre>
+df[(df[<span class="st">'capacity'</span>] &lt; <span class="nm">168</span>) &amp; (df[<span class="st">'line'</span>] == <span class="st">'A'</span>)]</code></pre>
         </div>
       </div>
       <div>
@@ -1008,16 +1008,16 @@ df[(df[<span class="st">'Age'</span>] &lt; <span class="nm">18</span>) &amp; (df
       <div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">행 이름, 열 이름을 쉼표로</span></div>
-          <pre><code>df.loc[<span class="nm">0</span>, <span class="st">'Age'</span>]
+          <pre><code>df.loc[<span class="nm">0</span>, <span class="st">'calc_temp'</span>]
 
-df.loc[<span class="nm">0</span>:<span class="nm">2</span>, [<span class="st">'Sex'</span>, <span class="st">'Age'</span>]]
+df.loc[<span class="nm">0</span>:<span class="nm">2</span>, [<span class="st">'line'</span>, <span class="st">'calc_temp'</span>]]
 
-df.loc[df[<span class="st">'Age'</span>] &lt; <span class="nm">18</span>, <span class="st">'Fare'</span>]</code></pre>
-          <div class="out">22.0
-      Sex   Age
-0    male  22.0
-1  female  38.0
-2  female  26.0</div>
+df.loc[df[<span class="st">'passed'</span>] == <span class="nm">0</span>, <span class="st">'capacity'</span>]</code></pre>
+          <div class="out">898.9
+  line  calc_temp
+0    B      898.9
+1    C      835.0
+2    F      829.3</div>
         </div>
       </div>
       <div>
@@ -1043,20 +1043,20 @@ df.loc[df[<span class="st">'Age'</span>] &lt; <span class="nm">18</span>, <span 
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">몇 번째인지로 센다</span></div>
           <pre><code>df.iloc[<span class="nm">0</span>, <span class="nm">3</span>]
 
-df.iloc[<span class="nm">0</span>:<span class="nm">2</span>, <span class="nm">1</span>:<span class="nm">3</span>]
+df.iloc[<span class="nm">0</span>:<span class="nm">2</span>, <span class="nm">1</span>:<span class="nm">4</span>]
 
 df.iloc[-<span class="nm">1</span>]</code></pre>
-          <div class="out">22.0
-   Survived     Sex
-0         0    male
-1         1  female</div>
+          <div class="out">898.9
+  line shift  calc_temp
+0    B   day      898.9
+1    C   day      835.0</div>
         </div>
       </div>
       <div>
         <div class="vlist">
           <div class="v"><span class="b">→</span><div>열 이름을 몰라도 <b>위치만으로</b> 꺼낸다. 앞 세 행만 보고 싶을 때 쓴다.</div></div>
           <div class="v"><span class="b">★</span><div><code>0:2</code>가 <b>0·1</b>이다. <code>iloc</code>은 <b>끝을 제외한다</b>.</div></div>
-          <div class="v"><span class="b">✕</span><div>이름과 번호를 <b>섞어 쓰면 에러</b>다. <code>df.iloc[0, 'Age']</code>는 안 된다.</div></div>
+          <div class="v"><span class="b">✕</span><div>이름과 번호를 <b>섞어 쓰면 에러</b>다. <code>df.iloc[0, 'calc_temp']</code>는 안 된다.</div></div>
         </div>
       </div>
     </div>
@@ -1072,24 +1072,27 @@ df.iloc[-<span class="nm">1</span>]</code></pre>
       <div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">value_counts()</span></div>
-          <pre><code>df[<span class="st">'Embarked'</span>].value_counts()
-df[<span class="st">'Sex'</span>].value_counts(normalize=<span class="kw">True</span>)</code></pre>
-          <div class="out">Embarked
-S    644
-C    168
-Q     77
+          <pre><code>df[<span class="st">'line'</span>].value_counts()
 
-Sex
-male      0.647587
-female    0.352413</div>
+df[<span class="st">'shift'</span>].value_counts(normalize=<span class="kw">True</span>)</code></pre>
+          <div class="out">line
+ A     176
+a       40
+A       33
+B      153
+<span class="err">... 24종 — 같은 설비가 흩어졌다</span>
+
+shift
+day      0.558782
+night    0.441218</div>
         </div>
       </div>
       <div>
         <div class="vlist">
           <div class="v"><span class="b">→</span><div>어떤 값이 <b>몇 종류, 몇 개씩</b> 있는지 한 줄로 나온다.</div></div>
           <div class="v"><span class="b">→</span><div><code>normalize=True</code>를 주면 개수 대신 <b>비율</b>이 나온다.</div></div>
-          <div class="v"><span class="b">✕</span><div>결측은 기본적으로 <b>세지 않는다</b>. 644+168+77 = 889로, 891에서 2개가 빠져 있다.</div></div>
-          <div class="v"><span class="b">★</span><div>같은 값의 다른 표기(<code>Male</code> / <code>male</code> / <code> male </code>)가 섞이면 여기서 종류 수가 튄다.</div></div>
+          <div class="v"><span class="b">✕</span><div>결측은 기본적으로 <b>세지 않는다</b>. 같은 설비가 대소문자·공백 탓에 24종으로 흩어져 있다.</div></div>
+          <div class="v"><span class="b">★</span><div>같은 값의 다른 표기(<code>A</code> / <code>a</code> / <code> A </code>)가 섞이면 여기서 종류 수가 튄다.</div></div>
         </div>
       </div>
     </div>
@@ -1112,8 +1115,8 @@ female    0.352413</div>
 df = df.drop_duplicates()
 
 df = df.drop_duplicates(
-    subset=[<span class="st">'Name'</span>], keep=<span class="st">'last'</span>)</code></pre>
-          <div class="out">0</div>
+    subset=[<span class="st">'batch_id'</span>], keep=<span class="st">'last'</span>)</code></pre>
+          <div class="out">12</div>
         </div>
       </div>
       <div>
@@ -1135,20 +1138,20 @@ df = df.drop_duplicates(
     <div class="twocol">
       <div>
         <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">Fare 가 문자열로 읽혔다면</span></div>
-          <pre><code>df[<span class="st">'Fare'</span>].dtype
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">impurity 가 문자열로 읽혔다면</span></div>
+          <pre><code>df[<span class="st">'impurity'</span>].dtype
 
-df[<span class="st">'Fare'</span>].sum()      <span class="cm"># 더해질까?</span>
-df[<span class="st">'Fare'</span>].max()      <span class="cm"># 최댓값은?</span></code></pre>
+df[<span class="st">'impurity'</span>].sum()      <span class="cm"># 더해질까?</span>
+df[<span class="st">'impurity'</span>].max()      <span class="cm"># 최댓값은?</span></code></pre>
           <div class="out">dtype('O')
-<span class="err">'7.2571.287.9253.10…'</span>   ← 이어 붙는다
-<span class="err">'9.8375'</span>                ← 사전 순 비교</div>
+'1,0248008714827919641,175…'  ← 이어 붙는다
+'998'  <span class="err">← 사전 순이라 1,763보다 크다</span></div>
         </div>
       </div>
       <div>
         <div class="vlist">
           <div class="v"><span class="b">✕</span><div><code>sum()</code>이 <b>덧셈이 아니라 이어 붙이기</b>가 된다. 에러 없이 이상한 값이 나온다.</div></div>
-          <div class="v"><span class="b">✕</span><div><code>max()</code>는 사전 순으로 비교한다. <code>'9.8375'</code>가 <code>'512.33'</code>보다 크다고 나온다.</div></div>
+          <div class="v"><span class="b">✕</span><div><code>max()</code>는 사전 순으로 비교한다. <code>'998'</code>이 <code>'1,763'</code>보다 크다고 나온다.</div></div>
           <div class="v"><span class="b">★</span><div>그래서 <code>info()</code>로 <b>Dtype부터 확인</b>하는 것이 순서다.</div></div>
         </div>
         <div class="stat-row">
@@ -1170,12 +1173,12 @@ df[<span class="st">'Fare'</span>].max()      <span class="cm"># 최댓값은?</
       <div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">astype() — 되돌려 담아야 반영된다</span></div>
-          <pre><code>df[<span class="st">'Fare'</span>] = df[<span class="st">'Fare'</span>].astype(<span class="st">'float64'</span>)
+          <pre><code>df[<span class="st">'particle_size'</span>] = df[<span class="st">'particle_size'</span>].astype(<span class="st">'float64'</span>)
 
 <span class="cm"># 한꺼번에 — 딕셔너리로 열마다 지정</span>
 df = df.astype({
-    <span class="st">'Pclass'</span>: <span class="st">'category'</span>,
-    <span class="st">'Sex'</span>: <span class="st">'category'</span>,
+    <span class="st">'line'</span>: <span class="st">'category'</span>,
+    <span class="st">'shift'</span>: <span class="st">'category'</span>,
 })</code></pre>
         </div>
         <div class="vlist">
@@ -1185,13 +1188,13 @@ df = df.astype({
       <div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">to_numeric() — 실패한 값은 NaN 으로</span></div>
-          <pre><code>df[<span class="st">'Fare'</span>] = pd.to_numeric(
-    df[<span class="st">'Fare'</span>], errors=<span class="st">'coerce'</span>
+          <pre><code>df[<span class="st">'particle_size'</span>] = pd.to_numeric(
+    df[<span class="st">'particle_size'</span>], errors=<span class="st">'coerce'</span>
 )
 
 <span class="cm"># 몇 개가 실패했는지 바로 센다</span>
-<span class="fn2">print</span>(df[<span class="st">'Fare'</span>].isna().sum())</code></pre>
-          <div class="out">0</div>
+<span class="fn2">print</span>(df[<span class="st">'particle_size'</span>].isna().sum())</code></pre>
+          <div class="out">112</div>
         </div>
         <table class="ctable">
           <thead><tr><th>errors=</th><th>실패한 값을</th></tr></thead>
@@ -1216,16 +1219,16 @@ df = df.astype({
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">반복문 없이</span></div>
           <pre><code><span class="cm"># 열 하나에 상수 연산</span>
-df[<span class="st">'FareUSD'</span>] = df[<span class="st">'Fare'</span>] * <span class="nm">1.3</span>
+df[<span class="st">'impurity_pct'</span>] = df[<span class="st">'impurity'</span>] / <span class="nm">10000</span>
 
 <span class="cm"># 열끼리 연산 — 같은 행끼리 짝지어진다</span>
-df[<span class="st">'Family'</span>] = df[<span class="st">'SibSp'</span>] + df[<span class="st">'Parch'</span>] + <span class="nm">1</span>
+df[<span class="st">'temp_gap'</span>] = (df[<span class="st">'calc_temp'</span>] - <span class="nm">890</span>).abs()
 
 <span class="cm"># 조건식도 열이 된다</span>
-df[<span class="st">'IsChild'</span>] = df[<span class="st">'Age'</span>] &lt; <span class="nm">18</span>
+df[<span class="st">'is_low'</span>] = df[<span class="st">'capacity'</span>] &lt; <span class="nm">168</span>
 
 <span class="cm"># 문자열 열은 .str 로 한꺼번에</span>
-df[<span class="st">'Sex'</span>] = df[<span class="st">'Sex'</span>].str.strip().str.lower()</code></pre>
+df[<span class="st">'line'</span>] = df[<span class="st">'line'</span>].str.strip().str.upper()</code></pre>
         </div>
       </div>
       <div>
@@ -1250,12 +1253,12 @@ df[<span class="st">'Sex'</span>] = df[<span class="st">'Sex'</span>].str.strip(
       <div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">map() — 대응표를 넘긴다</span></div>
-          <pre><code>df[<span class="st">'SexCode'</span>] = df[<span class="st">'Sex'</span>].map(
-    {<span class="st">'male'</span>: <span class="nm">0</span>, <span class="st">'female'</span>: <span class="nm">1</span>})
+          <pre><code>df[<span class="st">'shift_code'</span>] = df[<span class="st">'shift'</span>].map(
+    {<span class="st">'day'</span>: <span class="nm">0</span>, <span class="st">'night'</span>: <span class="nm">1</span>})
 
-<span class="fn2">print</span>(df[<span class="st">'SexCode'</span>].head(<span class="nm">3</span>))</code></pre>
+<span class="fn2">print</span>(df[<span class="st">'shift_code'</span>].head(<span class="nm">3</span>))</code></pre>
           <div class="out">0    0
-1    1
+1    0
 2    1</div>
         </div>
       </div>
@@ -1279,18 +1282,18 @@ df[<span class="st">'Sex'</span>] = df[<span class="st">'Sex'</span>].str.strip(
       <div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">apply() — 만든 함수를 넘긴다</span></div>
-          <pre><code><span class="kw">def</span> <span class="fn2">age_group</span>(a):
-    <span class="kw">if</span> a &lt; <span class="nm">13</span>:  <span class="kw">return</span> <span class="st">'child'</span>
-    <span class="kw">if</span> a &lt; <span class="nm">60</span>:  <span class="kw">return</span> <span class="st">'adult'</span>
-    <span class="kw">return</span> <span class="st">'senior'</span>
+          <pre><code><span class="kw">def</span> <span class="fn2">grade</span>(c):
+    <span class="kw">if</span> c &lt; <span class="nm">168</span>:   <span class="kw">return</span> <span class="st">'low'</span>
+    <span class="kw">if</span> c &lt; <span class="nm">178</span>:  <span class="kw">return</span> <span class="st">'mid'</span>
+    <span class="kw">return</span> <span class="st">'high'</span>
 
-df[<span class="st">'AgeGroup'</span>] = df[<span class="st">'Age'</span>].apply(age_group)</code></pre>
+df[<span class="st">'grade'</span>] = df[<span class="st">'capacity'</span>].apply(grade)</code></pre>
         </div>
       </div>
       <div>
         <div class="vlist">
-          <div class="v"><span class="b">→</span><div>함수 이름만 넘긴다. <code>age_group()</code>처럼 <b>괄호를 붙이지 않는다</b>.</div></div>
-          <div class="v"><span class="b">→</span><div>짧은 식은 그 자리에서 — <code>df['Fare'].apply(lambda f: f ** 0.5)</code></div></div>
+          <div class="v"><span class="b">→</span><div>함수 이름만 넘긴다. <code>grade()</code>처럼 <b>괄호를 붙이지 않는다</b>.</div></div>
+          <div class="v"><span class="b">→</span><div>짧은 식은 그 자리에서 — <code>df['impurity'].apply(lambda x: x ** 0.5)</code></div></div>
           <div class="v"><span class="b">★</span><div>태우는 함수에 <b><code>return</code>이 없으면</b> 열 전체가 <code>None</code>이 된다.</div></div>
         </div>
       </div>
@@ -1308,26 +1311,24 @@ df[<span class="st">'AgeGroup'</span>] = df[<span class="st">'Age'</span>].apply
       <div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">describe()</span></div>
-          <pre><code>df[[<span class="st">'Age'</span>, <span class="st">'Fare'</span>]].describe()</code></pre>
-          <div class="out">              Age        Fare
-count  <span class="err">714.0000</span>    891.0000
-mean    29.6991     32.2042
-std     14.5265     49.6934
-min      0.4200      <span class="err">0.0000</span>
-25%     20.1250      7.9104
-50%     28.0000     14.4542
-75%     38.0000     31.0000
-max     80.0000    <span class="err">512.3292</span></div>
+          <pre><code>df[[<span class="st">'calc_temp'</span>, <span class="st">'impurity'</span>, <span class="st">'capacity'</span>]].describe()</code></pre>
+          <div class="out">       calc_temp  impurity  capacity
+count    1412.00   1412.00   1412.00
+mean      851.21    829.26    173.23
+std        29.37    334.07      6.07
+min       753.90      2.00    140.50
+50%       850.85    826.00    174.30
+max       945.70   1763.00    188.50</div>
         </div>
       </div>
       <div>
         <div class="vlist">
           <div class="v"><span class="b">→</span><div><b>숫자 열만</b> 대상이다. 문자열 열이 빠졌다면 타입을 의심한다.</div></div>
-          <div class="v"><span class="b">✕</span><div><code>Age</code>의 count가 714다. <b>177명의 나이가 비어 있다</b>.</div></div>
-          <div class="v"><span class="b">✕</span><div><code>Fare</code>의 max 512는 mean 32의 16배다. <b>이상치이거나 특급 객실</b>이다. 확인이 필요하다.</div></div>
+          <div class="v"><span class="b">✕</span><div><code>particle_size</code>의 count가 1345다. <b>67건의 입도가 비어 있다</b>.</div></div>
+          <div class="v"><span class="b">✕</span><div><code>press</code>의 max 999는 mean 24의 40배다. <b>센서 오류값</b>이다. 확인이 필요하다.</div></div>
           <div class="v"><span class="b">→</span><div>mean 32와 median(50%) 14가 크게 벌어졌다. 분포가 <b>한쪽으로 쏠려</b> 있다.</div></div>
         </div>
-        <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>평균만 보고하면 틀린다</h4><p>평균 요금 32달러는 <b>승객 대다수의 경험이 아니다</b>. 중앙값 14가 실제에 가깝다.</p></div></div>
+        <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>평균만 보고하면 틀린다</h4><p>평균 불순물 32달러는 <b>배치 대다수의 경험이 아니다</b>. 중앙값 14가 실제에 가깝다.</p></div></div>
       </div>
     </div>
     <div class="keymsg"><span class="k">기준</span><div><code>describe()</code>는 요약이 아니라 <b>이상 탐지용</b>으로 먼저 본다. count · min · max가 첫 검문소다.</div></div>
@@ -1344,15 +1345,15 @@ max     80.0000    <span class="err">512.3292</span></div>
       <div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">sort_values</span></div>
-          <pre><code>df.sort_values(<span class="st">'Fare'</span>, ascending=<span class="kw">False</span>).head(<span class="nm">3</span>)
+          <pre><code>df.sort_values(<span class="st">'capacity'</span>).head(<span class="nm">3</span>)
 
 df.sort_values(
-    [<span class="st">'Pclass'</span>, <span class="st">'Fare'</span>],
+    [<span class="st">'line'</span>, <span class="st">'capacity'</span>],
     ascending=[<span class="kw">True</span>, <span class="kw">False</span>])</code></pre>
-          <div class="out">      Name      Fare  Pclass
-258   Ward   512.33       1
-737  Lesu…   512.33       1
-679  Cardeza 512.33       1</div>
+          <div class="out">     batch_id line  calc_temp  capacity
+1385   B00138    A      753.9     140.5
+983    B00504    C      772.2     146.8
+948    B00235    A      775.5     147.8</div>
         </div>
       </div>
       <div>
@@ -1372,9 +1373,9 @@ df.sort_values(
   <div class="rule"></div>
   <div class="body">
     <div class="pipe">
-      <div class="step"><div class="si">SPLIT</div><div class="sn">나눈다</div><div class="sd">'Sex' 값이 같은 행끼리</div></div>
+      <div class="step"><div class="si">SPLIT</div><div class="sn">나눈다</div><div class="sd">'line' 값이 같은 행끼리</div></div>
       <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
-      <div class="step"><div class="si">APPLY</div><div class="sn">계산한다</div><div class="sd">각 묶음의 'Survived' 평균</div></div>
+      <div class="step"><div class="si">APPLY</div><div class="sn">계산한다</div><div class="sd">각 묶음의 'passed' 평균</div></div>
       <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
       <div class="step"><div class="si">COMBINE</div><div class="sn">합친다</div><div class="sd">묶음마다 한 줄인 결과</div></div>
     </div>
@@ -1382,23 +1383,26 @@ df.sort_values(
       <div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">df.groupby("기준열")["대상열"].집계함수()</span></div>
-          <pre><code>df.groupby(<span class="st">'Sex'</span>)[<span class="st">'Survived'</span>].mean()
-df.groupby(<span class="st">'Pclass'</span>)[<span class="st">'Survived'</span>].mean()</code></pre>
-          <div class="out">Sex
-female    0.742038
-male      0.188908
+          <pre><code>df.groupby(<span class="st">'line'</span>)[<span class="st">'passed'</span>].mean()
+df.groupby(<span class="st">'shift'</span>)[<span class="st">'calc_temp'</span>].std()</code></pre>
+          <div class="out">line
+A    0.779
+B    0.793
+C    0.811
+D    0.812
+E    0.843
+F    0.837
 
-Pclass
-1    0.629630
-2    0.472826
-3    0.242363</div>
+shift
+day      28.0
+night    31.0</div>
         </div>
       </div>
       <div>
         <div class="vlist">
           <div class="v"><span class="b">→</span><div>기준 열의 값이 <b>결과의 인덱스</b>가 된다.</div></div>
           <div class="v"><span class="b">✕</span><div><code>groupby()</code>만 부르면 <code>DataFrameGroupBy</code> 객체다. <b>집계 함수를 붙여야</b> 표가 나온다.</div></div>
-          <div class="v"><span class="b">★</span><div>여성 74% 대 남성 19%. <b>Sex 하나가 생존을 4배 가른다</b> — 모델이 가장 먼저 잡을 신호다.</div></div>
+          <div class="v"><span class="b">★</span><div>A 설비 77.9% 대 E 설비 84.3%. <b>설비마다 양품률이 갈린다</b> — 어디를 먼저 볼지 알려 준다.</div></div>
         </div>
       </div>
     </div>
@@ -1415,14 +1419,14 @@ Pclass
       <div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">리스트로 넘긴다</span></div>
-          <pre><code>df.groupby([<span class="st">'Sex'</span>, <span class="st">'Pclass'</span>])[<span class="st">'Survived'</span>].mean()</code></pre>
-          <div class="out">Sex     Pclass
-female  1         0.968085
-        2         0.921053
-        3         0.500000
-male    1         0.368852
-        2         0.157407
-        3         0.135447</div>
+          <pre><code>df.groupby([<span class="st">'line'</span>, <span class="st">'shift'</span>])[<span class="st">'capacity'</span>].mean()</code></pre>
+          <div class="out">line  shift
+A     day      171.6
+      night    171.9
+B     day      172.2
+      night    172.4
+C     day      173.4
+      night    172.4</div>
         </div>
       </div>
       <div>
@@ -1432,7 +1436,7 @@ male    1         0.368852
         </div>
       </div>
     </div>
-    <div class="keymsg"><span class="k">주의</span><div>1등석 여성 96.8%는 <b>표본 94명</b>에서 나왔다. 그룹별 평균은 크기를 같이 봐야 한다.</div></div>
+    <div class="keymsg"><span class="k">주의</span><div>A 설비 야간조 평균은 <b>표본이 100건대</b>다. 그룹별 평균은 크기를 같이 봐야 한다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="agg">
@@ -1445,16 +1449,19 @@ male    1         0.368852
       <div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">agg() — 딕셔너리로 지정한다</span></div>
-          <pre><code>df.groupby(<span class="st">'Pclass'</span>).agg({
-    <span class="st">'Survived'</span>: [<span class="st">'mean'</span>, <span class="st">'count'</span>],
-    <span class="st">'Fare'</span>: <span class="st">'median'</span>,
+          <pre><code>df.groupby(<span class="st">'line'</span>).agg({
+    <span class="st">'passed'</span>: [<span class="st">'mean'</span>, <span class="st">'count'</span>],
+    <span class="st">'capacity'</span>: <span class="st">'median'</span>,
 })</code></pre>
-          <div class="out">        Survived         Fare
-            mean count median
-Pclass
-1       0.629630   216  60.29
-2       0.472826   184  14.25
-3       0.242363   491   8.05</div>
+          <div class="out">     passed       capacity
+       mean count   median
+line
+A     0.779   249   172.60
+B     0.793   222   172.55
+C     0.811   227   173.90
+D     0.812   240   174.40
+E     0.843   235   175.80
+F     0.837   239   175.60</div>
         </div>
       </div>
       <div>
@@ -1567,9 +1574,9 @@ df = pd.concat([jan, feb],
   <div class="rule"></div>
   <div class="body">
     <div class="cards c4">
-      <div class="card"><span class="n">01</span><h3>결측치</h3><p>빈칸이 하나라도 있으면 <b>학습이 시작되지 않는다</b>.</p><div class="chips"><span class="chip">Age 177개</span></div></div>
-      <div class="card"><span class="n">02</span><h3>인코딩</h3><p>모델은 글자를 못 읽는다. <b>범주를 숫자로</b> 바꾼다.</p><div class="chips"><span class="chip">Sex · Embarked</span></div></div>
-      <div class="card"><span class="n">03</span><h3>스케일링</h3><p>단위가 다르면 <b>큰 숫자 열이 결과를 지배</b>한다.</p><div class="chips"><span class="chip">Age 0~80</span><span class="chip">Fare 0~512</span></div></div>
+      <div class="card"><span class="n">01</span><h3>결측치</h3><p>빈칸이 하나라도 있으면 <b>학습이 시작되지 않는다</b>.</p><div class="chips"><span class="chip">particle_size 112개</span></div></div>
+      <div class="card"><span class="n">02</span><h3>인코딩</h3><p>모델은 글자를 못 읽는다. <b>범주를 숫자로</b> 바꾼다.</p><div class="chips"><span class="chip">line · shift</span></div></div>
+      <div class="card"><span class="n">03</span><h3>스케일링</h3><p>단위가 다르면 <b>큰 숫자 열이 결과를 지배</b>한다.</p><div class="chips"><span class="chip">calc_temp 754~946</span><span class="chip">moisture 0~2.6</span></div></div>
       <div class="card"><span class="n">04</span><h3>분할</h3><p>성적을 잴 <b>안 본 데이터</b>를 미리 떼어 둔다.</p><div class="chips"><span class="chip">train / test</span></div></div>
     </div>
     <div class="vlist">
@@ -1590,15 +1597,11 @@ df = pd.concat([jan, feb],
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">몇 개가 비었는지</span></div>
           <pre><code>df.isna().sum()
-df.isna().mean().sort_values(ascending=<span class="kw">False</span>)</code></pre>
-          <div class="out">Cabin       687
-Age         177
-Embarked      2
-Survived      0
 
-Cabin       0.771044
-Age         0.198653
-Embarked    0.002245</div>
+df.isna().mean().sort_values(ascending=<span class="kw">False</span>)</code></pre>
+          <div class="out">particle_size    112
+moisture          73
+batch_id           0</div>
         </div>
         <div class="vlist">
           <div class="v"><span class="b">→</span><div><code>NaN</code>은 "값 없음"이다. <code>0</code>이나 빈 문자열과 <b>다른 것</b>이다.</div></div>
@@ -1607,18 +1610,18 @@ Embarked    0.002245</div>
       <div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">비어 있는 행을 직접 본다</span></div>
-          <pre><code>df[df[<span class="st">'Age'</span>].isna()].head(<span class="nm">3</span>)
+          <pre><code>df[df[<span class="st">'particle_size'</span>].isna()].head(<span class="nm">3</span>)
 
 <span class="cm"># 결측 여부가 답과 관계있는지 확인</span>
-df.groupby(df[<span class="st">'Age'</span>].isna())[<span class="st">'Survived'</span>].mean()</code></pre>
-          <div class="out">Age
-False    0.406162
-True     0.293785</div>
+df.groupby(df[<span class="st">'particle_size'</span>].isna())[<span class="st">'passed'</span>].mean()</code></pre>
+          <div class="out">particle_size    0.079320
+moisture         0.051700
+batch_id         0.000000</div>
         </div>
-        <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>결측 자체가 정보다</h4><p>나이가 비어 있는 승객의 생존율이 29%로 더 낮다. <b>무작위로 빈 것이 아니라</b>는 뜻이다.</p></div></div>
+        <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>결측 자체가 정보다</h4><p>입도가 비어 있는 배치의 양품률이 79.5%로 조금 낮다. <b>무작위로 빈 것이 아니라</b>는 뜻이다.</p></div></div>
       </div>
     </div>
-    <div class="keymsg"><span class="k">기준</span><div>메우기 전에 <b>왜 비었는지</b>를 먼저 본다. 결측 비율이 77%인 <code>Cabin</code>은 메울 것이 아니라 버릴 열이다.</div></div>
+    <div class="keymsg"><span class="k">기준</span><div>메우기 전에 <b>왜 비었는지</b>를 먼저 본다. 결측 비율이 77%인 <code>press</code>은 메울 것이 아니라 버릴 열이다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="결측치 처리">
@@ -1629,25 +1632,25 @@ True     0.293785</div>
   <div class="body">
     <div class="cards c3">
       <div class="card"><span class="n">01</span><h3>버린다</h3>
-        <div class="code sm"><pre><code>df.dropna(subset=[<span class="st">'Embarked'</span>])
-df.drop(columns=[<span class="st">'Cabin'</span>])</code></pre></div>
+        <div class="code sm"><pre><code>df.dropna(subset=[<span class="st">'moisture'</span>])
+df.drop(columns=[<span class="st">'press'</span>])</code></pre></div>
         <p>결측이 <b>몇 개뿐</b>이거나, <b>열 대부분이 비었을</b> 때.</p></div>
       <div class="card"><span class="n">02</span><h3>대푯값으로 채운다</h3>
-        <div class="code sm"><pre><code>df[<span class="st">'Age'</span>] = df[<span class="st">'Age'</span>].fillna(
-    df[<span class="st">'Age'</span>].median())</code></pre></div>
+        <div class="code sm"><pre><code>df[<span class="st">'particle_size'</span>] = df[<span class="st">'particle_size'</span>].fillna(
+    df[<span class="st">'particle_size'</span>].median())</code></pre></div>
         <p>평균보다 <b>중앙값</b>이 안전하다. 이상치에 안 흔들린다.</p></div>
       <div class="card"><span class="n">03</span><h3>그룹별로 채운다</h3>
-        <div class="code sm"><pre><code>df[<span class="st">'Age'</span>] = df.groupby(<span class="st">'Pclass'</span>)[<span class="st">'Age'</span>] \
+        <div class="code sm"><pre><code>df[<span class="st">'particle_size'</span>] = df.groupby(<span class="st">'line'</span>)[<span class="st">'particle_size'</span>] \
     .transform(<span class="kw">lambda</span> s: s.fillna(s.median()))</code></pre></div>
-        <p>등급마다 나이대가 다르면 <b>훨씬 정확하다</b>.</p></div>
+        <p>설비마다 입도 분포가 다르면 <b>훨씬 정확하다</b>.</p></div>
     </div>
     <div class="twocol">
       <div>
-        <div class="callout rose"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4><code>fillna(0)</code>은 답이 아니다</h4><p>앞서 본 그 사고다. 나이 0살 승객 177명이 생긴다. <b>0이 뜻을 갖는 열</b>에서만 쓴다.</p></div></div>
+        <div class="callout rose"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4><code>fillna(0)</code>은 답이 아니다</h4><p>앞서 본 그 사고다. 입도 0µm 인 배치 112건이 생긴다. <b>0이 뜻을 갖는 열</b>에서만 쓴다.</p></div></div>
       </div>
       <div>
         <div class="vlist">
-          <div class="v"><span class="b">★</span><div>채운 흔적을 남기려면 <code>df['AgeMissing'] = df['Age'].isna()</code> 열을 <b>먼저</b> 만든다.</div></div>
+          <div class="v"><span class="b">★</span><div>채운 흔적을 남기려면 <code>df['size_missing'] = df['particle_size'].isna()</code> 열을 <b>먼저</b> 만든다.</div></div>
         </div>
       </div>
     </div>
@@ -1661,29 +1664,30 @@ df.drop(columns=[<span class="st">'Cabin'</span>])</code></pre></div>
   <div class="rule"></div>
   <div class="body">
     <div class="twopane">
-      <div class="pane bad"><h4>레이블 인코딩</h4><div class="mini">S → 0
-C → 1
-Q → 2</div><p>열 하나로 끝나지만, 모델이 <b>Q &gt; C &gt; S 라는 순서</b>가 있다고 오해한다.</p></div>
-      <div class="pane good"><h4>원-핫 인코딩</h4><div class="mini">        S   C   Q
-승객1    1   0   0
-승객2    0   1   0</div><p>열이 늘어나는 대신 <b>순서를 만들지 않는다</b>.</p></div>
+      <div class="pane bad"><h4>레이블 인코딩</h4><div class="mini">A → 0
+B → 1
+C → 2</div><p>열 하나로 끝나지만, 모델이 <b>C &gt; B &gt; A 라는 순서</b>가 있다고 오해한다.</p></div>
+      <div class="pane good"><h4>원-핫 인코딩</h4><div class="mini">        A   B   C
+배치1    1   0   0
+배치2    0   1   0</div><p>열이 늘어나는 대신 <b>순서를 만들지 않는다</b>.</p></div>
     </div>
     <div class="twocol">
       <div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">get_dummies — 원-핫</span></div>
           <pre><code>df = pd.get_dummies(
-    df, columns=[<span class="st">'Sex'</span>, <span class="st">'Embarked'</span>],
-    drop_first=<span class="kw">True</span>   <span class="cm"># 첫 범주는 뺀다</span>
+    df, columns=[<span class="st">'line'</span>, <span class="st">'shift'</span>],
+    drop_first=<span class="kw">True</span>  <span class="cm"># 첫 범주는 뺀다</span>
 )
 <span class="fn2">print</span>(df.columns.tolist())</code></pre>
-          <div class="out">[..., 'Sex_male', 'Embarked_Q', 'Embarked_S']</div>
+          <div class="out">[..., 'line_B', 'line_C', 'line_D',
+ 'line_E', 'line_F', 'shift_night']</div>
         </div>
       </div>
       <div>
         <div class="vlist">
-          <div class="v"><span class="b">→</span><div><b>순서가 있는 범주</b>(등급 1·2·3, 대·중·소)는 레이블 인코딩이 맞다.</div></div>
-          <div class="v"><span class="b">→</span><div><b>순서가 없는 범주</b>(성별, 도시, 색)는 원-핫이 맞다.</div></div>
+          <div class="v"><span class="b">→</span><div><b>순서가 있는 범주</b>(대·중·소, 상·중·하)는 레이블 인코딩이 맞다.</div></div>
+          <div class="v"><span class="b">→</span><div><b>순서가 없는 범주</b>(설비 호기, 교대조, 색)는 원-핫이 맞다.</div></div>
           <div class="v"><span class="b">✕</span><div>범주가 수백 개면 원-핫으로 열이 수백 개가 된다. 그때는 다른 방법을 쓴다.</div></div>
         </div>
       </div>
@@ -1702,14 +1706,14 @@ Q → 2</div><p>열 하나로 끝나지만, 모델이 <b>Q &gt; C &gt; S 라는 
         <table class="ctable">
           <thead><tr><th>열</th><th>범위</th><th>평균</th></tr></thead>
           <tbody>
-            <tr><td><code>Age</code></td><td>0.42 ~ 80</td><td>29.7</td></tr>
-            <tr><td><code>Fare</code></td><td>0 ~ <span class="hl">512.3</span></td><td>32.2</td></tr>
-            <tr><td><code>SibSp</code></td><td>0 ~ 8</td><td>0.52</td></tr>
-            <tr><td><code>Sex_male</code></td><td>0 ~ 1</td><td>0.65</td></tr>
+            <tr><td><code>calc_temp</code></td><td>754 ~ 946</td><td>851.2</td></tr>
+            <tr><td><code>impurity</code></td><td>2 ~ <span class="hl">1763</span></td><td>829.3</td></tr>
+            <tr><td><code>moisture</code></td><td>0.08 ~ 2.51</td><td>1.18</td></tr>
+            <tr><td><code>line_B</code></td><td>0 ~ 1</td><td>0.16</td></tr>
           </tbody>
         </table>
         <div class="vlist">
-          <div class="v"><span class="b">✕</span><div>거리로 판단하는 모델(KNN·SVM)과 신경망에서 <b>Fare가 다른 열을 눌러 버린다</b>.</div></div>
+          <div class="v"><span class="b">✕</span><div>거리로 판단하는 모델(KNN·SVM)과 신경망에서 <b>impurity 가 다른 열을 눌러 버린다</b>.</div></div>
           <div class="v"><span class="b">✕</span><div>신경망에서 스케일링을 빼면 <b>손실이 안 떨어지거나 발산</b>한다. 가장 흔한 실패 원인이다.</div></div>
         </div>
       </div>
@@ -1718,15 +1722,15 @@ Q → 2</div><p>열 하나로 끝나지만, 모델이 <b>Q &gt; C &gt; S 라는 
           <svg viewBox="0 0 320 210">
             <text x="10" y="16" font-size="11" fill="#8E8AAC">스케일링 전</text>
             <line x1="12" y1="80" x2="308" y2="80" stroke="#E8E4F8" stroke-width="1.2"/>
-            <rect x="12" y="60" width="14" height="18" fill="#5B3DF5"/><text x="32" y="74" font-size="10" fill="#4A4766">Sex 0~1</text>
-            <rect x="12" y="38" width="46" height="18" fill="#0FB5A1"/><text x="64" y="52" font-size="10" fill="#4A4766">Age 0~80</text>
-            <rect x="12" y="24" width="290" height="10" fill="#E8537A"/><text x="228" y="20" font-size="10" fill="#4A4766">Fare 0~512</text>
+            <rect x="12" y="60" width="14" height="18" fill="#5B3DF5"/><text x="32" y="74" font-size="10" fill="#4A4766">line_B 0~1</text>
+            <rect x="12" y="38" width="46" height="18" fill="#0FB5A1"/><text x="64" y="52" font-size="10" fill="#4A4766">calc_temp 754~946</text>
+            <rect x="12" y="24" width="290" height="10" fill="#E8537A"/><text x="228" y="20" font-size="10" fill="#4A4766">impurity 2~1763</text>
 
             <text x="10" y="126" font-size="11" fill="#8E8AAC">표준화 후</text>
             <line x1="12" y1="190" x2="308" y2="190" stroke="#E8E4F8" stroke-width="1.2"/>
-            <rect x="12" y="170" width="96" height="18" fill="#5B3DF5"/><text x="114" y="184" font-size="10" fill="#4A4766">Sex</text>
-            <rect x="12" y="148" width="104" height="18" fill="#0FB5A1"/><text x="122" y="162" font-size="10" fill="#4A4766">Age</text>
-            <rect x="12" y="134" width="100" height="10" fill="#E8537A"/><text x="118" y="143" font-size="10" fill="#4A4766">Fare</text>
+            <rect x="12" y="170" width="96" height="18" fill="#5B3DF5"/><text x="114" y="184" font-size="10" fill="#4A4766">line_B</text>
+            <rect x="12" y="148" width="104" height="18" fill="#0FB5A1"/><text x="122" y="162" font-size="10" fill="#4A4766">calc_temp</text>
+            <rect x="12" y="134" width="100" height="10" fill="#E8537A"/><text x="118" y="143" font-size="10" fill="#4A4766">impurity</text>
           </svg>
           <div class="cap">세 열의 값 범위 — 전과 후</div>
         </div>
@@ -1793,13 +1797,13 @@ X_test_s  = scaler.transform(X_test)        <span class="cm"># 테스트셋은 �
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">train_test_split</span></div>
           <pre><code><span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> train_test_split
 
-X = df.drop(columns=[<span class="st">'Survived'</span>])
-y = df[<span class="st">'Survived'</span>]
+X = df.drop(columns=[<span class="st">'passed'</span>, <span class="st">'capacity'</span>])
+y = df[<span class="st">'passed'</span>]
 
 X_tr, X_te, y_tr, y_te = train_test_split(
     X, y, test_size=<span class="nm">0.2</span>,
     random_state=<span class="nm">42</span>,   <span class="cm"># 재현 가능하게</span>
-    stratify=y         <span class="cm"># 생존 비율을 양쪽에 유지</span>
+    stratify=y       <span class="cm"># 불량 비율을 양쪽에 유지</span>
 )</code></pre>
         </div>
       </div>
@@ -1824,17 +1828,18 @@ X_tr, X_te, y_tr, y_te = train_test_split(
     <div class="twocol w">
       <div>
         <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">타이타닉 — 처음부터 끝까지</span></div>
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">공정 데이터 — 처음부터 끝까지</span></div>
           <pre><code><span class="cm"># 1. 쓸모없는 열 제거</span>
-df = df.drop(columns=[<span class="st">'PassengerId'</span>, <span class="st">'Name'</span>,
-                      <span class="st">'Ticket'</span>, <span class="st">'Cabin'</span>])
+df = df.drop(columns=[<span class="st">'batch_id'</span>,
+                      <span class="st">'capacity'</span>])
 
 <span class="cm"># 2. 결측 처리</span>
-df[<span class="st">'Age'</span>] = df[<span class="st">'Age'</span>].fillna(df[<span class="st">'Age'</span>].median())
-df = df.dropna(subset=[<span class="st">'Embarked'</span>])
+df[<span class="st">'particle_size'</span>] = df[<span class="st">'particle_size'</span>].fillna(
+    df[<span class="st">'particle_size'</span>].median())
+df = df.dropna(subset=[<span class="st">'moisture'</span>])
 
 <span class="cm"># 3. 범주형 인코딩</span>
-df = pd.get_dummies(df, columns=[<span class="st">'Sex'</span>, <span class="st">'Embarked'</span>],
+df = pd.get_dummies(df, columns=[<span class="st">'line'</span>, <span class="st">'shift'</span>],
                     drop_first=<span class="kw">True</span>)
 
 <span class="cm"># 4. 분할 — 스케일링보다 먼저</span>
@@ -1978,10 +1983,10 @@ plt.rc(<span class="st">'axes'</span>, unicode_minus=<span class="kw">False</spa
         <p>한 열의 <b>분포 모양</b>.</p></div>
     </div>
     <div class="code sm">
-      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">타이타닉에 적용하면</span></div>
-      <pre><code>df[<span class="st">'Age'</span>].hist(bins=<span class="nm">30</span>)                        <span class="cm"># 나이 분포 — 어디에 몰렸나</span>
-df.groupby(<span class="st">'Pclass'</span>)[<span class="st">'Survived'</span>].mean().plot.bar()  <span class="cm"># 등급별 생존율</span>
-df.plot.scatter(x=<span class="st">'Age'</span>, y=<span class="st">'Fare'</span>)                 <span class="cm"># 나이와 요금의 관계</span></code></pre>
+      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">공정 데이터에 적용하면</span></div>
+      <pre><code>df[<span class="st">'capacity'</span>].hist(bins=<span class="nm">30</span>)          <span class="cm"># 용량 분포 — 어디에 몰렸나</span>
+df.groupby(<span class="st">'line'</span>)[<span class="st">'passed'</span>].mean().plot.bar()   <span class="cm"># 설비별 양품률</span>
+df.plot.scatter(x=<span class="st">'calc_temp'</span>, y=<span class="st">'capacity'</span>)   <span class="cm"># 온도와 용량의 관계</span></code></pre>
     </div>
     <div class="keymsg"><span class="k">기준</span><div>한 열의 <b>분포</b>는 히스토그램, 두 열의 <b>관계</b>는 산점도, 범주별 <b>비교</b>는 막대다. 목적이 그래프를 정한다.</div></div>
   </div>
@@ -2004,10 +2009,10 @@ df.plot.scatter(x=<span class="st">'Age'</span>, y=<span class="st">'Fare'</span
           <pre><code>fig, ax = plt.subplots(<span class="nm">1</span>, <span class="nm">2</span>, figsize=(<span class="nm">10</span>, <span class="nm">4</span>),
                        constrained_layout=<span class="kw">True</span>)
 
-ax[<span class="nm">0</span>].hist(df[<span class="st">'Age'</span>].dropna(), bins=<span class="nm">30</span>)
-ax[<span class="nm">0</span>].set_title(<span class="st">"Age"</span>)
-ax[<span class="nm">1</span>].hist(df[<span class="st">'Fare'</span>], bins=<span class="nm">30</span>)
-ax[<span class="nm">1</span>].set_title(<span class="st">"Fare"</span>)
+ax[<span class="nm">0</span>].hist(df[<span class="st">'capacity'</span>], bins=<span class="nm">30</span>)
+ax[<span class="nm">0</span>].set_title(<span class="st">"capacity"</span>)
+ax[<span class="nm">1</span>].hist(df[<span class="st">'impurity'</span>], bins=<span class="nm">30</span>)
+ax[<span class="nm">1</span>].set_title(<span class="st">"impurity"</span>)
 plt.show()</code></pre>
         </div>
       </div>
@@ -2021,12 +2026,12 @@ plt.show()</code></pre>
             </g>
             <g fill="#5B3DF5"><rect x="40" y="120" width="16" height="48"/><rect x="58" y="86" width="16" height="82"/><rect x="76" y="70" width="16" height="98"/><rect x="94" y="96" width="16" height="72"/><rect x="112" y="132" width="16" height="36"/><rect x="130" y="152" width="16" height="16"/></g>
             <g fill="#0FB5A1"><rect x="196" y="60" width="16" height="108"/><rect x="214" y="112" width="16" height="56"/><rect x="232" y="140" width="16" height="28"/><rect x="250" y="152" width="16" height="16"/><rect x="268" y="158" width="16" height="10"/><rect x="286" y="162" width="16" height="6"/></g>
-            <text x="94" y="50" text-anchor="middle" font-size="11" fill="#4A4766">Age</text>
-            <text x="250" y="50" text-anchor="middle" font-size="11" fill="#4A4766">Fare</text>
+            <text x="94" y="50" text-anchor="middle" font-size="11" fill="#4A4766">capacity</text>
+            <text x="250" y="50" text-anchor="middle" font-size="11" fill="#4A4766">impurity</text>
             <text x="28" y="190" font-family="monospace" font-size="9.5" fill="#8E8AAC">ax[0]</text>
             <text x="184" y="190" font-family="monospace" font-size="9.5" fill="#8E8AAC">ax[1]</text>
           </svg>
-          <div class="cap">Fare는 왼쪽으로 심하게 쏠려 있다</div>
+          <div class="cap">impurity 는 오른쪽으로 길게 늘어져 있다</div>
         </div>
       </div>
     </div>
@@ -2040,13 +2045,13 @@ plt.show()</code></pre>
   <div class="rule"></div>
   <div class="body">
     <div class="twopane">
-      <div class="pane bad"><h4>Matplotlib</h4><div class="mini">for p in sorted(df['Pclass'].unique()):
-    sub = df[df['Pclass'] == p]
-    plt.hist(sub['Age'].dropna(), label=p, alpha=.5)
+      <div class="pane bad"><h4>Matplotlib</h4><div class="mini">for L in sorted(df['line'].unique()):
+    sub = df[df['line'] == L]
+    plt.hist(sub['capacity'], label=L, alpha=.5)
 plt.legend()</div><p>값을 <b>직접 꺼내</b> 넘긴다.</p></div>
       <div class="pane good"><h4>seaborn</h4><div class="mini">import seaborn as sns
 
-sns.histplot(data=df, x='Age', hue='Pclass')</div><p>표와 <b>열 이름</b>만 알려 주면 나눠 그린다.</p></div>
+sns.histplot(data=df, x='capacity', hue='line')</div><p>표와 <b>열 이름</b>만 알려 주면 나눠 그린다.</p></div>
     </div>
     <div class="vlist">
       <div class="v"><span class="b">→</span><div><code>hue</code>에 준 열의 <b>값마다 색이 갈리고 범례가 자동</b>으로 붙는다.</div></div>
@@ -2070,24 +2075,24 @@ sns.histplot(data=df, x='Age', hue='Pclass')</div><p>표와 <b>열 이름</b>만
         <div class="plot">
           <svg viewBox="0 0 300 120">
             <g font-size="9.5" font-family="monospace" fill="#8E8AAC">
-              <text x="4" y="30">Survived</text><text x="4" y="60">Pclass</text><text x="4" y="90">Fare</text>
-              <text x="72" y="14">Surv</text><text x="132" y="14">Pcls</text><text x="196" y="14">Fare</text>
+              <text x="4" y="30">capacity</text><text x="4" y="60">calc_temp</text><text x="4" y="90">impurity</text>
+              <text x="72" y="14">cap</text><text x="132" y="14">temp</text><text x="196" y="14">impurity</text>
             </g>
             <g><rect x="66" y="20" width="56" height="26" fill="#5B3DF5"/><rect x="128" y="20" width="56" height="26" fill="#7FA8E8"/><rect x="190" y="20" width="56" height="26" fill="#C8B4F0"/>
                <rect x="66" y="50" width="56" height="26" fill="#7FA8E8"/><rect x="128" y="50" width="56" height="26" fill="#5B3DF5"/><rect x="190" y="50" width="56" height="26" fill="#8FBEEA"/>
                <rect x="66" y="80" width="56" height="26" fill="#C8B4F0"/><rect x="128" y="80" width="56" height="26" fill="#8FBEEA"/><rect x="190" y="80" width="56" height="26" fill="#5B3DF5"/></g>
             <g font-size="10" fill="#fff" text-anchor="middle">
-              <text x="94" y="38">1.00</text><text x="156" y="38">-.34</text><text x="218" y="38">.26</text>
-              <text x="94" y="68">-.34</text><text x="156" y="68">1.00</text><text x="218" y="68">-.55</text>
-              <text x="94" y="98">.26</text><text x="156" y="98">-.55</text><text x="218" y="98">1.00</text>
+              <text x="94" y="38">1.00</text><text x="156" y="38">+.75</text><text x="218" y="38">-.00</text>
+              <text x="94" y="68">+.75</text><text x="156" y="68">1.00</text><text x="218" y="68">-.24</text>
+              <text x="94" y="98">-.00</text><text x="156" y="98">-.24</text><text x="218" y="98">1.00</text>
             </g>
           </svg>
-          <div class="cap">Pclass와 Survived는 −0.34 — 등급이 낮을수록 덜 살았다</div>
+          <div class="cap">calc_temp 와 capacity 는 +0.75 — 온도가 용량을 가장 크게 좌우한다</div>
         </div>
       </div>
       <div>
         <div class="phase-label">박스플롯 — 분포와 이상치를 같이<span class="ln"></span></div>
-        <div class="code sm"><pre><code>sns.boxplot(data=df, x=<span class="st">'Pclass'</span>, y=<span class="st">'Fare'</span>)</code></pre></div>
+        <div class="code sm"><pre><code>sns.boxplot(data=df, x=<span class="st">'line'</span>, y=<span class="st">'capacity'</span>)</code></pre></div>
         <div class="plot">
           <svg viewBox="0 0 300 140">
             <line x1="34" y1="122" x2="288" y2="122" stroke="#8E8AAC" stroke-width="1.2"/>
@@ -2098,7 +2103,7 @@ sns.histplot(data=df, x='Age', hue='Pclass')</div><p>표와 <b>열 이름</b>만
               <line x1="242" y1="90" x2="242" y2="100"/><rect x="222" y="100" width="40" height="12"/><line x1="222" y1="106" x2="262" y2="106" stroke-width="2.4"/><line x1="242" y1="112" x2="242" y2="118"/>
             </g>
             <g fill="#E8537A"><circle cx="86" cy="14" r="3"/><circle cx="86" cy="24" r="3"/><circle cx="164" cy="60" r="3"/><circle cx="242" cy="78" r="3"/></g>
-            <g font-size="10" fill="#8E8AAC" text-anchor="middle"><text x="86" y="136">1등석</text><text x="164" y="136">2등석</text><text x="242" y="136">3등석</text></g>
+            <g font-size="10" fill="#8E8AAC" text-anchor="middle"><text x="86" y="136">A</text><text x="164" y="136">C</text><text x="242" y="136">E</text></g>
           </svg>
           <div class="cap">점으로 튀어나온 것이 이상치다</div>
         </div>
