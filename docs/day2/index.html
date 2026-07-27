@@ -170,6 +170,24 @@
   .formula{display:flex; flex-direction:column; gap:10px; background:var(--code-bg); border-radius:13px; padding:20px; color:#fff; font-family:var(--mono);}
   .formula .big{font-size:21px; text-align:center;}
 
+
+  /* 결과 표 — 코드가 만든 DataFrame 을 눈에 보이게 그린다 */
+  .dft{border-collapse:separate; border-spacing:0; font-family:var(--mono); font-size:12px;
+       border-radius:8px; overflow:hidden; box-shadow:0 1px 0 var(--line);}
+  .dft th{background:#5B3DF5; color:#fff; padding:6px 11px; font-weight:700; font-size:11.5px;
+          text-align:right; white-space:nowrap;}
+  .dft th:first-child{background:#4A2FD8;}
+  .dft td{padding:5px 11px; text-align:right; background:#FCFBFF; border-bottom:1px solid #EEEAFA;
+          white-space:nowrap; color:#16142B;}
+  .dft td:first-child{background:#F4F1FF; color:#8E8AAC; font-weight:700;}
+  .dft tbody tr:last-child td{border-bottom:none;}
+  .dft td.s{text-align:left;} .dft th.s{text-align:left;}
+  .dft .on{background:#EAE4FF; color:#3A1FC9; font-weight:700;}
+  .dft .na{color:#C13458; font-style:italic;}
+  /* 표 → 코드 → 표 흐름 */
+  .flow{display:flex; align-items:center; gap:14px; flex-wrap:wrap;}
+  .flow .arw{color:#B7A9FF; font-size:26px; line-height:1;}
+  .cap2{font-family:var(--mono); font-size:10.5px; color:#8E8AAC; margin-bottom:5px;}
   .ctable{width:100%; border-collapse:separate; border-spacing:0; font-size:14px; border:1px solid var(--line); border-radius:13px; overflow:hidden;}
   .ctable th,.ctable td{padding:13px 16px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top;}
   .ctable thead th{background:var(--wash); color:var(--violet); font-family:var(--mono); font-size:12px; letter-spacing:.04em; text-transform:uppercase; font-weight:700;}
@@ -931,30 +949,26 @@ df.columns        <span class="cm"># 열 이름 목록</span></code></pre>
   <h2 class="s-title sm">대괄호 하나와 둘의 차이</h2>
   <div class="rule"></div>
   <div class="body">
-    <div class="twocol">
+    <div class="flow">
       <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">대괄호 하나 → Series</span></div>
-          <pre><code>df[<span class="st">'calc_temp'</span>]</code></pre>
-          <div class="out">0    898.9
-1    835.0
-2    829.3
-Name: calc_temp, dtype: float64</div>
-        </div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">대괄호 둘 → DataFrame</span></div>
-          <pre><code>df[[<span class="st">'line'</span>, <span class="st">'calc_temp'</span>]]</code></pre>
-          <div class="out">  line  calc_temp
-0    B      898.9
-1    C      835.0</div>
-        </div>
+        <div class="cap2">df</div>
+        <table class="dft"><thead><tr><th class="s"></th><th class="s">line</th><th class="s">shift</th><th>calc_temp</th><th>capacity</th></tr></thead><tbody><tr><td>0</td><td class="s">B</td><td class="s">day</td><td>898.9</td><td>178.9</td></tr><tr><td>1</td><td class="s">C</td><td class="s">day</td><td>835.0</td><td>170.5</td></tr><tr><td>2</td><td class="s">F</td><td class="s">night</td><td>829.3</td><td>172.5</td></tr><tr><td>3</td><td class="s">B</td><td class="s">day</td><td>855.1</td><td>178.1</td></tr></tbody></table>
       </div>
+      <div class="arw">→</div>
       <div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div>안쪽 대괄호는 <b>열 이름의 리스트</b>다. 하나만 넣어도 <code>df[['calc_temp']]</code>는 표로 나온다.</div></div>
-          <div class="v"><span class="b">→</span><div>Series 에는 <code>.mean()</code> <code>.value_counts()</code>가 바로 붙는다.</div></div>
-          <div class="v"><span class="b">✕</span><div>순서를 바꿔 쓰면 <code>KeyError</code>다. 열 이름은 <b>대소문자까지</b> 정확해야 한다.</div></div>
+        <div class="code sm" style="margin-bottom:10px">
+          <pre><code>df[<span class="st">'calc_temp'</span>]</code></pre>
         </div>
+        <div class="cap2">Series — 값만 남는다</div>
+        <table class="dft"><thead><tr><th class="s"></th><th>calc_temp</th></tr></thead><tbody><tr><td>0</td><td class="on">898.9</td></tr><tr><td>1</td><td class="on">835.0</td></tr><tr><td>2</td><td class="on">829.3</td></tr><tr><td>3</td><td class="on">855.1</td></tr></tbody></table>
+      </div>
+      <div class="arw">→</div>
+      <div>
+        <div class="code sm" style="margin-bottom:10px">
+          <pre><code>df[[<span class="st">'line'</span>, <span class="st">'calc_temp'</span>]]</code></pre>
+        </div>
+        <div class="cap2">DataFrame — 표로 남는다</div>
+        <table class="dft"><thead><tr><th class="s"></th><th class="s">line</th><th>calc_temp</th></tr></thead><tbody><tr><td>0</td><td class="s">B</td><td class="on">898.9</td></tr><tr><td>1</td><td class="s">C</td><td class="on">835.0</td></tr><tr><td>2</td><td class="s">F</td><td class="on">829.3</td></tr><tr><td>3</td><td class="s">B</td><td class="on">855.1</td></tr></tbody></table>
       </div>
     </div>
     <div class="keymsg"><span class="k">기준</span><div>계산할 열 하나는 <b>대괄호 하나</b>, 표를 남겨야 하면 <b>대괄호 둘</b>이다.</div></div>
@@ -966,28 +980,8 @@ Name: calc_temp, dtype: float64</div>
   <h2 class="s-title sm">조건으로 행 고르기</h2>
   <div class="rule"></div>
   <div class="body">
-    <div class="twocol">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">조건식을 대괄호에 넣는다</span></div>
-          <pre><code><span class="cm"># 조건식은 True/False 의 Series 다</span>
-df[<span class="st">'capacity'</span>] &lt; <span class="nm">168</span>
-
-<span class="cm"># 대괄호에 넣으면 참인 행만 남는다</span>
-df[df[<span class="st">'capacity'</span>] &lt; <span class="nm">168</span>]
-
-<span class="cm"># 조건 두 개는 괄호로 묶고 &amp; | 를 쓴다</span>
-df[(df[<span class="st">'capacity'</span>] &lt; <span class="nm">168</span>) &amp; (df[<span class="st">'line'</span>] == <span class="st">'A'</span>)]</code></pre>
-        </div>
-      </div>
-      <div>
-        <div class="callout rose"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>and 가 아니라 &amp;</h4><p>Pandas 조건 결합은 <code>&amp;</code> <code>|</code>이고, <b>각 조건을 괄호로 묶어야</b> 한다. <code>and</code>를 쓰면 에러가 난다.</p></div></div>
-        <div class="vlist">
-          <div class="v"><span class="b">★</span><div>앞에서 본 <code>a[a &gt;= 18]</code>과 같은 구조다. 배열 대신 표가 들어갔을 뿐이다.</div></div>
-        </div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>대괄호에 <b>이름을 넣으면 열</b>, <b>조건식을 넣으면 행</b>이 걸러진다.</div></div>
+    <div class="flow"><div><div class="cap2">df</div><table class="dft"><thead><tr><th class="s"></th><th class="s">line</th><th class="s">shift</th><th>calc_temp</th><th>capacity</th></tr></thead><tbody><tr><td>0</td><td class="s">B</td><td class="s">day</td><td>898.9</td><td>178.9</td></tr><tr><td>1</td><td class="s">C</td><td class="s">day</td><td>835.0</td><td class="on">170.5</td></tr><tr><td>2</td><td class="s">F</td><td class="s">night</td><td>829.3</td><td class="on">172.5</td></tr><tr><td>3</td><td class="s">B</td><td class="s">day</td><td>855.1</td><td>178.1</td></tr><tr><td>4</td><td class="s">C</td><td class="s">night</td><td>875.7</td><td>180.1</td></tr><tr><td>5</td><td class="s">D</td><td class="s">day</td><td>832.7</td><td class="on">172.5</td></tr></tbody></table></div><div class="arw">→</div><div><div class="cap2">참인 행만 남는다</div><div class="code sm" style="margin-bottom:10px"><pre><code>df[df[<span class="st">'capacity'</span>] &lt; <span class="nm">175</span>]</code></pre></div><table class="dft"><thead><tr><th class="s"></th><th class="s">line</th><th class="s">shift</th><th>calc_temp</th><th>capacity</th></tr></thead><tbody><tr><td>1</td><td class="s">C</td><td class="s">day</td><td>835.0</td><td class="on">170.5</td></tr><tr><td>2</td><td class="s">F</td><td class="s">night</td><td>829.3</td><td class="on">172.5</td></tr><tr><td>5</td><td class="s">D</td><td class="s">day</td><td>832.7</td><td class="on">172.5</td></tr></tbody></table></div></div>
+    <div class="keymsg"><span class="k">기준</span><div>대괄호에 <b>이름을 넣으면 열</b>, <b>조건식을 넣으면 행</b>이 걸러진다. 인덱스 번호는 그대로 따라온다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="값 세기">
@@ -996,35 +990,8 @@ df[(df[<span class="st">'capacity'</span>] &lt; <span class="nm">168</span>) &am
   <h2 class="s-title sm">범주형 열의 첫 점검</h2>
   <div class="rule"></div>
   <div class="body">
-    <div class="twocol">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">value_counts()</span></div>
-          <pre><code>df[<span class="st">'line'</span>].value_counts()
-
-df[<span class="st">'shift'</span>].value_counts(normalize=<span class="kw">True</span>)</code></pre>
-          <div class="out">line
- A     176
-a       40
-A       33
-B      153
-<span class="err">... 24종 — 같은 설비가 흩어졌다</span>
-
-shift
-day      0.558782
-night    0.441218</div>
-        </div>
-      </div>
-      <div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div>어떤 값이 <b>몇 종류, 몇 개씩</b> 있는지 한 줄로 나온다.</div></div>
-          <div class="v"><span class="b">→</span><div><code>normalize=True</code>를 주면 개수 대신 <b>비율</b>이 나온다.</div></div>
-          <div class="v"><span class="b">✕</span><div>결측은 기본적으로 <b>세지 않는다</b>. 같은 설비가 대소문자·공백 탓에 24종으로 흩어져 있다.</div></div>
-          <div class="v"><span class="b">★</span><div>같은 값의 다른 표기(<code>A</code> / <code>a</code> / <code> A </code>)가 섞이면 여기서 종류 수가 튄다.</div></div>
-        </div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>범주 개수가 예상보다 많으면 <b>표기 흔들림</b>, 합계가 행 수보다 적으면 <b>결측</b>이다. 집계 전에 둘 다 본다.</div></div>
+    <div class="flow"><div><div class="cap2">정리 전 — 24종으로 흩어졌다</div><div class="code sm" style="margin-bottom:10px"><pre><code>df[<span class="st">'line'</span>].value_counts()</code></pre></div><table class="dft"><thead><tr><th class="s">line</th><th>count</th></tr></thead><tbody><tr><td class="s"> A</td><td class="na">176</td></tr><tr><td class="s">a</td><td class="na">40</td></tr><tr><td class="s">A </td><td class="na">33</td></tr><tr><td class="s">B</td><td>153</td></tr><tr><td class="s">…</td><td>…</td></tr></tbody></table></div><div class="arw">→</div><div><div class="cap2">공백·대소문자를 맞춘 뒤</div><div class="code sm" style="margin-bottom:10px"><pre><code>df[<span class="st">'line'</span>] = df[<span class="st">'line'</span>].str.strip().str.upper()</code></pre></div><table class="dft"><thead><tr><th class="s">line</th><th>count</th></tr></thead><tbody><tr><td class="s">A</td><td>249</td></tr><tr><td class="s">B</td><td>222</td></tr><tr><td class="s">C</td><td>227</td></tr><tr><td class="s">D</td><td>240</td></tr><tr><td class="s">E</td><td>235</td></tr><tr><td class="s">F</td><td>239</td></tr></tbody></table></div></div>
+    <div class="keymsg"><span class="k">기준</span><div>범주 수가 예상보다 많으면 <b>표기 흔들림</b>이다. 집계 전에 반드시 맞춘다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="object 타입">
@@ -1177,44 +1144,11 @@ max       945.70   1763.00    188.50</div>
 <section class="slide" data-title="groupby">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>집계</div>
-  <h2 class="s-title sm">묶어서 접는 세 단계</h2>
+  <h2 class="s-title sm">묶어서 접기</h2>
   <div class="rule"></div>
   <div class="body">
-    <div class="pipe">
-      <div class="step"><div class="si">SPLIT</div><div class="sn">나눈다</div><div class="sd">'line' 값이 같은 행끼리</div></div>
-      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
-      <div class="step"><div class="si">APPLY</div><div class="sn">계산한다</div><div class="sd">각 묶음의 'passed' 평균</div></div>
-      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
-      <div class="step"><div class="si">COMBINE</div><div class="sn">합친다</div><div class="sd">묶음마다 한 줄인 결과</div></div>
-    </div>
-    <div class="twocol">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">df.groupby("기준열")["대상열"].집계함수()</span></div>
-          <pre><code>df.groupby(<span class="st">'line'</span>)[<span class="st">'passed'</span>].mean()
-df.groupby(<span class="st">'shift'</span>)[<span class="st">'calc_temp'</span>].std()</code></pre>
-          <div class="out">line
-A    0.779
-B    0.793
-C    0.811
-D    0.812
-E    0.843
-F    0.837
-
-shift
-day      28.0
-night    31.0</div>
-        </div>
-      </div>
-      <div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div>기준 열의 값이 <b>결과의 인덱스</b>가 된다.</div></div>
-          <div class="v"><span class="b">✕</span><div><code>groupby()</code>만 부르면 <code>DataFrameGroupBy</code> 객체다. <b>집계 함수를 붙여야</b> 표가 나온다.</div></div>
-          <div class="v"><span class="b">★</span><div>A 설비 77.9% 대 E 설비 84.3%. <b>설비마다 양품률이 갈린다</b> — 어디를 먼저 볼지 알려 준다.</div></div>
-        </div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">정리</span><div>모델을 만들기 전에 <code>groupby</code> 몇 줄로 <b>어떤 열이 답과 관계있는지</b> 먼저 본다.</div></div>
+    <div class="flow"><div><div class="cap2">df — 1412행</div><table class="dft"><thead><tr><th class="s"></th><th class="s">line</th><th>capacity</th></tr></thead><tbody><tr><td>0</td><td class="s">B</td><td>178.9</td></tr><tr><td>1</td><td class="s">C</td><td>170.5</td></tr><tr><td>2</td><td class="s">F</td><td>172.5</td></tr><tr><td>3</td><td class="s">B</td><td>178.1</td></tr><tr><td>…</td><td class="s">…</td><td>…</td></tr></tbody></table></div><div class="arw">→</div><div><div class="cap2">설비마다 한 줄로 접힌다</div><div class="code sm" style="margin-bottom:10px"><pre><code>df.groupby(<span class="st">'line'</span>)[<span class="st">'capacity'</span>].mean()</code></pre></div><table class="dft"><thead><tr><th class="s">line</th><th>capacity</th></tr></thead><tbody><tr><td class="s">A</td><td>171.7</td></tr><tr><td class="s">B</td><td>172.3</td></tr><tr><td class="s">C</td><td>173.0</td></tr><tr><td class="s">D</td><td>173.2</td></tr><tr><td class="s">E</td><td class="on">174.7</td></tr><tr><td class="s">F</td><td>174.5</td></tr></tbody></table></div></div>
+    <div class="keymsg"><span class="k">기준</span><div><b>나누고 · 계산하고 · 합친다.</b> 세 단계가 한 줄에 들어 있다. E 설비가 가장 높다.</div></div>
   </div>
 </section>
 <section class="slide section" data-title="[섹션] 전처리">
