@@ -388,19 +388,23 @@
   <div class="rule"></div>
   <div class="body">
     <div class="twopane">
-      <div class="pane bad"><h4>함수만 쓸 때</h4><div class="mini">def predict(x, w1, b1, w2, b2):
-    h = relu(x @ w1 + b1)
-    return h @ w2 + b2
+      <div class="pane bad"><h4>함수만 쓸 때</h4><div class="mini">def add(records, bid, temp):
+    records.append({'id': bid, 'temp': temp})
+    return records
 
-# 가중치 네 개를 매번 들고 다녀야 한다</div><p>모델이 커질수록 <b>넘길 값이 늘어난다</b>.</p></div>
-      <div class="pane good"><h4>클래스를 쓸 때</h4><div class="mini">model = MLP()
-model.forward(x)
+records = []
+records = add(records, 'B1', 898)
+records = add(records, 'B2', 835)</div><p><code>records</code>를 <b>매번 넘기고 받아야</b> 한다.</p></div>
+      <div class="pane good"><h4>클래스를 쓸 때</h4><div class="mini">log = BatchLog()
 
-# 가중치는 model 안에 들어 있다</div><p>데이터와 동작을 <b>한 덩어리로</b> 묶는다.</p></div>
+log.add('B1', 898)
+log.add('B2', 835)
+
+# records 는 log 안에 들어 있다</div><p>값과 동작을 <b>한 덩어리로</b> 묶는다. 이 <code>BatchLog</code>를 <b>바로 뒤에서 만든다</b>.</p></div>
     </div>
     <div class="vlist">
       <div class="v"><span class="b">→</span><div>클래스는 <b>상태(값)를 계속 들고 있어야 하는 것</b>을 표현할 때 쓴다.</div></div>
-      <div class="v"><span class="b">★</span><div>신경망이 정확히 그렇다. 가중치를 지니고, 학습할 때마다 그 값이 바뀐다.</div></div>
+      <div class="v"><span class="b">★</span><div>신경망이 정확히 그렇다. <b>가중치를 지니고</b> 있고, 학습할 때마다 그 값이 바뀐다.</div></div>
       <div class="v"><span class="b">→</span><div>앞서 쓴 <code>df.head()</code> <code>list.append()</code>도 전부 <b>클래스의 메서드</b>였다.</div></div>
     </div>
     <div class="keymsg"><span class="k">기준</span><div>값이 계속 바뀌면서 남아 있어야 하면 클래스, <b>넣으면 결과만 나오면 되는 것</b>은 함수다.</div></div>

@@ -798,6 +798,13 @@ pred = model.predict(X_test)      <span class="cm"># 3. 예측하고</span>
           <div class="v"><span class="b">✕</span><div>끝까지 자라게 두면 <b>훈련 데이터를 통째로 외운다</b>. <code>max_depth</code>로 제한한다.</div></div>
           <div class="v"><span class="b">→</span><div>스케일링이 <b>필요 없다</b>. 크기가 아니라 순서만 보기 때문이다.</div></div>
         </div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">깊이를 제한해 만든다</span></div>
+          <pre><code><span class="kw">from</span> sklearn.tree <span class="kw">import</span> DecisionTreeClassifier
+
+tree = DecisionTreeClassifier(max_depth=<span class="nm">4</span>)
+tree.fit(X_train, y_train)</code></pre>
+        </div>
       </div>
       <div>
         <div class="plot">
@@ -1036,8 +1043,11 @@ s = cross_val_score(model, X, y, cv=<span class="nm">5</span>)
       <div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">반복문 하나로 전부 돌린다</span></div>
-          <pre><code>models = {
-    <span class="st">'기준선(최빈값)'</span>: DummyClassifier(strategy=<span class="st">'most_frequent'</span>),
+          <pre><code><span class="cm"># 기준선은 앞에서 본 그 값 — 전부 양품이라 찍었을 때다</span>
+base = (y_test == <span class="nm">1</span>).mean()
+<span class="fn2">print</span>(<span class="st">'기준선'</span>, <span class="fn2">round</span>(base, <span class="nm">3</span>))
+
+models = {
     <span class="st">'로지스틱 회귀'</span>: LogisticRegression(max_iter=<span class="nm">1000</span>),
     <span class="st">'결정 트리'</span>:   DecisionTreeClassifier(max_depth=<span class="nm">4</span>),
     <span class="st">'랜덤 포레스트'</span>: RandomForestClassifier(n_estimators=<span class="nm">300</span>),

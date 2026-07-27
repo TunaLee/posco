@@ -1379,6 +1379,44 @@ C → 2</div><p>열 하나로 끝나지만, 모델이 <b>C &gt; B &gt; A 라는 
     <div class="keymsg"><span class="k">기준</span><div>트리 계열은 스케일링이 필요 없다. <b>거리·기울기를 쓰는 모델</b>에는 반드시 필요하다.</div></div>
   </div>
 </section>
+<section class="slide" data-title="데이터 분할">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>분할</div>
+  <h2 class="s-title sm">훈련·검증·테스트의 분리</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="pipe">
+      <div class="step"><div class="si">60~80%</div><div class="sn">훈련 Train</div><div class="sd">모델이 규칙을 찾는 데 쓴다</div></div>
+      <div class="step"><div class="si">10~20%</div><div class="sn">검증 Validation</div><div class="sd">설정을 고르고 멈출 시점을 잡는다</div></div>
+      <div class="step"><div class="si">10~20%</div><div class="sn">테스트 Test</div><div class="sd">최종 성적 — 딱 한 번만 본다</div></div>
+    </div>
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">train_test_split</span></div>
+          <pre><code><span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> train_test_split
+
+X = df.drop(columns=[<span class="st">'passed'</span>, <span class="st">'capacity'</span>])
+y = df[<span class="st">'passed'</span>]
+
+X_tr, X_te, y_tr, y_te = train_test_split(
+    X, y, test_size=<span class="nm">0.2</span>,
+    random_state=<span class="nm">42</span>,   <span class="cm"># 재현 가능하게</span>
+    stratify=y       <span class="cm"># 불량 비율을 양쪽에 유지</span>
+)</code></pre>
+        </div>
+      </div>
+      <div>
+        <div class="callout rose"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>데이터 누수 — 가장 흔한 실수</h4><p>전체 데이터로 <code>fit_transform</code>을 하고 나서 쪼개면, 스케일러가 <b>테스트셋의 평균까지 이미 봤다</b>. 성적이 실제보다 좋게 나온다.</p></div></div>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div>순서는 <b>쪼개고 → 훈련셋으로 fit → 양쪽에 transform</b>이다. 결측 대치도 마찬가지다.</div></div>
+          <div class="v"><span class="b">✕</span><div>시계열은 무작위로 쪼개면 안 된다. <b>시점으로</b> 자른다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>테스트셋은 <b>마지막에 한 번</b> 쓴다. 여러 번 보고 모델을 고치면 그 숫자는 더 이상 실전 성능이 아니다.</div></div>
+  </div>
+</section>
 <section class="slide" data-title="표준화와 정규화">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>스케일</div>
@@ -1418,44 +1456,6 @@ X_train_s = scaler.fit_transform(X_train)   <span class="cm"># 훈련셋으로 �
 X_test_s  = scaler.transform(X_test)        <span class="cm"># 테스트셋은 그 기준을 쓰기만</span></code></pre>
     </div>
     <div class="keymsg"><span class="k">주의</span><div>테스트셋에 <code>fit_transform</code>을 쓰면 <b>테스트 정보가 새어 들어간다</b>. 다음 장이 그 이야기다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="데이터 분할">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>분할</div>
-  <h2 class="s-title sm">훈련·검증·테스트의 분리</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="pipe">
-      <div class="step"><div class="si">60~80%</div><div class="sn">훈련 Train</div><div class="sd">모델이 규칙을 찾는 데 쓴다</div></div>
-      <div class="step"><div class="si">10~20%</div><div class="sn">검증 Validation</div><div class="sd">설정을 고르고 멈출 시점을 잡는다</div></div>
-      <div class="step"><div class="si">10~20%</div><div class="sn">테스트 Test</div><div class="sd">최종 성적 — 딱 한 번만 본다</div></div>
-    </div>
-    <div class="twocol">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">train_test_split</span></div>
-          <pre><code><span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> train_test_split
-
-X = df.drop(columns=[<span class="st">'passed'</span>, <span class="st">'capacity'</span>])
-y = df[<span class="st">'passed'</span>]
-
-X_tr, X_te, y_tr, y_te = train_test_split(
-    X, y, test_size=<span class="nm">0.2</span>,
-    random_state=<span class="nm">42</span>,   <span class="cm"># 재현 가능하게</span>
-    stratify=y       <span class="cm"># 불량 비율을 양쪽에 유지</span>
-)</code></pre>
-        </div>
-      </div>
-      <div>
-        <div class="callout rose"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>데이터 누수 — 가장 흔한 실수</h4><p>전체 데이터로 <code>fit_transform</code>을 하고 나서 쪼개면, 스케일러가 <b>테스트셋의 평균까지 이미 봤다</b>. 성적이 실제보다 좋게 나온다.</p></div></div>
-        <div class="vlist">
-          <div class="v"><span class="b">★</span><div>순서는 <b>쪼개고 → 훈련셋으로 fit → 양쪽에 transform</b>이다. 결측 대치도 마찬가지다.</div></div>
-          <div class="v"><span class="b">✕</span><div>시계열은 무작위로 쪼개면 안 된다. <b>시점으로</b> 자른다.</div></div>
-        </div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>테스트셋은 <b>마지막에 한 번</b> 쓴다. 여러 번 보고 모델을 고치면 그 숫자는 더 이상 실전 성능이 아니다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="전처리 순서">
