@@ -6,7 +6,7 @@
 | 덱 | 파일 | 슬라이드 |
 |---|---|---|
 | Day 1 · 파이썬 문법 | [day1/index.html](day1/index.html) | 60 |
-| Day 2 · 데이터 다루기 | [day2/index.html](day2/index.html) | 54 |
+| Day 2 · 데이터 다루기 | [day2/index.html](day2/index.html) | 55 |
 | Day 3 · 머신러닝 | [day3/index.html](day3/index.html) | 29 |
 | Day 4 · 딥러닝 | [day4/index.html](day4/index.html) | 26 |
 
@@ -26,9 +26,10 @@ Day 1  파이썬 문법
 
 Day 2  데이터 다루기
   CH0 NumPy             배열 · dtype · shape · 인덱싱 · 마스크 · reshape · 브로드캐스팅 · 행렬 곱
-  CH1 Pandas            DataFrame · read_csv · 선택(loc·iloc) · 타입 · map · apply · 정렬 · groupby · agg · concat · merge
+  CH1 Pandas            DataFrame · read_csv · 열 선택 · 행 필터링 · 타입 · 시리즈 연산 · groupby
   CH2 전처리            결측 · 인코딩 · 스케일링 · 분할 · 전처리 순서
   CH3 시각화            Matplotlib · 기본 네 그래프 · subplot · 한글 폰트 · seaborn
+  CH4 더 볼 것           loc · iloc · 정렬 · 중복 제거 · map · apply · groupby 심화 · agg · concat · merge
 
 Day 3  머신러닝
   CH0 학습의 뼈대       규칙의 출처 · 세 갈래 · 회귀와 분류
@@ -183,7 +184,7 @@ TODO 4  원-핫 인코딩         TODO 8  학습 루프 + 손실 곡선
 | 항목 | 결과 |
 |---|---|
 | 문체 lint (제목 명사구 · 시각 표기 규칙 포함) | day1 0 · day2 0 · day3 0 · day4 0 |
-| 1280×720 넘침 | 4개 덱 모두 0장 (헤드리스 크로미움 실측) |
+| 1280×720 넘침 | 4개 덱 모두 0장 — `scripts/overflow.cjs`, 웹폰트 로딩 후 실측 |
 | 에셋 참조 | day1 4/4 해결 (Colab 캡처), day2~4는 외부 이미지 0장 · 전부 인라인 SVG |
 
 하네스: `~/.claude/skills/lecture-deck/` — `scripts/lint.py`, `assets/template.html`,
