@@ -1382,13 +1382,12 @@ C → 2</div><p>열 하나로 끝나지만, 모델이 <b>C &gt; B &gt; A 라는 
 <section class="slide" data-title="데이터 분할">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>분할</div>
-  <h2 class="s-title sm">훈련·검증·테스트의 분리</h2>
+  <h2 class="s-title sm">훈련셋과 테스트셋</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="pipe">
-      <div class="step"><div class="si">60~80%</div><div class="sn">훈련 Train</div><div class="sd">모델이 규칙을 찾는 데 쓴다</div></div>
-      <div class="step"><div class="si">10~20%</div><div class="sn">검증 Validation</div><div class="sd">설정을 고르고 멈출 시점을 잡는다</div></div>
-      <div class="step"><div class="si">10~20%</div><div class="sn">테스트 Test</div><div class="sd">최종 성적 — 딱 한 번만 본다</div></div>
+      <div class="step"><div class="si">80%</div><div class="sn">훈련 Train</div><div class="sd">전처리 기준을 여기서만 배운다</div></div>
+      <div class="step"><div class="si">20%</div><div class="sn">테스트 Test</div><div class="sd">손대지 않고 남겨 둔다</div></div>
     </div>
     <div class="twocol">
       <div>
@@ -1411,10 +1410,11 @@ X_tr, X_te, y_tr, y_te = train_test_split(
         <div class="vlist">
           <div class="v"><span class="b">★</span><div>순서는 <b>쪼개고 → 훈련셋으로 fit → 양쪽에 transform</b>이다. 결측 대치도 마찬가지다.</div></div>
           <div class="v"><span class="b">✕</span><div>시계열은 무작위로 쪼개면 안 된다. <b>시점으로</b> 자른다.</div></div>
+          <div class="v"><span class="b">→</span><div><code>stratify=y</code>를 주면 <b>불량 비율이 양쪽에 같게</b> 유지된다. 불량이 18%뿐이라 안 주면 한쪽에 쏠린다.</div></div>
         </div>
       </div>
     </div>
-    <div class="keymsg"><span class="k">기준</span><div>테스트셋은 <b>마지막에 한 번</b> 쓴다. 여러 번 보고 모델을 고치면 그 숫자는 더 이상 실전 성능이 아니다.</div></div>
+    <div class="keymsg"><span class="k">기준</span><div>쪼개는 것이 <b>먼저</b>다. 전처리 기준을 전체에서 배우면 테스트셋을 이미 본 셈이 된다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="표준화와 정규화">

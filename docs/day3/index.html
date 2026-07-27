@@ -955,12 +955,17 @@ model.fit(X_train, y_train)
   <h2 class="s-title sm">설정값을 고르는 기준</h2>
   <div class="rule"></div>
   <div class="body">
+    <div class="pipe">
+      <div class="step"><div class="si">60%</div><div class="sn">훈련 Train</div><div class="sd">가중치를 여기서 배운다</div></div>
+      <div class="step"><div class="si">20%</div><div class="sn">검증 Validation</div><div class="sd">설정값을 여기서 고른다</div></div>
+      <div class="step"><div class="si">20%</div><div class="sn">테스트 Test</div><div class="sd">마지막에 한 번만 본다</div></div>
+    </div>
     <div class="twocol">
       <div>
         <div class="vlist">
           <div class="v"><span class="b">→</span><div><code>max_depth</code> <code>n_estimators</code> <code>learning_rate</code>처럼 <b>사람이 정해 주는 값</b>을 하이퍼파라미터라 한다.</div></div>
           <div class="v"><span class="b">→</span><div>가중치는 학습이 정하지만, 이 값들은 <b>학습이 정해 주지 않는다</b>. 여러 후보를 돌려 보고 고른다.</div></div>
-          <div class="v"><span class="b">★</span><div>고를 때 쓰는 데이터가 <b>검증셋</b>이다. 테스트셋으로 고르면 그 성적은 실전 성능이 아니다.</div></div>
+          <div class="v"><span class="b">★</span><div>앞서 나눈 <b>훈련셋을 다시 한 번</b> 쪼갠 것이 검증셋이다. 테스트셋은 건드리지 않는다.</div></div>
         </div>
         <div class="callout rose"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>테스트셋을 보고 고치면</h4><p>그 순간 테스트셋도 훈련 데이터가 된다. <b>마지막에 한 번</b>만 쓴다.</p></div></div>
       </div>
