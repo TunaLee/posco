@@ -9,8 +9,11 @@ import os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from nbkit import emit
-import day1_spec
+import day1_spec, day2_spec, day3_spec, day4_spec
 
 if __name__ == "__main__":
     print("생성:")
     emit(1, *day1_spec.SPEC)
+    emit(2, *day2_spec.SPEC)
+    emit(3, *day3_spec.SPEC)
+    emit(4, *day4_spec.SPEC)

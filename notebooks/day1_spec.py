@@ -44,11 +44,11 @@ print(2 ** 10)  # 거듭제곱
     lab("문자열도 순서를 가진다. 인덱스는 0부터, 마지막은 -1이다."),
     code("""
 batch = "B00115"
-print(name[0], name[-1])
-print(name[8:11])       # 8 이상 11 미만
-print(len(name))
-print(name.upper())
-print(name.split(", "))
+print(batch[0], batch[-1])
+print(batch[2:5])       # 2 이상 5 미만
+print(len(batch))
+print(batch.lower())
+print(batch.startswith("B"))
 """),
 
     Ex(3, "`code` 에서 연도만 잘라 `year` 에 담는다. 결과는 문자열 `'2024'` 다.",
@@ -171,10 +171,10 @@ print(set(ports), len(set(ports)))
     code("""
 row = {"line": "A", "temp": 898, "impurity": 1024}
 
-print(row["age"])
+print(row["temp"])
 row["passed"] = 1
 print(list(row.keys()))
-print(row.get("cabin", "미상"))     # 없는 키는 기본값으로
+print(row.get("moisture", "미상"))  # 없는 키는 기본값으로
 
 for k, v in row.items():
     print(k, "→", v)
@@ -453,7 +453,7 @@ line = "a"
 print(line.upper())      # 문자열에는 append 가 없다
 
 try:
-    name.append("!")
+    line.append("!")
 except AttributeError as e:
     print("에러:", e)
 """),
