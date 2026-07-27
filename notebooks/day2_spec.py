@@ -255,11 +255,13 @@ df['particle_size'] = df['particle_size'].fillna(df['particle_size'].median())
 print('메운 뒤:', df['particle_size'].isna().sum())
 """),
 
-    Ex(15, "`moisture` 결측을 **설비별 중앙값**으로 채운다.",
+    Ex(15, "`moisture` 결측을 **중앙값**으로 채우고, 채운 흔적을 `moisture_missing` 열에 남긴다.",
         setup=LOAD,
-        blank="df['moisture'] = df.groupby('line')['moisture'].transform(___)",
-        answer="df['moisture'] = df.groupby('line')['moisture'].transform(lambda s: s.fillna(s.median()))",
-        check="assert df['moisture'].isna().sum() == 0, '아직 결측이 남았다'\nprint('통과')"),
+        blank="df['moisture_missing'] = ___\ndf['moisture'] = ___",
+        answer="df['moisture_missing'] = df['moisture'].isna()\n"
+               "df['moisture'] = df['moisture'].fillna(df['moisture'].median())",
+        check="assert df['moisture'].isna().sum() == 0, '아직 결측이 남았다'\n"
+              "assert df['moisture_missing'].sum() == 73, f\"기대 73, 실제 {df['moisture_missing'].sum()}\"\nprint('통과')"),
 
     lab("글자는 모델에 들어가지 않는다. 원-핫으로 열을 늘린다."),
     code(f"""

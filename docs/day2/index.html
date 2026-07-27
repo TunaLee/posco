@@ -628,7 +628,7 @@ float64
 mask = a &gt;= <span class="nm">18</span>
 <span class="fn2">print</span>(mask)
 <span class="fn2">print</span>(a[mask])
-<span class="fn2">print</span>(a[a &gt;= <span class="nm">18</span>].mean())</code></pre>
+<span class="fn2">print</span>(a[a &gt;= <span class="nm">18</span>].mean())   <span class="cm"># 고른 것들의 평균</span></code></pre>
           <div class="out">[ True  True False  True]
 [22 38 35]
 31.666666666666668</div>
@@ -743,7 +743,7 @@ size 6 into shape (4,2)</span></div>
         </div>
       </div>
     </div>
-    <div class="keymsg"><span class="k">효과</span><div>열마다 평균을 빼는 표준화가 <code>(X - X.mean(axis=0)) / X.std(axis=0)</code> <b>한 줄</b>로 끝난다.</div></div>
+    <div class="keymsg"><span class="k">효과</span><div>열마다 평균을 빼는 일이 <code>X - X.mean(axis=0)</code> <b>한 줄</b>로 끝난다. 반복문이 필요 없다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="행렬 곱">
@@ -1112,33 +1112,25 @@ df = df.astype({
   <h2 class="s-title sm">열 전체에 한 번에 걸리는 계산</h2>
   <div class="rule"></div>
   <div class="body">
-    <div class="twocol">
+    <div class="flow">
+      <div><div class="cap2">df</div><table class="dft"><thead><tr><th class="s"></th><th>calc_temp</th><th>calc_time</th><th>impurity</th><th>capacity</th></tr></thead><tbody><tr><td>0</td><td>898.9</td><td>150</td><td>1024</td><td>178.9</td></tr><tr><td>1</td><td>835.0</td><td>135</td><td>800</td><td>170.5</td></tr><tr><td>2</td><td>829.3</td><td>150</td><td>871</td><td>172.5</td></tr><tr><td>3</td><td>855.1</td><td>120</td><td>482</td><td>178.1</td></tr></tbody></table></div>
+      <div class="arw">→</div>
       <div>
-        <div class="code sm">
+        <div class="code sm" style="margin-bottom:10px">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">반복문 없이</span></div>
-          <pre><code><span class="cm"># 열 하나에 상수 연산</span>
+          <pre><code><span class="cm"># 열 하나에 숫자 하나</span>
 df[<span class="st">'impurity_pct'</span>] = df[<span class="st">'impurity'</span>] / <span class="nm">10000</span>
 
-<span class="cm"># 열끼리 연산 — 같은 행끼리 짝지어진다</span>
-df[<span class="st">'temp_gap'</span>] = (df[<span class="st">'calc_temp'</span>] - <span class="nm">890</span>).abs()
+<span class="cm"># 열과 열 — 같은 행끼리 짝지어진다</span>
+df[<span class="st">'heat'</span>] = df[<span class="st">'calc_temp'</span>] * df[<span class="st">'calc_time'</span>]
 
 <span class="cm"># 조건식도 열이 된다</span>
-df[<span class="st">'is_low'</span>] = df[<span class="st">'capacity'</span>] &lt; <span class="nm">168</span>
-
-<span class="cm"># 문자열 열은 .str 로 한꺼번에</span>
-df[<span class="st">'line'</span>] = df[<span class="st">'line'</span>].str.strip().str.upper()</code></pre>
+df[<span class="st">'is_low'</span>] = df[<span class="st">'capacity'</span>] &lt; <span class="nm">175</span></code></pre>
         </div>
-      </div>
-      <div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div>Series에 연산을 걸면 <b>모든 행에 동시에</b> 적용된다. 이것을 벡터 연산이라 한다.</div></div>
-          <div class="v"><span class="b">→</span><div>열끼리 연산은 <b>인덱스가 같은 행끼리</b> 짝지어진다.</div></div>
-          <div class="v"><span class="b">★</span><div>문자열 처리는 <code>.str</code>을 거친다. <code>.str.strip()</code> <code>.str.contains()</code> <code>.str.split()</code>.</div></div>
-        </div>
-        <div class="callout mint"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div class="ct"><h4>결측은 건너뛴다</h4><p><code>NaN</code>이 섞인 열도 <code>mean()</code>·<code>sum()</code>은 <b>결측을 빼고</b> 계산한다. 0으로 채울 필요가 없다.</p></div></div>
+        <div class="cap2">열 세 개가 새로 붙는다</div><table class="dft"><thead><tr><th class="s"></th><th>impurity_pct</th><th>heat</th><th>is_low</th></tr></thead><tbody><tr><td>0</td><td class="on">0.1024</td><td class="on">134835.0</td><td class="on">False</td></tr><tr><td>1</td><td class="on">0.0800</td><td class="on">112725.0</td><td class="on">True</td></tr><tr><td>2</td><td class="on">0.0871</td><td class="on">124395.0</td><td class="on">True</td></tr><tr><td>3</td><td class="on">0.0482</td><td class="on">102612.0</td><td class="on">False</td></tr></tbody></table>
       </div>
     </div>
-    <div class="keymsg"><span class="k">기준</span><div>Pandas에서 <code>for</code>로 행을 도는 코드를 보면 <b>벡터 연산으로 바꾼다</b>.</div></div>
+    <div class="keymsg"><span class="k">기준</span><div>Series에 연산을 걸면 <b>모든 행에 한 번에</b> 적용된다. <code>for</code>로 행을 도는 코드를 보면 이 모양으로 바꾼다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="통계 요약">
@@ -1242,9 +1234,9 @@ max       945.70   1763.00    188.50</div>
       <div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">몇 개가 비었는지</span></div>
-          <pre><code>df.isna().sum()
+          <pre><code>df.isna().sum()          <span class="cm"># 몇 개</span>
 
-df.isna().mean().sort_values(ascending=<span class="kw">False</span>)</code></pre>
+df.isna().mean()         <span class="cm"># 몇 퍼센트</span></code></pre>
           <div class="out">particle_size    112
 moisture          73
 batch_id           0</div>
@@ -1285,9 +1277,11 @@ df.drop(columns=[<span class="st">'press'</span>])</code></pre></div>
         <div class="code sm"><pre><code>df[<span class="st">'particle_size'</span>] = df[<span class="st">'particle_size'</span>].fillna(
     df[<span class="st">'particle_size'</span>].median())</code></pre></div>
         <p>평균보다 <b>중앙값</b>이 안전하다. 이상치에 안 흔들린다.</p></div>
-      <div class="card"><span class="n">03</span><h3>그룹별로 채운다</h3>
-        <div class="code sm"><pre><code>df[<span class="st">'particle_size'</span>] = df.groupby(<span class="st">'line'</span>)[<span class="st">'particle_size'</span>] \
-    .transform(<span class="kw">lambda</span> s: s.fillna(s.median()))</code></pre></div>
+      <div class="card"><span class="n">03</span><h3>채운 흔적을 남긴다</h3>
+        <div class="code sm"><pre><code>df[<span class="st">'size_missing'</span>] = df[<span class="st">'particle_size'</span>].isna()
+
+df[<span class="st">'particle_size'</span>] = df[<span class="st">'particle_size'</span>].fillna(
+    df[<span class="st">'particle_size'</span>].median())</code></pre></div>
         <p>설비마다 입도 분포가 다르면 <b>훨씬 정확하다</b>.</p></div>
     </div>
     <div class="twocol">
