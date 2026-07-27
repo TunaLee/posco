@@ -5,8 +5,8 @@
 
 | 덱 | 파일 | 슬라이드 |
 |---|---|---|
-| Day 1 · 파이썬 문법 | [day1/index.html](day1/index.html) | 54 |
-| Day 2 · 데이터 다루기 | [day2/index.html](day2/index.html) | 42 |
+| Day 1 · 파이썬 문법 | [day1/index.html](day1/index.html) | 56 |
+| Day 2 · 데이터 다루기 | [day2/index.html](day2/index.html) | 45 |
 | Day 3 · 머신러닝 | [day3/index.html](day3/index.html) | 29 |
 | Day 4 · 딥러닝 | [day4/index.html](day4/index.html) | 26 |
 
@@ -19,16 +19,17 @@
 ```
 Day 1  파이썬 문법
   CH0 작업 환경         두 가지 실행 환경 · 로컬(Anaconda·가상환경·Jupyter) · 클라우드(Colab·세션·GPU) · 고르는 기준
-  CH1 값과 변수         자료형 · 연산자 · 문자열(+메서드 표) · 불변과 가변 · 얕은 복사와 깊은 복사
+  CH1 값과 변수         자료형 · 연산자 · 문자열(인덱스·f-string·메서드 표) · 불변과 가변 · 얕은 복사와 깊은 복사
   CH2 자료 구조         리스트 · 튜플 · 딕셔너리 · 집합 · 표의 파이썬 표현 · 메서드 표
-  CH3 흐름 제어         입력 · 형변환 · 비교와 논리 · 조건문 · 반복문 · 컴프리헨션 4종
+  CH3 흐름 제어         입력 · 형변환 · 비교와 논리 · 조건문 · elif · 반복문 · 컴프리헨션 4종
   CH4 함수              입력·처리·출력 · 내장 함수 · def · 반환 · 인자의 가변성 · 메서드
 
 Day 2  데이터 다루기
-  CH0 Pandas            DataFrame · read_csv · 타입 · 필터링 · map/apply · groupby
-  CH1 전처리            결측 · 인코딩 · 스케일링 · 분할 · 전처리 순서
-  CH2 시각화            Matplotlib · 기본 네 그래프 · subplot · seaborn · 탐색용 두 장
-  CH3 NumPy             배열 · dtype · shape · reshape · 마스크 · 브로드캐스팅 · 행렬 곱
+  CH0 NumPy             배열 · dtype · shape · 인덱싱과 마스크
+  CH1 Pandas            DataFrame · read_csv · 타입 · 필터링 · map/apply · groupby
+  CH2 전처리            결측 · 인코딩 · 스케일링 · 분할 · 전처리 순서
+  CH3 시각화            Matplotlib · 기본 네 그래프 · subplot · 한글 폰트 · seaborn
+  CH4 배열 연산          reshape · 브로드캐스팅 · 행렬 곱
 
 Day 3  머신러닝
   CH0 학습의 뼈대       규칙의 출처 · 세 갈래 · 회귀와 분류
@@ -60,15 +61,16 @@ Day 4  딥러닝
 | 자료형 → 곧바로 OOP | 자료형 → **조건·반복·함수** → (Day 4) OOP | `def`를 모르는 상태에서 `class`·`__init__`·`self`는 안 붙는다. OOP는 `nn.Module`이 눈앞에 있는 Day 4로 옮겼다 |
 | List Comprehension을 `for` 전에 | `for` → `range` → `while` → **컴프리헨션** | 접기 전에 펴진 형태를 먼저 본다 |
 | 미분(Day 2) ↔ 경사 하강법(Day 4) | 둘을 **Day 3 오전에 붙였다** | 이틀 간격이면 잊는다. 기울기를 배운 직후 바로 굴려 본다 |
+| NumPy를 Day 2 맨 뒤에 | **배열·shape·마스크는 Pandas 앞**, reshape·브로드캐스팅·행렬 곱은 뒤 | Series 내부가 NumPy 배열이다. 뒤에 두면 `df[df['Age'] < 18]`을 원리보다 여덟 장 먼저 쓰게 된다. 뒤 묶음은 Day 4의 `Wx + b`로 바로 이어진다 |
 
 ### 채운 것
 
 | 추가 | 어디 | 없으면 |
 |---|---|---|
 | 조건문 · 반복문 · 함수 | Day 1 CH4·CH5 | 초안에 통째로 없었다. 나머지가 전부 공중에 뜬다 |
-| **Pandas** | Day 2 CH0 (15장) | 초안에 없는데 Day 4 과제가 "Tabular 전처리"였다. CSV를 NumPy로 전처리할 수는 없다 |
-| **전처리** — 결측·인코딩·스케일링 | Day 2 CH1 (8장) | 스케일링을 빼면 Day 4에서 **손실이 안 떨어진다**. 실습 실패의 직접 원인 |
-| **시각화** | Day 2 CH2 (6장) | 손실 곡선을 못 그리면 학습 성공 여부를 확인할 수단이 없다 |
+| **Pandas** | Day 2 CH1 (13장) | 초안에 없는데 Day 4 과제가 "Tabular 전처리"였다. CSV를 NumPy로 전처리할 수는 없다 |
+| **전처리** — 결측·인코딩·스케일링 | Day 2 CH2 (9장) | 스케일링을 빼면 Day 4에서 **손실이 안 떨어진다**. 실습 실패의 직접 원인 |
+| **시각화** | Day 2 CH3 (6장) | 손실 곡선을 못 그리면 학습 성공 여부를 확인할 수단이 없다 |
 | **과적합 · 교차 검증** | Day 3 CH3 | 초안은 train/test split만 있었다. 훈련 정확도만 보고 보고하게 된다 |
 | **평가 지표 확장** | Day 3 CH3 | 초안은 "Accuracy, MSE 등". 불균형 데이터에서 정확도가 무의미하다는 것을 스팸 예제(97%)로 보인다 |
 | **에러 읽는 법** | Day 4 CH3 (2장) | shape 에러는 PyTorch 실습에서 100% 만난다 |
