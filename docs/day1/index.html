@@ -871,23 +871,67 @@ Mr.
         </div>
       </div>
       <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">자주 쓰는 메서드와 f-string</span></div>
-          <pre><code>raw = <span class="st">"  female  "</span>
-<span class="fn2">print</span>(raw.strip())          <span class="cm"># 양끝 공백 제거</span>
-<span class="fn2">print</span>(name.split(<span class="st">", "</span>))     <span class="cm"># 쪼개서 리스트로</span>
-<span class="fn2">print</span>(raw.strip().upper())
-
-rate = <span class="nm">0.3838</span>
-<span class="fn2">print</span>(<span class="st">f"생존율 {rate:.1%}"</span>)</code></pre>
-          <div class="out">female
-['Braund', 'Mr. Owen']
-FEMALE
-생존율 38.4%</div>
+        <div class="plot">
+          <svg viewBox="0 0 340 156">
+            <g fill="#EFEAFF" stroke="#B7A9FF">
+              <rect x="16" y="44" width="42" height="42"/><rect x="60" y="44" width="42" height="42"/><rect x="104" y="44" width="42" height="42"/>
+              <rect x="148" y="44" width="42" height="42"/><rect x="192" y="44" width="42" height="42"/><rect x="236" y="44" width="42" height="42"/>
+            </g>
+            <g font-family="ui-monospace,monospace" font-size="19" font-weight="700" fill="#16142B" text-anchor="middle">
+              <text x="37" y="72">B</text><text x="81" y="72">r</text><text x="125" y="72">a</text>
+              <text x="169" y="72">u</text><text x="213" y="72">n</text><text x="257" y="72">d</text>
+            </g>
+            <g font-family="ui-monospace,monospace" font-size="12" fill="#5B3DF5" text-anchor="middle">
+              <text x="37" y="34">0</text><text x="81" y="34">1</text><text x="125" y="34">2</text>
+              <text x="169" y="34">3</text><text x="213" y="34">4</text><text x="257" y="34">5</text>
+            </g>
+            <g font-family="ui-monospace,monospace" font-size="12" fill="#E8537A" text-anchor="middle">
+              <text x="37" y="104">-6</text><text x="81" y="104">-5</text><text x="125" y="104">-4</text>
+              <text x="169" y="104">-3</text><text x="213" y="104">-2</text><text x="257" y="104">-1</text>
+            </g>
+            <line x1="104" y1="124" x2="190" y2="124" stroke="#0FB5A1" stroke-width="3"/>
+            <text x="147" y="146" font-family="ui-monospace,monospace" font-size="13" fill="#0A7F70" text-anchor="middle">[2:5]</text>
+          </svg>
         </div>
       </div>
     </div>
-    <div class="keymsg"><span class="k">정리</span><div>현장 데이터의 절반은 <b>문자열을 쪼개고 다듬는 일</b>이다. <code>strip · split · upper</code>가 전처리의 기본 세 가지다.</div></div>
+    <div class="keymsg"><span class="k">기준</span><div>슬라이스는 <b>앞은 포함, 뒤는 제외</b>다. <code>[2:5]</code>는 2·3·4번이고 5번은 빠진다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="f-string">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>문자열</div>
+  <h2 class="s-title sm">값을 문자열에 끼워 넣기</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">따옴표 앞에 f 를 붙인다</span></div>
+          <pre><code>name = <span class="st">"Owen"</span>
+age = <span class="nm">22</span>
+
+<span class="fn2">print</span>(<span class="st">f"{name}({age}세)"</span>)</code></pre>
+          <div class="out">Owen(22세)</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>중괄호 안에 <b>이름이나 식</b>을 그대로 쓴다. <code>str()</code>로 바꿔 이어 붙이지 않아도 된다.</div></div>
+        </div>
+      </div>
+      <div>
+        <table class="ctable">
+          <thead><tr><th>형식</th><th>결과</th></tr></thead>
+          <tbody>
+            <tr><td><code>f"{n:,}"</code></td><td><b>1,234,567</b> — 천 단위 쉼표</td></tr>
+            <tr><td><code>f"{x:.2f}"</code></td><td><b>3.14</b> — 소수점 두 자리</td></tr>
+            <tr><td><code>f"{r:.1%}"</code></td><td><b>38.4%</b> — 퍼센트로</td></tr>
+            <tr><td><code>f"{n:&gt;8}"</code></td><td>여덟 칸에 오른쪽 정렬</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>콜론 뒤는 <b>표시 형식</b>이다. 값 자체는 그대로 두고 보이는 모양만 바꾼다.</div></div>
   </div>
 </section>
 
@@ -1122,31 +1166,23 @@ deep[<span class="nm">0</span>][<span class="st">'age'</span>] = <span class="nm
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">만들고 꺼내기</span></div>
           <pre><code>ages = [<span class="nm">22</span>, <span class="nm">38</span>, <span class="nm">26</span>, <span class="nm">35</span>]
 
-<span class="fn2">print</span>(ages[<span class="nm">0</span>])
-<span class="fn2">print</span>(ages[-<span class="nm">1</span>])
+<span class="fn2">print</span>(ages[<span class="nm">0</span>], ages[-<span class="nm">1</span>])
 <span class="fn2">print</span>(ages[<span class="nm">1</span>:<span class="nm">3</span>])
-<span class="fn2">print</span>(<span class="fn2">len</span>(ages))</code></pre>
-          <div class="out">22
-35
+<span class="fn2">print</span>(<span class="fn2">len</span>(ages))
+
+ages.append(<span class="nm">54</span>)
+<span class="fn2">print</span>(ages)</code></pre>
+          <div class="out">22 35
 [38, 26]
-4</div>
-        </div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div>인덱스는 <b>0부터</b> 센다. 마지막은 <code>-1</code>이다.</div></div>
+4
+[22, 38, 26, 35, 54]</div>
         </div>
       </div>
       <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">넣고 빼고 정렬하기</span></div>
-          <pre><code>ages.append(<span class="nm">54</span>)     <span class="cm"># 뒤에 추가</span>
-ages[<span class="nm">1</span>] = <span class="nm">39</span>         <span class="cm"># 그 자리를 교체</span>
-ages.remove(<span class="nm">26</span>)     <span class="cm"># 값으로 삭제</span>
-ages.sort()          <span class="cm"># 오름차순 정렬</span>
-<span class="fn2">print</span>(ages)
-
-<span class="fn2">print</span>(<span class="nm">22</span> <span class="kw">in</span> ages)    <span class="cm"># 있는지 확인</span></code></pre>
-          <div class="out">[22, 35, 39, 54]
-True</div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>대괄호로 묶고 쉼표로 나눈다. <b>순서가 있고</b>, 같은 값이 여러 번 들어가도 된다.</div></div>
+          <div class="v"><span class="b">→</span><div>슬라이스는 문자열과 규칙이 같다 — <b>앞은 포함, 뒤는 제외</b>.</div></div>
+          <div class="v"><span class="b">★</span><div>내용을 바꾸는 <code>append</code> <code>remove</code> <code>sort</code>는 <b>뒤에서 표로</b> 모아 본다.</div></div>
         </div>
       </div>
     </div>
@@ -1206,15 +1242,13 @@ support item assignment</span></div>
       <div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">이름으로 꺼낸다</span></div>
-          <pre><code>row = {<span class="st">'name'</span>: <span class="st">'Owen'</span>, <span class="st">'age'</span>: <span class="nm">22</span>, <span class="st">'fare'</span>: <span class="nm">7.25</span>}
+          <pre><code>row = {<span class="st">'name'</span>: <span class="st">'Owen'</span>, <span class="st">'age'</span>: <span class="nm">22</span>}
 
 <span class="fn2">print</span>(row[<span class="st">'age'</span>])
-row[<span class="st">'survived'</span>] = <span class="nm">0</span>       <span class="cm"># 키 추가</span>
-<span class="fn2">print</span>(row.keys())
-<span class="fn2">print</span>(row.get(<span class="st">'cabin'</span>, <span class="st">'미상'</span>))  <span class="cm"># 없으면 기본값</span></code></pre>
+row[<span class="st">'survived'</span>] = <span class="nm">0</span>   <span class="cm"># 키 추가</span>
+<span class="fn2">print</span>(row)</code></pre>
           <div class="out">22
-dict_keys(['name', 'age', 'fare', 'survived'])
-미상</div>
+{'name': 'Owen', 'age': 22, 'survived': 0}</div>
         </div>
         <div class="vlist">
           <div class="v"><span class="b">✕</span><div>없는 키를 <code>row['cabin']</code>으로 부르면 <code>KeyError</code>다. <code>.get()</code>은 대신 기본값을 준다.</div></div>
@@ -1227,7 +1261,6 @@ dict_keys(['name', 'age', 'fare', 'survived'])
     <span class="st">'lr'</span>: <span class="nm">0.001</span>,
     <span class="st">'epochs'</span>: <span class="nm">50</span>,
     <span class="st">'hidden'</span>: [<span class="nm">64</span>, <span class="nm">32</span>],
-    <span class="st">'shuffle'</span>: <span class="kw">True</span>,
 }
 <span class="fn2">print</span>(config[<span class="st">'hidden'</span>][<span class="nm">0</span>])</code></pre>
           <div class="out">64</div>
@@ -1582,25 +1615,61 @@ True</div>
         </div>
       </div>
       <div>
+        <div class="plot">
+          <svg viewBox="0 0 320 170">
+            <rect x="108" y="8" width="104" height="34" rx="8" fill="#EFEAFF" stroke="#B7A9FF"/>
+            <text x="160" y="30" font-family="ui-monospace,monospace" font-size="13" fill="#5B3DF5" text-anchor="middle">age &lt; 18</text>
+            <path d="M160 42 L160 62" stroke="#B7A9FF" stroke-width="2"/>
+            <path d="M160 62 L70 62 L70 84" stroke="#0FB5A1" stroke-width="2" fill="none"/>
+            <path d="M160 62 L250 62 L250 84" stroke="#E8537A" stroke-width="2" fill="none"/>
+            <text x="106" y="58" font-family="ui-monospace,monospace" font-size="11" fill="#0A7F70">True</text>
+            <text x="196" y="58" font-family="ui-monospace,monospace" font-size="11" fill="#C13458">False</text>
+            <rect x="20" y="84" width="100" height="34" rx="8" fill="#E6FAF6" stroke="#0FB5A1"/>
+            <text x="70" y="106" font-family="ui-monospace,monospace" font-size="12" fill="#0A7F70" text-anchor="middle">"미성년"</text>
+            <rect x="200" y="84" width="100" height="34" rx="8" fill="#FDECF1" stroke="#E8537A"/>
+            <text x="250" y="106" font-family="ui-monospace,monospace" font-size="12" fill="#C13458" text-anchor="middle">"성인"</text>
+            <path d="M70 118 L70 138 L250 138 L250 118" stroke="#C9C4E0" stroke-width="2" fill="none"/>
+            <path d="M160 138 L160 156" stroke="#C9C4E0" stroke-width="2"/>
+            <text x="160" y="168" font-family="ui-monospace,monospace" font-size="11" fill="#6B6790" text-anchor="middle">다음 줄로</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>조건식 끝에 <b>콜론</b>을 찍고, 실행할 줄은 <b>들여쓴다</b>. 둘 중 한쪽만 실행된다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="elif">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>조건문</div>
+  <h2 class="s-title sm">셋 이상의 갈래</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
         <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">elif — 갈래가 셋 이상일 때</span></div>
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">elif</span></div>
           <pre><code>age = <span class="nm">35</span>
 
 <span class="kw">if</span> age &lt; <span class="nm">13</span>:
     group = <span class="st">"어린이"</span>
 <span class="kw">elif</span> age &lt; <span class="nm">20</span>:
     group = <span class="st">"청소년"</span>
-<span class="kw">elif</span> age &lt; <span class="nm">65</span>:
-    group = <span class="st">"성인"</span>
 <span class="kw">else</span>:
-    group = <span class="st">"노년"</span>
+    group = <span class="st">"성인"</span>
 
 <span class="fn2">print</span>(group)</code></pre>
           <div class="out">성인</div>
         </div>
       </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div><code>elif</code>는 몇 개든 이어 붙인다. <code>else</code>는 맨 끝에 하나만 온다.</div></div>
+          <div class="v"><span class="b">✕</span><div>범위가 <b>넓은 조건을 위에 두면</b> 아래는 영원히 안 걸린다. <code>age &lt; 100</code>을 첫 줄에 쓰면 전부 거기서 끝난다.</div></div>
+        </div>
+      </div>
     </div>
-    <div class="keymsg"><span class="k">주의</span><div><code>elif</code>는 <b>위에서부터 걸리는 첫 줄만</b> 실행된다. 범위를 넓은 것부터 쓰면 아래 조건은 영원히 안 걸린다.</div></div>
+    <div class="keymsg"><span class="k">주의</span><div><b>위에서부터 걸리는 첫 갈래만</b> 실행되고 나머지는 건너뛴다. 좁은 조건을 먼저 쓴다.</div></div>
   </div>
 </section>
 
@@ -2092,8 +2161,7 @@ print(r)        → <b>성인</b></div><p>결과를 변수에 담고 <b>다음 �
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">불변 인자 — 밖이 안 바뀐다</span></div>
           <pre><code><span class="kw">def</span> <span class="fn2">add_one</span>(n):
-    n = n + <span class="nm">1</span>      <span class="cm"># 새 정수를 만든다</span>
-    <span class="kw">return</span> n
+    n = n + <span class="nm">1</span>   <span class="cm"># 새 정수를 만든다</span>
 
 x = <span class="nm">10</span>
 <span class="fn2">add_one</span>(x)
