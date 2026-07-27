@@ -6,7 +6,7 @@
 | 덱 | 파일 | 슬라이드 |
 |---|---|---|
 | Day 1 · 파이썬 문법 | [day1/index.html](day1/index.html) | 60 |
-| Day 2 · 데이터 다루기 | [day2/index.html](day2/index.html) | 57 |
+| Day 2 · 데이터 다루기 | [day2/index.html](day2/index.html) | 48 |
 | Day 3 · 머신러닝 | [day3/index.html](day3/index.html) | 29 |
 | Day 4 · 딥러닝 | [day4/index.html](day4/index.html) | 26 |
 
@@ -29,7 +29,6 @@ Day 2  데이터 다루기
   CH1 Pandas            쓰는 이유 · DataFrame · read_csv · 열 선택 · 행 필터링 · loc · iloc · 타입 · 시리즈 연산 · groupby
   CH2 전처리            결측 · 인코딩 · 스케일링 · 분할 · 전처리 순서
   CH3 시각화            Matplotlib · 제목과 축 이름 · 범례 · 기본 네 그래프 · subplot · 한글 폰트 · seaborn
-  CH4 더 볼 것           정렬 · 중복 제거 · map · apply · groupby 심화 · agg · concat · merge
 
 Day 3  머신러닝
   CH0 학습의 뼈대       규칙의 출처 · 세 갈래 · 회귀와 분류

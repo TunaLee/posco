@@ -213,40 +213,7 @@ print(df[['calc_temp', 'temp_gap', 'capacity', 'is_low']].head(3))
        answer="df['impurity_pct'] = df['impurity'] / 10000",
        check="assert abs(df['impurity_pct'].mean() - 0.0829) < 0.001, f\"실제 {df['impurity_pct'].mean()}\"\nprint('통과')"),
 
-    Task(2, "온도가 최적점(890 °C)에서 얼마나 벗어났는지를 `temp_gap` 열에 만들고,\n"
-            "**벗어남이 가장 큰 배치 3건**의 `batch_id` 를 `worst` 에 담는다.\n"
-            "> `sort_values` 와 `head(3)` 를 쓴다.",
-         setup=LOAD,
-         answer="df['temp_gap'] = (df['calc_temp'] - 890).abs()\n"
-                "worst = list(df.sort_values('temp_gap', ascending=False).head(3)['batch_id'])",
-         check="assert len(worst) == 3, f'3건이어야 한다: {worst}'\n"
-               "assert df.set_index('batch_id').loc[worst[0], 'calc_temp'] < 800\nprint('통과')"),
 
-    lab("map 은 대응표로 갈아 끼우고, apply 는 만든 함수를 태운다."),
-    code(f"""
-{LOAD}
-
-df['shift_code'] = df['shift'].map({{'day': 0, 'night': 1}})
-
-def grade(c):
-    if c < 168:  return 'low'
-    if c < 178:  return 'mid'
-    return 'high'
-
-df['grade'] = df['capacity'].apply(grade)
-print(df['grade'].value_counts())
-"""),
-
-    Ex(12, "`line` 을 설치 연도로 바꾼 열 `year` 를 만든다.\n"
-           "A·B는 2015, C·D는 2018, E·F는 2021 이다.",
-        setup=LOAD,
-        blank="year_map = ___\ndf['year'] = ___",
-        answer="year_map = {'A': 2015, 'B': 2015, 'C': 2018, 'D': 2018, 'E': 2021, 'F': 2021}\n"
-               "df['year'] = df['line'].map(year_map)",
-        check="assert df['year'].isna().sum() == 0, '못 바꾼 값이 있다'\n"
-              "assert sorted(df['year'].unique()) == [2015, 2018, 2021]\nprint('통과')"),
-
-    # ══════════════════════════════════════════════════════════════════
     h(2, "3. Pandas — 묶고 합치기"),
 
     lab("groupby 는 나누고 계산하고 합친다. 세 단계가 한 줄에 들어 있다."),
@@ -265,13 +232,6 @@ print(df.groupby(['line', 'shift'])['capacity'].mean().round(1).head(4))
         check="assert abs(bad_rate['A'] - 0.221) < 0.002, f\"A 실제 {bad_rate['A']}\"\n"
               "assert bad_rate.idxmax() == 'A', f'가장 나쁜 설비는 A 여야 한다: {bad_rate.idxmax()}'\nprint('통과')"),
 
-    Ex(14, "`agg` 로 설비별 **양품률·건수·용량 중앙값**을 한 번에 낸 표를 `summary` 에 담는다.",
-        setup=LOAD,
-        blank="summary = df.groupby('line').agg(___)",
-        answer="summary = df.groupby('line').agg({'passed': ['mean', 'count'], 'capacity': 'median'})",
-        check="assert summary.shape[0] == 6, f'설비 6개여야 한다: {summary.shape}'\n"
-              "assert summary.shape[1] == 3, f'열 3개여야 한다: {summary.shape}'\nprint('통과')"),
-
     lab("설비 마스터를 붙이면 연식이 드러난다. merge 는 키를 기준으로 옆에 잇는다."),
     code(f"""
 {LOAD}
@@ -282,22 +242,6 @@ merged = pd.merge(df, master, on='line', how='left')
 print((1 - merged.groupby('installed_year')['passed'].mean()).round(3))
 """),
 
-    Task(3, "설비 마스터를 붙여 **팀별 평균 용량**을 `by_team` 에 담는다.\n"
-            "> `merge` 후 `groupby('team')` 이다.",
-         setup=LOAD + f"\nmaster = pd.read_csv('{MASTER}')",
-         answer="merged = pd.merge(df, master, on='line', how='left')\n"
-                "by_team = merged.groupby('team')['capacity'].mean()",
-         check="assert len(by_team) == 3, f'팀 3개여야 한다: {by_team}'\n"
-               "assert by_team.idxmax() == '3팀', f'가장 높은 팀은 3팀: {by_team.idxmax()}'\nprint('통과')"),
-
-    Task(4, "같은 배치가 두 번 기록된 행이 있다. **몇 건인지** 세어 `n_dup` 에 담고,\n"
-            "지운 뒤 남는 행 수를 `n_left` 에 담는다.",
-         setup=LOAD,
-         answer="n_dup = df.duplicated().sum()\nn_left = len(df.drop_duplicates())",
-         check="assert n_dup == 12, f'기대 12, 실제 {n_dup}'\n"
-               "assert n_left == 1400, f'기대 1400, 실제 {n_left}'\nprint('통과')"),
-
-    # ══════════════════════════════════════════════════════════════════
     h(2, "4. 전처리"),
 
     lab("결측은 세고, 왜 비었는지 보고, 그다음에 메운다."),
@@ -496,10 +440,9 @@ MODES = {
     ("ex", 5): "together",  ("ex", 6): "solo",       ("ex", 7): "solo",
     # 2. 고르고 계산하기
     ("ex", 8): "together",  ("ex", 9): "solo",       ("ex", 10): "solo",
-    ("ex", 11): "solo",     ("ex", 12): "solo",      ("task", 2): "team",
+    ("ex", 11): "solo",
     # 3. 묶고 합치기
-    ("ex", 13): "together", ("ex", 14): "solo",
-    ("task", 3): "team",    ("task", 4): "team",
+    ("ex", 13): "together",
     # 4. 전처리
     ("ex", 15): "together", ("ex", 16): "solo",      ("task", 5): "team",
     # 5. 시각화
