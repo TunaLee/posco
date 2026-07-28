@@ -1,4 +1,4 @@
-batch_id,line,shift,calc_temp,calc_time,particle_size,moisture,impurity,press,capacity,passed
+배치번호,설비호기,교대조,소성온도,소성시간,입도,수분율,불순물,성형압력,방전용량,양품여부
 B00115,B,day,898.9,150,,0.93,"1,024",25.6,178.9,1
 B01337,C,day,835.0,135,14.06,1.33,800,27.5,170.5,1
 B01376,F,night,829.3,150,14.77,1.26,871,26.1,172.5,1

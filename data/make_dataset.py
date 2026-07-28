@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-"""강의용 합성 공정 데이터 생성기.  python3 data/make_dataset.py
+"""강의용 합성 양극재 소성 공정 데이터 생성기.  python3 data/make_dataset.py
 
-실제 데이터가 아니다. 난수로 만든 가상의 소성 공정 배치 기록이다.
+실제 데이터가 아니다. 난수로 만든 가상의 이차전지 양극재 소성 배치 기록이다.
 회사·설비·제품을 특정하지 않는다.
 
 만드는 파일
-  docs/data/batch_quality.csv   배치 1400건 — 전처리·학습에 쓴다
+  docs/data/batch_quality.csv   배치 1400건 — 전처리·학습에 쓴다 (열 이름은 한글)
   docs/data/line_master.csv     설비 마스터 6행 — merge 예제에 쓴다
 
 가르칠 것을 의도적으로 심어 둔다
   결측       particle_size 8% · moisture 4% (표기가 'N/A' '-' '' 로 흔들린다)
   타입 사고   impurity 가 '1,240' 처럼 쉼표를 달고 와서 object 로 읽힌다
-  표기 흔들림 line 이 'A' 'a' ' A ' 로 섞여 들어온다
+  표기 흔들림 설비호기 가 'A' 'a' ' A ' 로 섞여 들어온다
   이상치     press 에 센서 오류값 999.0
   중복       같은 배치가 두 번 기록된 행 12건
   불균형     불량 약 16% — 정확도만 보면 안 되는 예
@@ -72,17 +72,17 @@ def make_rows(rng):
         passed = 1 if (cap >= 168.0 and impurity <= 1500) else 0
 
         rows.append({
-            "batch_id": "B%05d" % i,
-            "line": line,
-            "shift": shift,
-            "calc_temp": rounded(calc_temp),
-            "calc_time": calc_time,
-            "particle_size": rounded(particle, 2),
-            "moisture": rounded(moisture, 2),
-            "impurity": int(impurity),
-            "press": rounded(press, 1),
-            "capacity": rounded(cap, 1),
-            "passed": passed,
+            "배치번호": "B%05d" % i,
+            "설비호기": line,
+            "교대조": shift,
+            "소성온도": rounded(calc_temp),
+            "소성시간": calc_time,
+            "입도": rounded(particle, 2),
+            "수분율": rounded(moisture, 2),
+            "불순물": int(impurity),
+            "성형압력": rounded(press, 1),
+            "방전용량": rounded(cap, 1),
+            "양품여부": passed,
         })
     return rows
 
@@ -92,21 +92,21 @@ def dirty(rows, rng):
     for r in rows:
         # 표기 흔들림 — 같은 설비인데 대소문자와 공백이 다르다
         if rng.random() < 0.30:
-            r["line"] = rng.choice([r["line"].lower(), " " + r["line"], r["line"] + " "])
+            r["설비호기"] = rng.choice([r["설비호기"].lower(), " " + r["설비호기"], r["설비호기"] + " "])
 
         # 결측 — 표기가 통일돼 있지 않다
         if rng.random() < 0.08:
-            r["particle_size"] = rng.choice(NA_TOKENS)
+            r["입도"] = rng.choice(NA_TOKENS)
         if rng.random() < 0.04:
-            r["moisture"] = rng.choice(NA_TOKENS)
+            r["수분율"] = rng.choice(NA_TOKENS)
 
         # 천 단위 쉼표가 붙어 문자열로 읽힌다
-        if r["impurity"] >= 1000:
-            r["impurity"] = "{:,}".format(r["impurity"])
+        if r["불순물"] >= 1000:
+            r["불순물"] = "{:,}".format(r["불순물"])
 
         # 센서 오류 — 눈에 띄는 이상치
         if rng.random() < 0.015:
-            r["press"] = 999.0
+            r["성형압력"] = 999.0
 
     # 같은 배치가 두 번 기록된다
     for r in rng.sample(rows, 12):
@@ -117,12 +117,12 @@ def dirty(rows, rng):
 
 def line_master():
     return [
-        {"line": "A", "installed_year": 2015, "rated_temp": 850, "team": "1팀"},
-        {"line": "B", "installed_year": 2015, "rated_temp": 850, "team": "1팀"},
-        {"line": "C", "installed_year": 2018, "rated_temp": 870, "team": "2팀"},
-        {"line": "D", "installed_year": 2018, "rated_temp": 870, "team": "2팀"},
-        {"line": "E", "installed_year": 2021, "rated_temp": 880, "team": "3팀"},
-        {"line": "F", "installed_year": 2021, "rated_temp": 880, "team": "3팀"},
+        {"설비호기": "A", "설치연도": 2015, "정격온도": 850, "담당팀": "1팀"},
+        {"설비호기": "B", "설치연도": 2015, "정격온도": 850, "담당팀": "1팀"},
+        {"설비호기": "C", "설치연도": 2018, "정격온도": 870, "담당팀": "2팀"},
+        {"설비호기": "D", "설치연도": 2018, "정격온도": 870, "담당팀": "2팀"},
+        {"설비호기": "E", "설치연도": 2021, "정격온도": 880, "담당팀": "3팀"},
+        {"설비호기": "F", "설치연도": 2021, "정격온도": 880, "담당팀": "3팀"},
     ]
 
 
@@ -138,15 +138,15 @@ def main():
     os.makedirs(OUT, exist_ok=True)
 
     rows = dirty(make_rows(rng), rng)
-    fields = ["batch_id", "line", "shift", "calc_temp", "calc_time",
-              "particle_size", "moisture", "impurity", "press", "capacity", "passed"]
+    fields = ["배치번호", "설비호기", "교대조", "소성온도", "소성시간",
+              "입도", "수분율", "불순물", "성형압력", "방전용량", "양품여부"]
     write(os.path.join(OUT, "batch_quality.csv"), rows, fields)
 
     master = line_master()
     write(os.path.join(OUT, "line_master.csv"), master,
-          ["line", "installed_year", "rated_temp", "team"])
+          ["설비호기", "설치연도", "정격온도", "담당팀"])
 
-    bad = sum(1 for r in rows if r["passed"] == 0)
+    bad = sum(1 for r in rows if r["양품여부"] == 0)
     print("batch_quality.csv  %d행 · 불량 %d건 (%.1f%%)" % (len(rows), bad, 100 * bad / len(rows)))
     print("line_master.csv    %d행" % len(master))
 
