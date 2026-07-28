@@ -853,10 +853,60 @@ w = w − 걸음 × 방향</div><p>곡선 전체를 몰라도 된다. <b>지금 
   <div class="agenda"><span>공통 인터페이스</span><span>회귀</span><span>분류</span><span>트리와 앙상블</span></div>
 </section>
 
+<section class="slide" data-title="데이터 준비">
+  <!-- lint:code-ok 읽기부터 분할까지 한 셀로 이어져야 강의 중에 그대로 돌아간다 -->
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">CH2</span><span class="dot"></span>준비</div>
+  <h2 class="s-title sm">X_train 을 만드는 곳</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">이 셀을 먼저 돌린다 — 뒤의 모든 코드가 여기에 기댄다</span></div>
+          <pre><code><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> train_test_split
+<span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> StandardScaler
+
+<span class="cm"># 1. 읽기</span>
+url = <span class="st">'…/batch_quality.csv'</span>
+df  = pd.read_csv(url, thousands=<span class="st">','</span>, na_values=[<span class="st">'N/A'</span>, <span class="st">'-'</span>])
+
+<span class="cm"># 2. 손보기 — 앞에서 한 그대로</span>
+df[<span class="st">'설비호기'</span>] = df[<span class="st">'설비호기'</span>].str.strip().str.upper()
+df[<span class="st">'입도'</span>]   = df[<span class="st">'입도'</span>].fillna(df[<span class="st">'입도'</span>].median())
+df = df.dropna(subset=[<span class="st">'수분율'</span>])
+d  = pd.get_dummies(df, columns=[<span class="st">'설비호기'</span>, <span class="st">'교대조'</span>], drop_first=<span class="kw">True</span>)
+
+<span class="cm"># 3. 입력과 정답으로 가르고 나누기</span>
+X = d.drop(columns=[<span class="st">'양품여부'</span>, <span class="st">'방전용량'</span>, <span class="st">'배치번호'</span>])
+y = d[<span class="st">'양품여부'</span>]
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=<span class="nm">0.2</span>, random_state=<span class="nm">42</span>, stratify=y)
+
+<span class="cm"># 4. 거리·규제를 쓰는 모델용 — 훈련셋 기준으로만 fit</span>
+sc = StandardScaler()
+X_train_s = sc.fit_transform(X_train)
+X_test_s  = sc.transform(X_test)</code></pre>
+        </div>
+      </div>
+      <div>
+        <table class="ctable"><thead><tr><th>변수</th><th>모양</th></tr></thead><tbody><tr><td><code>X</code></td><td>(1339, 12)</td></tr><tr><td><code>X_train</code></td><td><b>(1071, 12)</b></td></tr><tr><td><code>X_test</code></td><td>(268, 12)</td></tr><tr><td><code>y_train</code></td><td>양품 81.1%</td></tr><tr><td><code>y_test</code></td><td>양품 81.0%</td></tr><tr><td><code>X_train_s</code></td><td>스케일링본 (1071, 12)</td></tr></tbody></table>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div>여기서 만든 <code>X_train</code> <code>y_train</code> 을 <b>뒤의 모든 모델이 그대로</b> 쓴다.</div></div>
+          <div class="v"><span class="b">→</span><div><code>방전용량</code> 도 지운다. 정답을 만든 열이라 <b>남겨 두면 답을 보고 푸는 셈</b>이다.</div></div>
+          <div class="v"><span class="b">→</span><div>거리를 쓰는 모델(KNN·SVM)과 규제는 <code>X_train_s</code> 를 쓴다. 트리 계열은 <code>X_train</code> 그대로다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>모델을 바꿔 가며 비교하려면 <b>데이터가 매번 같아야</b> 한다. <code>random_state</code> 를 고정하는 이유다.</div></div>
+  </div>
+</section>
 <section class="slide" data-title="공통 인터페이스">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag mint">CH2</span><span class="dot"></span>구조</div>
-  <h2 class="s-title sm">모든 모델이 공유하는 네 줄</h2>
+  <h2 class="s-title sm">모든 모델의 공통 코드</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twocol w">
@@ -927,7 +977,7 @@ model.fit(X_train_s, y_train)</code></pre>
 <section class="slide" data-title="로지스틱 회귀">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag mint">CH2</span><span class="dot"></span>분류</div>
-  <h2 class="s-title sm">회귀라는 이름, 분류라는 일</h2>
+  <h2 class="s-title sm">이름은 회귀, 하는 일은 분류</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twocol w2">
@@ -1224,7 +1274,7 @@ model.fit(X_train, y_train)</code></pre>
 <section class="slide" data-title="랜덤 포레스트">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag amber">CH3</span><span class="dot"></span>앙상블</div>
-  <h2 class="s-title sm">약한 트리 수백 그루의 다수결</h2>
+  <h2 class="s-title sm">트리 수백 그루의 다수결</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twocol w">
@@ -1438,12 +1488,14 @@ model.fit(X_train, y_train)</code></pre>
       <div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">깊이를 바꿔 가며 검증 점수를 본다</span></div>
-          <pre><code><span class="kw">for</span> d <span class="kw">in</span> [<span class="nm">2</span>, <span class="nm">4</span>, <span class="nm">6</span>, <span class="nm">8</span>, <span class="kw">None</span>]:
-    m = DecisionTreeClassifier(max_depth=d,
-                               random_state=<span class="nm">42</span>)
+          <pre><code><span class="cm"># 훈련셋을 다시 한 번 쪼갠다 — 테스트셋은 건드리지 않는다</span>
+X_tr, X_val, y_tr, y_val = train_test_split(
+    X_train, y_train, test_size=<span class="nm">0.25</span>, random_state=<span class="nm">42</span>)
+
+<span class="kw">for</span> d <span class="kw">in</span> [<span class="nm">2</span>, <span class="nm">4</span>, <span class="nm">6</span>, <span class="nm">8</span>, <span class="kw">None</span>]:
+    m = DecisionTreeClassifier(max_depth=d, random_state=<span class="nm">42</span>)
     m.fit(X_tr, y_tr)
-    <span class="fn2">print</span>(d, <span class="fn2">round</span>(m.score(X_tr, y_tr), <span class="nm">3</span>),
-             <span class="fn2">round</span>(m.score(X_val, y_val), <span class="nm">3</span>))</code></pre>
+    <span class="fn2">print</span>(d, <span class="fn2">round</span>(m.score(X_val, y_val), <span class="nm">3</span>))</code></pre>
           <div class="out">   깊이  훈련    검증
    2    0.786  0.793
    4    0.831  <span class="err">0.816</span>   ← 가장 좋다
@@ -1654,7 +1706,7 @@ accuracy = <span class="nm">970</span> / <span class="nm">1000</span></code></pr
 <section class="slide" data-title="정밀도와 재현율">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>평가</div>
-  <h2 class="s-title sm">잡은 것의 정확함과 놓친 것의 양</h2>
+  <h2 class="s-title sm">정밀도와 재현율</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twopane">
@@ -1695,7 +1747,7 @@ recall    = <span class="nm">18</span> / (<span class="nm">18</span> + <span cla
 <section class="slide" data-title="지표 선택">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>선택</div>
-  <h2 class="s-title sm">더 비싼 쪽의 실수</h2>
+  <h2 class="s-title sm">지표를 고르는 기준</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twocol w">
@@ -1755,7 +1807,7 @@ recall    = <span class="nm">18</span> / (<span class="nm">18</span> + <span cla
 <section class="slide" data-title="회귀 평가 지표">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>평가</div>
-  <h2 class="s-title sm">회귀에서 쓰는 네 가지 자</h2>
+  <h2 class="s-title sm">회귀 평가 지표 네 가지</h2>
   <div class="rule"></div>
   <div class="body">
     <table class="ctable">
@@ -1856,7 +1908,7 @@ model.predict(one)</code></pre>
 <section class="slide" data-title="Day 3 정리">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>정리</div>
-  <h2 class="s-title sm">손에 남는 것</h2>
+  <h2 class="s-title sm">머신러닝 정리</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="biglist">

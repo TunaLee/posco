@@ -1172,7 +1172,7 @@ max     945.70  1763.00   188.50</div>
 <section class="slide" data-title="groupby">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>집계</div>
-  <h2 class="s-title sm">묶어서 접기</h2>
+  <h2 class="s-title sm">groupby 로 묶어 집계</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="flow"><div><div class="cap2">df — 1412행</div><table class="dft"><thead><tr><th class="s"></th><th class="s">설비호기</th><th>방전용량</th></tr></thead><tbody><tr><td>0</td><td class="s">B</td><td>178.9</td></tr><tr><td>1</td><td class="s">C</td><td>170.5</td></tr><tr><td>2</td><td class="s">F</td><td>172.5</td></tr><tr><td>3</td><td class="s">B</td><td>178.1</td></tr><tr><td>…</td><td class="s">…</td><td>…</td></tr></tbody></table></div><div class="arw">→</div><div><div class="cap2">설비마다 한 줄로 접힌다</div><div class="code sm" style="margin-bottom:10px"><pre><code>df.groupby(<span class="st">'설비호기'</span>)[<span class="st">'방전용량'</span>].mean()</code></pre></div><table class="dft"><thead><tr><th class="s">설비호기</th><th>방전용량</th></tr></thead><tbody><tr><td class="s">A</td><td>171.7</td></tr><tr><td class="s">B</td><td>172.3</td></tr><tr><td class="s">C</td><td>173.0</td></tr><tr><td class="s">D</td><td>173.2</td></tr><tr><td class="s">E</td><td class="on">174.7</td></tr><tr><td class="s">F</td><td>174.5</td></tr></tbody></table></div></div>
@@ -1514,7 +1514,7 @@ X_te = scaler.transform(X_te)</code></pre>
 <section class="slide" data-title="Matplotlib">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>배경</div>
-  <h2 class="s-title sm">선 하나로 드러나는 것</h2>
+  <h2 class="s-title sm">첫 그래프 그리기</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twocol">
@@ -1713,7 +1713,7 @@ plt.show()</code></pre>
 <section class="slide" data-title="seaborn">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>seaborn</div>
-  <h2 class="s-title sm">DataFrame을 그대로 받는 층</h2>
+  <h2 class="s-title sm">DataFrame 을 그대로 받는 seaborn</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twopane">
@@ -1787,7 +1787,7 @@ sns.histplot(data=df, x='방전용량', hue='설비호기')</div><p>표와 <b>�
 <section class="slide" data-title="Day 2 정리">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>정리</div>
-  <h2 class="s-title sm">손에 남는 것</h2>
+  <h2 class="s-title sm">데이터 다루기 정리</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="biglist">
