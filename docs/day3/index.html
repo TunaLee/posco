@@ -1012,42 +1012,6 @@ model.fit(X_train, y_train)</code></pre>
     <div class="keymsg"><span class="k">기준</span><div>임계값을 내리면 <b>놓치는 양성이 줄고 오탐이 는다</b>. 이 조절이 CH3의 지표들과 직결된다.</div></div>
   </div>
 </section>
-<section class="slide" data-title="SVM">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag mint">CH2</span><span class="dot"></span>경계</div>
-  <h2 class="s-title sm">여백이 가장 넓은 경계선</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">커널로 굽은 경계도 만든다</span></div>
-          <pre><code><span class="kw">from</span> sklearn.svm <span class="kw">import</span> SVC
-
-<span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> StandardScaler
-
-<span class="cm"># SVM 은 크기를 맞춰야 한다</span>
-sc = StandardScaler()
-X_train_s = sc.fit_transform(X_train)
-
-model = SVC(kernel=<span class="st">'rbf'</span>)
-model.fit(X_train_s, y_train)</code></pre>
-        </div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div>두 무리를 가르는 선은 여럿이다. 그중 <b>양쪽 여백이 가장 넓은</b> 선을 고른다.</div></div>
-          <div class="v"><span class="b">→</span><div>검은 테두리가 <b>경계를 정하는 점</b>이다. 나머지는 치워도 선이 안 바뀐다.</div></div>
-          <div class="v"><span class="b">✕</span><div>스케일링을 빼면 <code>0.914 → 0.825</code>로 떨어진다. 거리 기반이라 그렇다.</div></div>
-        </div>
-      </div>
-      <div>
-        <div class="plot"><svg viewBox="0 0 300 210"><rect x="8" y="8" width="284" height="170" fill="#FCFBFF" stroke="#DCD6F0"/><line x1="40" y1="176" x2="250" y2="20" stroke="#5B3DF5" stroke-width="2.4"/><line x1="18" y1="160" x2="228" y2="4" stroke="#B7A9FF" stroke-width="1.4" stroke-dasharray="5 4"/><line x1="62" y1="192" x2="272" y2="36" stroke="#B7A9FF" stroke-width="1.4" stroke-dasharray="5 4"/><polygon points="18,160 228,4 272,36 62,192" fill="#5B3DF5" opacity=".06"/><circle cx="40" cy="60" r="5" fill="#0FB5A1" opacity=".85"/><circle cx="70" cy="42" r="5" fill="#0FB5A1" opacity=".85"/><circle cx="58" cy="90" r="5" fill="#0FB5A1" opacity=".85"/><circle cx="96" cy="30" r="5" fill="#0FB5A1" opacity=".85"/><circle cx="30" cy="110" r="5" fill="#0FB5A1" opacity=".85"/><circle cx="84" cy="70" r="5" fill="#0FB5A1" opacity=".85"/><circle cx="200" cy="150" r="5" fill="#E8537A" opacity=".85"/><circle cx="232" cy="120" r="5" fill="#E8537A" opacity=".85"/><circle cx="180" cy="168" r="5" fill="#E8537A" opacity=".85"/><circle cx="250" cy="148" r="5" fill="#E8537A" opacity=".85"/><circle cx="214" cy="96" r="5" fill="#E8537A" opacity=".85"/><circle cx="84" cy="70" r="9" fill="none" stroke="#16142B" stroke-width="1.6"/><circle cx="214" cy="96" r="9" fill="none" stroke="#16142B" stroke-width="1.6"/><text x="150" y="196" font-size="10.5" fill="#3A1FC9" text-anchor="middle" font-weight="700">여백이 가장 넓은 선을 고른다</text><text x="252" y="70" font-size="9.5" fill="#8E8AAC">여백</text></svg>
-          <div class="cap">실선이 경계, 점선까지가 여백</div></div>
-        <table class="ctable"><thead><tr><th>kernel</th><th>정확도</th></tr></thead><tbody><tr><td>'linear'</td><td>0.910</td></tr><tr><td>'rbf'</td><td><b>0.914</b></td></tr><tr><td>스케일링 없이</td><td><span class="no">0.825</span></td></tr></tbody></table>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>데이터가 <b>많지 않고 열이 많을 때</b> 잘 듣는다. 수만 행을 넘어가면 느려진다.</div></div>
-  </div>
-</section>
 
 <section class="slide" data-title="결정 트리">
   <div class="coord"><b></b> / <span class="tot"></span></div>
@@ -1131,73 +1095,6 @@ pred = model.predict(X_test)</code></pre>
     <div class="keymsg"><span class="k">기준</span><div>분류와 회귀는 <b>정답 열의 생김새</b>로 갈린다. 0/1 이면 분류, 연속된 숫자면 회귀다.</div></div>
   </div>
 </section>
-<section class="slide" data-title="다항 회귀">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag mint">CH2</span><span class="dot"></span>회귀</div>
-  <h2 class="s-title sm">직선으로 안 되면 굽히기</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">제곱 항을 만들어 붙인다</span></div>
-          <pre><code><span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> PolynomialFeatures
-<span class="kw">from</span> sklearn.pipeline <span class="kw">import</span> make_pipeline
-
-model = make_pipeline(
-    PolynomialFeatures(<span class="nm">2</span>),   <span class="cm"># 제곱·교차항 추가</span>
-    LinearRegression())
-model.fit(X_train, y_train)</code></pre>
-        </div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div>열을 <b>제곱해서 새 열로 붙인다</b>. 모델은 여전히 선형 회귀다.</div></div>
-          <div class="v"><span class="b">★</span><div>온도는 890 °C 부근이 최적이라 <b>굽은 관계</b>다. 직선으로는 못 잡는다.</div></div>
-        </div>
-      </div>
-      <div>
-        <div class="plot"><svg viewBox="0 0 332 176"><rect x="44" y="18" width="274" height="124" fill="#FCFBFF" stroke="#DCD6F0"/><line x1="44" y1="133.7" x2="318" y2="133.7" stroke="#F0EDFA"/><text x="39" y="136.7" font-size="8.5" fill="#8E8AAC" text-anchor="end" font-family="ui-monospace,monospace">160</text><line x1="44" y1="71.7" x2="318" y2="71.7" stroke="#F0EDFA"/><text x="39" y="74.7" font-size="8.5" fill="#8E8AAC" text-anchor="end" font-family="ui-monospace,monospace">175</text><line x1="44" y1="30.4" x2="318" y2="30.4" stroke="#F0EDFA"/><text x="39" y="33.4" font-size="8.5" fill="#8E8AAC" text-anchor="end" font-family="ui-monospace,monospace">185</text><circle cx="143.1" cy="77.1" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="195.8" cy="83.7" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="155.7" cy="96.5" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="84.0" cy="99.4" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="145.2" cy="74.6" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="115.7" cy="77.5" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="117.8" cy="100.7" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="151.5" cy="76.3" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="105.1" cy="92.8" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="109.3" cy="112.7" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="193.6" cy="30.8" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="134.6" cy="92.4" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="145.2" cy="88.7" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="244.2" cy="54.0" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="256.9" cy="84.1" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="143.1" cy="92.4" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="292.7" cy="68.8" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="263.2" cy="60.2" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="233.7" cy="50.7" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="138.8" cy="66.4" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="204.2" cy="52.3" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="221.0" cy="39.5" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="159.9" cy="88.7" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="166.2" cy="67.2" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="109.3" cy="111.0" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="256.9" cy="58.9" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="149.4" cy="79.6" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="126.2" cy="82.1" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="263.2" cy="54.8" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="69.3" cy="123.4" r="3.2" fill="#8E8AAC" opacity=".6"/><line x1="48.2" y1="116.7" x2="313.8" y2="36.5" stroke="#B7A9FF" stroke-width="2" stroke-dasharray="5 4"/><polyline points="48.2,138.9 60.9,129.3 73.5,120.4 86.2,112.0 98.8,104.3 111.4,97.2 124.1,90.7 136.7,84.8 149.4,79.6 162.0,74.9 174.7,70.9 187.3,67.5 200.0,64.7 212.6,62.5 225.3,60.9 237.9,60.0 250.6,59.7 263.2,60.0 275.8,60.9 288.5,62.4 301.1,64.5 313.8,67.3" fill="none" stroke="#E8537A" stroke-width="2.6"/><text x="65.1" y="156" font-size="8.5" fill="#8E8AAC" text-anchor="middle" font-family="ui-monospace,monospace">800</text><text x="170.5" y="156" font-size="8.5" fill="#8E8AAC" text-anchor="middle" font-family="ui-monospace,monospace">850</text><text x="275.8" y="156" font-size="8.5" fill="#8E8AAC" text-anchor="middle" font-family="ui-monospace,monospace">900</text><text x="181" y="172" font-size="9.5" fill="#4A4766" text-anchor="middle">소성온도 (°C)</text><g font-size="9" font-family="ui-monospace,monospace"><line x1="196" y1="30" x2="212" y2="30" stroke="#B7A9FF" stroke-width="2" stroke-dasharray="5 4"/><text x="216" y="33" fill="#8E8AAC">직선</text><line x1="252" y1="30" x2="268" y2="30" stroke="#E8537A" stroke-width="2.6"/><text x="272" y="33" fill="#C13458">2차</text></g></svg>
-          <div class="cap">점선은 직선, 빨간 곡선이 2차</div></div>
-        <table class="ctable"><thead><tr><th></th><th>R²</th><th>MAE</th></tr></thead><tbody><tr><td>직선</td><td>0.719</td><td>2.54</td></tr><tr><td>2차</td><td><b>0.878</b></td><td><b>1.78</b></td></tr></tbody></table>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>차수를 올릴수록 잘 맞지만 <b>너무 올리면 외운다</b>. 2차·3차에서 멈추고 검증셋으로 확인한다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="규제">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag mint">CH2</span><span class="dot"></span>회귀</div>
-  <h2 class="s-title sm">계수를 눌러 과적합 막기</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">alpha 가 누르는 세기다</span></div>
-          <pre><code><span class="kw">from</span> sklearn.linear_model <span class="kw">import</span> Ridge, Lasso
-
-<span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> StandardScaler
-
-<span class="cm"># 벌점을 공평하게 주려면 크기부터 맞춘다</span>
-X_train_s = StandardScaler().fit_transform(X_train)
-
-Ridge(alpha=<span class="nm">10</span>).fit(X_train_s, y_train)   <span class="cm"># 계수를 줄인다</span>
-Lasso(alpha=<span class="nm">0.3</span>).fit(X_train_s, y_train)  <span class="cm"># 0 으로도 만든다</span></code></pre>
-        </div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div>계수가 커질수록 벌점을 준다. 모델이 <b>한 열에 몰빵하지 못하게</b> 막는다.</div></div>
-          <div class="v"><span class="b">★</span><div><b>Lasso</b> 는 쓸모없는 열의 계수를 <b>아예 0</b> 으로 만든다 — 열을 고르는 셈이다.</div></div>
-          <div class="v"><span class="b">✕</span><div>규제를 쓰려면 <b>스케일링이 먼저</b>다. 단위가 다르면 벌점이 공평하지 않다.</div></div>
-        </div>
-      </div>
-      <div>
-        <div class="plot"><svg viewBox="0 0 320 190"><text x="112" y="26" font-size="9" fill="#4A4766" text-anchor="end" font-family="ui-monospace,monospace">소성온도</text><line x1="120" y1="14" x2="120" y2="182" stroke="#DCD6F0"/><rect x="120.0" y="18" width="49.9" height="8" fill="#B7A9FF"/><rect x="120.0" y="28" width="46.6" height="8" fill="#5B3DF5"/><text x="112" y="53" font-size="9" fill="#4A4766" text-anchor="end" font-family="ui-monospace,monospace">불순물</text><line x1="120" y1="14" x2="120" y2="182" stroke="#DCD6F0"/><rect x="103.2" y="45" width="16.8" height="8" fill="#B7A9FF"/><rect x="106.6" y="55" width="13.4" height="8" fill="#5B3DF5"/><text x="112" y="80" font-size="9" fill="#4A4766" text-anchor="end" font-family="ui-monospace,monospace">소성시간</text><line x1="120" y1="14" x2="120" y2="182" stroke="#DCD6F0"/><rect x="120.0" y="72" width="11.1" height="8" fill="#B7A9FF"/><rect x="120.0" y="82" width="8.0" height="8" fill="#5B3DF5"/><text x="112" y="107" font-size="9" fill="#4A4766" text-anchor="end" font-family="ui-monospace,monospace">수분율</text><line x1="120" y1="14" x2="120" y2="182" stroke="#DCD6F0"/><rect x="109.7" y="99" width="10.3" height="8" fill="#B7A9FF"/><rect x="112.7" y="109" width="7.3" height="8" fill="#5B3DF5"/><text x="112" y="134" font-size="9" fill="#4A4766" text-anchor="end" font-family="ui-monospace,monospace">입도</text><line x1="120" y1="14" x2="120" y2="182" stroke="#DCD6F0"/><rect x="111.2" y="126" width="8.8" height="8" fill="#B7A9FF"/><rect x="114.2" y="136" width="5.8" height="8" fill="#5B3DF5"/><text x="112" y="161" font-size="9" fill="#4A4766" text-anchor="end" font-family="ui-monospace,monospace">성형압력</text><line x1="120" y1="14" x2="120" y2="182" stroke="#DCD6F0"/><rect x="120.0" y="153" width="1.1" height="8" fill="#B7A9FF"/><rect x="120.0" y="163" width="0.0" height="8" fill="#5B3DF5"/><text x="126" y="170" font-size="8.5" fill="#C13458" font-weight="700">0 — 버렸다</text><g font-size="8.5" font-family="ui-monospace,monospace"><rect x="196" y="6" width="10" height="7" fill="#B7A9FF"/><text x="210" y="13" fill="#8E8AAC">선형</text><rect x="248" y="6" width="10" height="7" fill="#5B3DF5"/><text x="262" y="13" fill="#3A1FC9">Lasso</text></g></svg>
-          <div class="cap">Lasso 가 성형압력 를 0 으로 만들었다 — 용량과 상관 −0.05 인 열</div></div>
-        <table class="ctable"><thead><tr><th></th><th>R²</th></tr></thead><tbody><tr><td>선형</td><td>0.719</td></tr><tr><td>Ridge</td><td>0.718</td></tr><tr><td>Lasso</td><td>0.688</td></tr></tbody></table>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>열이 많고 데이터가 적을 때 쓴다. 여기서는 열이 적어 <b>효과가 크지 않다</b> — 대신 Lasso 가 쓸 열을 골라 준다.</div></div>
-  </div>
-</section>
 <section class="slide" data-title="회귀 기법 비교">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag mint">CH2</span><span class="dot"></span>회귀</div>
@@ -1206,10 +1103,10 @@ Lasso(alpha=<span class="nm">0.3</span>).fit(X_train_s, y_train)  <span class="c
   <div class="body">
     <div class="twocol">
       <div>
-        <table class="ctable"><thead><tr><th>기법</th><th>언제 쓰나</th></tr></thead><tbody><tr><td><b>선형</b></td><td>관계가 곧을 때. <b>계수를 읽어</b> 설명해야 할 때</td></tr><tr><td><b>다항</b></td><td>굽은 관계일 때. 차수는 2~3 에서 멈춘다</td></tr><tr><td><b>Ridge</b></td><td>열이 많고 서로 겹칠 때</td></tr><tr><td><b>Lasso</b></td><td>열이 많아 <b>골라내야</b> 할 때</td></tr><tr><td><b>트리 계열</b></td><td>관계가 복잡하고 <b>설명보다 정확도</b>가 중요할 때</td></tr></tbody></table>
+        <table class="ctable"><thead><tr><th>기법</th><th>언제 쓰나</th></tr></thead><tbody><tr><td><b>선형 회귀</b></td><td>관계가 곧을 때. <b>계수를 읽어</b> 설명해야 할 때</td></tr><tr><td><b>결정 트리</b></td><td>관계가 굽었을 때. <b>왜 그렇게 판정했는지</b> 그림으로 읽힌다</td></tr><tr><td><b>앙상블</b></td><td>정확도가 가장 중요할 때. <b>설명은 어려워진다</b></td></tr></tbody></table>
       </div>
       <div>
-        <div class="plot"><svg viewBox="0 0 320 200"><text x="86" y="24" font-size="9.5" fill="#4A4766" text-anchor="end">선형</text><rect x="92" y="16" width="52.4" height="12" rx="2" fill="#DCD6F0"/><text x="148.4" y="26" font-size="9" fill="#16142B" font-family="ui-monospace,monospace">0.719</text><text x="86" y="50" font-size="9.5" fill="#4A4766" text-anchor="end">Ridge</text><rect x="92" y="42" width="51.7" height="12" rx="2" fill="#DCD6F0"/><text x="147.7" y="52" font-size="9" fill="#16142B" font-family="ui-monospace,monospace">0.718</text><text x="86" y="76" font-size="9.5" fill="#4A4766" text-anchor="end">Lasso</text><rect x="92" y="68" width="28.9" height="12" rx="2" fill="#DCD6F0"/><text x="124.9" y="78" font-size="9" fill="#16142B" font-family="ui-monospace,monospace">0.688</text><text x="86" y="102" font-size="9.5" fill="#4A4766" text-anchor="end">결정 트리</text><rect x="92" y="94" width="83.6" height="12" rx="2" fill="#B7A9FF"/><text x="179.6" y="104" font-size="9" fill="#16142B" font-family="ui-monospace,monospace">0.760</text><text x="86" y="128" font-size="9.5" fill="#4A4766" text-anchor="end">랜덤 포레스트</text><rect x="92" y="120" width="142.1" height="12" rx="2" fill="#5B3DF5"/><text x="238.1" y="130" font-size="9" fill="#16142B" font-family="ui-monospace,monospace">0.837</text><text x="86" y="154" font-size="9.5" fill="#4A4766" text-anchor="end">부스팅</text><rect x="92" y="146" width="149.7" height="12" rx="2" fill="#5B3DF5"/><text x="245.7" y="156" font-size="9" fill="#16142B" font-family="ui-monospace,monospace">0.847</text><text x="86" y="180" font-size="9.5" fill="#4A4766" text-anchor="end">다항 2차</text><rect x="92" y="172" width="173.3" height="12" rx="2" fill="#5B3DF5"/><text x="269.3" y="182" font-size="9" fill="#16142B" font-family="ui-monospace,monospace">0.878</text><text x="160" y="196" font-size="9" fill="#8E8AAC" text-anchor="middle">R² — 1 에 가까울수록 좋다</text></svg>
+        <div class="plot"><svg viewBox="0 0 320 150"><text x="98" y="30" font-size="10" fill="#4A4766" text-anchor="end">선형 회귀</text><rect x="104" y="20" width="52.4" height="14" rx="2" fill="#DCD6F0"/><text x="160.4" y="31" font-size="9.5" fill="#16142B" font-family="ui-monospace,monospace">0.719</text><text x="98" y="60" font-size="10" fill="#4A4766" text-anchor="end">결정 트리</text><rect x="104" y="50" width="83.6" height="14" rx="2" fill="#B7A9FF"/><text x="191.6" y="61" font-size="9.5" fill="#16142B" font-family="ui-monospace,monospace">0.760</text><text x="98" y="90" font-size="10" fill="#4A4766" text-anchor="end">랜덤 포레스트</text><rect x="104" y="80" width="142.1" height="14" rx="2" fill="#5B3DF5"/><text x="250.1" y="91" font-size="9.5" fill="#16142B" font-family="ui-monospace,monospace">0.837</text><text x="98" y="120" font-size="10" fill="#4A4766" text-anchor="end">부스팅</text><rect x="104" y="110" width="149.7" height="14" rx="2" fill="#5B3DF5"/><text x="257.7" y="121" font-size="9.5" fill="#16142B" font-family="ui-monospace,monospace">0.847</text><text x="160" y="144" font-size="9" fill="#8E8AAC" text-anchor="middle">R² — 1 에 가까울수록 좋다</text></svg>
           <div class="cap">같은 데이터 · 같은 분할로 잰 값</div></div>
       </div>
     </div>
@@ -1470,130 +1367,7 @@ model.fit(X_train, y_train)</code></pre>
   </div>
 </section>
 
-<section class="slide" data-title="검증셋의 역할">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>검증</div>
-  <h2 class="s-title sm">설정값을 고르는 기준</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="pipe">
-      <div class="step"><div class="si">60%</div><div class="sn">훈련 Train</div><div class="sd">가중치를 여기서 배운다</div></div>
-      <div class="step"><div class="si">20%</div><div class="sn">검증 Validation</div><div class="sd">설정값을 여기서 고른다</div></div>
-      <div class="step"><div class="si">20%</div><div class="sn">테스트 Test</div><div class="sd">마지막에 한 번만 본다</div></div>
-    </div>
-    <div class="twocol">
-      <div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div><code>max_depth</code> <code>n_estimators</code> <code>learning_rate</code>처럼 <b>사람이 정해 주는 값</b>을 하이퍼파라미터라 한다.</div></div>
-          <div class="v"><span class="b">→</span><div>가중치는 학습이 정하지만, 이 값들은 <b>학습이 정해 주지 않는다</b>. 여러 후보를 돌려 보고 고른다.</div></div>
-          <div class="v"><span class="b">★</span><div>앞서 나눈 <b>훈련셋을 다시 한 번</b> 쪼갠 것이 검증셋이다. 테스트셋은 건드리지 않는다.</div></div>
-        </div>
-        <div class="callout rose"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>테스트셋을 보고 고치면</h4><p>그 순간 테스트셋도 훈련 데이터가 된다. <b>마지막에 한 번</b>만 쓴다.</p></div></div>
-      </div>
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">깊이를 바꿔 가며 검증 점수를 본다</span></div>
-          <pre><code><span class="cm"># 훈련셋을 다시 한 번 쪼갠다 — 테스트셋은 건드리지 않는다</span>
-X_tr, X_val, y_tr, y_val = train_test_split(
-    X_train, y_train, test_size=<span class="nm">0.25</span>, random_state=<span class="nm">42</span>)
 
-<span class="kw">for</span> d <span class="kw">in</span> [<span class="nm">2</span>, <span class="nm">4</span>, <span class="nm">6</span>, <span class="nm">8</span>, <span class="kw">None</span>]:
-    m = DecisionTreeClassifier(max_depth=d, random_state=<span class="nm">42</span>)
-    m.fit(X_tr, y_tr)
-    <span class="fn2">print</span>(d, <span class="fn2">round</span>(m.score(X_val, y_val), <span class="nm">3</span>))</code></pre>
-          <div class="out">   깊이  훈련    검증
-   2    0.786  0.793
-   4    0.831  <span class="err">0.816</span>   ← 가장 좋다
-   6    0.865  0.804
-   8    0.906  0.782
-   None 0.983  0.749</div>
-        </div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>훈련 점수는 깊이를 늘릴수록 계속 오른다. <b>검증 점수가 꺾이는 지점</b>을 고른다.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="K-Fold 교차 검증">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>검증</div>
-  <h2 class="s-title sm">한 번 나눈 결과의 운</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol w">
-      <div>
-        <div class="plot">
-          <svg viewBox="0 0 340 190">
-            <g font-family="monospace" font-size="10.5" fill="#8E8AAC">
-              <text x="4" y="26">Fold 1</text><text x="4" y="60">Fold 2</text><text x="4" y="94">Fold 3</text><text x="4" y="128">Fold 4</text><text x="4" y="162">Fold 5</text>
-            </g>
-            <g>
-              <rect x="52" y="12" width="54" height="20" fill="#5B3DF5"/><rect x="110" y="12" width="54" height="20" fill="#EFEAFF" stroke="#E8E4F8"/><rect x="168" y="12" width="54" height="20" fill="#EFEAFF" stroke="#E8E4F8"/><rect x="226" y="12" width="54" height="20" fill="#EFEAFF" stroke="#E8E4F8"/><rect x="284" y="12" width="54" height="20" fill="#EFEAFF" stroke="#E8E4F8"/>
-              <rect x="52" y="46" width="54" height="20" fill="#EFEAFF" stroke="#E8E4F8"/><rect x="110" y="46" width="54" height="20" fill="#5B3DF5"/><rect x="168" y="46" width="54" height="20" fill="#EFEAFF" stroke="#E8E4F8"/><rect x="226" y="46" width="54" height="20" fill="#EFEAFF" stroke="#E8E4F8"/><rect x="284" y="46" width="54" height="20" fill="#EFEAFF" stroke="#E8E4F8"/>
-              <rect x="52" y="80" width="54" height="20" fill="#EFEAFF" stroke="#E8E4F8"/><rect x="110" y="80" width="54" height="20" fill="#EFEAFF" stroke="#E8E4F8"/><rect x="168" y="80" width="54" height="20" fill="#5B3DF5"/><rect x="226" y="80" width="54" height="20" fill="#EFEAFF" stroke="#E8E4F8"/><rect x="284" y="80" width="54" height="20" fill="#EFEAFF" stroke="#E8E4F8"/>
-              <rect x="52" y="114" width="54" height="20" fill="#EFEAFF" stroke="#E8E4F8"/><rect x="110" y="114" width="54" height="20" fill="#EFEAFF" stroke="#E8E4F8"/><rect x="168" y="114" width="54" height="20" fill="#EFEAFF" stroke="#E8E4F8"/><rect x="226" y="114" width="54" height="20" fill="#5B3DF5"/><rect x="284" y="114" width="54" height="20" fill="#EFEAFF" stroke="#E8E4F8"/>
-              <rect x="52" y="148" width="54" height="20" fill="#EFEAFF" stroke="#E8E4F8"/><rect x="110" y="148" width="54" height="20" fill="#EFEAFF" stroke="#E8E4F8"/><rect x="168" y="148" width="54" height="20" fill="#EFEAFF" stroke="#E8E4F8"/><rect x="226" y="148" width="54" height="20" fill="#EFEAFF" stroke="#E8E4F8"/><rect x="284" y="148" width="54" height="20" fill="#5B3DF5"/>
-            </g>
-            <rect x="52" y="178" width="16" height="9" fill="#5B3DF5"/><text x="74" y="187" font-size="10.5" fill="#4A4766">검증</text>
-            <rect x="110" y="178" width="16" height="9" fill="#EFEAFF" stroke="#E8E4F8"/><text x="132" y="187" font-size="10.5" fill="#4A4766">훈련</text>
-          </svg>
-        </div>
-      </div>
-      <div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div>데이터를 K조각으로 나누고, <b>한 조각씩 돌아가며</b> 검증에 쓴다.</div></div>
-          <div class="v"><span class="b">→</span><div>K번의 점수를 <b>평균</b>낸다. 모든 데이터가 한 번씩 검증에 쓰인다.</div></div>
-          <div class="v"><span class="b">★</span><div>점수의 <b>편차</b>가 크면 데이터가 적거나 불균일하다는 신호다.</div></div>
-        </div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">5-Fold</span></div>
-          <pre><code><span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> cross_val_score
-
-s = cross_val_score(model, X, y, cv=<span class="nm">5</span>)
-<span class="fn2">print</span>(s.round(<span class="nm">3</span>))
-<span class="fn2">print</span>(s.mean().round(<span class="nm">3</span>), s.std().round(<span class="nm">3</span>))</code></pre>
-          <div class="out">[0.799 0.792 0.815 0.809 0.831]
-0.809 0.014</div>
-        </div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>한 번 쪼개서 나온 점수는 <b>운</b>이 섞여 있다. 데이터가 적을수록 교차 검증이 필수다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="하이퍼파라미터 탐색">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>튜닝</div>
-  <h2 class="s-title sm">설정값을 자동으로 고르기</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">후보를 늘어놓으면 알아서 돌린다</span></div>
-          <pre><code><span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> GridSearchCV
-
-gs = GridSearchCV(
-    DecisionTreeClassifier(),
-    {<span class="st">'max_depth'</span>: [<span class="nm">2, 3, 4, 5, 6, 8, 10</span>]},
-    cv=<span class="nm">5</span>)
-gs.fit(X_train, y_train)
-
-<span class="fn2">print</span>(gs.best_params_)</code></pre>
-        </div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div>후보를 딕셔너리로 주면 <b>모든 조합을 돌려</b> 가장 좋은 것을 고른다.</div></div>
-          <div class="v"><span class="b">★</span><div>고를 때는 <b>검증셋</b>만 본다. <code>cv=5</code>가 K-Fold 를 알아서 한다.</div></div>
-        </div>
-      </div>
-      <div>
-        <div class="plot"><svg viewBox="0 0 300 180"><rect x="40" y="16" width="246" height="104" fill="#FCFBFF" stroke="#DCD6F0"/><line x1="40" y1="105.1" x2="286" y2="105.1" stroke="#F0EDFA"/><text x="35" y="108.1" font-size="8.5" fill="#8E8AAC" text-anchor="end" font-family="ui-monospace,monospace">0.87</text><line x1="40" y1="60.6" x2="286" y2="60.6" stroke="#F0EDFA"/><text x="35" y="63.6" font-size="8.5" fill="#8E8AAC" text-anchor="end" font-family="ui-monospace,monospace">0.90</text><line x1="40" y1="30.9" x2="286" y2="30.9" stroke="#F0EDFA"/><text x="35" y="33.9" font-size="8.5" fill="#8E8AAC" text-anchor="end" font-family="ui-monospace,monospace">0.92</text><polyline points="52.0,102.2 88.0,76.9 124.0,59.1 160.0,38.3 196.0,45.7 232.0,66.5 268.0,84.3" fill="none" stroke="#5B3DF5" stroke-width="2.2"/><circle cx="52.0" cy="102.2" r="2" fill="#5B3DF5"/><circle cx="88.0" cy="76.9" r="2" fill="#5B3DF5"/><circle cx="124.0" cy="59.1" r="2" fill="#5B3DF5"/><circle cx="160.0" cy="38.3" r="5" fill="#E8537A"/><circle cx="196.0" cy="45.7" r="2" fill="#5B3DF5"/><circle cx="232.0" cy="66.5" r="2" fill="#5B3DF5"/><circle cx="268.0" cy="84.3" r="2" fill="#5B3DF5"/><text x="52.0" y="134" font-size="8.5" fill="#8E8AAC" text-anchor="middle" font-family="ui-monospace,monospace">2</text><text x="88.0" y="134" font-size="8.5" fill="#8E8AAC" text-anchor="middle" font-family="ui-monospace,monospace">3</text><text x="124.0" y="134" font-size="8.5" fill="#8E8AAC" text-anchor="middle" font-family="ui-monospace,monospace">4</text><text x="160.0" y="134" font-size="8.5" fill="#C13458" text-anchor="middle" font-family="ui-monospace,monospace">5</text><text x="196.0" y="134" font-size="8.5" fill="#8E8AAC" text-anchor="middle" font-family="ui-monospace,monospace">6</text><text x="232.0" y="134" font-size="8.5" fill="#8E8AAC" text-anchor="middle" font-family="ui-monospace,monospace">8</text><text x="268.0" y="134" font-size="8.5" fill="#8E8AAC" text-anchor="middle" font-family="ui-monospace,monospace">10</text><text x="163" y="150" font-size="9.5" fill="#4A4766" text-anchor="middle">max_depth</text><text x="163" y="170" font-size="10" fill="#C13458" text-anchor="middle" font-weight="700">5 에서 검증 점수가 가장 높다</text></svg>
-          <div class="cap">{'max_depth': 5}</div></div>
-        <table class="ctable"><thead><tr><th></th><th>점수</th></tr></thead><tbody><tr><td>검증 (고를 때)</td><td>0.915</td></tr><tr><td>테스트 (마지막)</td><td><b>0.899</b></td></tr></tbody></table>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>검증 점수보다 테스트 점수가 <b>조금 낮은 것이 정상</b>이다. 검증셋에 맞춰 골랐기 때문이다.</div></div>
-  </div>
-</section>
 
 <section class="slide" data-title="모델 비교">
   <div class="coord"><b></b> / <span class="tot"></span></div>
@@ -1616,12 +1390,12 @@ models = {
 }
 
 <span class="kw">for</span> name, m <span class="kw">in</span> models.items():
-    s = cross_val_score(m, X, y, cv=<span class="nm">5</span>)
-    <span class="fn2">print</span>(<span class="st">f"{name:14s} {s.mean():.3f} ± {s.std():.3f}"</span>)</code></pre>
-          <div class="out">기준선(최빈값)   0.616 ± 0.001
-로지스틱 회귀    0.799 ± 0.019
-결정 트리       0.816 ± 0.024
-랜덤 포레스트    0.821 ± 0.017</div>
+    m.fit(X_train, y_train)
+    <span class="fn2">print</span>(<span class="st">f"{name:14s} {m.score(X_test, y_test):.3f}"</span>)</code></pre>
+          <div class="out">기준선        0.810
+로지스틱 회귀   0.892
+결정 트리      0.925
+랜덤 포레스트   <span class="ol">0.940</span></div>
         </div>
       </div>
       <div>
@@ -1749,65 +1523,6 @@ recall    = <span class="nm">18</span> / (<span class="nm">18</span> + <span cla
   </div>
 </section>
 
-<section class="slide" data-title="지표 선택">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>선택</div>
-  <h2 class="s-title sm">지표를 고르는 기준</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol w">
-      <div>
-        <table class="ctable">
-          <thead><tr><th>상황</th><th>더 아픈 실수</th><th>우선 지표</th></tr></thead>
-          <tbody>
-            <tr><td>출하 전 불량 검사</td><td>놓침 (FN) — 고객 클레임</td><td class="hl">재현율</td></tr>
-            <tr><td>재검사 비용이 큰 공정</td><td>헛경보 (FP) — 라인이 멈춘다</td><td class="hl">정밀도</td></tr>
-            <tr><td>설비 이상 예지</td><td>놓침 (FN) — 설비 손상</td><td class="hl">재현율</td></tr>
-            <tr><td>둘 다 비슷할 때</td><td>—</td><td class="hl">F1</td></tr>
-          </tbody>
-        </table>
-        <div class="formula">
-          <div class="big">F1 = 2 · (P · R) / (P + R)</div>
-        </div>
-      </div>
-      <div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div>F1은 정밀도와 재현율의 <b>조화평균</b>이다. 한쪽이 낮으면 F1도 같이 낮아진다.</div></div>
-          <div class="v"><span class="b">→</span><div>산술평균이 아닌 이유가 그것이다. <code>P=1.0, R=0.1</code>이면 산술평균은 0.55지만 <b>F1은 0.18</b>이다.</div></div>
-          <div class="v"><span class="b">★</span><div>지표는 모델을 만들기 <b>전에</b> 정한다. 결과를 보고 고르면 좋아 보이는 숫자만 남는다.</div></div>
-        </div>
-        <div class="callout mint"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div class="ct"><h4>먼저 합의할 것</h4><p>"놓친 것 1건"과 "헛경보 1건"의 <b>비용을 숫자로</b> 받아 두면 임계값이 계산으로 정해진다.</p></div></div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>모델 성능은 하나의 숫자가 아니다. <b>어떤 실수를 감당할지</b> 정하고 나서야 성적표가 의미를 갖는다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="클래스 불균형">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>불균형</div>
-  <h2 class="s-title sm">적은 쪽 찾기</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">한 줄로 가중치를 준다</span></div>
-          <pre><code>model = RandomForestClassifier(
-    class_weight=<span class="st">'balanced'</span>)   <span class="cm"># 적은 쪽에 무게를</span></code></pre>
-        </div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div><b>적은 쪽을 틀리면 더 크게 벌점</b>을 주어 모델이 신경 쓰게 만든다.</div></div>
-          <div class="v"><span class="b">✕</span><div>항상 좋아지지 않는다. 아래처럼 <b>오히려 나빠지기도</b> 한다. 반드시 재 본다.</div></div>
-        </div>
-      </div>
-      <div>
-        <div class="plot"><svg viewBox="0 0 300 180"><rect x="26" y="30" width="180" height="34" rx="6" fill="#0FB5A1" opacity=".8"/><text x="116" y="52" font-size="11" fill="#fff" text-anchor="middle" font-weight="700">양품 1147건 (81%)</text><rect x="26" y="72" width="42" height="34" rx="6" fill="#E8537A" opacity=".85"/><text x="47" y="94" font-size="10" fill="#fff" text-anchor="middle" font-weight="700">265</text><text x="78" y="94" font-size="10.5" fill="#C13458">불량 19%</text><text x="26" y="130" font-size="10.5" fill="#4A4766">모델은 <tspan font-weight="700">많은 쪽</tspan>을 맞히려 든다</text><text x="26" y="150" font-size="10.5" fill="#4A4766">— 정작 찾고 싶은 건 <tspan font-weight="700" fill="#C13458">적은 쪽</tspan>이다</text></svg></div>
-        <table class="ctable"><thead><tr><th>class_weight</th><th>불량 재현율</th><th>정밀도</th></tr></thead><tbody><tr><td>없음</td><td><b>0.824</b></td><td>0.875</td></tr><tr><td>'balanced'</td><td><span class="no">0.784</span></td><td>0.870</td></tr></tbody></table>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>불균형이 심하면 <b>정확도 대신 재현율</b>을 본다. 가중치는 <b>손대 보고 재 보는</b> 수단이지 정답이 아니다.</div></div>
-  </div>
-</section>
 
 <section class="slide" data-title="회귀 평가 지표">
   <div class="coord"><b></b> / <span class="tot"></span></div>
@@ -1877,36 +1592,6 @@ pred = model.predict(X_test)
       </div>
     </div>
     <div class="keymsg"><span class="k">기준</span><div>확률이 <b>0.5 언저리면 애매한 배치</b>다. 그런 건 사람이 다시 본다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="모델 저장">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>배포</div>
-  <h2 class="s-title sm">학습한 모델을 파일로 남기기</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">joblib 두 줄</span></div>
-          <pre><code><span class="kw">import</span> joblib
-
-joblib.dump(model, <span class="st">'model.pkl'</span>)
-
-<span class="cm"># 나중에, 다른 노트북에서</span>
-model = joblib.load(<span class="st">'model.pkl'</span>)
-model.predict(one)</code></pre>
-        </div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div>학습에 오래 걸리는 모델을 <b>매번 다시 돌리지 않아도</b> 된다.</div></div>
-          <div class="v"><span class="b">✕</span><div><b>전처리도 같이 저장</b>해야 한다. 스케일러가 없으면 새 데이터를 같은 기준으로 못 바꾼다.</div></div>
-        </div>
-      </div>
-      <div>
-        <div class="plot"><svg viewBox="0 0 300 150"><rect x="10" y="40" width="70" height="38" rx="8" fill="#EFEAFF" stroke="#B7A9FF"/><text x="45" y="64" font-size="10.5" fill="#3A1FC9" text-anchor="middle">학습</text><path d="M82 59 L106 59" stroke="#C9C4E0" stroke-width="1.8"/><polygon points="106,54 116,59 106,64" fill="#C9C4E0"/><rect x="118" y="34" width="62" height="50" rx="6" fill="#FCFBFF" stroke="#5B3DF5" stroke-width="1.6"/><text x="149" y="56" font-size="10" fill="#5B3DF5" text-anchor="middle" font-family="ui-monospace,monospace">model</text><text x="149" y="72" font-size="10" fill="#5B3DF5" text-anchor="middle" font-family="ui-monospace,monospace">.pkl</text><path d="M182 59 L206 59" stroke="#C9C4E0" stroke-width="1.8"/><polygon points="206,54 216,59 206,64" fill="#C9C4E0"/><rect x="218" y="40" width="70" height="38" rx="8" fill="#E6FAF6" stroke="#0FB5A1"/><text x="253" y="64" font-size="10.5" fill="#0A7F70" text-anchor="middle">불러와 예측</text><text x="150" y="112" font-size="10" fill="#8E8AAC" text-anchor="middle">한 번 학습해 두면 다시 안 돌려도 된다</text><text x="150" y="132" font-size="10" fill="#8E8AAC" text-anchor="middle">파일 1.1 KB</text></svg></div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>모델만 저장하면 반쪽이다. <b>전처리 + 모델</b>을 한 덩어리로 남긴다.</div></div>
   </div>
 </section>
 

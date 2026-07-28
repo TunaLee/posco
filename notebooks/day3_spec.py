@@ -222,33 +222,6 @@ print(classification_report(y_te, pred, target_names=['불량', '양품']))
        answer="recall = recall_score(y_te, pred, pos_label=0)",
        check="assert 0.6 < recall < 1.0, f'실제 {recall}'\nprint('통과 — 재현율', round(recall, 3))"),
 
-    lab("한 번 나눈 성적은 운이 섞인다. 여러 번 나눠 평균을 본다."),
-    code(f"""
-{PREP}
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import cross_val_score
-
-d = load()
-X = d.drop(columns=['양품여부', '방전용량', '배치번호'])
-y = d['양품여부']
-
-scores = cross_val_score(RandomForestClassifier(n_estimators=200, random_state=42), X, y, cv=5)
-print(scores.round(3))
-print('평균', round(scores.mean(), 3), ' 표준편차', round(scores.std(), 3))
-"""),
-
-    Task(2, "**5-Fold 교차 검증**으로 결정 트리와 랜덤 포레스트를 비교한다.\n"
-            "각 평균 점수를 `cv_tree`, `cv_forest` 에 담고 출력한다.",
-         setup=PREP + "\nfrom sklearn.tree import DecisionTreeClassifier\n"
-                      "from sklearn.ensemble import RandomForestClassifier\n"
-                      "from sklearn.model_selection import cross_val_score\n"
-                      "d = load()\n"
-                      "X = d.drop(columns=['양품여부', '방전용량', '배치번호'])\ny = d['양품여부']",
-         answer="cv_tree = cross_val_score(DecisionTreeClassifier(max_depth=3, random_state=42), X, y, cv=5).mean()\n"
-                "cv_forest = cross_val_score(RandomForestClassifier(n_estimators=200, random_state=42), X, y, cv=5).mean()\n"
-                "print(round(cv_tree, 3), round(cv_forest, 3))",
-         check="assert cv_forest > cv_tree, '포레스트가 더 높다'\n"
-               "assert cv_forest > 0.9, f'실제 {cv_forest}'\nprint('통과')"),
 
     Task(3, "**과적합**을 눈으로 본다. 결정 트리의 `max_depth` 를 1부터 20까지 늘리며\n"
             "훈련 정확도와 테스트 정확도를 같이 재어 그린다.\n"
@@ -351,8 +324,7 @@ MODES = {
     # 2. scikit-learn
     ("ex", 4): "together", ("ex", 5): "solo", ("ex", 6): "solo", ("task", 1): "team",
     # 3. 검증과 평가
-    ("ex", 7): "together", ("ex", 8): "solo", ("ex", 9): "solo",
-    ("task", 2): "team", ("task", 3): "team",
+    ("ex", 7): "together", ("ex", 8): "solo", ("ex", 9): "solo", ("task", 3): "team",
     # 4. 회귀
     ("ex", 10): "solo", ("task", 4): "team",
     # 5. 종합
