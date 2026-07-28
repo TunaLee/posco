@@ -68,15 +68,6 @@ print('이상치 후 MSE', round(((y_true - y_pred2) ** 2).mean(), 1),
       ' MAE', round(np.abs(y_true - y_pred2).mean(), 1))
 """),
 
-    Ex(3, "`y_true` 와 `y_pred` 로 **RMSE**(MSE 의 제곱근)를 구해 `rmse` 에 담는다.",
-       setup="import numpy as np\n"
-             "y_true = np.array([170.0, 175.0, 168.0, 180.0])\n"
-             "y_pred = np.array([172.0, 174.0, 165.0, 179.0])",
-       blank="rmse = ___",
-       answer="rmse = (((y_true - y_pred) ** 2).mean()) ** 0.5",
-       check="assert abs(rmse - 1.9364916731037085) < 1e-9, f'실제 {rmse}'\nprint('통과')"),
-
-    # ══════════════════════════════════════════════════════════════════
     h(2, "2. scikit-learn — 네 줄로 끝나는 학습"),
 
     lab("어떤 모델이든 만들고·학습하고·예측하고·점수 보는 네 줄이다."),
@@ -320,7 +311,7 @@ for name, m in (('linear', lin), ('forest', rf)):
 
 MODES = {
     # 1. 학습의 원리
-    ("ex", 1): "together", ("ex", 2): "together", ("ex", 3): "solo",
+    ("ex", 1): "together", ("ex", 2): "together",
     # 2. scikit-learn
     ("ex", 4): "together", ("ex", 5): "solo", ("ex", 6): "solo", ("task", 1): "team",
     # 3. 검증과 평가
