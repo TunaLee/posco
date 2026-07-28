@@ -649,6 +649,64 @@
     <div class="keymsg"><span class="k">기준</span><div>손실 함수를 고르는 일은 <b>어떤 오차를 더 미워할지</b> 정하는 일이다. 과제 종류가 후보를 좁힌다.</div></div>
   </div>
 </section>
+<section class="slide" data-title="손실 곡선">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>목표</div>
+  <h2 class="s-title sm">w 에 따라 달라지는 손실</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">w 를 하나씩 넣어 손실을 재 본다</span></div>
+          <pre><code><span class="kw">for</span> w <span class="kw">in</span> [<span class="nm">0</span>, <span class="nm">4</span>, <span class="nm">8</span>, <span class="nm">12</span>, <span class="nm">16</span>]:
+    pred = w * x + b
+    mse  = ((y - pred) ** <span class="nm">2</span>).mean()
+    <span class="fn2">print</span>(w, <span class="fn2">round</span>(mse, <span class="nm">1</span>))</code></pre>
+          <div class="out">0  36.9
+4  21.1
+8  <span class="ol">16.4</span>
+12 22.7
+16 40.1</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>w 하나마다 손실이 하나 나온다. 점을 이으면 <b>U 자 곡선</b>이 그려진다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="plot"><svg viewBox="0 0 332 176"><rect x="44" y="20" width="274" height="120" fill="#FCFBFF" stroke="#DCD6F0"/><line x1="44" y1="114.3" x2="318" y2="114.3" stroke="#F0EDFA"/><text x="39" y="117.3" font-size="8.5" fill="#8E8AAC" text-anchor="end" font-family="ui-monospace,monospace">20</text><line x1="44" y1="71.4" x2="318" y2="71.4" stroke="#F0EDFA"/><text x="39" y="74.4" font-size="8.5" fill="#8E8AAC" text-anchor="end" font-family="ui-monospace,monospace">30</text><line x1="44" y1="28.6" x2="318" y2="28.6" stroke="#F0EDFA"/><text x="39" y="31.6" font-size="8.5" fill="#8E8AAC" text-anchor="end" font-family="ui-monospace,monospace">40</text><polyline points="44.0,41.9 61.1,63.3 78.2,81.7 95.4,97.1 112.5,109.6 129.6,119.0 146.8,125.4 163.9,128.9 181.0,129.7 198.1,127.1 215.2,122.0 232.4,113.9 249.5,102.7 266.6,88.1 283.8,71.0 300.9,51.3 318.0,28.1" fill="none" stroke="#5B3DF5" stroke-width="2.6"/><circle cx="78.2" cy="81.7" r="5" fill="#E8537A"/><text x="78.2" y="70.7" font-size="9" fill="#E8537A" text-anchor="middle" font-weight="700">기울기 −</text><circle cx="181.0" cy="129.7" r="5" fill="#0FB5A1"/><text x="181.0" y="118.7" font-size="9" fill="#0FB5A1" text-anchor="middle" font-weight="700">기울기 0</text><circle cx="283.8" cy="71.0" r="5" fill="#E8537A"/><text x="269.8" y="77.0" font-size="9" fill="#E8537A" text-anchor="middle" font-weight="700">기울기 +</text><line x1="181.0" y1="129.7" x2="181.0" y2="140.0" stroke="#0FB5A1" stroke-width="1.6" stroke-dasharray="4 3"/><text x="181.0" y="153" font-size="9" fill="#0A7F70" text-anchor="middle" font-weight="700">여기가 답</text><text x="44.0" y="153" font-size="8.5" fill="#8E8AAC" text-anchor="middle" font-family="ui-monospace,monospace">0</text><text x="318.0" y="153" font-size="8.5" fill="#8E8AAC" text-anchor="middle" font-family="ui-monospace,monospace">16</text><text x="181" y="170" font-size="9.5" fill="#4A4766" text-anchor="middle">w — 직선의 가중치</text><text x="12" y="80" font-size="9.5" fill="#4A4766" text-anchor="middle" transform="rotate(-90 12 80)">손실 MSE</text></svg>
+          <div class="cap">실제 데이터로 잰 값 — 소성온도로 방전용량 맞히기</div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>학습은 <b>이 곡선의 바닥을 찾는 일</b>이다. 문제는 곡선을 통째로 그려 볼 수 없다는 것이다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="방향을 아는 법">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>다리</div>
+  <h2 class="s-title sm">곡선을 못 그릴 때 내려가는 법</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twopane">
+      <div class="pane bad"><h4>곡선을 다 그려서 찾기</h4><div class="mini"><i># w 하나면 17번 재면 된다</i>
+<b>for</b> w <b>in</b> range(17): ...
+
+<i># w 가 열 개면?</i>
+17 × 17 × … × 17 = <b>2조 번</b></div><p>열이 늘면 <b>경우의 수가 폭발한다</b>. 실제 모델은 가중치가 수천 개다.</p></div>
+      <div class="pane good"><h4>서 있는 자리에서 물어보기</h4><div class="mini"><i># 지금 w 에서 한 가지만 묻는다</i>
+"여기서 <b>어느 쪽이 내리막</b>인가?"
+
+<i># 그 방향으로 한 걸음</i>
+w = w − 걸음 × 방향</div><p>곡선 전체를 몰라도 된다. <b>지금 자리의 기울어짐</b>만 알면 된다.</p></div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>그 <b>기울어진 정도</b>를 재는 것이 <b>기울기</b>다. 앞 그림의 빨간 점과 초록 점이 그것이다.</div></div>
+      <div class="v"><span class="b">→</span><div>기울기가 <b>음수면 오른쪽</b>, <b>양수면 왼쪽</b>이 내리막이다. 0 이면 바닥이다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>산에서 안개가 껴 아래가 안 보여도 <b>발밑의 경사</b>는 느낄 수 있다. 그 방향으로 내려가면 된다.</div></div>
+  </div>
+</section>
 
 <section class="slide" data-title="기울기">
   <div class="coord"><b></b> / <span class="tot"></span></div>
