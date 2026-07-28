@@ -1024,6 +1024,86 @@ pred = model.predict(X_test)</code></pre>
     <div class="keymsg"><span class="k">기준</span><div>분류와 회귀는 <b>정답 열의 생김새</b>로 갈린다. 0/1 이면 분류, 연속된 숫자면 회귀다.</div></div>
   </div>
 </section>
+<section class="slide" data-title="다항 회귀">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">CH2</span><span class="dot"></span>회귀</div>
+  <h2 class="s-title sm">직선으로 안 되면 굽히기</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">제곱 항을 만들어 붙인다</span></div>
+          <pre><code><span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> PolynomialFeatures
+<span class="kw">from</span> sklearn.pipeline <span class="kw">import</span> make_pipeline
+
+model = make_pipeline(
+    PolynomialFeatures(<span class="nm">2</span>),   <span class="cm"># 제곱·교차항 추가</span>
+    LinearRegression())
+model.fit(X_train, y_train)</code></pre>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>열을 <b>제곱해서 새 열로 붙인다</b>. 모델은 여전히 선형 회귀다.</div></div>
+          <div class="v"><span class="b">★</span><div>온도는 890 °C 부근이 최적이라 <b>굽은 관계</b>다. 직선으로는 못 잡는다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="plot"><svg viewBox="0 0 332 176"><rect x="44" y="18" width="274" height="124" fill="#FCFBFF" stroke="#DCD6F0"/><line x1="44" y1="133.7" x2="318" y2="133.7" stroke="#F0EDFA"/><text x="39" y="136.7" font-size="8.5" fill="#8E8AAC" text-anchor="end" font-family="ui-monospace,monospace">160</text><line x1="44" y1="71.7" x2="318" y2="71.7" stroke="#F0EDFA"/><text x="39" y="74.7" font-size="8.5" fill="#8E8AAC" text-anchor="end" font-family="ui-monospace,monospace">175</text><line x1="44" y1="30.4" x2="318" y2="30.4" stroke="#F0EDFA"/><text x="39" y="33.4" font-size="8.5" fill="#8E8AAC" text-anchor="end" font-family="ui-monospace,monospace">185</text><circle cx="143.1" cy="77.1" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="195.8" cy="83.7" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="155.7" cy="96.5" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="84.0" cy="99.4" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="145.2" cy="74.6" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="115.7" cy="77.5" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="117.8" cy="100.7" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="151.5" cy="76.3" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="105.1" cy="92.8" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="109.3" cy="112.7" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="193.6" cy="30.8" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="134.6" cy="92.4" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="145.2" cy="88.7" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="244.2" cy="54.0" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="256.9" cy="84.1" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="143.1" cy="92.4" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="292.7" cy="68.8" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="263.2" cy="60.2" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="233.7" cy="50.7" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="138.8" cy="66.4" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="204.2" cy="52.3" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="221.0" cy="39.5" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="159.9" cy="88.7" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="166.2" cy="67.2" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="109.3" cy="111.0" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="256.9" cy="58.9" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="149.4" cy="79.6" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="126.2" cy="82.1" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="263.2" cy="54.8" r="3.2" fill="#8E8AAC" opacity=".6"/><circle cx="69.3" cy="123.4" r="3.2" fill="#8E8AAC" opacity=".6"/><line x1="48.2" y1="116.7" x2="313.8" y2="36.5" stroke="#B7A9FF" stroke-width="2" stroke-dasharray="5 4"/><polyline points="48.2,138.9 60.9,129.3 73.5,120.4 86.2,112.0 98.8,104.3 111.4,97.2 124.1,90.7 136.7,84.8 149.4,79.6 162.0,74.9 174.7,70.9 187.3,67.5 200.0,64.7 212.6,62.5 225.3,60.9 237.9,60.0 250.6,59.7 263.2,60.0 275.8,60.9 288.5,62.4 301.1,64.5 313.8,67.3" fill="none" stroke="#E8537A" stroke-width="2.6"/><text x="65.1" y="156" font-size="8.5" fill="#8E8AAC" text-anchor="middle" font-family="ui-monospace,monospace">800</text><text x="170.5" y="156" font-size="8.5" fill="#8E8AAC" text-anchor="middle" font-family="ui-monospace,monospace">850</text><text x="275.8" y="156" font-size="8.5" fill="#8E8AAC" text-anchor="middle" font-family="ui-monospace,monospace">900</text><text x="181" y="172" font-size="9.5" fill="#4A4766" text-anchor="middle">calc_temp (°C)</text><g font-size="9" font-family="ui-monospace,monospace"><line x1="196" y1="30" x2="212" y2="30" stroke="#B7A9FF" stroke-width="2" stroke-dasharray="5 4"/><text x="216" y="33" fill="#8E8AAC">직선</text><line x1="252" y1="30" x2="268" y2="30" stroke="#E8537A" stroke-width="2.6"/><text x="272" y="33" fill="#C13458">2차</text></g></svg>
+          <div class="cap">점선은 직선, 빨간 곡선이 2차</div></div>
+        <table class="ctable"><thead><tr><th></th><th>R²</th><th>MAE</th></tr></thead><tbody><tr><td>직선</td><td>0.719</td><td>2.54</td></tr><tr><td>2차</td><td><b>0.878</b></td><td><b>1.78</b></td></tr></tbody></table>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>차수를 올릴수록 잘 맞지만 <b>너무 올리면 외운다</b>. 2차·3차에서 멈추고 검증셋으로 확인한다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="규제">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">CH2</span><span class="dot"></span>회귀</div>
+  <h2 class="s-title sm">계수를 눌러 과적합 막기</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">alpha 가 누르는 세기다</span></div>
+          <pre><code><span class="kw">from</span> sklearn.linear_model <span class="kw">import</span> Ridge, Lasso
+
+Ridge(alpha=<span class="nm">10</span>).fit(X_train_s, y_train)   <span class="cm"># 계수를 줄인다</span>
+Lasso(alpha=<span class="nm">0.3</span>).fit(X_train_s, y_train)  <span class="cm"># 0 으로도 만든다</span></code></pre>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>계수가 커질수록 벌점을 준다. 모델이 <b>한 열에 몰빵하지 못하게</b> 막는다.</div></div>
+          <div class="v"><span class="b">★</span><div><b>Lasso</b> 는 쓸모없는 열의 계수를 <b>아예 0</b> 으로 만든다 — 열을 고르는 셈이다.</div></div>
+          <div class="v"><span class="b">✕</span><div>규제를 쓰려면 <b>스케일링이 먼저</b>다. 단위가 다르면 벌점이 공평하지 않다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="plot"><svg viewBox="0 0 320 190"><text x="112" y="26" font-size="9" fill="#4A4766" text-anchor="end" font-family="ui-monospace,monospace">calc_temp</text><line x1="120" y1="14" x2="120" y2="182" stroke="#DCD6F0"/><rect x="120.0" y="18" width="49.9" height="8" fill="#B7A9FF"/><rect x="120.0" y="28" width="46.6" height="8" fill="#5B3DF5"/><text x="112" y="53" font-size="9" fill="#4A4766" text-anchor="end" font-family="ui-monospace,monospace">impurity</text><line x1="120" y1="14" x2="120" y2="182" stroke="#DCD6F0"/><rect x="103.2" y="45" width="16.8" height="8" fill="#B7A9FF"/><rect x="106.6" y="55" width="13.4" height="8" fill="#5B3DF5"/><text x="112" y="80" font-size="9" fill="#4A4766" text-anchor="end" font-family="ui-monospace,monospace">calc_time</text><line x1="120" y1="14" x2="120" y2="182" stroke="#DCD6F0"/><rect x="120.0" y="72" width="11.1" height="8" fill="#B7A9FF"/><rect x="120.0" y="82" width="8.0" height="8" fill="#5B3DF5"/><text x="112" y="107" font-size="9" fill="#4A4766" text-anchor="end" font-family="ui-monospace,monospace">moisture</text><line x1="120" y1="14" x2="120" y2="182" stroke="#DCD6F0"/><rect x="109.7" y="99" width="10.3" height="8" fill="#B7A9FF"/><rect x="112.7" y="109" width="7.3" height="8" fill="#5B3DF5"/><text x="112" y="134" font-size="9" fill="#4A4766" text-anchor="end" font-family="ui-monospace,monospace">particle_size</text><line x1="120" y1="14" x2="120" y2="182" stroke="#DCD6F0"/><rect x="111.2" y="126" width="8.8" height="8" fill="#B7A9FF"/><rect x="114.2" y="136" width="5.8" height="8" fill="#5B3DF5"/><text x="112" y="161" font-size="9" fill="#4A4766" text-anchor="end" font-family="ui-monospace,monospace">press</text><line x1="120" y1="14" x2="120" y2="182" stroke="#DCD6F0"/><rect x="120.0" y="153" width="1.1" height="8" fill="#B7A9FF"/><rect x="120.0" y="163" width="0.0" height="8" fill="#5B3DF5"/><text x="126" y="170" font-size="8.5" fill="#C13458" font-weight="700">0 — 버렸다</text><g font-size="8.5" font-family="ui-monospace,monospace"><rect x="196" y="6" width="10" height="7" fill="#B7A9FF"/><text x="210" y="13" fill="#8E8AAC">선형</text><rect x="248" y="6" width="10" height="7" fill="#5B3DF5"/><text x="262" y="13" fill="#3A1FC9">Lasso</text></g></svg>
+          <div class="cap">Lasso 가 press 를 0 으로 만들었다 — 용량과 상관 −0.05 인 열</div></div>
+        <table class="ctable"><thead><tr><th></th><th>R²</th></tr></thead><tbody><tr><td>선형</td><td>0.719</td></tr><tr><td>Ridge</td><td>0.718</td></tr><tr><td>Lasso</td><td>0.688</td></tr></tbody></table>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>열이 많고 데이터가 적을 때 쓴다. 여기서는 열이 적어 <b>효과가 크지 않다</b> — 대신 Lasso 가 쓸 열을 골라 준다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="회귀 기법 비교">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">CH2</span><span class="dot"></span>회귀</div>
+  <h2 class="s-title sm">기법을 고르는 기준</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <table class="ctable"><thead><tr><th>기법</th><th>언제 쓰나</th></tr></thead><tbody><tr><td><b>선형</b></td><td>관계가 곧을 때. <b>계수를 읽어</b> 설명해야 할 때</td></tr><tr><td><b>다항</b></td><td>굽은 관계일 때. 차수는 2~3 에서 멈춘다</td></tr><tr><td><b>Ridge</b></td><td>열이 많고 서로 겹칠 때</td></tr><tr><td><b>Lasso</b></td><td>열이 많아 <b>골라내야</b> 할 때</td></tr><tr><td><b>트리 계열</b></td><td>관계가 복잡하고 <b>설명보다 정확도</b>가 중요할 때</td></tr></tbody></table>
+      </div>
+      <div>
+        <div class="plot"><svg viewBox="0 0 320 200"><text x="86" y="24" font-size="9.5" fill="#4A4766" text-anchor="end">선형</text><rect x="92" y="16" width="52.4" height="12" rx="2" fill="#DCD6F0"/><text x="148.4" y="26" font-size="9" fill="#16142B" font-family="ui-monospace,monospace">0.719</text><text x="86" y="50" font-size="9.5" fill="#4A4766" text-anchor="end">Ridge</text><rect x="92" y="42" width="51.7" height="12" rx="2" fill="#DCD6F0"/><text x="147.7" y="52" font-size="9" fill="#16142B" font-family="ui-monospace,monospace">0.718</text><text x="86" y="76" font-size="9.5" fill="#4A4766" text-anchor="end">Lasso</text><rect x="92" y="68" width="28.9" height="12" rx="2" fill="#DCD6F0"/><text x="124.9" y="78" font-size="9" fill="#16142B" font-family="ui-monospace,monospace">0.688</text><text x="86" y="102" font-size="9.5" fill="#4A4766" text-anchor="end">결정 트리</text><rect x="92" y="94" width="83.6" height="12" rx="2" fill="#B7A9FF"/><text x="179.6" y="104" font-size="9" fill="#16142B" font-family="ui-monospace,monospace">0.760</text><text x="86" y="128" font-size="9.5" fill="#4A4766" text-anchor="end">랜덤 포레스트</text><rect x="92" y="120" width="142.1" height="12" rx="2" fill="#5B3DF5"/><text x="238.1" y="130" font-size="9" fill="#16142B" font-family="ui-monospace,monospace">0.837</text><text x="86" y="154" font-size="9.5" fill="#4A4766" text-anchor="end">부스팅</text><rect x="92" y="146" width="149.7" height="12" rx="2" fill="#5B3DF5"/><text x="245.7" y="156" font-size="9" fill="#16142B" font-family="ui-monospace,monospace">0.847</text><text x="86" y="180" font-size="9.5" fill="#4A4766" text-anchor="end">다항 2차</text><rect x="92" y="172" width="173.3" height="12" rx="2" fill="#5B3DF5"/><text x="269.3" y="182" font-size="9" fill="#16142B" font-family="ui-monospace,monospace">0.878</text><text x="160" y="196" font-size="9" fill="#8E8AAC" text-anchor="middle">R² — 1 에 가까울수록 좋다</text></svg>
+          <div class="cap">같은 데이터 · 같은 분할로 잰 값</div></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>먼저 <b>선형으로 재 보고</b> 기준을 잡는다. 그보다 못하면 데이터나 전처리를 의심한다.</div></div>
+  </div>
+</section>
 
 <section class="slide section" data-title="[섹션] 앙상블">
   <div class="ghost">03</div>
