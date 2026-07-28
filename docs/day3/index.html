@@ -820,20 +820,19 @@ w = w − 걸음 × 방향</div><p>곡선 전체를 몰라도 된다. <b>지금 
       <div class="card"><span class="n">너무 작으면</span><h3>느리다</h3>
         <div class="plot"><svg viewBox="0 0 190 110">
           <path d="M14 12 Q95 122 176 12" fill="none" stroke="#E8E4F8" stroke-width="2.4"/>
-          <g fill="#5B3DF5"><circle cx="30" cy="36" r="4"/><circle cx="42" cy="54" r="4"/><circle cx="54" cy="68" r="4"/><circle cx="66" cy="78" r="4"/><circle cx="78" cy="86" r="4"/></g>
+          <polyline points="25,26 32,34 37,39 42,44 46,47" fill="none" stroke="#5B3DF5" stroke-width="1.3" stroke-dasharray="3 3" opacity=".65"/><g fill="#5B3DF5"><circle cx="25" cy="26" r="3"/><circle cx="32" cy="34" r="3"/><circle cx="37" cy="39" r="3"/><circle cx="42" cy="44" r="3"/><circle cx="46" cy="47" r="5"/></g><text x="95" y="100" font-size="9" fill="#8E8AAC" text-anchor="middle">바닥이 아직 멀다</text>
         </svg></div>
         <p>바닥까지 <b>수천 번</b> 걸린다. 시간 안에 끝나지 않는다.</p></div>
       <div class="card"><span class="n">적정</span><h3>수렴한다</h3>
         <div class="plot"><svg viewBox="0 0 190 110">
           <path d="M14 12 Q95 122 176 12" fill="none" stroke="#E8E4F8" stroke-width="2.4"/>
-          <g fill="#0FB5A1"><circle cx="30" cy="36" r="4"/><circle cx="62" cy="76" r="4"/><circle cx="95" cy="94" r="5"/></g>
+          <polyline points="25,26 53,52 78,65 95,67" fill="none" stroke="#0FB5A1" stroke-width="1.3" stroke-dasharray="3 3" opacity=".65"/><g fill="#0FB5A1"><circle cx="25" cy="26" r="3"/><circle cx="53" cy="52" r="3"/><circle cx="78" cy="65" r="3"/><circle cx="95" cy="67" r="5"/></g><text x="95" y="100" font-size="9" fill="#0A7F70" text-anchor="middle" font-weight="700">바닥 도착</text>
         </svg></div>
         <p>몇 번 만에 바닥 근처에 <b>안착</b>한다.</p></div>
       <div class="card"><span class="n">너무 크면</span><h3>발산한다</h3>
         <div class="plot"><svg viewBox="0 0 190 110">
           <path d="M14 12 Q95 122 176 12" fill="none" stroke="#E8E4F8" stroke-width="2.4"/>
-          <g fill="#E8537A"><circle cx="40" cy="52" r="4"/><circle cx="150" cy="38" r="4"/><circle cx="26" cy="28" r="4"/><circle cx="168" cy="18" r="4"/></g>
-          <path d="M40 52 L150 38 L26 28 L168 18" fill="none" stroke="#E8537A" stroke-width="1.4" stroke-dasharray="4 3"/>
+          <polyline points="69,61 127,58 38,40 160,32" fill="none" stroke="#E8537A" stroke-width="1.3" stroke-dasharray="3 3" opacity=".65"/><g fill="#E8537A"><circle cx="69" cy="61" r="3"/><circle cx="127" cy="58" r="3"/><circle cx="38" cy="40" r="3"/><circle cx="160" cy="32" r="5"/></g><text x="95" y="100" font-size="9" fill="#C13458" text-anchor="middle">점점 벌어진다</text>
         </svg></div>
         <p>바닥을 <b>건너뛰며</b> 튄다. 손실이 <code>NaN</code>이 된다.</p></div>
     </div>
