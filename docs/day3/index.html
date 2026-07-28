@@ -1268,6 +1268,40 @@ s = cross_val_score(model, X, y, cv=<span class="nm">5</span>)
     <div class="keymsg"><span class="k">기준</span><div>한 번 쪼개서 나온 점수는 <b>운</b>이 섞여 있다. 데이터가 적을수록 교차 검증이 필수다.</div></div>
   </div>
 </section>
+<section class="slide" data-title="하이퍼파라미터 탐색">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>튜닝</div>
+  <h2 class="s-title sm">설정값을 자동으로 고르기</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">후보를 늘어놓으면 알아서 돌린다</span></div>
+          <pre><code><span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> GridSearchCV
+
+gs = GridSearchCV(
+    DecisionTreeClassifier(),
+    {<span class="st">'max_depth'</span>: [<span class="nm">2, 3, 4, 5, 6, 8, 10</span>]},
+    cv=<span class="nm">5</span>)
+gs.fit(X_train, y_train)
+
+<span class="fn2">print</span>(gs.best_params_)</code></pre>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>후보를 딕셔너리로 주면 <b>모든 조합을 돌려</b> 가장 좋은 것을 고른다.</div></div>
+          <div class="v"><span class="b">★</span><div>고를 때는 <b>검증셋</b>만 본다. <code>cv=5</code>가 K-Fold 를 알아서 한다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="plot"><svg viewBox="0 0 300 180"><rect x="40" y="16" width="246" height="104" fill="#FCFBFF" stroke="#DCD6F0"/><line x1="40" y1="105.1" x2="286" y2="105.1" stroke="#F0EDFA"/><text x="35" y="108.1" font-size="8.5" fill="#8E8AAC" text-anchor="end" font-family="ui-monospace,monospace">0.87</text><line x1="40" y1="60.6" x2="286" y2="60.6" stroke="#F0EDFA"/><text x="35" y="63.6" font-size="8.5" fill="#8E8AAC" text-anchor="end" font-family="ui-monospace,monospace">0.90</text><line x1="40" y1="30.9" x2="286" y2="30.9" stroke="#F0EDFA"/><text x="35" y="33.9" font-size="8.5" fill="#8E8AAC" text-anchor="end" font-family="ui-monospace,monospace">0.92</text><polyline points="52.0,102.2 88.0,76.9 124.0,59.1 160.0,38.3 196.0,45.7 232.0,66.5 268.0,84.3" fill="none" stroke="#5B3DF5" stroke-width="2.2"/><circle cx="52.0" cy="102.2" r="2" fill="#5B3DF5"/><circle cx="88.0" cy="76.9" r="2" fill="#5B3DF5"/><circle cx="124.0" cy="59.1" r="2" fill="#5B3DF5"/><circle cx="160.0" cy="38.3" r="5" fill="#E8537A"/><circle cx="196.0" cy="45.7" r="2" fill="#5B3DF5"/><circle cx="232.0" cy="66.5" r="2" fill="#5B3DF5"/><circle cx="268.0" cy="84.3" r="2" fill="#5B3DF5"/><text x="52.0" y="134" font-size="8.5" fill="#8E8AAC" text-anchor="middle" font-family="ui-monospace,monospace">2</text><text x="88.0" y="134" font-size="8.5" fill="#8E8AAC" text-anchor="middle" font-family="ui-monospace,monospace">3</text><text x="124.0" y="134" font-size="8.5" fill="#8E8AAC" text-anchor="middle" font-family="ui-monospace,monospace">4</text><text x="160.0" y="134" font-size="8.5" fill="#C13458" text-anchor="middle" font-family="ui-monospace,monospace">5</text><text x="196.0" y="134" font-size="8.5" fill="#8E8AAC" text-anchor="middle" font-family="ui-monospace,monospace">6</text><text x="232.0" y="134" font-size="8.5" fill="#8E8AAC" text-anchor="middle" font-family="ui-monospace,monospace">8</text><text x="268.0" y="134" font-size="8.5" fill="#8E8AAC" text-anchor="middle" font-family="ui-monospace,monospace">10</text><text x="163" y="150" font-size="9.5" fill="#4A4766" text-anchor="middle">max_depth</text><text x="163" y="170" font-size="10" fill="#C13458" text-anchor="middle" font-weight="700">5 에서 검증 점수가 가장 높다</text></svg>
+          <div class="cap">{'max_depth': 5}</div></div>
+        <table class="ctable"><thead><tr><th></th><th>점수</th></tr></thead><tbody><tr><td>검증 (고를 때)</td><td>0.915</td></tr><tr><td>테스트 (마지막)</td><td><b>0.899</b></td></tr></tbody></table>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>검증 점수보다 테스트 점수가 <b>조금 낮은 것이 정상</b>이다. 검증셋에 맞춰 골랐기 때문이다.</div></div>
+  </div>
+</section>
 
 <section class="slide" data-title="모델 비교">
   <div class="coord"><b></b> / <span class="tot"></span></div>
@@ -1456,6 +1490,32 @@ recall    = <span class="nm">18</span> / (<span class="nm">18</span> + <span cla
     <div class="keymsg"><span class="k">기준</span><div>모델 성능은 하나의 숫자가 아니다. <b>어떤 실수를 감당할지</b> 정하고 나서야 성적표가 의미를 갖는다.</div></div>
   </div>
 </section>
+<section class="slide" data-title="클래스 불균형">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>불균형</div>
+  <h2 class="s-title sm">적은 쪽 찾기</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">한 줄로 가중치를 준다</span></div>
+          <pre><code>model = RandomForestClassifier(
+    class_weight=<span class="st">'balanced'</span>)   <span class="cm"># 적은 쪽에 무게를</span></code></pre>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div><b>적은 쪽을 틀리면 더 크게 벌점</b>을 주어 모델이 신경 쓰게 만든다.</div></div>
+          <div class="v"><span class="b">✕</span><div>항상 좋아지지 않는다. 아래처럼 <b>오히려 나빠지기도</b> 한다. 반드시 재 본다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="plot"><svg viewBox="0 0 300 180"><rect x="26" y="30" width="180" height="34" rx="6" fill="#0FB5A1" opacity=".8"/><text x="116" y="52" font-size="11" fill="#fff" text-anchor="middle" font-weight="700">양품 1147건 (81%)</text><rect x="26" y="72" width="42" height="34" rx="6" fill="#E8537A" opacity=".85"/><text x="47" y="94" font-size="10" fill="#fff" text-anchor="middle" font-weight="700">265</text><text x="78" y="94" font-size="10.5" fill="#C13458">불량 19%</text><text x="26" y="130" font-size="10.5" fill="#4A4766">모델은 <tspan font-weight="700">많은 쪽</tspan>을 맞히려 든다</text><text x="26" y="150" font-size="10.5" fill="#4A4766">— 정작 찾고 싶은 건 <tspan font-weight="700" fill="#C13458">적은 쪽</tspan>이다</text></svg></div>
+        <table class="ctable"><thead><tr><th>class_weight</th><th>불량 재현율</th><th>정밀도</th></tr></thead><tbody><tr><td>없음</td><td><b>0.824</b></td><td>0.875</td></tr><tr><td>'balanced'</td><td><span class="no">0.784</span></td><td>0.870</td></tr></tbody></table>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>불균형이 심하면 <b>정확도 대신 재현율</b>을 본다. 가중치는 <b>손대 보고 재 보는</b> 수단이지 정답이 아니다.</div></div>
+  </div>
+</section>
 
 <section class="slide" data-title="회귀 평가 지표">
   <div class="coord"><b></b> / <span class="tot"></span></div>
@@ -1497,6 +1557,64 @@ pred = model.predict(X_test)
       </div>
     </div>
     <div class="keymsg"><span class="k">기준</span><div>"R² 0.69"보다 <b>"평균 2.4도 틀린다"</b>가 통한다. 공정 허용 오차와 바로 비교되기 때문이다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="새 배치 판정">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>실전</div>
+  <h2 class="s-title sm">학습한 모델로 한 건 판정하기</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">훈련 때와 같은 열 · 같은 순서로 넣는다</span></div>
+          <pre><code>one = X_test.iloc[[<span class="nm">0</span>]]        <span class="cm"># 대괄호 두 겹 — 표 모양을 지킨다</span>
+
+<span class="fn2">print</span>(model.predict(one))        <span class="cm"># [1]</span>
+<span class="fn2">print</span>(model.predict_proba(one))  <span class="cm"># [[0.35 0.65]]</span></code></pre>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div><code>predict</code>는 <b>0 또는 1</b>, <code>predict_proba</code>는 <b>확률</b>을 준다.</div></div>
+          <div class="v"><span class="b">✕</span><div>열이 하나라도 빠지거나 순서가 다르면 에러다. 전처리를 <b>함수로 묶어 두는</b> 이유다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="plot"><svg viewBox="0 0 300 190"><rect x="10" y="14" width="132" height="76" rx="8" fill="#FCFBFF" stroke="#DCD6F0"/><text x="20" y="32" font-size="9.5" fill="#8E8AAC" font-family="ui-monospace,monospace">새 배치 한 건</text><text x="20" y="48" font-size="9.5" fill="#16142B" font-family="ui-monospace,monospace">calc_temp  829.4</text><text x="20" y="63" font-size="9.5" fill="#16142B" font-family="ui-monospace,monospace">calc_time     90</text><text x="20" y="78" font-size="9.5" fill="#16142B" font-family="ui-monospace,monospace">impurity     570</text><path d="M146 52 L176 52" stroke="#5B3DF5" stroke-width="2"/><polygon points="176,46 188,52 176,58" fill="#5B3DF5"/><rect x="192" y="30" width="96" height="44" rx="9" fill="#5B3DF5"/><text x="240" y="57" font-size="11" fill="#fff" text-anchor="middle" font-weight="700">model</text><rect x="40" y="118" width="220" height="22" rx="11" fill="#EEEAFA"/><rect x="40" y="118" width="143" height="22" rx="11" fill="#0FB5A1"/><text x="111" y="134" font-size="10.5" fill="#fff" text-anchor="middle" font-weight="700">양품 0.650</text><text x="222" y="134" font-size="10" fill="#8E8AAC" text-anchor="middle">불량 0.350</text><text x="150" y="164" font-size="10.5" fill="#3A1FC9" text-anchor="middle" font-weight="700">0.5 를 넘으므로 양품으로 판정</text></svg>
+          <div class="cap">확률을 보면 얼마나 확신하는지 알 수 있다</div></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>확률이 <b>0.5 언저리면 애매한 배치</b>다. 그런 건 사람이 다시 본다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="모델 저장">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>배포</div>
+  <h2 class="s-title sm">학습한 모델을 파일로 남기기</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">joblib 두 줄</span></div>
+          <pre><code><span class="kw">import</span> joblib
+
+joblib.dump(model, <span class="st">'model.pkl'</span>)
+
+<span class="cm"># 나중에, 다른 노트북에서</span>
+model = joblib.load(<span class="st">'model.pkl'</span>)
+model.predict(one)</code></pre>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>학습에 오래 걸리는 모델을 <b>매번 다시 돌리지 않아도</b> 된다.</div></div>
+          <div class="v"><span class="b">✕</span><div><b>전처리도 같이 저장</b>해야 한다. 스케일러가 없으면 새 데이터를 같은 기준으로 못 바꾼다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="plot"><svg viewBox="0 0 300 150"><rect x="10" y="40" width="70" height="38" rx="8" fill="#EFEAFF" stroke="#B7A9FF"/><text x="45" y="64" font-size="10.5" fill="#3A1FC9" text-anchor="middle">학습</text><path d="M82 59 L106 59" stroke="#C9C4E0" stroke-width="1.8"/><polygon points="106,54 116,59 106,64" fill="#C9C4E0"/><rect x="118" y="34" width="62" height="50" rx="6" fill="#FCFBFF" stroke="#5B3DF5" stroke-width="1.6"/><text x="149" y="56" font-size="10" fill="#5B3DF5" text-anchor="middle" font-family="ui-monospace,monospace">model</text><text x="149" y="72" font-size="10" fill="#5B3DF5" text-anchor="middle" font-family="ui-monospace,monospace">.pkl</text><path d="M182 59 L206 59" stroke="#C9C4E0" stroke-width="1.8"/><polygon points="206,54 216,59 206,64" fill="#C9C4E0"/><rect x="218" y="40" width="70" height="38" rx="8" fill="#E6FAF6" stroke="#0FB5A1"/><text x="253" y="64" font-size="10.5" fill="#0A7F70" text-anchor="middle">불러와 예측</text><text x="150" y="112" font-size="10" fill="#8E8AAC" text-anchor="middle">한 번 학습해 두면 다시 안 돌려도 된다</text><text x="150" y="132" font-size="10" fill="#8E8AAC" text-anchor="middle">파일 1.1 KB</text></svg></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>모델만 저장하면 반쪽이다. <b>전처리 + 모델</b>을 한 덩어리로 남긴다.</div></div>
   </div>
 </section>
 
