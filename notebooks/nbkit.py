@@ -94,9 +94,7 @@ INTRO = {
     "practice": """강의가 끝난 뒤 **수강생끼리** 푼다.
 
 `스스로 풀기` 는 각자, `조별 과제` 는 2~3명이 한 조로 상의하며 푼다.
-막히면 강의 노트북(`lecture`)의 실습 셀로 돌아가 확인한다.
-
-빈 자리에 **직접 쓴다.** 위의 실습 셀을 그대로 가져다 고쳐도 된다.""",
+막히면 강의 노트북(`lecture`)의 실습 셀로 돌아가 확인한다.""",
     "solution": """`lecture` 와 `practice` 의 모든 문제에 대한 정답본이다.
 수강생은 먼저 스스로 풀어 본 뒤에 연다.
 
@@ -143,9 +141,10 @@ def build(day, title, subtitle, spec, variant, modes=None, renumber=False, no_bl
             if len(keep) > 1:
                 cells.append(md(f"### {label}\n\n{how}"))
             for x in group:
-                x.no_blank = no_blank
+                x.no_blank = no_blank and key == "together"
                 if renumber:
-                    k = "task" if no_blank else x.kind   # 한 줄기로 셀지 나눠 셀지
+                    # 머리글이 같은 것끼리 한 줄기로 센다
+                    k = "task" if (x.no_blank or x.kind == "task") else "ex"
                     seq[k] += 1
                     x.display_no = seq[k]
                 else:

@@ -219,7 +219,7 @@ for epoch in range(1, 101):
        check="assert last < first, f'손실이 줄어야 한다: {first:.4f} → {last:.4f}'\n"
              "print(f'통과 — {first:.4f} → {last:.4f}')"),
 
-    Ex(7, "`opt.zero_grad()` 를 **일부러 빼고** 20회 돌린다.\n"
+    Ex(7, "`opt.zero_grad()` 를 **빼면** 어떻게 되는지 본다.\n"
           "기울기가 쌓여 손실이 제대로 안 줄어드는 것을 확인한다.",
        setup=PREP + "\n"
              "class MLP(nn.Module):\n"
