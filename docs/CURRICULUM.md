@@ -7,7 +7,7 @@
 |---|---|---|
 | Day 1 · 파이썬 문법 | [day1/index.html](day1/index.html) | 60 |
 | Day 2 · 데이터 다루기 | [day2/index.html](day2/index.html) | 48 |
-| Day 3 · 머신러닝 | [day3/index.html](day3/index.html) | 42 |
+| Day 3 · 머신러닝 | [day3/index.html](day3/index.html) | 45 |
 | Day 4 · 딥러닝 | [day4/index.html](day4/index.html) | 26 |
 
 조작: `← →` 또는 Space · 숫자 입력 후 Enter로 점프 · `≡` 목차 · `−/+` 줌 · PDF 버튼(인쇄).
@@ -31,7 +31,7 @@ Day 2  데이터 다루기
   CH3 시각화            Matplotlib · 제목과 축 이름 · 범례 · 기본 네 그래프 · subplot · 한글 폰트 · seaborn
 
 Day 3  머신러닝
-  CH0 학습의 뼈대       규칙의 출처 · 세 갈래 · 회귀와 분류
+  CH0 학습의 뼈대       규칙의 출처 · 세 갈래 · 지도/비지도/강화 · 회귀와 분류
   CH1 학습의 원리       선형 회귀 · 손실 함수 · 기울기 · 경사 하강법 · 학습률
   CH2 모델              공통 네 줄 · KNN · 로지스틱 회귀 · SVM · 결정 트리 · 선형 회귀
   CH3 앙상블            앙상블 · 배깅 · 랜덤 포레스트 · 부스팅 · 배깅↔부스팅 · XGBoost
@@ -186,7 +186,7 @@ TODO 4  원-핫 인코딩         TODO 8  학습 루프 + 손실 곡선
 |---|---|
 | 문체 lint (제목 명사구 · 시각 표기 규칙 포함) | day1 0 · day2 0 · day3 0 · day4 0 |
 | 1280×720 넘침 | 4개 덱 모두 0장 — `scripts/overflow.cjs`, 웹폰트 로딩 후 실측 |
-| 에셋 참조 | day1 4/4 해결 (Colab 캡처), day2~4는 외부 이미지 0장 · 전부 인라인 SVG |
+| 에셋 참조 | day1 4/4 (Colab 캡처) · day3 3/3 (학습 방법 도해) · 나머지는 인라인 SVG |
 
 하네스: `~/.claude/skills/lecture-deck/` — `scripts/lint.py`, `assets/template.html`,
 `references/voice.md`(문체 규칙), `references/components.md`(컴포넌트 카탈로그).

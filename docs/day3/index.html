@@ -146,6 +146,7 @@
 
   .twocol{display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start;}
   .twocol.w{grid-template-columns:1.15fr .85fr;} .twocol.w2{grid-template-columns:.85fr 1.15fr;}
+  .twocol.wide{grid-template-columns:1.45fr .55fr; gap:20px;}
 
   .chips{display:flex; flex-wrap:wrap; gap:8px;}
   .chip{font-size:12.5px; font-weight:600; color:var(--ink-soft); background:#fff; border:1px solid var(--line); padding:6px 12px; border-radius:999px;}
@@ -443,6 +444,79 @@
       </tbody>
     </table>
     <div class="keymsg"><span class="k">기준</span><div>갈림길은 <b>데이터에 정답이 붙어 있는가</b>다. 실무 과제의 대부분은 지도학습이고, 이 장에서 다루는 것도 그것이다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="지도학습">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>지도학습</div>
+  <h2 class="s-title sm">정답을 알려 주고 배우기</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol wide">
+      <div>
+        <figure class="figure">
+          <img src="assets/supervised.png" alt="정답을 알려 주고 배우기">
+          <figcaption>입력과 정답의 쌍을 주면 모델이 그 관계를 찾는다</figcaption>
+        </figure>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div><b>입력</b>과 <b>정답</b>이 짝지어진 데이터가 있어야 한다.</div></div>
+          <div class="v"><span class="b">★</span><div>배치 표가 그렇다 — 조건 다섯 열이 입력, <code>passed</code>가 정답이다.</div></div>
+        </div>
+        <table class="ctable"><thead><tr><th>하는 일</th><th>입력 → 정답</th></tr></thead><tbody><tr><td>불량 검출</td><td>공정 조건 → 양품/불량</td></tr><tr><td>용량 예측</td><td>공정 조건 → 178.9 mAh/g</td></tr><tr><td>스팸 분류</td><td>메일 본문 → 스팸/정상</td></tr><tr><td>집값 예측</td><td>평수·위치 → 4억 2천</td></tr></tbody></table>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>정답이 붙은 <b>과거 기록</b>이 있으면 지도학습이다. 나흘 내내 다루는 것이 이쪽이다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="비지도학습">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>비지도학습</div>
+  <h2 class="s-title sm">정답 없이 구조 찾기</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol wide">
+      <div>
+        <figure class="figure">
+          <img src="assets/unsupervised.png" alt="정답 없이 구조 찾기">
+          <figcaption>정답을 안 주면 모델이 비슷한 것끼리 스스로 묶는다</figcaption>
+        </figure>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>정답 열이 <b>없다</b>. 무엇이 맞는지 알려 주지 않는다.</div></div>
+          <div class="v"><span class="b">★</span><div>배치 표에서 <code>passed</code>를 <b>가리고</b> 돌리면 이쪽이 된다.</div></div>
+        </div>
+        <table class="ctable"><thead><tr><th>하는 일</th><th>무엇이 나오나</th></tr></thead><tbody><tr><td>배치 유형 찾기</td><td>비슷한 조건의 배치가 세 무리로 갈린다</td></tr><tr><td>이상 탐지</td><td>평소와 다른 배치를 짚어 낸다</td></tr><tr><td>고객 세분화</td><td>구매 패턴이 닮은 고객끼리 묶는다</td></tr><tr><td>차원 축소</td><td>열 20개를 2개로 줄여 그림으로 본다</td></tr></tbody></table>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>정답이 <b>없거나 붙이는 값이 비쌀 때</b> 쓴다. 결과가 맞는지 판정할 자가 없다는 것이 어렵다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="강화학습">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>강화학습</div>
+  <h2 class="s-title sm">해 보고 점수를 받으며 배우기</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol wide">
+      <div>
+        <figure class="figure">
+          <img src="assets/reinforcement.png" alt="해 보고 점수를 받으며 배우기">
+          <figcaption>행동하고 보상을 받아 더 나은 전략을 찾는다</figcaption>
+        </figure>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>정답이 아니라 <b>점수</b>를 준다. 좋은 행동엔 상, 나쁜 행동엔 벌.</div></div>
+          <div class="v"><span class="b">→</span><div>한 번에 못 배운다. <b>수없이 시도</b>하며 조금씩 나아진다.</div></div>
+          <div class="v"><span class="b">✕</span><div>현장에서 함부로 못 쓴다. 실제 설비로 시행착오를 하면 <b>불량이 쌓인다</b>.</div></div>
+        </div>
+        <table class="ctable"><thead><tr><th>하는 일</th><th>보상</th></tr></thead><tbody><tr><td>미로 탈출</td><td>도착 +10 · 벽 −5</td></tr><tr><td>게임</td><td>점수가 곧 보상</td></tr><tr><td>공정 조건 자동 조정</td><td>양품이면 +, 불량이면 −</td></tr></tbody></table>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div><b>시행착오가 싸게 먹히는 곳</b>에서 쓴다. 시뮬레이터가 있으면 가능하고, 없으면 어렵다.</div></div>
   </div>
 </section>
 
