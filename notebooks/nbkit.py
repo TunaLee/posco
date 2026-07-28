@@ -37,6 +37,12 @@ GROUPS = [
     ("team",     "조별 과제",   "2~3명이 한 조로 상의하며 푼다."),
 ]
 
+GROUPS_LAB = [                      # day3 부터 — 실습 시간에 강사와 같이 본다
+    ("together", "같이 풀기",  "수업 중에 같이 푼다."),
+    ("solo",     "스스로 풀기", "각자 푼다. 막히면 손을 든다."),
+    ("team",     "조별로 풀기", "2~3명이 한 조로 상의하며 푼다."),
+]
+
 
 def q(no, text):
     return md(f"> **빈칸 문제 {no}.** {text}")
@@ -102,9 +108,19 @@ INTRO = {
 **지문으로 찾는다.**""",
 }
 
+INTRO_LAB = dict(INTRO, practice="""실습 시간에 푼다.
 
-def build(day, title, subtitle, spec, variant, modes=None, renumber=False, no_blank=False):
+`스스로 풀기` 는 각자, `조별로 풀기` 는 2~3명이 한 조로 상의하며 푼다.
+막히면 강의 노트북(`lecture`)의 실습 셀로 돌아가 확인한다.""")
+
+
+def build(day, title, subtitle, spec, variant, modes=None, renumber=False,
+          no_blank=False, lab=False):
     desc, keep, solution = VARIANTS[variant]
+    if lab and variant == "practice":
+        desc = "실습"
+    groups = GROUPS_LAB if lab else GROUPS
+    intro  = (INTRO_LAB if lab else INTRO)[variant]
     url = (f"https://colab.research.google.com/github/{REPO}"
            f"/blob/main/notebooks/day{day}_{variant}.ipynb")
 
@@ -122,7 +138,7 @@ def build(day, title, subtitle, spec, variant, modes=None, renumber=False, no_bl
 1. **파일 → 드라이브에 사본 저장** 을 먼저 누른다. 안 하면 고친 내용이 남지 않는다.
 2. 셀을 고르고 **Shift + Enter** 로 실행한다.
 
-{INTRO[variant]}
+{intro}
 
 문제는 실행하면 `assert` 로 자가 채점된다. 맞으면 `통과` 가 찍히고,
 틀리면 기대값과 실제값이 같이 나온다.
@@ -132,7 +148,7 @@ def build(day, title, subtitle, spec, variant, modes=None, renumber=False, no_bl
     seq = {"ex": 0, "task": 0}          # 벌 안에서 1번부터 다시 센다
 
     def flush():
-        for key, label, how in GROUPS:
+        for key, label, how in groups:
             if key not in keep:
                 continue
             group = [x for x in pending if x.mode == key]
@@ -192,7 +208,9 @@ def build(day, title, subtitle, spec, variant, modes=None, renumber=False, no_bl
     return path, sum(1 for c in pruned if c["cell_type"] == "code")
 
 
-def emit(day, title, subtitle, spec, modes=None, renumber=False, no_blank=False):
+def emit(day, title, subtitle, spec, modes=None, renumber=False,
+         no_blank=False, lab=False):
     for variant in VARIANTS:
-        p, n = build(day, title, subtitle, spec, variant, modes, renumber, no_blank)
+        p, n = build(day, title, subtitle, spec, variant, modes, renumber,
+                     no_blank, lab)
         print(f"  {os.path.basename(p):<26} 코드 셀 {n:>3}개")
