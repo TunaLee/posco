@@ -827,6 +827,9 @@ optimizer = torch.optim.Adam(model.parameters(), lr=<span class="nm">0.01</span>
         </div>
       </div>
     </div>
+    <div class="vlist">
+          <div class="v"><span class="b">→</span><div>손실 함수는 <b>문제에 맞춰 고른다</b>. 양품/불량 판정이면 <code>nn.BCEWithLogitsLoss()</code>, 용량 같은 <b>숫자를 맞히면</b> <code>nn.MSELoss()</code>다.</div></div>
+    </div>
     <div class="keymsg"><span class="k">함정</span><div><code>zero_grad()</code>를 빠뜨리는 것이 가장 흔한 실수다. 손실이 <b>이상하게 튀면</b> 이 줄부터 확인한다.</div></div>
   </div>
 </section>

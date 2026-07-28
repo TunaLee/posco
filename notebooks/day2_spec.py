@@ -144,16 +144,16 @@ print(df.isna().sum())
     code(f"""
 raw = pd.read_csv('{URL}')
 print(raw['line'].value_counts().head(8))
-print('종류 수:', raw['line'].nunique())
+print('종류 수:', len(raw['line'].value_counts()))
 
 cleaned = raw['line'].str.strip().str.upper()
-print('정리 후 종류 수:', cleaned.nunique())
+print('정리 후 종류 수:', len(cleaned.value_counts()))
 """),
 
-    Ex(7, "`raw['line']` 의 공백과 대소문자를 정리해 `n_kind` 에 **종류 수**를 담는다.",
+    Ex(7, "`raw['line']` 의 공백과 대소문자를 정리한 뒤, **몇 종류가 남는지** `n_kind` 에 담는다.\n> `value_counts()` 결과의 길이를 센다.",
        setup=f"import pandas as pd\nraw = pd.read_csv('{URL}')",
        blank="n_kind = ___",
-       answer="n_kind = raw['line'].str.strip().str.upper().nunique()",
+       answer="n_kind = len(raw['line'].str.strip().str.upper().value_counts())",
        check="assert n_kind == 6, f'기대 6, 실제 {n_kind}'\nprint('통과')"),
 
     # ══════════════════════════════════════════════════════════════════
@@ -232,15 +232,6 @@ print(df.groupby(['line', 'shift'])['capacity'].mean().round(1).head(4))
         check="assert abs(bad_rate['A'] - 0.221) < 0.002, f\"A 실제 {bad_rate['A']}\"\n"
               "assert bad_rate.idxmax() == 'A', f'가장 나쁜 설비는 A 여야 한다: {bad_rate.idxmax()}'\nprint('통과')"),
 
-    lab("설비 마스터를 붙이면 연식이 드러난다. merge 는 키를 기준으로 옆에 잇는다."),
-    code(f"""
-{LOAD}
-master = pd.read_csv('{MASTER}')
-print(master)
-
-merged = pd.merge(df, master, on='line', how='left')
-print((1 - merged.groupby('installed_year')['passed'].mean()).round(3))
-"""),
 
     h(2, "4. 전처리"),
 
@@ -370,10 +361,10 @@ plt.show()
 """),
 
     Ex(18, "`capacity` 와 상관이 **가장 강한 열**의 이름을 `best` 에 담는다.\n"
-           "자기 자신은 뺀다. 부호는 무시하고 절댓값으로 본다.",
+           "자기 자신은 뺀다. 가장 큰 양수를 고르면 된다.",
         setup=LOAD,
         blank="c = df.corr(numeric_only=True)['capacity'].drop('capacity')\nbest = ___",
-        answer="c = df.corr(numeric_only=True)['capacity'].drop('capacity')\nbest = c.abs().idxmax()",
+        answer="c = df.corr(numeric_only=True)['capacity'].drop('capacity')\nbest = c.sort_values().index[-1]",
         check="assert best == 'calc_temp', f'기대 calc_temp, 실제 {best}'\nprint('통과')"),
 
     Task(6, "설비별 `capacity` 분포를 **박스플롯**으로 그리고,\n"
@@ -421,17 +412,6 @@ plt.show()
          check="assert isinstance(worst, tuple) and len(worst) == 2, f'튜플이어야 한다: {worst}'\n"
                "assert worst[0] in list('ABCDEF') and worst[1] in ('day', 'night')\nprint('통과')"),
 
-    Task(9, "설비 마스터를 붙여 **연식별 평균 용량과 불량률**을 한 표로 만든다.\n"
-            "> `installed_year` 로 묶어 `capacity` 평균과 `passed` 평균을 같이 낸다.",
-         setup=LOAD + f"\nmaster = pd.read_csv('{MASTER}')",
-         answer="merged = pd.merge(df, master, on='line', how='left')\n"
-                "table = merged.groupby('installed_year').agg(\n"
-                "    avg_capacity=('capacity', 'mean'),\n"
-                "    bad_rate=('passed', lambda s: 1 - s.mean()))\n"
-                "print(table.round(3))",
-         check="assert len(table) == 3, f'연식 3종: {len(table)}'\n"
-               "assert table['bad_rate'].iloc[0] > table['bad_rate'].iloc[-1], '오래된 설비의 불량률이 더 높다'\n"
-               "assert table['avg_capacity'].iloc[0] < table['avg_capacity'].iloc[-1]\nprint('통과')"),
 ]
 
 MODES = {
@@ -452,7 +432,7 @@ MODES = {
     ("task", 6): "team",    ("task", 7): "team",
     # 6. 종합 — 전부 조별
     ("ex", 19): "team",     ("ex", 20): "team",
-    ("task", 8): "team",    ("task", 9): "team",
+    ("task", 8): "team",
 }
 
 SPEC = ("데이터 다루기", "NumPy · Pandas · 전처리 · 시각화", CELLS, MODES)

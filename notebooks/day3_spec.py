@@ -144,7 +144,8 @@ print(export_text(tree, feature_names=list(X_tr.columns)))
        blank="model = ___\nmodel.fit(X_tr, y_tr)\ntop = ___",
        answer="model = RandomForestClassifier(n_estimators=200, random_state=42)\n"
               "model.fit(X_tr, y_tr)\n"
-              "top = X_tr.columns[model.feature_importances_.argmax()]",
+              "pairs = sorted(zip(model.feature_importances_, X_tr.columns), reverse=True)\n"
+              "top = pairs[0][1]",
        check="assert top == 'calc_temp', f'기대 calc_temp, 실제 {top}'\nprint('통과')"),
 
     Task(1, "세 모델(로지스틱·결정 트리·랜덤 포레스트)의 테스트 정확도를 재어\n"

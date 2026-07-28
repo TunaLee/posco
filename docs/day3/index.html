@@ -1244,8 +1244,13 @@ recall    = <span class="nm">18</span> / (<span class="nm">18</span> + <span cla
     <div class="twocol">
       <div>
         <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">scikit-learn</span></div>
-          <pre><code><span class="kw">from</span> sklearn.metrics <span class="kw">import</span> mean_absolute_error, r2_score
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">분류와 같은 네 줄, 정답만 숫자다</span></div>
+          <pre><code><span class="kw">from</span> sklearn.linear_model <span class="kw">import</span> LinearRegression
+<span class="kw">from</span> sklearn.metrics <span class="kw">import</span> mean_absolute_error, r2_score
+
+<span class="cm"># 정답 열만 capacity 로 바꾸면 나머지는 분류와 같다</span>
+model = LinearRegression().fit(X_train, y_train)
+pred = model.predict(X_test)
 
 <span class="fn2">print</span>(mean_absolute_error(y_test, pred))
 <span class="fn2">print</span>(r2_score(y_test, pred))</code></pre>
