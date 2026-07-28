@@ -38,14 +38,14 @@ for step in range(1, 21):
         print(f"{step:>3}회  x={x:6.3f}  f(x)={f(x):6.3f}")
 """),
 
-    Ex(1, "학습률을 `0.01` 로 낮추고 같은 20회를 돌린 뒤 `x` 를 확인한다.\n"
+    Ex(1, "학습률 `lr` 을 `0.01` 로 두고 20회를 돌린 뒤 `x` 를 확인한다.\n"
           "값이 3에 **덜 가까워지는 것**을 본다.",
        setup="def grad(x): return 2 * (x - 3)\nx = 10.0",
        blank="lr = ___\nfor _ in range(20):\n    x = x - lr * grad(x)",
        answer="lr = 0.01\nfor _ in range(20):\n    x = x - lr * grad(x)",
        check="assert x > 4, f'학습률이 작으면 20회로는 못 간다. 실제 {x}'\nprint('통과 — x =', round(x, 3))"),
 
-    Ex(2, "학습률을 `1.1` 로 올리면 어떻게 되는지 본다. `x` 가 **발산**한다.",
+    Ex(2, "이번엔 학습률 `lr` 을 `1.1` 로 두고 같은 20회를 돌린다. `x` 가 **발산**한다.",
        setup="def grad(x): return 2 * (x - 3)\nx = 10.0",
        blank="lr = ___\nfor _ in range(20):\n    x = x - lr * grad(x)",
        answer="lr = 1.1\nfor _ in range(20):\n    x = x - lr * grad(x)",

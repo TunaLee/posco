@@ -191,7 +191,8 @@ for epoch in range(1, 101):
         print(f"{{epoch:>4}}  loss {{loss.item():.4f}}")
 """),
 
-    Ex(6, "학습 루프 다섯 줄의 **순서를 채운다.** 100회 돌린 뒤 손실이 줄었는지 본다.",
+    Ex(6, "학습 루프 **다섯 줄을 순서대로** 쓴다. 100회 돌린 뒤 손실이 줄었는지 본다.\n"
+       "> 예측 → 손실 → 기울기 비우기 → 역전파 → 갱신.",
        setup=PREP + "\n"
              "class MLP(nn.Module):\n"
              "    def __init__(self, n_in):\n"
@@ -218,7 +219,7 @@ for epoch in range(1, 101):
        check="assert last < first, f'손실이 줄어야 한다: {first:.4f} → {last:.4f}'\n"
              "print(f'통과 — {first:.4f} → {last:.4f}')"),
 
-    Ex(7, "`opt.zero_grad()` 를 **빼면** 어떻게 되는지 본다.\n"
+    Ex(7, "`opt.zero_grad()` 를 **일부러 빼고** 20회 돌린다.\n"
           "기울기가 쌓여 손실이 제대로 안 줄어드는 것을 확인한다.",
        setup=PREP + "\n"
              "class MLP(nn.Module):\n"
