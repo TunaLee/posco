@@ -7,7 +7,7 @@
 |---|---|---|
 | Day 1 · 파이썬 문법 | [day1/index.html](day1/index.html) | 60 |
 | Day 2 · 데이터 다루기 | [day2/index.html](day2/index.html) | 48 |
-| Day 3 · 머신러닝 | [day3/index.html](day3/index.html) | 29 |
+| Day 3 · 머신러닝 | [day3/index.html](day3/index.html) | 38 |
 | Day 4 · 딥러닝 | [day4/index.html](day4/index.html) | 26 |
 
 조작: `← →` 또는 Space · 숫자 입력 후 Enter로 점프 · `≡` 목차 · `−/+` 줌 · PDF 버튼(인쇄).
@@ -33,8 +33,9 @@ Day 2  데이터 다루기
 Day 3  머신러닝
   CH0 학습의 뼈대       규칙의 출처 · 세 갈래 · 회귀와 분류
   CH1 학습의 원리       선형 회귀 · 손실 함수 · 기울기 · 경사 하강법 · 학습률
-  CH2 scikit-learn      공통 네 줄 · 로지스틱 회귀 · 결정 트리 · 랜덤 포레스트
-  CH3 검증과 평가       과적합 · 검증셋(3분할) · K-Fold · 모델 비교 · 혼동 행렬 · 지표 선택
+  CH2 모델              공통 네 줄 · KNN · 로지스틱 회귀 · SVM · 결정 트리 · 선형 회귀
+  CH3 앙상블            앙상블 · 배깅 · 랜덤 포레스트 · 부스팅 · 배깅↔부스팅 · XGBoost
+  CH4 검증과 평가       과적합 · 검증셋(3분할) · K-Fold · 모델 비교 · 혼동 행렬 · 지표 선택
 
 Day 4  딥러닝
   CH0 객체지향 기초     클래스 · 인스턴스 · 상속과 재정의
