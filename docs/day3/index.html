@@ -213,7 +213,10 @@
   .pane h4{margin:0 0 9px; font-size:14px; font-weight:800; display:flex; align-items:center; gap:7px;}
   .pane.bad h4{color:#C9405B;} .pane.good h4{color:#0E9E6E;}
   .pane p{margin:0; font-size:13px; color:var(--ink-soft); line-height:1.5;}
-  .pane .mini{font-family:var(--mono); font-size:12px; background:var(--wash-2); border:1px solid var(--line); border-radius:3px; padding:8px 10px; color:var(--ink-soft); line-height:1.5; margin-top:8px;}
+  .pane .mini{font-family:var(--mono); font-size:13.5px; background:#16142B; border:1px solid #2A2545; border-radius:6px; padding:13px 15px; color:#E8E4F5; line-height:1.7; margin-top:10px; white-space:pre-wrap;}
+  .mini b{color:#9BE8DC; font-weight:700;}          /* 강조할 토큰 */
+  .mini i{color:#8E8AAC; font-style:normal;}        /* 주석 */
+  .pane.good .mini{background:#0E2A26; border-color:#1C4A43;}
 
   .controlbar{
     position:fixed; left:50%; bottom:18px; transform:translateX(-50%); z-index:70;
@@ -388,15 +391,21 @@
   <div class="rule"></div>
   <div class="body">
     <div class="twopane">
-      <div class="pane bad"><h4>전통 프로그래밍</h4><div class="mini">if temp &gt; 950 and dwell &lt; 6:
-    defect = True
-elif d50 &gt; 12.5 and o2 &lt; 18:
-    defect = True
+      <div class="pane bad"><h4>전통 프로그래밍</h4><div class="mini"><i># 사람이 조건을 하나하나 적는다</i>
+<b>if</b> calc_temp &gt; 900 <b>and</b> calc_time &lt; 100:
+    passed = 0
+<b>elif</b> impurity &gt; 1500:
+    passed = 0
+<b>elif</b> moisture &gt; 1.8 <b>and</b> particle_size &gt; 15:
+    passed = 0
 ...</div><p>사람이 규칙을 쓴다. 조건이 늘어날수록 <b>손으로 감당이 안 된다</b>.</p></div>
-      <div class="pane good"><h4>머신러닝</h4><div class="mini">입력: 소성온도 · 체류시간 · 입도 · 산소농도 (과거 3만 로트)
-정답: 그 로트가 불량이었는지
+      <div class="pane good"><h4>머신러닝</h4><div class="mini"><i># 사람은 데이터와 정답만 준다</i>
+입력  calc_temp · calc_time · impurity
+      moisture · particle_size
+정답  <b>passed</b>  (0 또는 1)
 
-→ 모델이 경계선을 스스로 찾는다</div><p>사람은 <b>데이터와 정답</b>만 준다. 규칙은 학습 결과로 나온다.</p></div>
+<b>model.fit(X, y)</b>
+<i># 경계는 모델이 스스로 찾는다</i></div><p>사람은 <b>데이터와 정답</b>만 준다. 규칙은 학습 결과로 나온다.</p></div>
     </div>
     <div class="pipe">
       <div class="step"><div class="si">01</div><div class="sn">데이터</div><div class="sd">입력 X 와 정답 y</div></div>
