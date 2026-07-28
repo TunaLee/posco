@@ -56,7 +56,7 @@ class Task:
     def cells(self, solution):
         body = self.answer if solution else "# 여기에 작성한다\n"
         src = "\n".join(x for x in (self.setup, body, "", self.check) if x)
-        return [t(self.no, self.prompt), code(src)]
+        return [t(getattr(self, "display_no", self.no), self.prompt), code(src)]
 
 
 class Ex:
@@ -71,7 +71,7 @@ class Ex:
     def cells(self, solution):
         body = self.answer if solution else self.blank
         src = "\n".join(x for x in (self.setup, body, "", self.check) if x is not None)
-        return [q(self.no, self.prompt), code(src)]
+        return [q(getattr(self, "display_no", self.no), self.prompt), code(src)]
 
 
 VARIANTS = {
@@ -91,11 +91,14 @@ INTRO = {
 `스스로 풀기` 는 각자, `조별 과제` 는 2~3명이 한 조로 상의하며 푼다.
 막히면 강의 노트북(`lecture`)의 실습 셀로 돌아가 확인한다.""",
     "solution": """`lecture` 와 `practice` 의 모든 문제에 대한 정답본이다.
-수강생은 먼저 스스로 풀어 본 뒤에 연다.""",
+수강생은 먼저 스스로 풀어 본 뒤에 연다.
+
+두 벌을 합쳐 담으므로 **문제 번호가 `lab` 과 다르다.** 번호 대신
+**지문으로 찾는다.**""",
 }
 
 
-def build(day, title, subtitle, spec, variant, modes=None):
+def build(day, title, subtitle, spec, variant, modes=None, renumber=False):
     desc, keep, solution = VARIANTS[variant]
     url = (f"https://colab.research.google.com/github/{REPO}"
            f"/blob/main/notebooks/day{day}_{variant}.ipynb")
@@ -121,6 +124,7 @@ def build(day, title, subtitle, spec, variant, modes=None):
 """)]
 
     pending, section_open = [], None
+    seq = {"ex": 0, "task": 0}          # 벌 안에서 1번부터 다시 센다
 
     def flush():
         for key, label, how in GROUPS:
@@ -132,6 +136,11 @@ def build(day, title, subtitle, spec, variant, modes=None):
             if len(keep) > 1:
                 cells.append(md(f"### {label}\n\n{how}"))
             for x in group:
+                if renumber:
+                    seq[x.kind] += 1
+                    x.display_no = seq[x.kind]
+                else:
+                    x.display_no = x.no
                 cells.extend(x.cells(solution))
         pending.clear()
 
@@ -175,7 +184,7 @@ def build(day, title, subtitle, spec, variant, modes=None):
     return path, sum(1 for c in pruned if c["cell_type"] == "code")
 
 
-def emit(day, title, subtitle, spec, modes=None):
+def emit(day, title, subtitle, spec, modes=None, renumber=False):
     for variant in VARIANTS:
-        p, n = build(day, title, subtitle, spec, variant, modes)
+        p, n = build(day, title, subtitle, spec, variant, modes, renumber)
         print(f"  {os.path.basename(p):<26} 코드 셀 {n:>3}개")
