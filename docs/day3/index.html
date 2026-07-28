@@ -866,7 +866,6 @@ w = w − 걸음 × 방향</div><p>곡선 전체를 몰라도 된다. <b>지금 
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">이 셀을 먼저 돌린다 — 뒤의 모든 코드가 여기에 기댄다</span></div>
           <pre><code><span class="kw">import</span> pandas <span class="kw">as</span> pd
 <span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> train_test_split
-<span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> StandardScaler
 
 <span class="cm"># 1. 읽기</span>
 url = <span class="st">'…/batch_quality.csv'</span>
@@ -883,20 +882,15 @@ X = d.drop(columns=[<span class="st">'양품여부'</span>, <span class="st">'�
 y = d[<span class="st">'양품여부'</span>]
 
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=<span class="nm">0.2</span>, random_state=<span class="nm">42</span>, stratify=y)
-
-<span class="cm"># 4. 거리·규제를 쓰는 모델용 — 훈련셋 기준으로만 fit</span>
-sc = StandardScaler()
-X_train_s = sc.fit_transform(X_train)
-X_test_s  = sc.transform(X_test)</code></pre>
+    X, y, test_size=<span class="nm">0.2</span>, random_state=<span class="nm">42</span>, stratify=y)</code></pre>
         </div>
       </div>
       <div>
-        <table class="ctable"><thead><tr><th>변수</th><th>모양</th></tr></thead><tbody><tr><td><code>X</code></td><td>(1339, 12)</td></tr><tr><td><code>X_train</code></td><td><b>(1071, 12)</b></td></tr><tr><td><code>X_test</code></td><td>(268, 12)</td></tr><tr><td><code>y_train</code></td><td>양품 81.1%</td></tr><tr><td><code>y_test</code></td><td>양품 81.0%</td></tr><tr><td><code>X_train_s</code></td><td>스케일링본 (1071, 12)</td></tr></tbody></table>
+        <table class="ctable"><thead><tr><th>변수</th><th>모양</th></tr></thead><tbody><tr><td><code>X</code></td><td>(1339, 12)</td></tr><tr><td><code>X_train</code></td><td><b>(1071, 12)</b></td></tr><tr><td><code>X_test</code></td><td>(268, 12)</td></tr><tr><td><code>y_train</code></td><td>양품 81.1%</td></tr><tr><td><code>y_test</code></td><td>양품 81.0%</td></tr></tbody></table>
         <div class="vlist">
           <div class="v"><span class="b">★</span><div>여기서 만든 <code>X_train</code> <code>y_train</code> 을 <b>뒤의 모든 모델이 그대로</b> 쓴다.</div></div>
           <div class="v"><span class="b">→</span><div><code>방전용량</code> 도 지운다. 정답을 만든 열이라 <b>남겨 두면 답을 보고 푸는 셈</b>이다.</div></div>
-          <div class="v"><span class="b">→</span><div>거리를 쓰는 모델(KNN·SVM)과 규제는 <code>X_train_s</code> 를 쓴다. 트리 계열은 <code>X_train</code> 그대로다.</div></div>
+          <div class="v"><span class="b">→</span><div>트리 계열은 이대로 쓴다. <b>크기를 맞추는 일이 필요한 모델</b>은 그 자리에서 한 줄 더 붙인다.</div></div>
         </div>
       </div>
     </div>
@@ -956,18 +950,18 @@ pred = model.predict(X_test)      <span class="cm"># 3. 예측하고</span>
           <pre><code><span class="kw">from</span> sklearn.neighbors <span class="kw">import</span> KNeighborsClassifier
 
 model = KNeighborsClassifier(n_neighbors=<span class="nm">5</span>)
-model.fit(X_train_s, y_train)</code></pre>
+model.fit(X_train, y_train)</code></pre>
         </div>
         <div class="vlist">
           <div class="v"><span class="b">→</span><div>새 배치와 <b>가장 가까운 5건</b>을 찾아 그중 많은 쪽으로 판정한다.</div></div>
           <div class="v"><span class="b">★</span><div>학습이랄 게 없다. <b>데이터를 통째로 외워 뒀다가</b> 물어볼 때 계산한다.</div></div>
-          <div class="v"><span class="b">✕</span><div>거리를 재므로 <b>스케일링이 필수</b>다. 단위가 큰 열이 거리를 지배한다.</div></div>
+          <div class="v"><span class="b">✕</span><div>거리를 재므로 <b>단위가 큰 열이 거리를 지배</b>한다. 크기를 맞추면 결과가 달라진다 — 좋아질 때도, 나빠질 때도 있다.</div></div>
         </div>
       </div>
       <div>
         <div class="plot"><svg viewBox="0 0 300 210"><rect x="8" y="8" width="284" height="170" fill="#FCFBFF" stroke="#DCD6F0"/><circle cx="110" cy="60" r="84" fill="#5B3DF5" opacity=".07" stroke="#5B3DF5" stroke-dasharray="4 3"/><circle cx="60" cy="140" r="5" fill="#0FB5A1" opacity=".85"/><circle cx="88" cy="120" r="5" fill="#0FB5A1" opacity=".85"/><circle cx="72" cy="158" r="5" fill="#0FB5A1" opacity=".85"/><circle cx="105" cy="146" r="5" fill="#0FB5A1" opacity=".85"/><circle cx="52" cy="112" r="5" fill="#0FB5A1" opacity=".85"/><circle cx="120" cy="168" r="5" fill="#0FB5A1" opacity=".85"/><circle cx="95" cy="178" r="5" fill="#0FB5A1" opacity=".85"/><circle cx="66" cy="96" r="5" fill="#0FB5A1" opacity=".85"/><circle cx="190" cy="72" r="5" fill="#E8537A" opacity=".85"/><circle cx="215" cy="100" r="5" fill="#E8537A" opacity=".85"/><circle cx="172" cy="52" r="5" fill="#E8537A" opacity=".85"/><circle cx="232" cy="66" r="5" fill="#E8537A" opacity=".85"/><circle cx="200" cy="120" r="5" fill="#E8537A" opacity=".85"/><circle cx="160" cy="90" r="5" fill="#E8537A" opacity=".85"/><circle cx="66" cy="96" r="9" fill="none" stroke="#5B3DF5" stroke-width="1.6"/><circle cx="160" cy="90" r="9" fill="none" stroke="#5B3DF5" stroke-width="1.6"/><circle cx="172" cy="52" r="9" fill="none" stroke="#5B3DF5" stroke-width="1.6"/><circle cx="88" cy="120" r="9" fill="none" stroke="#5B3DF5" stroke-width="1.6"/><circle cx="52" cy="112" r="9" fill="none" stroke="#5B3DF5" stroke-width="1.6"/><rect x="104" y="54" width="13" height="13" fill="#16142B" transform="rotate(45 110 60)"/><text x="110" y="-30" font-size="10" fill="#16142B" text-anchor="middle" font-weight="700">새 배치</text><g font-size="10.5" font-family="ui-monospace,monospace"><circle cx="20" cy="196" r="4.5" fill="#0FB5A1"/><text x="30" y="200" fill="#0A7F70">양품 3</text><circle cx="96" cy="196" r="4.5" fill="#E8537A"/><text x="106" y="200" fill="#C13458">불량 2</text><text x="176" y="200" fill="#3A1FC9" font-weight="700">→ 양품으로 판정</text></g></svg>
           <div class="cap">점선 안 5건 중 3대 2 — 만장일치가 아니어도 된다</div></div>
-        <table class="ctable"><thead><tr><th>k</th><th>정확도</th></tr></thead><tbody><tr><td>1</td><td>0.843</td></tr><tr><td>5</td><td><b>0.854</b></td></tr><tr><td>31</td><td>0.836</td></tr></tbody></table>
+        <table class="ctable"><thead><tr><th>k</th><th>정확도</th></tr></thead><tbody><tr><td>1</td><td>0.884</td></tr><tr><td>5</td><td><b>0.903</b></td></tr><tr><td>31</td><td>0.858</td></tr></tbody></table>
       </div>
     </div>
     <div class="keymsg"><span class="k">기준</span><div>k 가 작으면 <b>잡음까지 따라가고</b>, 너무 크면 <b>동네 특성이 뭉개진다</b>. 여기서는 5가 가장 낫다.</div></div>
@@ -1030,7 +1024,13 @@ model.fit(X_train_s, y_train)</code></pre>
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">커널로 굽은 경계도 만든다</span></div>
           <pre><code><span class="kw">from</span> sklearn.svm <span class="kw">import</span> SVC
 
-model = SVC(kernel=<span class="st">'rbf'</span>)      <span class="cm"># 굽은 경계</span>
+<span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> StandardScaler
+
+<span class="cm"># SVM 은 크기를 맞춰야 한다</span>
+sc = StandardScaler()
+X_train_s = sc.fit_transform(X_train)
+
+model = SVC(kernel=<span class="st">'rbf'</span>)
 model.fit(X_train_s, y_train)</code></pre>
         </div>
         <div class="vlist">
@@ -1174,6 +1174,11 @@ model.fit(X_train, y_train)</code></pre>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">alpha 가 누르는 세기다</span></div>
           <pre><code><span class="kw">from</span> sklearn.linear_model <span class="kw">import</span> Ridge, Lasso
+
+<span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> StandardScaler
+
+<span class="cm"># 벌점을 공평하게 주려면 크기부터 맞춘다</span>
+X_train_s = StandardScaler().fit_transform(X_train)
 
 Ridge(alpha=<span class="nm">10</span>).fit(X_train_s, y_train)   <span class="cm"># 계수를 줄인다</span>
 Lasso(alpha=<span class="nm">0.3</span>).fit(X_train_s, y_train)  <span class="cm"># 0 으로도 만든다</span></code></pre>
