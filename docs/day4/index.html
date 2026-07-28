@@ -1064,12 +1064,12 @@ Linear(in_features=10, out_features=16)</div>
 df = ...
 
 <span class="cm"># TODO 2: 안 쓸 열을 지운다</span>
-<span class="cm">#   batch_id, capacity</span>
+<span class="cm">#   배치번호, 방전용량</span>
 
-<span class="cm"># TODO 3: particle_size 결측을 중앙값으로 채운다</span>
-<span class="cm">#   moisture 결측 행은 지운다</span>
+<span class="cm"># TODO 3: 입도 결측을 중앙값으로 채운다</span>
+<span class="cm">#   수분율 결측 행은 지운다</span>
 
-<span class="cm"># TODO 4: line, shift 를 원-핫 인코딩</span>
+<span class="cm"># TODO 4: 설비호기, 교대조 를 원-핫 인코딩</span>
 
 <span class="cm"># TODO 5: X, y 로 나누고 train_test_split</span>
 <span class="cm">#   test_size=0.2, stratify=y, random_state=42</span></code></pre>

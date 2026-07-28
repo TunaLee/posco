@@ -8,7 +8,7 @@ MASTER = "https://tunalee.github.io/posco/data/line_master.csv"
 LOAD = (
     "import pandas as pd\n"
     f"df = pd.read_csv('{URL}', thousands=',', na_values=['N/A', '-'])\n"
-    "df['line'] = df['line'].str.strip().str.upper()"
+    "df['설비호기'] = df['설비호기'].str.strip().str.upper()"
 )
 
 CELLS = [
@@ -138,22 +138,22 @@ print(df.isna().sum())
        setup=LOAD,
        blank="missing_cols = ___",
        answer="missing_cols = list(df.columns[df.isna().sum() > 0])",
-       check="assert sorted(missing_cols) == ['moisture', 'particle_size'], f'실제 {missing_cols}'\nprint('통과')"),
+       check="assert sorted(missing_cols) == ['수분율', '입도'], f'실제 {missing_cols}'\nprint('통과')"),
 
     lab("범주형 열은 value_counts 로 먼저 본다. 표기 흔들림이 여기서 드러난다."),
     code(f"""
 raw = pd.read_csv('{URL}')
-print(raw['line'].value_counts().head(8))
-print('종류 수:', len(raw['line'].value_counts()))
+print(raw['설비호기'].value_counts().head(8))
+print('종류 수:', len(raw['설비호기'].value_counts()))
 
-cleaned = raw['line'].str.strip().str.upper()
+cleaned = raw['설비호기'].str.strip().str.upper()
 print('정리 후 종류 수:', len(cleaned.value_counts()))
 """),
 
-    Ex(7, "`raw['line']` 의 공백과 대소문자를 정리한 뒤, **몇 종류가 남는지** `n_kind` 에 담는다.\n> `value_counts()` 결과의 길이를 센다.",
+    Ex(7, "`raw['설비호기']` 의 공백과 대소문자를 정리한 뒤, **몇 종류가 남는지** `n_kind` 에 담는다.\n> `value_counts()` 결과의 길이를 센다.",
        setup=f"import pandas as pd\nraw = pd.read_csv('{URL}')",
        blank="n_kind = ___",
-       answer="n_kind = len(raw['line'].str.strip().str.upper().value_counts())",
+       answer="n_kind = len(raw['설비호기'].str.strip().str.upper().value_counts())",
        check="assert n_kind == 6, f'기대 6, 실제 {n_kind}'\nprint('통과')"),
 
     # ══════════════════════════════════════════════════════════════════
@@ -163,54 +163,54 @@ print('정리 후 종류 수:', len(cleaned.value_counts()))
     code(f"""
 {LOAD}
 
-print(type(df['calc_temp']))
-print(type(df[['calc_temp']]))
+print(type(df['소성온도']))
+print(type(df[['소성온도']]))
 
-print(df[df['capacity'] < 168].shape)
-print(df[(df['capacity'] < 168) & (df['line'] == 'A')].shape)
+print(df[df['방전용량'] < 168].shape)
+print(df[(df['방전용량'] < 168) & (df['설비호기'] == 'A')].shape)
 """),
 
-    Ex(8, "불량(`passed == 0`)인 행만 골라 `bad` 에 담는다.",
+    Ex(8, "불량(`양품여부 == 0`)인 행만 골라 `bad` 에 담는다.",
        setup=LOAD,
        blank="bad = ___",
-       answer="bad = df[df['passed'] == 0]",
+       answer="bad = df[df['양품여부'] == 0]",
        check="assert len(bad) == 265, f'기대 265, 실제 {len(bad)}'\nprint('통과')"),
 
-    Ex(9, "`calc_temp` 가 900 이상이면서 양품인 배치 수를 `n` 에 담는다.",
+    Ex(9, "`소성온도` 가 900 이상이면서 양품인 배치 수를 `n` 에 담는다.",
        setup=LOAD,
        blank="n = ___",
-       answer="n = len(df[(df['calc_temp'] >= 900) & (df['passed'] == 1)])",
+       answer="n = len(df[(df['소성온도'] >= 900) & (df['양품여부'] == 1)])",
        check="assert n == 65, f'기대 65, 실제 {n}'\nprint('통과')"),
 
     lab("`loc` 는 이름으로, `iloc` 는 번호로 고른다. 슬라이스의 끝 처리가 다르다."),
     code(f"""
 {LOAD}
 
-print(df.loc[0, 'calc_temp'])
-print(df.loc[0:2, ['line', 'calc_temp']])   # 끝 포함
+print(df.loc[0, '소성온도'])
+print(df.loc[0:2, ['설비호기', '소성온도']])   # 끝 포함
 print(df.iloc[0:2, 1:4])                    # 끝 제외
 """),
 
-    Ex(10, "`loc` 로 불량 배치의 `capacity` 만 뽑아 평균을 `avg` 에 담는다.",
+    Ex(10, "`loc` 로 불량 배치의 `방전용량` 만 뽑아 평균을 `avg` 에 담는다.",
        setup=LOAD,
        blank="avg = ___",
-       answer="avg = df.loc[df['passed'] == 0, 'capacity'].mean()",
+       answer="avg = df.loc[df['양품여부'] == 0, '방전용량'].mean()",
        check="assert abs(avg - 164.5) < 1.0, f'실제 {avg}'\nprint('통과')"),
 
     lab("열 전체에 한 번에 연산이 걸린다. 반복문이 필요 없다."),
     code(f"""
 {LOAD}
 
-df['temp_gap'] = (df['calc_temp'] - 890).abs()
-df['is_low'] = df['capacity'] < 168
+df['temp_gap'] = (df['소성온도'] - 890).abs()
+df['is_low'] = df['방전용량'] < 168
 
-print(df[['calc_temp', 'temp_gap', 'capacity', 'is_low']].head(3))
+print(df[['소성온도', 'temp_gap', '방전용량', 'is_low']].head(3))
 """),
 
-    Ex(11, "`impurity` 를 퍼센트로 바꾼 열 `impurity_pct` 를 만든다. ppm ÷ 10000 이다.",
+    Ex(11, "`불순물` 을 퍼센트로 바꾼 열 `impurity_pct` 를 만든다. ppm ÷ 10000 이다.",
        setup=LOAD,
        blank="df['impurity_pct'] = ___",
-       answer="df['impurity_pct'] = df['impurity'] / 10000",
+       answer="df['impurity_pct'] = df['불순물'] / 10000",
        check="assert abs(df['impurity_pct'].mean() - 0.0829) < 0.001, f\"실제 {df['impurity_pct'].mean()}\"\nprint('통과')"),
 
 
@@ -220,15 +220,15 @@ print(df[['calc_temp', 'temp_gap', 'capacity', 'is_low']].head(3))
     code(f"""
 {LOAD}
 
-print(df.groupby('line')['passed'].mean().round(3))
-print(df.groupby('shift')['calc_temp'].std().round(1))
-print(df.groupby(['line', 'shift'])['capacity'].mean().round(1).head(4))
+print(df.groupby('설비호기')['양품여부'].mean().round(3))
+print(df.groupby('교대조')['소성온도'].std().round(1))
+print(df.groupby(['설비호기', '교대조'])['방전용량'].mean().round(1).head(4))
 """),
 
     Ex(13, "설비별 **불량률**을 구해 `bad_rate` 에 담는다. 불량률 = 1 − 양품률.",
         setup=LOAD,
         blank="bad_rate = ___",
-        answer="bad_rate = 1 - df.groupby('line')['passed'].mean()",
+        answer="bad_rate = 1 - df.groupby('설비호기')['양품여부'].mean()",
         check="assert abs(bad_rate['A'] - 0.221) < 0.002, f\"A 실제 {bad_rate['A']}\"\n"
               "assert bad_rate.idxmax() == 'A', f'가장 나쁜 설비는 A 여야 한다: {bad_rate.idxmax()}'\nprint('통과')"),
 
@@ -240,36 +240,36 @@ print(df.groupby(['line', 'shift'])['capacity'].mean().round(1).head(4))
 {LOAD}
 
 print(df.isna().sum())
-print(df.groupby(df['particle_size'].isna())['passed'].mean().round(3))
+print(df.groupby(df['입도'].isna())['양품여부'].mean().round(3))
 
-df['particle_size'] = df['particle_size'].fillna(df['particle_size'].median())
-print('메운 뒤:', df['particle_size'].isna().sum())
+df['입도'] = df['입도'].fillna(df['입도'].median())
+print('메운 뒤:', df['입도'].isna().sum())
 """),
 
-    Ex(15, "`moisture` 결측을 **중앙값**으로 채우고, 채운 흔적을 `moisture_missing` 열에 남긴다.",
+    Ex(15, "`수분율` 결측을 **중앙값**으로 채우고, 채운 흔적을 `moisture_missing` 열에 남긴다.",
         setup=LOAD,
-        blank="df['moisture_missing'] = ___\ndf['moisture'] = ___",
-        answer="df['moisture_missing'] = df['moisture'].isna()\n"
-               "df['moisture'] = df['moisture'].fillna(df['moisture'].median())",
-        check="assert df['moisture'].isna().sum() == 0, '아직 결측이 남았다'\n"
+        blank="df['moisture_missing'] = ___\ndf['수분율'] = ___",
+        answer="df['moisture_missing'] = df['수분율'].isna()\n"
+               "df['수분율'] = df['수분율'].fillna(df['수분율'].median())",
+        check="assert df['수분율'].isna().sum() == 0, '아직 결측이 남았다'\n"
               "assert df['moisture_missing'].sum() == 73, f\"기대 73, 실제 {df['moisture_missing'].sum()}\"\nprint('통과')"),
 
     lab("글자는 모델에 들어가지 않는다. 원-핫으로 열을 늘린다."),
     code(f"""
 {LOAD}
 
-d = pd.get_dummies(df, columns=['line', 'shift'], drop_first=True)
-print([c for c in d.columns if c.startswith(('line_', 'shift_'))])
+d = pd.get_dummies(df, columns=['설비호기', '교대조'], drop_first=True)
+print([c for c in d.columns if c.startswith(('설비호기_', '교대조_'))])
 print(d.shape)
 """),
 
-    Ex(16, "`line` 과 `shift` 를 원-핫으로 바꾼 표를 `d` 에 담는다. 첫 범주는 뺀다.",
+    Ex(16, "`설비호기` 와 `교대조` 를 원-핫으로 바꾼 표를 `d` 에 담는다. 첫 범주는 뺀다.",
         setup=LOAD,
         blank="d = ___",
-        answer="d = pd.get_dummies(df, columns=['line', 'shift'], drop_first=True)",
-        check="cols = [c for c in d.columns if c.startswith(('line_', 'shift_'))]\n"
+        answer="d = pd.get_dummies(df, columns=['설비호기', '교대조'], drop_first=True)",
+        check="cols = [c for c in d.columns if c.startswith(('설비호기_', '교대조_'))]\n"
               "assert len(cols) == 6, f'기대 6개, 실제 {len(cols)}: {cols}'\n"
-              "assert 'line_A' not in cols, 'drop_first=True 면 line_A 는 빠진다'\nprint('통과')"),
+              "assert '설비호기_A' not in cols, 'drop_first=True 면 설비호기_A 는 빠진다'\nprint('통과')"),
 
     lab("분할이 스케일링보다 먼저다. 순서를 바꾸면 테스트셋 정보가 새어 들어간다."),
     code(f"""
@@ -277,12 +277,12 @@ print(d.shape)
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
-df['particle_size'] = df['particle_size'].fillna(df['particle_size'].median())
-df = df.dropna(subset=['moisture'])
-d = pd.get_dummies(df, columns=['line', 'shift'], drop_first=True)
+df['입도'] = df['입도'].fillna(df['입도'].median())
+df = df.dropna(subset=['수분율'])
+d = pd.get_dummies(df, columns=['설비호기', '교대조'], drop_first=True)
 
-X = d.drop(columns=['passed', 'capacity', 'batch_id'])
-y = d['passed']
+X = d.drop(columns=['양품여부', '방전용량', '배치번호'])
+y = d['양품여부']
 
 X_tr, X_te, y_tr, y_te = train_test_split(
     X, y, test_size=0.2, random_state=42, stratify=y)
@@ -302,12 +302,12 @@ print('테스트셋 불량 비율:', round(1 - y_te.mean(), 3))
                f"from sklearn.preprocessing import StandardScaler\nURL = '{URL}'",
          answer="def prep(url):\n"
                 "    df = pd.read_csv(url, thousands=',', na_values=['N/A', '-'])\n"
-                "    df['line'] = df['line'].str.strip().str.upper()\n"
-                "    df['particle_size'] = df['particle_size'].fillna(df['particle_size'].median())\n"
-                "    df = df.dropna(subset=['moisture'])\n"
-                "    d = pd.get_dummies(df, columns=['line', 'shift'], drop_first=True)\n"
-                "    X = d.drop(columns=['passed', 'capacity', 'batch_id'])\n"
-                "    y = d['passed']\n"
+                "    df['설비호기'] = df['설비호기'].str.strip().str.upper()\n"
+                "    df['입도'] = df['입도'].fillna(df['입도'].median())\n"
+                "    df = df.dropna(subset=['수분율'])\n"
+                "    d = pd.get_dummies(df, columns=['설비호기', '교대조'], drop_first=True)\n"
+                "    X = d.drop(columns=['양품여부', '방전용량', '배치번호'])\n"
+                "    y = d['양품여부']\n"
                 "    X_tr, X_te, y_tr, y_te = train_test_split(\n"
                 "        X, y, test_size=0.2, random_state=42, stratify=y)\n"
                 "    sc = StandardScaler()\n"
@@ -325,7 +325,7 @@ print('테스트셋 불량 비율:', round(1 - y_te.mean(), 3))
 {LOAD}
 import matplotlib.pyplot as plt
 
-plt.hist(df['capacity'], bins=30)
+plt.hist(df['방전용량'], bins=30)
 plt.xlabel('capacity (mAh/g)')
 plt.ylabel('batches')
 plt.title('Discharge capacity')
@@ -337,16 +337,16 @@ plt.show()
 {LOAD}
 import matplotlib.pyplot as plt
 
-plt.scatter(df['calc_temp'], df['capacity'], alpha=0.25, s=12)
-plt.xlabel('calc_temp')
-plt.ylabel('capacity')
+plt.scatter(df['소성온도'], df['방전용량'], alpha=0.25, s=12)
+plt.xlabel('소성온도')
+plt.ylabel('방전용량')
 plt.show()
 """),
 
     Ex(17, "설비별 **평균 용량**을 막대 그래프로 그린다.",
         setup=LOAD + "\nimport matplotlib.pyplot as plt",
         blank="ax = ___\nplt.show()",
-        answer="ax = df.groupby('line')['capacity'].mean().plot.bar()\nplt.show()",
+        answer="ax = df.groupby('설비호기')['방전용량'].mean().plot.bar()\nplt.show()",
         check="assert ax is not None, '그래프 객체가 없다'\nprint('통과')"),
 
     lab("상관 히트맵으로 답과 붙어 있는 열을 찾는다."),
@@ -355,32 +355,32 @@ plt.show()
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-cols = ['calc_temp', 'calc_time', 'particle_size', 'moisture', 'impurity', 'press', 'capacity']
+cols = ['소성온도', '소성시간', '입도', '수분율', '불순물', '성형압력', '방전용량']
 sns.heatmap(df[cols].corr(numeric_only=True), annot=True, fmt='.2f', cmap='coolwarm')
 plt.show()
 """),
 
-    Ex(18, "`capacity` 와 상관이 **가장 강한 열**의 이름을 `best` 에 담는다.\n"
+    Ex(18, "`방전용량` 와 상관이 **가장 강한 열**의 이름을 `best` 에 담는다.\n"
            "자기 자신은 뺀다. 가장 큰 양수를 고르면 된다.",
         setup=LOAD,
-        blank="c = df.corr(numeric_only=True)['capacity'].drop('capacity')\nbest = ___",
-        answer="c = df.corr(numeric_only=True)['capacity'].drop('capacity')\nbest = c.sort_values().index[-1]",
-        check="assert best == 'calc_temp', f'기대 calc_temp, 실제 {best}'\nprint('통과')"),
+        blank="c = df.corr(numeric_only=True)['방전용량'].drop('방전용량')\nbest = ___",
+        answer="c = df.corr(numeric_only=True)['방전용량'].drop('방전용량')\nbest = c.sort_values().index[-1]",
+        check="assert best == '소성온도', f'기대 소성온도, 실제 {best}'\nprint('통과')"),
 
-    Task(6, "설비별 `capacity` 분포를 **박스플롯**으로 그리고,\n"
+    Task(6, "설비별 `방전용량` 분포를 **박스플롯**으로 그리고,\n"
             "이상치가 가장 많이 튀어나온 열이 무엇인지 눈으로 확인한다.\n"
-            "> `sns.boxplot(data=df, x='line', y='capacity')`",
+            "> `sns.boxplot(data=df, x='설비호기', y='방전용량')`",
          setup=LOAD + "\nimport seaborn as sns\nimport matplotlib.pyplot as plt",
-         answer="sns.boxplot(data=df, x='line', y='capacity')\nplt.show()",
+         answer="sns.boxplot(data=df, x='설비호기', y='방전용량')\nplt.show()",
          check="print('통과 — 그림이 그려졌으면 된다')"),
 
-    Task(7, "`press` 에는 센서 오류값 999 가 섞여 있다.\n"
+    Task(7, "`성형압력` 에는 센서 오류값 999 가 섞여 있다.\n"
             "**999 를 결측으로 바꾼 뒤** 중앙값으로 채우고, 바꾸기 전후의 평균을 둘 다 출력한다.",
          setup=LOAD,
-         answer="before = df['press'].mean()\n"
-                "df.loc[df['press'] == 999, 'press'] = None\n"
-                "df['press'] = df['press'].fillna(df['press'].median())\n"
-                "after = df['press'].mean()\n"
+         answer="before = df['성형압력'].mean()\n"
+                "df.loc[df['성형압력'] == 999, '성형압력'] = None\n"
+                "df['성형압력'] = df['성형압력'].fillna(df['성형압력'].median())\n"
+                "after = df['성형압력'].mean()\n"
                 "print(round(before, 2), round(after, 2))",
          check="assert before > 30, f'바꾸기 전 평균은 999 탓에 커야 한다: {before}'\n"
                "assert 23 < after < 25, f'바꾼 뒤 평균은 24 근처: {after}'\nprint('통과')"),
@@ -392,23 +392,23 @@ plt.show()
            "야간 − 주간 순서로 뺀다.",
         setup=LOAD,
         blank="rate = ___\ngap = ___",
-        answer="rate = 1 - df.groupby('shift')['passed'].mean()\ngap = rate['night'] - rate['day']",
+        answer="rate = 1 - df.groupby('교대조')['양품여부'].mean()\ngap = rate['night'] - rate['day']",
         check="assert gap > 0, '야간조 불량률이 더 높다'\n"
               "assert abs(gap - 0.035) < 0.01, f'실제 {gap}'\nprint('통과')"),
 
     Ex(20, "온도를 10도 구간으로 묶어 구간별 **평균 용량**을 `band_avg` 에 담는다.\n"
-           "> `(df['calc_temp'] // 10 * 10)` 으로 구간 열을 만든다.",
+           "> `(df['소성온도'] // 10 * 10)` 으로 구간 열을 만든다.",
         setup=LOAD,
         blank="df['band'] = ___\nband_avg = ___",
-        answer="df['band'] = df['calc_temp'] // 10 * 10\n"
-               "band_avg = df.groupby('band')['capacity'].mean()",
+        answer="df['band'] = df['소성온도'] // 10 * 10\n"
+               "band_avg = df.groupby('band')['방전용량'].mean()",
         check="assert band_avg.idxmax() >= 880, f'용량이 가장 높은 구간은 880 이상: {band_avg.idxmax()}'\nprint('통과')"),
 
     Task(8, "**불량이 가장 많이 나온 조건 조합**을 찾는다.\n"
             "설비와 교대조로 묶어 불량 건수를 세고, 가장 많은 조합을 `worst` 에 담는다.\n"
             "> 결과는 `('A', 'night')` 같은 튜플이다.",
          setup=LOAD,
-         answer="cnt = df[df['passed'] == 0].groupby(['line', 'shift']).size()\nworst = cnt.idxmax()",
+         answer="cnt = df[df['양품여부'] == 0].groupby(['설비호기', '교대조']).size()\nworst = cnt.idxmax()",
          check="assert isinstance(worst, tuple) and len(worst) == 2, f'튜플이어야 한다: {worst}'\n"
                "assert worst[0] in list('ABCDEF') and worst[1] in ('day', 'night')\nprint('통과')"),
 

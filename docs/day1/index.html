@@ -1117,13 +1117,13 @@ c.append(<span class="nm">99</span>)
       <div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">얕은 복사 — 안쪽은 그대로 공유된다</span></div>
-          <pre><code>rows = [{<span class="st">'line'</span>: <span class="st">'A'</span>, <span class="st">'temp'</span>: <span class="nm">898</span>},
-        {<span class="st">'line'</span>: <span class="st">'E'</span>, <span class="st">'temp'</span>: <span class="nm">829</span>}]
+          <pre><code>rows = [{<span class="st">'설비호기'</span>: <span class="st">'A'</span>, <span class="st">'소성온도'</span>: <span class="nm">898</span>},
+        {<span class="st">'설비호기'</span>: <span class="st">'E'</span>, <span class="st">'소성온도'</span>: <span class="nm">829</span>}]
 
 shallow = rows.copy()      <span class="cm"># 바깥 리스트만 새로</span>
-shallow[<span class="nm">0</span>][<span class="st">'temp'</span>] = <span class="nm">99</span>     <span class="cm"># 안쪽 딕셔너리를 고친다</span>
+shallow[<span class="nm">0</span>][<span class="st">'소성온도'</span>] = <span class="nm">99</span>     <span class="cm"># 안쪽 딕셔너리를 고친다</span>
 
-<span class="fn2">print</span>(rows[<span class="nm">0</span>][<span class="st">'temp'</span>])</code></pre>
+<span class="fn2">print</span>(rows[<span class="nm">0</span>][<span class="st">'소성온도'</span>])</code></pre>
           <div class="out"><span class="err">99</span>   ← 원본도 바뀌었다</div>
         </div>
       </div>
@@ -1133,9 +1133,9 @@ shallow[<span class="nm">0</span>][<span class="st">'temp'</span>] = <span class
           <pre><code><span class="kw">import</span> copy
 
 deep = copy.deepcopy(rows)
-deep[<span class="nm">0</span>][<span class="st">'temp'</span>] = <span class="nm">99</span>
+deep[<span class="nm">0</span>][<span class="st">'소성온도'</span>] = <span class="nm">99</span>
 
-<span class="fn2">print</span>(rows[<span class="nm">0</span>][<span class="st">'temp'</span>])</code></pre>
+<span class="fn2">print</span>(rows[<span class="nm">0</span>][<span class="st">'소성온도'</span>])</code></pre>
           <div class="out">898   ← 원본은 그대로</div>
         </div>
       </div>
@@ -1289,13 +1289,13 @@ True</div>
       <div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">키: 값 을 중괄호로 묶는다</span></div>
-          <pre><code>row = {<span class="st">'line'</span>: <span class="st">'A'</span>, <span class="st">'temp'</span>: <span class="nm">898</span>}
+          <pre><code>row = {<span class="st">'설비호기'</span>: <span class="st">'A'</span>, <span class="st">'소성온도'</span>: <span class="nm">898</span>}
 
-<span class="fn2">print</span>(row[<span class="st">'temp'</span>])
-row[<span class="st">'passed'</span>] = <span class="nm">1</span>   <span class="cm"># 키 추가</span>
+<span class="fn2">print</span>(row[<span class="st">'소성온도'</span>])
+row[<span class="st">'양품여부'</span>] = <span class="nm">1</span>   <span class="cm"># 키 추가</span>
 <span class="fn2">print</span>(row)</code></pre>
           <div class="out">898
-{'line': 'A', 'temp': 898, 'passed': 1}</div>
+{'설비호기': 'A', '소성온도': 898, '양품여부': 1}</div>
         </div>
       </div>
       <div>
@@ -1348,7 +1348,7 @@ row[<span class="st">'passed'</span>] = <span class="nm">1</span>   <span class=
     <div class="twocol">
       <div>
         <table class="ctable">
-          <thead><tr><th>line</th><th>temp</th><th>passed</th></tr></thead>
+          <thead><tr><th>설비호기</th><th>temp</th><th>양품여부</th></tr></thead>
           <tbody>
             <tr><td>A</td><td>898</td><td class="yes">1</td></tr>
             <tr><td>C</td><td>835</td><td class="yes">1</td></tr>
@@ -1364,12 +1364,12 @@ row[<span class="st">'passed'</span>] = <span class="nm">1</span>   <span class=
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">같은 표, 파이썬으로</span></div>
           <pre><code>rows = [
-    {<span class="st">'line'</span>: <span class="st">'A'</span>, <span class="st">'temp'</span>: <span class="nm">898</span>, <span class="st">'passed'</span>: <span class="nm">1</span>},
-    {<span class="st">'line'</span>: <span class="st">'C'</span>, <span class="st">'temp'</span>: <span class="nm">835</span>, <span class="st">'passed'</span>: <span class="nm">1</span>},
-    {<span class="st">'line'</span>: <span class="st">'E'</span>, <span class="st">'temp'</span>: <span class="nm">829</span>, <span class="st">'passed'</span>: <span class="nm">0</span>},
+    {<span class="st">'설비호기'</span>: <span class="st">'A'</span>, <span class="st">'소성온도'</span>: <span class="nm">898</span>, <span class="st">'양품여부'</span>: <span class="nm">1</span>},
+    {<span class="st">'설비호기'</span>: <span class="st">'C'</span>, <span class="st">'소성온도'</span>: <span class="nm">835</span>, <span class="st">'양품여부'</span>: <span class="nm">1</span>},
+    {<span class="st">'설비호기'</span>: <span class="st">'E'</span>, <span class="st">'소성온도'</span>: <span class="nm">829</span>, <span class="st">'양품여부'</span>: <span class="nm">0</span>},
 ]
 
-<span class="fn2">print</span>(rows[<span class="nm">1</span>][<span class="st">'line'</span>])   <span class="cm"># 2행의 line</span>
+<span class="fn2">print</span>(rows[<span class="nm">1</span>][<span class="st">'설비호기'</span>])   <span class="cm"># 2행의 line</span>
 <span class="fn2">print</span>(<span class="fn2">len</span>(rows))          <span class="cm"># 행 수</span></code></pre>
           <div class="out">C
 3</div>
@@ -1651,7 +1651,7 @@ True</div>
     <span class="fn2">print</span>(<span class="st">"비어 있음"</span>)</code></pre>
           <div class="out">비어 있음</div>
         </div>
-        <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>값 0이 걸러진다</h4><p><code>if press:</code>는 <b>압력이 0일 때 거짓</b>이 된다. 값의 유무를 볼 때는 <code>if press is not None:</code>을 쓴다.</p></div></div>
+        <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>값 0이 걸러진다</h4><p><code>if 성형압력:</code>는 <b>압력이 0일 때 거짓</b>이 된다. 값의 유무를 볼 때는 <code>if 성형압력 is not None:</code>을 쓴다.</p></div></div>
       </div>
     </div>
     <div class="keymsg"><span class="k">함정</span><div>"비었는가"와 "값이 0인가"는 다른 질문이다. 데이터에서 이 둘을 섞으면 <b>정상값이 결측으로 처리</b>된다.</div></div>
@@ -1850,7 +1850,7 @@ print(ages[3])
         </div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">딕셔너리의 키와 값</span></div>
-          <pre><code>row = {<span class="st">'temp'</span>: <span class="nm">22</span>, <span class="st">'fare'</span>: <span class="nm">7.25</span>}
+          <pre><code>row = {<span class="st">'소성온도'</span>: <span class="nm">22</span>, <span class="st">'fare'</span>: <span class="nm">7.25</span>}
 
 <span class="kw">for</span> k, v <span class="kw">in</span> row.items():
     <span class="fn2">print</span>(k, v)</code></pre>

@@ -10,17 +10,17 @@ from sklearn.preprocessing import StandardScaler
 
 def load():
     df = pd.read_csv('{URL}', thousands=',', na_values=['N/A', '-'])
-    df['line'] = df['line'].str.strip().str.upper()
-    df['particle_size'] = df['particle_size'].fillna(df['particle_size'].median())
-    df = df.dropna(subset=['moisture'])
-    return pd.get_dummies(df, columns=['line', 'shift'], drop_first=True)
+    df['설비호기'] = df['설비호기'].str.strip().str.upper()
+    df['입도'] = df['입도'].fillna(df['입도'].median())
+    df = df.dropna(subset=['수분율'])
+    return pd.get_dummies(df, columns=['설비호기', '교대조'], drop_first=True)
 
-def split(target='passed'):
+def split(target='양품여부'):
     d = load()
-    drop = ['passed', 'capacity', 'batch_id']
+    drop = ['양품여부', '방전용량', '배치번호']
     X, y = d.drop(columns=drop), d[target]
     return train_test_split(X, y, test_size=0.2, random_state=42,
-                            stratify=y if target == 'passed' else None)"""
+                            stratify=y if target == '양품여부' else None)"""
 
 CELLS = [
     # ══════════════════════════════════════════════════════════════════
@@ -146,7 +146,7 @@ print(export_text(tree, feature_names=list(X_tr.columns)))
               "model.fit(X_tr, y_tr)\n"
               "pairs = sorted(zip(model.feature_importances_, X_tr.columns), reverse=True)\n"
               "top = pairs[0][1]",
-       check="assert top == 'calc_temp', f'기대 calc_temp, 실제 {top}'\nprint('통과')"),
+       check="assert top == '소성온도', f'기대 소성온도, 실제 {top}'\nprint('통과')"),
 
     Task(1, "세 모델(로지스틱·결정 트리·랜덤 포레스트)의 테스트 정확도를 재어\n"
             "`scores` 딕셔너리에 담고 출력한다.\n"
@@ -229,8 +229,8 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import cross_val_score
 
 d = load()
-X = d.drop(columns=['passed', 'capacity', 'batch_id'])
-y = d['passed']
+X = d.drop(columns=['양품여부', '방전용량', '배치번호'])
+y = d['양품여부']
 
 scores = cross_val_score(RandomForestClassifier(n_estimators=200, random_state=42), X, y, cv=5)
 print(scores.round(3))
@@ -243,7 +243,7 @@ print('평균', round(scores.mean(), 3), ' 표준편차', round(scores.std(), 3)
                       "from sklearn.ensemble import RandomForestClassifier\n"
                       "from sklearn.model_selection import cross_val_score\n"
                       "d = load()\n"
-                      "X = d.drop(columns=['passed', 'capacity', 'batch_id'])\ny = d['passed']",
+                      "X = d.drop(columns=['양품여부', '방전용량', '배치번호'])\ny = d['양품여부']",
          answer="cv_tree = cross_val_score(DecisionTreeClassifier(max_depth=3, random_state=42), X, y, cv=5).mean()\n"
                 "cv_forest = cross_val_score(RandomForestClassifier(n_estimators=200, random_state=42), X, y, cv=5).mean()\n"
                 "print(round(cv_tree, 3), round(cv_forest, 3))",
@@ -277,7 +277,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import r2_score, mean_squared_error
 
-X_tr, X_te, y_tr, y_te = split(target='capacity')
+X_tr, X_te, y_tr, y_te = split(target='방전용량')
 
 lin = LinearRegression().fit(X_tr, y_tr)
 rf = RandomForestRegressor(n_estimators=200, random_state=42).fit(X_tr, y_tr)
@@ -287,10 +287,10 @@ for name, m in (('linear', lin), ('forest', rf)):
     print(f"{{name:>8}}  R2 {{r2_score(y_te, p):.3f}}  RMSE {{mean_squared_error(y_te, p) ** 0.5:.2f}}")
 """),
 
-    Ex(10, "선형 회귀로 `capacity` 를 예측하고 **R²** 를 `r2` 에 담는다.",
+    Ex(10, "선형 회귀로 `방전용량` 을 예측하고 **R²** 를 `r2` 에 담는다.",
         setup=PREP + "\nfrom sklearn.linear_model import LinearRegression\n"
                      "from sklearn.metrics import r2_score\n"
-                     "X_tr, X_te, y_tr, y_te = split(target='capacity')",
+                     "X_tr, X_te, y_tr, y_te = split(target='방전용량')",
         blank="model = ___\nmodel.fit(X_tr, y_tr)\nr2 = ___",
         answer="model = LinearRegression()\nmodel.fit(X_tr, y_tr)\n"
                "r2 = r2_score(y_te, model.predict(X_te))",
@@ -302,7 +302,7 @@ for name, m in (('linear', lin), ('forest', rf)):
          setup=PREP + "\nfrom sklearn.linear_model import LinearRegression\n"
                       "from sklearn.ensemble import RandomForestRegressor\n"
                       "from sklearn.metrics import r2_score\n"
-                      "X_tr, X_te, y_tr, y_te = split(target='capacity')",
+                      "X_tr, X_te, y_tr, y_te = split(target='방전용량')",
          answer="r2_lin = r2_score(y_te, LinearRegression().fit(X_tr, y_tr).predict(X_te))\n"
                 "r2_rf = r2_score(y_te, RandomForestRegressor(n_estimators=200, random_state=42)\n"
                 "                       .fit(X_tr, y_tr).predict(X_te))\n"
@@ -332,15 +332,15 @@ for name, m in (('linear', lin), ('forest', rf)):
                "assert p1 <= p0, '대신 헛경보가 늘어 정밀도는 떨어진다'\nprint('통과')"),
 
     Task(6, "어떤 열이 없어도 되는지 본다.\n"
-            "`press` 를 **뺀 채로** 랜덤 포레스트를 학습해 정확도가 거의 그대로인 것을 확인한다.\n"
-            "> `press` 는 용량과 상관이 −0.05 였다.",
+            "`성형압력` 을 **뺀 채로** 랜덤 포레스트를 학습해 정확도가 거의 그대로인 것을 확인한다.\n"
+            "> `성형압력` 는 용량과 상관이 −0.05 였다.",
          setup=PREP + "\nfrom sklearn.ensemble import RandomForestClassifier\n"
                       "X_tr, X_te, y_tr, y_te = split()",
          answer="full = RandomForestClassifier(n_estimators=200, random_state=42)\\\n"
                 "        .fit(X_tr, y_tr).score(X_te, y_te)\n"
                 "less = RandomForestClassifier(n_estimators=200, random_state=42)\\\n"
-                "        .fit(X_tr.drop(columns=['press']), y_tr)\\\n"
-                "        .score(X_te.drop(columns=['press']), y_te)\n"
+                "        .fit(X_tr.drop(columns=['성형압력']), y_tr)\\\n"
+                "        .score(X_te.drop(columns=['성형압력']), y_te)\n"
                 "print(round(full, 3), round(less, 3), '차이', round(full - less, 3))",
          check="assert abs(full - less) < 0.03, f'press 를 빼도 크게 안 변한다: {full} vs {less}'\nprint('통과')"),
 ]

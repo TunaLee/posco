@@ -89,7 +89,7 @@ print("같은 객체인가:", id(a) == id(b))
     code("""
 import copy
 
-rows = [{"line": "A", "temp": 898}, {"line": "E", "temp": 829}]
+rows = [{"설비호기": "A", "소성온도": 898}, {"설비호기": "E", "소성온도": 829}]
 
 shallow = rows.copy()
 shallow[0]["age"] = 99
@@ -169,12 +169,12 @@ print(set(ports), len(set(ports)))
 
     lab("딕셔너리는 순서가 아니라 이름으로 값을 꺼낸다."),
     code("""
-row = {"line": "A", "temp": 898, "impurity": 1024}
+row = {"설비호기": "A", "소성온도": 898, "불순물": 1024}
 
-print(row["temp"])
-row["passed"] = 1
+print(row["소성온도"])
+row["양품여부"] = 1
 print(list(row.keys()))
-print(row.get("moisture", "미상"))  # 없는 키는 기본값으로
+print(row.get("수분율", "미상"))  # 없는 키는 기본값으로
 
 for k, v in row.items():
     print(k, "→", v)
@@ -189,31 +189,31 @@ for k, v in row.items():
     lab("표 한 장은 딕셔너리의 리스트로 표현된다. Pandas 의 DataFrame 이 이 구조를 감싼 것이다."),
     code("""
 rows = [
-    {"line": "A", "temp": 898, "passed": 1},
-    {"line": "C", "temp": 835, "passed": 0},
-    {"line": "E", "temp": 829, "passed": 1},
+    {"설비호기": "A", "소성온도": 898, "양품여부": 1},
+    {"설비호기": "C", "소성온도": 835, "양품여부": 0},
+    {"설비호기": "E", "소성온도": 829, "양품여부": 1},
 ]
-print(rows[1]["line"])
+print(rows[1]["설비호기"])
 print(len(rows))
 """),
 
-    Ex(11, "`rows` 에서 양품(`passed == 1`)이 몇 건인지 세어 `good` 에 담는다.",
+    Ex(11, "`rows` 에서 양품(`양품여부 == 1`)이 몇 건인지 세어 `good` 에 담는다.",
         setup="""rows = [
-    {"line": "A", "temp": 898, "passed": 1},
-    {"line": "C", "temp": 835, "passed": 0},
-    {"line": "E", "temp": 829, "passed": 1},
+    {"설비호기": "A", "소성온도": 898, "양품여부": 1},
+    {"설비호기": "C", "소성온도": 835, "양품여부": 0},
+    {"설비호기": "E", "소성온도": 829, "양품여부": 1},
 ]""",
         blank="good = 0\nfor r in rows:\n    ___",
-        answer="good = 0\nfor r in rows:\n    if r['passed'] == 1:\n        good = good + 1",
+        answer="good = 0\nfor r in rows:\n    if r['양품여부'] == 1:\n        good = good + 1",
         check='assert good == 2, f"기대 2, 실제 {good}"\nprint("통과")'),
 
     Task(3, "`rows` 에서 **설비 호기만 모은 리스트**를 `lines` 에 만든다.",
          setup="""rows = [
-    {"line": "A", "temp": 898, "passed": 1},
-    {"line": "C", "temp": 835, "passed": 0},
-    {"line": "E", "temp": 829, "passed": 1},
+    {"설비호기": "A", "소성온도": 898, "양품여부": 1},
+    {"설비호기": "C", "소성온도": 835, "양품여부": 0},
+    {"설비호기": "E", "소성온도": 829, "양품여부": 1},
 ]""",
-         answer='lines = [r["line"] for r in rows]',
+         answer='lines = [r["설비호기"] for r in rows]',
          check='assert lines == ["A", "C", "E"], f"실제 {lines}"\nprint("통과")'),
 
     Task(4, "`stock` 에서 **수량이 0인 품목의 이름**만 골라 `sold_out` 에 담는다.",
@@ -483,15 +483,15 @@ except AttributeError as e:
 
     Ex(23, "배치 목록에서 **야간조 양품률**을 구해 `rate` 에 담는다. 소수 그대로 둔다.",
         setup="""batches = [
-    {"line": "A", "shift": "day",   "passed": 1},
-    {"line": "C", "shift": "night", "passed": 0},
-    {"line": "E", "shift": "night", "passed": 1},
-    {"line": "B", "shift": "day",   "passed": 1},
-    {"line": "D", "shift": "night", "passed": 1},
+    {"설비호기": "A", "교대조": "day",   "양품여부": 1},
+    {"설비호기": "C", "교대조": "night", "양품여부": 0},
+    {"설비호기": "E", "교대조": "night", "양품여부": 1},
+    {"설비호기": "B", "교대조": "day",   "양품여부": 1},
+    {"설비호기": "D", "교대조": "night", "양품여부": 1},
 ]""",
         blank="night = ___\nrate = ___",
-        answer='night = [b for b in batches if b["shift"] == "night"]\n'
-               'rate = sum(b["passed"] for b in night) / len(night)',
+        answer='night = [b for b in batches if b["교대조"] == "night"]\n'
+               'rate = sum(b["양품여부"] for b in night) / len(night)',
         check='assert abs(rate - 2/3) < 1e-9, f"기대 0.666…, 실제 {rate}"\nprint("통과")'),
 
     Ex(24, "온도 목록에서 결측(`None`)을 뺀 나머지의 평균을 `avg` 에 담는다.",
@@ -526,17 +526,17 @@ except AttributeError as e:
     Task(10, "배치 목록을 받아 **교대조별 양품률 딕셔너리**를 돌려주는 함수를 만든다.\n"
              "> 결과는 `{\"day\": 1.0, \"night\": 0.666…}` 형태다.",
          setup="""batches = [
-    {"line": "A", "shift": "day",   "passed": 1},
-    {"line": "C", "shift": "night", "passed": 0},
-    {"line": "E", "shift": "night", "passed": 1},
-    {"line": "B", "shift": "day",   "passed": 1},
-    {"line": "D", "shift": "night", "passed": 1},
+    {"설비호기": "A", "교대조": "day",   "양품여부": 1},
+    {"설비호기": "C", "교대조": "night", "양품여부": 0},
+    {"설비호기": "E", "교대조": "night", "양품여부": 1},
+    {"설비호기": "B", "교대조": "day",   "양품여부": 1},
+    {"설비호기": "D", "교대조": "night", "양품여부": 1},
 ]""",
          answer='def pass_rate_by_shift(rows):\n'
                 '    result = {}\n'
-                '    for sh in set(r["shift"] for r in rows):\n'
-                '        group = [r for r in rows if r["shift"] == sh]\n'
-                '        result[sh] = sum(r["passed"] for r in group) / len(group)\n'
+                '    for sh in set(r["교대조"] for r in rows):\n'
+                '        group = [r for r in rows if r["교대조"] == sh]\n'
+                '        result[sh] = sum(r["양품여부"] for r in group) / len(group)\n'
                 '    return result',
          check='out = pass_rate_by_shift(batches)\n'
                'assert set(out.keys()) == {"day", "night"}, f"키가 다르다: {out.keys()}"\n'

@@ -10,17 +10,17 @@ from sklearn.preprocessing import StandardScaler
 
 torch.manual_seed(42)
 
-def tensors(target='passed'):
+def tensors(target='양품여부'):
     df = pd.read_csv('{URL}', thousands=',', na_values=['N/A', '-'])
-    df['line'] = df['line'].str.strip().str.upper()
-    df['particle_size'] = df['particle_size'].fillna(df['particle_size'].median())
-    df = df.dropna(subset=['moisture'])
-    d = pd.get_dummies(df, columns=['line', 'shift'], drop_first=True)
-    X = d.drop(columns=['passed', 'capacity', 'batch_id']).astype('float32')
+    df['설비호기'] = df['설비호기'].str.strip().str.upper()
+    df['입도'] = df['입도'].fillna(df['입도'].median())
+    df = df.dropna(subset=['수분율'])
+    d = pd.get_dummies(df, columns=['설비호기', '교대조'], drop_first=True)
+    X = d.drop(columns=['양품여부', '방전용량', '배치번호']).astype('float32')
     y = d[target].astype('float32')
     X_tr, X_te, y_tr, y_te = train_test_split(
         X, y, test_size=0.2, random_state=42,
-        stratify=y if target == 'passed' else None)
+        stratify=y if target == '양품여부' else None)
     sc = StandardScaler()
     to = lambda a: torch.tensor(np.asarray(a, dtype='float32'))
     return (to(sc.fit_transform(X_tr)), to(sc.transform(X_te)),
@@ -365,10 +365,10 @@ print('테스트 정확도', round(acc, 3))
          check="assert len(results) == 4, f'4가지여야 한다: {results}'\n"
                "assert all(v > 0.8 for v in results.values()), f'전부 0.8 은 넘는다: {results}'\nprint('통과')"),
 
-    Task(4, "**회귀로 바꿔 본다.** `capacity` 를 맞히는 신경망을 만든다.\n"
+    Task(4, "**회귀로 바꿔 본다.** `방전용량` 을 맞히는 신경망을 만든다.\n"
             "> 마지막 층은 그대로 1개, 손실은 `nn.MSELoss()` 를 쓴다.\n"
             "> 정답 스케일이 크므로 `y` 도 표준화하면 학습이 훨씬 잘 된다.",
-         setup=PREP + "\nX_tr, X_te, y_tr, y_te = tensors(target='capacity')",
+         setup=PREP + "\nX_tr, X_te, y_tr, y_te = tensors(target='방전용량')",
          answer="mu, sd = y_tr.mean(), y_tr.std()\n"
                 "y_tr_s, y_te_s = (y_tr - mu) / sd, (y_te - mu) / sd\n\n"
                 "torch.manual_seed(42)\n"
