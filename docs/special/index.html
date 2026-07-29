@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>특강 · AI 도구로 웹 서비스 만들기</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#16142B; --ink-soft:#4A4766; --mut:#8E8AAC;
+    --violet:#5B3DF5; --violet-700:#3A1FC9; --violet-300:#B7A9FF;
+    --wash:#F4F1FF; --wash-2:#FAF9FF; --line:#E8E4F8;
+    --paper:#FFFFFF; --mint:#0FB5A1; --mint-soft:#E4F8F4;
+    --amber:#F4A93C; --rose:#E8537A;
+    --code-bg:#1C1933; --code-ink:#ECEAFF; --code-dim:#9C97D6;
+    --sw:1280px; --sh:720px;
+    --shadow:0 24px 60px -24px rgba(43,28,120,.45);
+    --serif: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:var(--serif); color:var(--ink);
+    background:
+      radial-gradient(1200px 600px at 15% -10%, #ECE7FF 0%, rgba(236,231,255,0) 60%),
+      radial-gradient(1000px 700px at 110% 10%, #F0EBFF 0%, rgba(240,235,255,0) 55%),
+      #EAE7F4;
+    min-height:100vh; -webkit-font-smoothing:antialiased;
+  }
+  .progress{position:fixed; top:0; left:0; right:0; height:3px; z-index:60; background:transparent;}
+  .progress .fill{height:100%; width:0; background:linear-gradient(90deg,var(--violet),#9B7BFF); transition:width .2s ease;}
+
+  .stage{
+    position:fixed; inset:0 0 0 0; z-index:10;
+    display:flex; justify-content:safe center; align-items:safe center;
+    overflow:auto; padding:30px 30px 96px;
+  }
+  .sizer{position:relative;}
+  .scaler{ width:var(--sw); height:var(--sh); transform-origin:top left; position:relative; }
+
+  .slide{
+    width:var(--sw); height:var(--sh);
+    background:var(--paper); border:1px solid var(--line);
+    border-radius:22px; box-shadow:var(--shadow);
+    overflow:hidden; display:none; flex-direction:column;
+    padding:50px 60px 46px; position:relative;
+  }
+  .slide.active{display:flex;}
+
+  .eyebrow{display:inline-flex; align-items:center; gap:10px; font-family:var(--mono); font-size:13px; font-weight:700; letter-spacing:.04em; color:var(--violet); text-transform:uppercase;}
+  .eyebrow .tag{color:#fff; background:var(--violet); border-radius:6px; padding:3px 8px; font-size:11px; letter-spacing:.05em;}
+  .eyebrow .tag.mint{background:var(--mint);}
+  .eyebrow .dot{width:5px;height:5px;border-radius:50%;background:var(--violet-300);}
+  .coord{position:absolute; top:30px; right:40px; font-family:var(--mono); font-size:12px; color:var(--mut); font-weight:600; letter-spacing:.05em;}
+  .coord b{color:var(--ink);}
+
+  .s-title{font-size:39px; line-height:1.12; letter-spacing:-.025em; font-weight:800; margin:14px 0 4px;}
+  .s-title.sm{font-size:32px;} .s-title.xs{font-size:28px;}
+  .s-sub{font-size:17px; color:var(--ink-soft); font-weight:500; line-height:1.5; max-width:64ch;}
+  .rule{height:4px; width:54px; border-radius:3px; background:var(--violet); margin:13px 0 6px;}
+  .body{flex:1; min-height:0; display:flex; flex-direction:column; justify-content:center;}
+  .body.top{justify-content:flex-start; padding-top:6px;}
+
+  .slide.cover{ padding:0; justify-content:center;
+    background:
+      radial-gradient(900px 520px at 100% 0%, #6B4BFF 0%, rgba(107,75,255,0) 58%),
+      radial-gradient(700px 600px at -5% 110%, #3A1FC9 0%, rgba(58,31,201,0) 55%),
+      linear-gradient(135deg,#2A1B8C 0%, #4226D6 48%, #5B3DF5 100%);
+    color:#fff; border:none; }
+  .cover .aperture{position:absolute; top:-120px; right:-120px; width:460px; height:460px; border-radius:50%; background:radial-gradient(circle at 35% 35%, rgba(255,255,255,.5), rgba(255,255,255,0) 62%); filter:blur(2px);}
+  .cover .ring{position:absolute; right:60px; top:60px; width:120px; height:120px; border-radius:50%; border:1.5px solid rgba(255,255,255,.4);}
+  .cover .ring::after{content:""; position:absolute; inset:18px; border-radius:50%; border:1.5px dashed rgba(255,255,255,.35);}
+  .cover .wrap{padding:60px 70px; position:relative; z-index:2; width:100%;}
+  .cover .kick{font-family:var(--mono); letter-spacing:.18em; font-size:13.5px; font-weight:600; color:rgba(255,255,255,.86); text-transform:uppercase; display:flex; align-items:center; gap:14px;}
+  .cover .kick .pill{border:1px solid rgba(255,255,255,.45); border-radius:999px; padding:4px 12px;}
+  .cover h1{font-size:58px; line-height:1.08; letter-spacing:-.03em; font-weight:800; margin:24px 0 16px; max-width:21ch;}
+  .cover .lead{font-size:18px; line-height:1.55; color:rgba(255,255,255,.9); max-width:56ch; font-weight:400;}
+  .cover .meta{margin-top:36px; display:flex; gap:24px; flex-wrap:wrap; font-size:14px;}
+  .cover .meta .it{display:flex; flex-direction:column; gap:3px;}
+  .cover .meta .it .k{font-family:var(--mono); font-size:11px; letter-spacing:.1em; color:rgba(255,255,255,.6); text-transform:uppercase;}
+  .cover .meta .it .v{font-size:15px; font-weight:700; color:#fff;}
+
+  .slide.section{ background:linear-gradient(140deg,#3A1FC9 0%, #5B3DF5 70%, #7A5BFF 100%); color:#fff; border:none; justify-content:center; padding:60px 70px; }
+  .slide.section.mintbg{ background:linear-gradient(140deg,#0A8A7A 0%, #0FB5A1 70%, #34D6C2 100%); }
+  .slide.section .ghost{position:absolute; right:34px; bottom:-66px; font-family:var(--mono); font-weight:700; font-size:330px; line-height:.8; color:rgba(255,255,255,.10); letter-spacing:-.04em;}
+  .slide.section .lab-flag{display:inline-flex; align-items:center; gap:9px; align-self:flex-start; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.4); padding:7px 14px; border-radius:999px; font-weight:700; font-size:13px; font-family:var(--mono); letter-spacing:.06em;}
+  .slide.section .lab-flag .sq{width:9px;height:9px;border-radius:3px;background:#fff;}
+  .slide.section .seyebrow{font-family:var(--mono); letter-spacing:.16em; font-size:14px; color:rgba(255,255,255,.85); text-transform:uppercase; margin-bottom:14px;}
+  .slide.section h2{font-size:48px; line-height:1.1; letter-spacing:-.025em; font-weight:800; margin:0 0 14px; max-width:24ch; position:relative; z-index:2;}
+  .slide.section p{font-size:18px; color:rgba(255,255,255,.92); max-width:54ch; line-height:1.55; position:relative; z-index:2;}
+  .slide.section .agenda{display:flex; gap:10px; flex-wrap:wrap; margin-top:22px; position:relative; z-index:2;}
+  .slide.section .agenda span{font-size:13px; font-weight:600; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3); padding:6px 12px; border-radius:999px;}
+
+  .cards{display:grid; gap:16px;}
+  .cards.c2{grid-template-columns:repeat(2,1fr);} .cards.c3{grid-template-columns:repeat(3,1fr);} .cards.c4{grid-template-columns:repeat(4,1fr);}
+  .card{background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:17px 19px; display:flex; flex-direction:column; gap:7px; position:relative;}
+  .card .ic{width:38px; height:38px; border-radius:4px; display:grid; place-items:center; background:transparent; border:1.5px solid var(--violet-300); color:var(--violet); margin-bottom:3px;}
+  .card .ic svg{width:20px;height:20px;}
+  .card h3{font-size:17px; font-weight:800; letter-spacing:-.01em; margin:0 0 1px; padding-bottom:8px; border-bottom:1px solid var(--line);}
+  .card p{font-size:14px; color:var(--ink-soft); line-height:1.5; margin:0;}
+  .card .n{font-family:var(--mono); font-size:11.5px; color:var(--violet); font-weight:700;}
+
+  .biglist{display:flex; flex-direction:column; gap:13px;}
+  .biglist .li{display:flex; gap:15px; align-items:flex-start;}
+  .biglist .li .num{flex:none; width:34px; height:34px; border-radius:10px; background:var(--violet); color:#fff; font-family:var(--mono); font-weight:700; display:grid; place-items:center; font-size:14px; margin-top:1px;}
+  .biglist .li .tx h4{margin:0 0 3px; font-size:17.5px; font-weight:800;}
+  .biglist .li .tx p{margin:0; font-size:14px; color:var(--ink-soft); line-height:1.5;}
+
+  .phase-label{font-family:var(--mono); font-size:12px; font-weight:700; letter-spacing:.08em; color:var(--violet); text-transform:uppercase; margin:0 0 10px; display:flex; align-items:center; gap:9px;}
+  .phase-label .ln{height:1px; flex:1; background:var(--line);}
+  .pipe{display:flex; align-items:stretch; gap:0; margin-bottom:20px;}
+  .pipe .step{flex:1; background:var(--paper); border:1px solid var(--line); border-top:3px solid var(--violet); border-radius:4px; padding:12px 10px; text-align:center; min-width:0;}
+  .pipe .step .si{font-family:var(--mono); font-size:11px; color:var(--violet); font-weight:700;}
+  .pipe .step .sn{font-size:14.5px; font-weight:800; margin-top:3px; letter-spacing:-.01em;}
+  .pipe .step .sd{font-size:11px; color:var(--mut); margin-top:2px; line-height:1.3;}
+  .pipe .arrow{display:flex; align-items:center; padding:0 5px; color:var(--violet-300);}
+  .pipe .arrow svg{width:17px;height:17px;}
+  .pipe.q .step{background:var(--paper); border-color:var(--line); border-top-color:var(--mint);} .pipe.q .step .si{color:var(--mint);} .pipe.q .arrow{color:#8AD7CC;}
+
+  .code{background:var(--code-bg); border-radius:14px; overflow:hidden; border:1px solid #2A2548; box-shadow:0 18px 40px -22px rgba(28,25,51,.7);}
+  .code .bar{display:flex; align-items:center; gap:7px; padding:10px 15px; border-bottom:1px solid #2A2548; background:#171430;}
+  .code .bar .dot{width:11px;height:11px;border-radius:50%;}
+  .code .bar .r{background:#FF6058;} .code .bar .y{background:#FFC130;} .code .bar .g{background:#28CA42;}
+  .code .bar .fn{margin-left:8px; font-family:var(--mono); font-size:12px; color:var(--code-dim);}
+  .code pre{margin:0; padding:16px 18px; overflow:auto;}
+  .code code{font-family:var(--mono); font-size:13px; line-height:1.6; color:var(--code-ink); white-space:pre;}
+  .code.sm code{font-size:12px; line-height:1.55;}
+  .cm{color:#7D78B8;} .kw{color:#C792FF;} .st{color:#9DE39A;} .fn2{color:#82D3FF;} .nm{color:#FFD479;}
+
+  .callout{border-radius:4px; padding:15px 18px; display:flex; gap:13px; align-items:flex-start; background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet);}
+  .callout .ci{flex:none; width:34px;height:34px;border-radius:4px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .callout .ci svg{width:18px;height:18px;}
+  .callout .ct h4{margin:0 0 3px; font-size:15.5px; font-weight:800;}
+  .callout .ct p{margin:0; font-size:13.5px; color:var(--ink-soft); line-height:1.5;}
+  .callout.mint{border-left-color:var(--mint);} .callout.mint .ci{background:var(--mint);}
+  .callout.amber{border-left-color:var(--amber);} .callout.amber .ci{background:var(--amber);}
+  .callout.rose{border-left-color:var(--rose);} .callout.rose .ci{background:var(--rose);}
+
+  .lab-badge{display:inline-flex; align-items:center; gap:9px; background:var(--mint-soft); color:#0A7F70; border:1px solid #BFE9E1; padding:7px 13px; border-radius:999px; font-weight:700; font-size:13px; font-family:var(--mono); letter-spacing:.04em;}
+  .lab-badge .sq{width:9px;height:9px;border-radius:3px;background:var(--mint);}
+
+  .twocol{display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start;}
+  .twocol.w{grid-template-columns:1.15fr .85fr;} .twocol.w2{grid-template-columns:.85fr 1.15fr;}
+  .twocol.wide{grid-template-columns:1.45fr .55fr; gap:20px;}
+
+  .chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{font-size:12.5px; font-weight:600; color:var(--ink-soft); background:#fff; border:1px solid var(--line); padding:6px 12px; border-radius:999px;}
+  .chip b{color:var(--violet);}
+
+  .deliv{background:var(--paper); border:1px dashed var(--violet-300); border-left:3px solid var(--violet); border-radius:4px; padding:15px 18px; display:flex; align-items:center; gap:13px;}
+  .deliv .di{flex:none;width:36px;height:36px;border-radius:4px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .deliv .di svg{width:19px;height:19px;}
+  .deliv .dt b{display:block;font-size:11px;font-family:var(--mono);letter-spacing:.08em;color:var(--violet);text-transform:uppercase;}
+  .deliv .dt span{font-size:15px;font-weight:700;}
+
+  .vlist{display:flex;flex-direction:column;gap:10px;}
+  .vlist .v{display:flex;gap:11px;align-items:flex-start;font-size:14.5px;color:var(--ink-soft);line-height:1.45;}
+  .vlist .v .b{flex:none;width:22px;height:22px;border-radius:7px;background:var(--wash);color:var(--violet);display:grid;place-items:center;font-family:var(--mono);font-size:12px;font-weight:700;margin-top:1px;}
+  .vlist .v b{color:var(--ink);font-weight:700;}
+
+  .keymsg{margin-top:auto; background:var(--ink); color:#fff; border-radius:4px; padding:15px 20px; display:flex; gap:13px; align-items:center; font-size:15px; line-height:1.5;}
+  .keymsg .k{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;color:var(--violet-300);text-transform:uppercase;flex:none;}
+  .keymsg b{color:#fff;}
+
+  .formula{display:flex; flex-direction:column; gap:10px; background:var(--code-bg); border-radius:13px; padding:20px; color:#fff; font-family:var(--mono);}
+  .formula .big{font-size:21px; text-align:center;}
+
+  .ctable{width:100%; border-collapse:separate; border-spacing:0; font-size:14px; border:1px solid var(--line); border-radius:13px; overflow:hidden;}
+  .ctable th,.ctable td{padding:13px 16px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top;}
+  .ctable thead th{background:var(--wash); color:var(--violet); font-family:var(--mono); font-size:12px; letter-spacing:.04em; text-transform:uppercase; font-weight:700;}
+  .ctable tbody tr:last-child td{border-bottom:none;}
+  .ctable td b{color:var(--ink);} .ctable .hl{color:var(--violet); font-weight:700;}
+  .ctable .yes{color:var(--mint); font-weight:700;} .ctable .no{color:var(--rose); font-weight:700;}
+
+  .timeline{display:flex; gap:0; align-items:stretch; margin-top:6px;}
+  .timeline .t{flex:1; position:relative; padding:0 6px;}
+  .timeline .t .yr{font-family:var(--mono); font-size:13px; font-weight:700; color:var(--violet);}
+  .timeline .t .ev{font-size:13px; font-weight:700; margin-top:30px; line-height:1.3;}
+  .timeline .t .ds{font-size:11.5px; color:var(--mut); margin-top:3px; line-height:1.35;}
+  .timeline .t::before{content:""; position:absolute; left:0; right:0; top:26px; height:2px; background:var(--line);}
+  .timeline .t::after{content:""; position:absolute; left:8px; top:21px; width:12px; height:12px; border-radius:50%; background:var(--violet); border:3px solid #fff; box-shadow:0 0 0 1px var(--violet-300);}
+
+  .quote{background:var(--wash-2); border-left:4px solid var(--violet); border-radius:0 13px 13px 0; padding:18px 22px;}
+  .quote p{margin:0; font-size:18px; line-height:1.5; font-weight:600; color:var(--ink);}
+  .quote .src{margin-top:10px; font-size:12.5px; color:var(--mut); font-family:var(--mono);}
+  .refbox{background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:14px 16px; display:flex; gap:12px; align-items:flex-start;}
+  .refbox .rk{font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; color:var(--violet); text-transform:uppercase; font-weight:700;}
+  .refbox h4{margin:2px 0 3px; font-size:14.5px; font-weight:800;}
+  .refbox p{margin:0; font-size:12.5px; color:var(--ink-soft); line-height:1.45;}
+  .refbox .ri{flex:none;width:30px;height:30px;border-radius:8px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .refbox .ri svg{width:16px;height:16px;}
+
+  .arch{display:flex; align-items:center; gap:18px; justify-content:center; margin:6px 0;}
+  .arch .box{border:1.5px solid var(--line); border-radius:14px; padding:18px 20px; text-align:center; background:var(--wash-2); min-width:160px;}
+  .arch .box .bt{font-size:15px; font-weight:800;} .arch .box .bs{font-size:12px; color:var(--mut); margin-top:3px; line-height:1.35;}
+  .arch .box.local{border-style:dashed; border-color:var(--violet-300); background:#fff;}
+  .arch .box.api{background:linear-gradient(135deg,#EFEAFF,#F8F5FF); border-color:var(--violet-300);}
+  .arch .conn{display:flex; flex-direction:column; align-items:center; gap:4px; color:var(--violet); font-family:var(--mono); font-size:11px; font-weight:700;}
+  .arch .conn svg{width:34px;height:18px;}
+
+  .stat-row{display:flex; gap:16px;}
+  .stat{flex:1; background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:16px 18px;}
+  .stat .num{font-size:30px; font-weight:800; letter-spacing:-.02em; color:var(--violet); font-family:var(--mono);}
+  .stat .lab{font-size:13px; color:var(--ink-soft); margin-top:4px; line-height:1.4;}
+
+  .twopane{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .pane{border:1px solid var(--line); border-radius:4px; padding:16px 18px; background:var(--paper);}
+  .pane.bad{border-left:3px solid var(--rose);} .pane.good{border-left:3px solid var(--mint);}
+  .pane h4{margin:0 0 9px; font-size:14px; font-weight:800; display:flex; align-items:center; gap:7px;}
+  .pane.bad h4{color:#C9405B;} .pane.good h4{color:#0E9E6E;}
+  .pane p{margin:0; font-size:13px; color:var(--ink-soft); line-height:1.5;}
+  .pane .mini{font-family:var(--mono); font-size:13.5px; background:#16142B; border:1px solid #2A2545; border-radius:6px; padding:13px 15px; color:#E8E4F5; line-height:1.7; margin-top:10px; white-space:pre-wrap;}
+  .mini b{color:#9BE8DC; font-weight:700;}          /* 강조할 토큰 */
+  .mini i{color:#8E8AAC; font-style:normal;}        /* 주석 */
+  .pane.good .mini{background:#0E2A26; border-color:#1C4A43;}
+
+  .controlbar{
+    position:fixed; left:50%; bottom:18px; transform:translateX(-50%); z-index:70;
+    display:flex; align-items:center; gap:4px;
+    background:#2B2B2E; border-radius:999px; padding:8px 10px;
+    box-shadow:0 16px 40px -12px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.04) inset;
+  }
+  .controlbar button{appearance:none; border:none; background:transparent; cursor:pointer; color:#C9C9D2; display:grid; place-items:center; border-radius:999px; transition:.12s ease; font-family:var(--serif);}
+  .controlbar .ico{width:38px; height:38px;}
+  .controlbar .ico svg{width:19px;height:19px;}
+  .controlbar .ico:hover{color:#fff; background:rgba(255,255,255,.1);}
+  .controlbar .ico:disabled{color:#5C5C66; cursor:not-allowed; background:transparent;}
+  .controlbar .sep{width:1px; height:24px; background:rgba(255,255,255,.16); margin:0 6px;}
+  .controlbar .count{ color:#EDEDF2; font-style:italic; font-family:Georgia,'Times New Roman',serif; font-size:17px; min-width:78px; text-align:center; letter-spacing:.02em; user-select:none;}
+  .controlbar .count b{font-style:italic; font-weight:600;}
+  .controlbar .zoom{width:32px;height:38px; color:#9A9AA6; font-size:18px;}
+  .controlbar .zoom:hover{color:#fff;}
+  .controlbar .zoom svg{width:17px;height:17px;}
+  .controlbar .pdf{
+    margin-left:6px; background:#7CB342; color:#fff; font-weight:800; font-size:14px; letter-spacing:.06em;
+    padding:0 22px; height:38px; border-radius:999px; display:flex; align-items:center;
+    box-shadow:0 6px 16px -6px rgba(124,179,66,.8);
+  }
+  .controlbar .pdf:hover{background:#86BD4B; color:#fff;}
+
+  .overview{position:fixed; inset:0; z-index:80; background:rgba(22,20,43,.55); backdrop-filter:blur(8px); display:none; padding:40px; overflow:auto;}
+  .overview.on{display:block;}
+  .overview .head{display:flex; align-items:center; justify-content:space-between; max-width:1100px; margin:0 auto 18px; color:#fff;}
+  .overview .head h3{margin:0; font-size:18px; font-weight:800;}
+  .overview .head button{appearance:none;border:1px solid rgba(255,255,255,.3); background:rgba(255,255,255,.1); color:#fff; border-radius:10px; padding:8px 14px; cursor:pointer; font-family:var(--serif); font-weight:700; font-size:13px;}
+  .ovgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; max-width:1100px; margin:0 auto;}
+  .ovcard{background:#fff; border:1px solid var(--line); border-radius:11px; padding:13px 15px; cursor:pointer; transition:.12s; text-align:left;}
+  .ovcard:hover{transform:translateY(-2px); box-shadow:0 12px 22px -12px rgba(0,0,0,.4); border-color:var(--violet);}
+  .ovcard .ovn{font-family:var(--mono); font-size:11px; color:var(--violet); font-weight:700;}
+  .ovcard .ovt{font-size:13.5px; font-weight:700; margin-top:4px; line-height:1.3; color:var(--ink);}
+
+  .hint{position:fixed; left:18px; bottom:24px; z-index:65; font-size:11px; color:var(--mut); font-family:var(--mono);}
+
+
+  /* ===== 이미지 / 도해 컴포넌트 (덱 하네스 추가분) ===== */
+  .figure{border:1px solid var(--line); border-radius:4px; background:var(--wash-2); overflow:hidden; display:flex; flex-direction:column; min-height:0;}
+  .figure img{display:block; width:100%; height:auto; object-fit:contain; min-height:0;}
+  .figure figcaption{font-family:var(--mono); font-size:11px; color:var(--mut); padding:7px 11px; border-top:1px solid var(--line); background:#fff;}
+  .figure.tight img{max-height:330px; object-fit:contain; background:#fff;}
+  /* 원본이 검은 여백을 달고 있는 캡처용 */
+  .figure.dark{background:#16142B; border-color:#2A2548;}
+  .figure.dark img{background:#16142B;}
+  .figure.dark figcaption{background:#1C1933; color:#9C97D6; border-top-color:#2A2548;}
+
+  /* 스크린샷: 창 프레임을 씌워 원본 캡처임을 드러낸다 */
+  .shot{border:1px solid var(--line); border-radius:9px; overflow:hidden; background:#fff; box-shadow:0 10px 26px -18px rgba(28,25,51,.6); display:flex; flex-direction:column; min-height:0;}
+  .shot .sbar{display:flex; align-items:center; gap:6px; padding:7px 11px; background:var(--wash); border-bottom:1px solid var(--line);}
+  .shot .sbar .d{width:9px;height:9px;border-radius:50%;background:var(--violet-300);}
+  .shot .sbar .t{margin-left:6px; font-family:var(--mono); font-size:11px; color:var(--mut);}
+  .shot img{display:block; width:100%; height:auto; max-height:400px; object-fit:contain; min-height:0;}
+
+  /* 도구 두 가지를 나란히 처음 보여줄 때 — 그림과 한 줄만 */
+  .duo{display:grid; grid-template-columns:1fr 1fr; gap:30px;}
+  .duo .side{border:1px solid var(--line); border-radius:18px; background:var(--wash-2);
+    padding:34px 30px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:20px; text-align:center;}
+  .duo .side img{max-height:92px; max-width:78%; width:auto; display:block;}
+  .duo .side .tagline{font-family:var(--mono); font-size:11.5px; letter-spacing:.12em;
+    color:var(--violet); text-transform:uppercase; font-weight:700;}
+  .duo .side h3{margin:0; font-size:23px; font-weight:800; letter-spacing:-.02em;}
+  .duo .side p{margin:0; font-size:15px; color:var(--ink-soft); line-height:1.55; max-width:30ch;}
+
+  /* 제품·도구 로고 — 작은 브랜드 마크 */
+  .brandmark{display:flex; align-items:center; gap:15px; margin-bottom:18px;}
+  .brandmark img{height:46px; width:auto; display:block;}
+  .brandmark .bt{font-size:13.5px; color:var(--ink-soft); line-height:1.45;}
+  .brandmark .bt b{color:var(--ink);}
+
+  /* 채워야 할 이미지 자리 — 인쇄에도 남으므로 발표 전 반드시 교체 */
+  .need-img{border:2px dashed var(--violet-300); border-radius:4px; background:repeating-linear-gradient(135deg,#FBFAFF,#FBFAFF 10px,#F4F1FF 10px,#F4F1FF 20px);
+    display:flex; flex-direction:column; justify-content:center; gap:6px; padding:20px 22px; min-height:150px;}
+  .need-img .nk{font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:.1em; color:var(--violet); text-transform:uppercase;}
+  .need-img .nd{font-size:14px; font-weight:700; color:var(--ink); line-height:1.4;}
+  .need-img .nm2{font-family:var(--mono); font-size:11.5px; color:var(--mut);}
+  .need-img.sm{min-height:92px; padding:14px 16px; align-items:center; text-align:center;}
+
+  /* 코드 실행 결과 */
+  .code .out{border-top:1px dashed #38325C; background:#141127; padding:11px 18px; font-family:var(--mono); font-size:12.5px; line-height:1.55; color:#9DE39A; white-space:pre; overflow:auto;}
+  .code .out .ol{color:#7D78B8;}
+  .code .err{color:#FF8E8E;}
+
+  /* 메모리 슬롯 도해 */
+  .slots{display:flex; gap:8px; flex-wrap:wrap; align-items:flex-start;}
+  .slot{border:1.5px solid var(--line); border-radius:8px; min-width:74px; padding:9px 11px; text-align:center; background:#fff;}
+  .slot .adr{font-family:var(--mono); font-size:10px; color:var(--mut); letter-spacing:.02em;}
+  .slot .val{font-family:var(--mono); font-size:15px; font-weight:700; color:var(--ink); margin-top:2px;}
+  .slot .nm{font-size:11px; color:var(--violet); font-weight:700; margin-top:3px;}
+  .slot.ref{border-style:dashed; border-color:var(--violet-300); background:var(--wash-2);}
+  .slot.dim{opacity:.45;}
+  .ptr{display:grid; place-items:center; color:var(--violet); font-family:var(--mono); font-size:18px; font-weight:700; padding:0 2px; align-self:center;}
+
+  /* 인라인 SVG 차트 */
+  .plot{background:var(--wash-2); border:1px solid var(--line); border-radius:4px; padding:14px; display:grid; place-items:center; min-height:0;}
+  .plot svg{width:100%; height:auto; display:block; max-height:300px;}
+  .plot .cap{font-family:var(--mono); font-size:11px; color:var(--mut); margin-top:8px; text-align:center;}
+  .formula .cap{font-family:var(--mono); font-size:11.5px; color:var(--code-dim); text-align:center;}
+
+  /* 수정·보강 표시 (원본 pptx에 없던 내용) */
+  .newmark{position:absolute; top:30px; right:112px; font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.08em;
+    color:var(--mint); border:1px solid #BFE9E1; background:var(--mint-soft); border-radius:999px; padding:3px 9px;}
+
+  @media print{
+    @page{ size:1280px 720px; margin:0; }
+    body{background:#fff !important;}
+    .controlbar,.progress,.hint,.overview{display:none !important;}
+    .stage{position:static; inset:auto; overflow:visible; display:block; padding:0;}
+    .sizer{width:auto !important; height:auto !important;}
+    .scaler{transform:none !important; width:auto !important; height:auto !important;}
+    .slide{ display:flex !important; width:1280px !important; height:720px !important;
+      border-radius:0 !important; border:none !important; box-shadow:none !important;
+      page-break-after:always; break-after:page;
+      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .slide:last-child{page-break-after:auto;}
+  }
+</style>
+</head>
+<body>
+
+<div class="progress"><div class="fill" id="pfill"></div></div>
+
+<main class="stage" id="stage">
+  <div class="sizer" id="sizer">
+    <div class="scaler" id="scaler">
+
+
+
+<!-- ============================================================
+     슬라이드는 여기부터. 규격: 1280x720 고정.
+     첫 장은 slide cover active, 나머지는 active 없이.
+     ============================================================ -->
+
+<section class="slide cover active" data-title="표지 · 특강">
+  <div class="aperture"></div><div class="ring"></div>
+  <div class="wrap">
+    <div class="kick"><span class="pill">특강</span><span>WEB SERVICE</span></div>
+    <h1>AI 도구로<br/>웹 서비스 만들기</h1>
+  </div>
+</section>
+
+<section class="slide" data-title="오늘의 일정">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">AGENDA</span><span class="dot"></span>일정</div>
+  <h2 class="s-title sm">오늘의 일정</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c4">
+      <div class="card"><span class="n">CH0</span><h3>방법론 고르기</h3><p>룰베이스 · 머신러닝 · 딥러닝 · AI 에이전트 넷 중 무엇으로 풀 것인가.</p></div>
+      <div class="card"><span class="n">CH1</span><h3>만들기 전에 적는 것</h3><p>요구사항 정의서 · 흐름도 · 와이어프레임 · 일정표.</p></div>
+      <div class="card"><span class="n">CH2</span><h3>웹 서비스의 구조</h3><p>화면과 서버와 저장소가 어떻게 나뉘고 이어지는가.</p></div>
+      <div class="card"><span class="n">CH3</span><h3>만들고 올리기</h3><p>백엔드 선택 · AI 도구로 만드는 순서 · 배포.</p></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>코드를 직접 쓰지 않는다. <b>무엇을 만들지 정하고, 무엇으로 만들지 고르는</b> 데까지 간다.</div></div>
+  </div>
+</section>
+
+<section class="slide section" data-title="[섹션] 방법론 고르기">
+  <div class="ghost">00</div>
+  <div class="seyebrow">CHAPTER 00</div>
+  <h2>방법론 고르기</h2>
+  <div class="agenda"><span>네 가지 방법</span><span>고르는 질문</span></div>
+</section>
+
+<section class="slide" data-title="네 가지 방법">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>방법론</div>
+  <h2 class="s-title sm">문제를 푸는 네 가지 방법</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c4">
+      <div class="card"><span class="n">1</span><h3>룰베이스</h3><p>사람이 정한 규칙대로 동작한다. 조건문의 연속이다.</p></div>
+      <div class="card"><span class="n">2</span><h3>머신러닝</h3><p>입력과 정답 데이터를 주면 규칙을 스스로 찾는다.</p></div>
+      <div class="card"><span class="n">3</span><h3>딥러닝</h3><p>이미지·음성·글처럼 표로 정리되지 않는 데이터를 다룬다.</p></div>
+      <div class="card"><span class="n">4</span><h3>AI 에이전트</h3><p>목표를 받아 스스로 계획하고 도구를 호출해 실행한다.</p></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>뒤로 갈수록 <b>사람이 적어 넣는 규칙이 줄고 비용이 는다</b>. 앞쪽으로 풀리면 앞쪽에서 끝낸다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="룰베이스">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>방법론</div>
+  <h2 class="s-title sm">사람이 적어 넣은 규칙</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">배송비를 정하는 규칙</span></div>
+          <pre><code><span class="kw">if</span> 주문금액 &gt;= <span class="nm">50000</span>:
+    배송비 = <span class="nm">0</span>
+<span class="kw">else</span>:
+    배송비 = <span class="nm">3000</span></code></pre>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div>규칙이 <b>글로 적히므로</b> 왜 그런 결과가 나왔는지 그대로 설명된다.</div></div>
+          <div class="v"><span class="b">→</span><div>데이터가 없어도 <b>오늘 바로</b> 만들 수 있다.</div></div>
+        </div>
+      </div>
+      <div>
+        <table class="ctable">
+          <thead><tr><th></th><th>내용</th></tr></thead>
+          <tbody>
+            <tr><td><b>적합</b></td><td>규칙이 명확하고 예외가 적다</td></tr>
+            <tr><td><b>한계</b></td><td>규칙이 늘면 서로 부딪히고, 조건이 바뀌면 전부 고쳐야 한다</td></tr>
+            <tr><td><b>예시</b></td><td>승인·거절 기준 · 조건문 챗봇</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">함정</span><div>규칙이 <b>스무 줄을 넘어가면</b> 사람이 관리하지 못한다. 그때가 다음 방법으로 넘어갈 시점이다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="머신러닝">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>방법론</div>
+  <h2 class="s-title sm">데이터에서 뽑아낸 규칙</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w2">
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>규칙을 적는 대신 <b>입력과 정답의 쌍</b>을 모아 준다.</div></div>
+          <div class="v"><span class="b">★</span><div>스팸 메일 1만 통에 <code>스팸</code>·<code>정상</code> 딱지를 붙여 주면, 어떤 단어가 스팸에 자주 나오는지 <b>모델이 세어 낸다</b>.</div></div>
+          <div class="v"><span class="b">✕</span><div>정답이 붙은 데이터가 없으면 시작할 수 없다.</div></div>
+        </div>
+      </div>
+      <div>
+        <table class="ctable">
+          <thead><tr><th></th><th>내용</th></tr></thead>
+          <tbody>
+            <tr><td><b>적합</b></td><td>규칙으로 적기는 어렵지만 예시 데이터는 있다</td></tr>
+            <tr><td><b>한계</b></td><td>데이터 품질이 결과를 좌우한다</td></tr>
+            <tr><td><b>예시</b></td><td>스팸 분류 · 이탈 예측 · 불량 판정</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>규칙을 <b>말로 설명할 수 없는데 예시는 댈 수 있다면</b> 머신러닝 쪽이다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="딥러닝">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>방법론</div>
+  <h2 class="s-title sm">표로 정리되지 않는 데이터</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w2">
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>사진 한 장은 <b>픽셀 수십만 개</b>다. 열 이름을 붙일 수 없어 표에 담기지 않는다.</div></div>
+          <div class="v"><span class="b">★</span><div>층을 여러 겹 쌓아 <b>선 → 모양 → 사물</b> 순서로 점점 큰 특징을 잡아낸다.</div></div>
+          <div class="v"><span class="b">✕</span><div>데이터와 계산이 많이 든다. 학습 비용이 앞의 둘과 자릿수가 다르다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="plot">
+          <svg viewBox="0 0 300 190">
+            <g fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1.4">
+              <circle cx="40" cy="40" r="13"/><circle cx="40" cy="95" r="13"/><circle cx="40" cy="150" r="13"/>
+              <circle cx="150" cy="25" r="13"/><circle cx="150" cy="72" r="13"/><circle cx="150" cy="119" r="13"/><circle cx="150" cy="166" r="13"/>
+            </g>
+            <g stroke="#DCD6F0" stroke-width="1">
+              <line x1="53" y1="40" x2="137" y2="25"/><line x1="53" y1="40" x2="137" y2="72"/><line x1="53" y1="40" x2="137" y2="119"/><line x1="53" y1="40" x2="137" y2="166"/>
+              <line x1="53" y1="95" x2="137" y2="25"/><line x1="53" y1="95" x2="137" y2="72"/><line x1="53" y1="95" x2="137" y2="119"/><line x1="53" y1="95" x2="137" y2="166"/>
+              <line x1="53" y1="150" x2="137" y2="25"/><line x1="53" y1="150" x2="137" y2="72"/><line x1="53" y1="150" x2="137" y2="119"/><line x1="53" y1="150" x2="137" y2="166"/>
+              <line x1="163" y1="25" x2="247" y2="95"/><line x1="163" y1="72" x2="247" y2="95"/><line x1="163" y1="119" x2="247" y2="95"/><line x1="163" y1="166" x2="247" y2="95"/>
+            </g>
+            <circle cx="260" cy="95" r="14" fill="#5B3DF5"/>
+            <text x="40" y="180" text-anchor="middle" font-size="10.5" fill="#8E8AAC">입력</text>
+            <text x="150" y="185" text-anchor="middle" font-size="10.5" fill="#8E8AAC">숨은 층</text>
+            <text x="260" y="125" text-anchor="middle" font-size="10.5" fill="#8E8AAC">출력</text>
+          </svg>
+          <div class="cap">층이 깊어질수록 잡아내는 특징이 커진다</div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>다루는 것이 <b>이미지·음성·자연어</b>면 사실상 딥러닝 말고 선택지가 없다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="AI 에이전트">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>방법론</div>
+  <h2 class="s-title sm">목표를 받아 도구를 쓰는 프로그램</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="pipe">
+      <div class="step"><div class="si">1</div><div class="sn">목표 받기</div><div class="sd">영수증을 엑셀로 정리해 달라</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="si">2</div><div class="sn">계획 세우기</div><div class="sd">읽기 → 뽑기 → 표로 만들기 → 저장</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="si">3</div><div class="sn">도구 호출</div><div class="sd">이미지 인식 · 파일 저장 · DB 조회</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="si">4</div><div class="sn">결과 전달</div><div class="sd">완성된 xlsx 파일</div></div>
+    </div>
+    <div class="twocol">
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div>앞의 셋은 <b>답을 하나 내놓고 끝난다</b>. 에이전트는 여러 단계를 이어서 실행한다.</div></div>
+          <div class="v"><span class="b">→</span><div>사람이 붙어 있지 않아도 <b>중간 판단</b>을 스스로 한다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>통제가 함께 필요하다</h4><p>스스로 실행하므로 <b>무엇까지 허용할지</b>를 미리 정해 둬야 한다.</p></div></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>판단·계획·실행이 <b>한 번에 다 필요할 때</b>만 에이전트를 꺼낸다. 단답이면 과하다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="방법론 고르는 질문">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>방법론</div>
+  <h2 class="s-title sm">방법론을 고르는 네 질문</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="pipe q">
+      <div class="step"><div class="si">1</div><div class="sn">규칙이 명확한가</div><div class="sd">예 → 룰베이스</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="si">2</div><div class="sn">예시 데이터가 있는가</div><div class="sd">예 → 머신러닝</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="si">3</div><div class="sn">이미지·음성·글인가</div><div class="sd">예 → 딥러닝</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="si">4</div><div class="sn">여러 단계를 스스로 해야 하는가</div><div class="sd">예 → AI 에이전트</div></div>
+    </div>
+    <table class="ctable">
+      <thead><tr><th>문제</th><th>고르는 것</th><th>이유</th></tr></thead>
+      <tbody>
+        <tr><td>연차 신청 승인 기준</td><td class="hl">룰베이스</td><td>규정이 이미 문서로 있다</td></tr>
+        <tr><td>이탈할 고객 추리기</td><td class="hl">머신러닝</td><td>과거 이탈 기록이 남아 있다</td></tr>
+        <tr><td>불량품 사진 골라내기</td><td class="hl">딥러닝</td><td>입력이 이미지다</td></tr>
+        <tr><td>주간 보고서 자동 작성</td><td class="hl">AI 에이전트</td><td>조회·정리·발송이 이어진다</td></tr>
+      </tbody>
+    </table>
+    <div class="keymsg"><span class="k">기준</span><div>위에서부터 내려오다 <b>처음 &lsquo;예&rsquo;가 나오는 곳에서 멈춘다</b>. 더 내려갈수록 비싸진다.</div></div>
+  </div>
+</section>
+
+<section class="slide section" data-title="[섹션] 만들기 전에 적는 것">
+  <div class="ghost">01</div>
+  <div class="seyebrow">CHAPTER 01</div>
+  <h2>만들기 전에 적는 것</h2>
+  <div class="agenda"><span>요구사항</span><span>흐름도</span><span>와이어프레임</span><span>일정</span></div>
+</section>
+
+<section class="slide" data-title="기획 문서 넷">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>기획</div>
+  <h2 class="s-title sm">만들기 전에 남기는 문서 넷</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c4">
+      <div class="card"><span class="n">1</span><h3>요구사항 정의서</h3><p>어떤 기능이 필요한지 표로 적는다.</p></div>
+      <div class="card"><span class="n">2</span><h3>플로우차트</h3><p>기능이 어떤 순서로 도는지 도형으로 그린다.</p></div>
+      <div class="card"><span class="n">3</span><h3>와이어프레임</h3><p>화면 어디에 무엇이 놓이는지 배치만 그린다.</p></div>
+      <div class="card"><span class="n">4</span><h3>간트차트</h3><p>어떤 작업을 언제까지 할지 시간 축에 놓는다.</p></div>
+    </div>
+    <div class="keymsg"><span class="k">효과</span><div>넷 다 <b>AI 에게 그대로 넘기는 입력</b>이 된다. 말로 시키는 것보다 결과가 정확해진다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="요구사항 정의서">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>기획</div>
+  <h2 class="s-title sm">기능 하나가 한 줄이 되는 표</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable">
+      <thead><tr><th>기능 ID</th><th>기능명</th><th>상세 설명</th><th>필수 데이터</th></tr></thead>
+      <tbody>
+        <tr><td class="hl">MEM01_01</td><td>자체 로그인</td><td>아이디와 비밀번호를 입력받아 본인 확인 후 로그인시킨다</td><td>ID, 비밀번호</td></tr>
+        <tr><td class="hl">MEM01_02</td><td>아이디 찾기</td><td>전화번호와 이름을 입력하면 해당 아이디를 보여 준다</td><td>전화번호, 이름</td></tr>
+        <tr><td class="hl">MEM02_01</td><td>자체 회원가입</td><td>필수 정보를 받아 계정을 만든다</td><td>이름, 생년월일, 전화번호</td></tr>
+        <tr><td class="hl">MEM04_01</td><td>회원 탈퇴</td><td>비밀번호를 다시 확인한 뒤 정보를 삭제한다</td><td>비밀번호</td></tr>
+      </tbody>
+    </table>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>상세 설명은 <b>동작 한 문장</b>으로 적는다. <q>편리하게</q> 같은 형용사는 만들 수 없는 말이다.</div></div>
+      <div class="v"><span class="b">→</span><div>필수 데이터 칸이 그대로 <b>데이터베이스 열 이름</b>이 된다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>한 줄을 읽고 <b>만들 수 있는 그림이 그려지지 않으면</b> 아직 쪼갤 것이 남았다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="기능 ID">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>기획</div>
+  <div class="newmark">보강</div>
+  <h2 class="s-title sm">기능마다 붙는 고유 번호</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">ID 붙이는 규칙</span></div>
+          <pre><code>MEM  01  _  02
+ │    │      └ 그 안의 몇 번째 기능인가
+ │    └─────── 요구사항 번호
+ └──────────── 영역 (MEM 회원 · ORD 주문)</code></pre>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>번호가 있으면 <q>로그인 그거</q> 대신 <code>MEM01_02</code> 로 부를 수 있다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="callout mint"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div class="ct"><h4>번호가 문서를 잇는다</h4><p>흐름도·화면 설계·일정표가 <b>같은 번호</b>를 쓰면 셋이 하나로 묶인다.</p></div></div>
+        <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>번호를 재사용하지 않는다</h4><p>기능이 빠져도 번호는 비워 둔다. 옮겨 쓰면 옛 문서가 다른 것을 가리킨다.</p></div></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">효과</span><div>ID 하나로 <b>기획서·화면·일정·코드</b>가 같은 것을 가리킨다. 회의에서 헛도는 시간이 준다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="흐름도 도형">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>기획</div>
+  <h2 class="s-title sm">흐름도를 이루는 도형 다섯</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="plot">
+          <svg viewBox="0 0 210 220">
+            <ellipse cx="52" cy="22" rx="40" ry="15" fill="#DFF5EC" stroke="#5FC6A4" stroke-width="1.6"/>
+            <text x="110" y="20" font-size="12" font-weight="700" fill="#16142B">타원</text>
+            <text x="110" y="33" font-size="10" fill="#8E8AAC">시작 · 종료</text>
+            <rect x="14" y="58" width="76" height="30" rx="3" fill="#E4EEFF" stroke="#7FA8E8" stroke-width="1.6"/>
+            <text x="110" y="72" font-size="12" font-weight="700" fill="#16142B">직사각형</text>
+            <text x="110" y="85" font-size="10" fill="#8E8AAC">처리</text>
+            <path d="M52 108 L92 128 L52 148 L12 128 Z" fill="#FFF0D6" stroke="#E8B45A" stroke-width="1.6"/>
+            <text x="110" y="124" font-size="12" font-weight="700" fill="#16142B">마름모</text>
+            <text x="110" y="137" font-size="10" fill="#8E8AAC">조건 · 판단</text>
+            <path d="M22 166 L96 166 L82 194 L8 194 Z" fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1.6"/>
+            <text x="110" y="176" font-size="12" font-weight="700" fill="#16142B">평행사변형</text>
+            <text x="110" y="189" font-size="10" fill="#8E8AAC">입력 · 출력</text>
+            <line x1="14" y1="212" x2="84" y2="212" stroke="#16142B" stroke-width="2"/>
+            <path d="M84 207 L94 212 L84 217 Z" fill="#16142B"/>
+            <text x="110" y="216" font-size="12" font-weight="700" fill="#16142B">화살표</text>
+          </svg>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div>도형이 <b>다섯뿐</b>이라 배우는 데 몇 분이면 된다. 그런데 어떤 절차든 그려진다.</div></div>
+          <div class="v"><span class="b">→</span><div>마름모에서만 갈래가 생긴다. <b>선이 두 개 나가면</b> 각각에 <code>예</code>·<code>아니오</code>를 적는다.</div></div>
+          <div class="v"><span class="b">✕</span><div>도형을 새로 만들지 않는다. 읽는 사람이 뜻을 물어보게 된다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">효과</span><div>그리다 보면 <b>빠뜨린 예외가 드러난다</b>. 비밀번호를 틀렸을 때 어디로 가는지 적어야 하기 때문이다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="로그인 흐름도">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>기획</div>
+  <h2 class="s-title sm">로그인 한 번의 흐름도</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="plot">
+      <svg viewBox="0 0 700 200">
+        <ellipse cx="46" cy="52" rx="40" ry="19" fill="#DFF5EC" stroke="#5FC6A4" stroke-width="1.6"/>
+        <text x="46" y="57" text-anchor="middle" font-size="13" fill="#16142B">시작</text>
+        <path d="M110 33 L206 33 L192 71 L96 71 Z" fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1.6"/>
+        <text x="151" y="57" text-anchor="middle" font-size="13" fill="#3A1FC9">아이디 입력</text>
+        <path d="M232 33 L336 33 L322 71 L218 71 Z" fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1.6"/>
+        <text x="277" y="57" text-anchor="middle" font-size="13" fill="#3A1FC9">비밀번호 입력</text>
+        <path d="M424 12 L502 52 L424 92 L346 52 Z" fill="#FFF0D6" stroke="#E8B45A" stroke-width="1.6"/>
+        <text x="424" y="48" text-anchor="middle" font-size="12" fill="#16142B">저장된 값과</text>
+        <text x="424" y="63" text-anchor="middle" font-size="12" fill="#16142B">같은가</text>
+        <ellipse cx="612" cy="52" rx="58" ry="19" fill="#DFF5EC" stroke="#5FC6A4" stroke-width="1.6"/>
+        <text x="612" y="57" text-anchor="middle" font-size="13" fill="#16142B">로그인 성공</text>
+        <rect x="330" y="140" width="130" height="34" rx="3" fill="#FDE8EE" stroke="#F0A9BC" stroke-width="1.6"/>
+        <text x="395" y="162" text-anchor="middle" font-size="13" fill="#C9405B">오류 안내 후 재입력</text>
+        <g stroke="#16142B" stroke-width="1.8" fill="none">
+          <line x1="86" y1="52" x2="98" y2="52"/><line x1="200" y1="52" x2="222" y2="52"/><line x1="330" y1="52" x2="344" y2="52"/>
+        </g>
+        <g fill="#16142B">
+          <path d="M98 47 L108 52 L98 57 Z"/><path d="M222 47 L232 52 L222 57 Z"/><path d="M344 47 L354 52 L344 57 Z"/>
+        </g>
+        <line x1="502" y1="52" x2="544" y2="52" stroke="#0FB5A1" stroke-width="1.8"/>
+        <path d="M544 47 L554 52 L544 57 Z" fill="#0FB5A1"/>
+        <text x="520" y="43" text-anchor="middle" font-size="11" fill="#0FB5A1">예</text>
+        <line x1="424" y1="92" x2="424" y2="132" stroke="#E8537A" stroke-width="1.8"/>
+        <path d="M419 130 L424 140 L429 130 Z" fill="#E8537A"/>
+        <text x="434" y="118" font-size="11" fill="#E8537A">아니오</text>
+        <path d="M330 157 L151 157 L151 76" fill="none" stroke="#E8537A" stroke-width="1.8"/>
+        <path d="M146 86 L151 76 L156 86 Z" fill="#E8537A"/>
+      </svg>
+      <div class="cap">아니오 가지가 다시 입력으로 돌아온다 — 이 되돌아오는 선이 흐름도의 값어치다</div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>선이 <b>어디에도 닿지 않고 끊기면</b> 만들 수 없는 기능이다. 끊긴 선을 먼저 잇는다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="와이어프레임">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>기획</div>
+  <h2 class="s-title sm">색을 빼고 배치만 그린 초안</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="plot">
+          <svg viewBox="0 0 260 230">
+            <rect x="30" y="6" width="224" height="26" rx="3" fill="#F4F1FF" stroke="#DCD6F0"/>
+            <rect x="38" y="13" width="26" height="12" fill="#DCD6F0"/><rect x="74" y="13" width="120" height="12" rx="6" fill="#fff" stroke="#DCD6F0"/>
+            <circle cx="238" cy="19" r="7" fill="#fff" stroke="#DCD6F0"/>
+            <text x="26" y="23" text-anchor="end" font-size="9.5" fill="#5B3DF5">헤더</text>
+            <rect x="30" y="38" width="224" height="20" rx="3" fill="#fff" stroke="#DCD6F0"/>
+            <g fill="#DCD6F0"><rect x="38" y="45" width="14" height="7"/><rect x="70" y="45" width="34" height="7"/><rect x="114" y="45" width="34" height="7"/><rect x="158" y="45" width="34" height="7"/></g>
+            <text x="26" y="53" text-anchor="end" font-size="9.5" fill="#5B3DF5">메뉴</text>
+            <rect x="30" y="64" width="224" height="70" fill="#fff" stroke="#DCD6F0"/>
+            <path d="M30 64 L254 134 M254 64 L30 134" stroke="#DCD6F0"/>
+            <text x="26" y="102" text-anchor="end" font-size="9.5" fill="#5B3DF5">이미지</text>
+            <rect x="30" y="140" width="224" height="46" fill="#fff" stroke="#DCD6F0"/>
+            <g fill="#E8E4F8"><rect x="38" y="147" width="90" height="8"/><rect x="38" y="161" width="206" height="5"/><rect x="38" y="171" width="180" height="5"/></g>
+            <text x="26" y="166" text-anchor="end" font-size="9.5" fill="#5B3DF5">텍스트</text>
+            <rect x="30" y="192" width="224" height="22" rx="3" fill="#E8E4F8" stroke="#DCD6F0"/>
+            <text x="142" y="207" text-anchor="middle" font-size="10.5" fill="#4A4766">버튼</text>
+            <text x="26" y="207" text-anchor="end" font-size="9.5" fill="#5B3DF5">버튼</text>
+          </svg>
+          <div class="cap">회색 상자와 가위표뿐이다 — 그것이 목적이다</div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div>색과 글꼴을 빼면 <b>배치 이야기만 남는다</b>. 버튼 색으로 회의가 새지 않는다.</div></div>
+          <div class="v"><span class="b">→</span><div>고치는 데 몇 분이면 된다. 디자인이 끝난 뒤 <b>같은 지적을 받으면 며칠</b>이 든다.</div></div>
+          <div class="v"><span class="b">→</span><div>어떤 정보가 어디에 들어갈지 정해지면 <b>필요한 데이터가 드러난다</b>.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>와이어프레임에서 <b>못 그리는 화면</b>은 디자인 도구를 열어도 못 그린다. 정보가 아직 안 정해진 것이다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="만드는 순서">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>기획</div>
+  <h2 class="s-title sm">아이디어에서 개발까지 네 단계</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="pipe">
+      <div class="step"><div class="si">1</div><div class="sn">아이디어</div><div class="sd">무엇을 해결할지 한 문장</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="si">2</div><div class="sn">와이어프레임</div><div class="sd">화면 배치를 회색 상자로</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="si">3</div><div class="sn">디자인</div><div class="sd">색·글꼴·간격을 입힌다</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="si">4</div><div class="sn">개발</div><div class="sd">화면을 코드로 만든다</div></div>
+    </div>
+    <table class="ctable">
+      <thead><tr><th>단계를 건너뛰면</th><th>생기는 일</th></tr></thead>
+      <tbody>
+        <tr><td>아이디어 없이 화면부터</td><td>화면은 나왔는데 <b>누가 왜 쓰는지</b>가 비어 있다</td></tr>
+        <tr><td>와이어프레임 없이 디자인부터</td><td>배치를 바꿀 때마다 <b>디자인을 다시</b> 한다</td></tr>
+        <tr><td>디자인 없이 개발부터</td><td>다 만든 화면을 <b>뜯어고치게</b> 된다</td></tr>
+      </tbody>
+    </table>
+    <div class="keymsg"><span class="k">기준</span><div>뒤로 갈수록 <b>고치는 비용이 커진다</b>. 그래서 앞 단계에서 최대한 많이 틀려 둔다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="간트차트">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>기획</div>
+  <h2 class="s-title sm">작업을 시간 축에 늘어놓은 표</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="plot">
+      <svg viewBox="0 0 640 190">
+        <rect x="4" y="6" width="632" height="26" fill="#F4F1FF" stroke="#DCD6F0"/>
+        <text x="60" y="24" text-anchor="middle" font-size="12" font-weight="700" fill="#3A1FC9">작업</text>
+        <g font-size="11" fill="#4A4766" text-anchor="middle">
+          <text x="170" y="24">1주</text><text x="280" y="24">2주</text><text x="390" y="24">3주</text><text x="500" y="24">4주</text><text x="590" y="24">5주</text>
+        </g>
+        <g stroke="#E8E4F8"><line x1="116" y1="32" x2="116" y2="178"/><line x1="226" y1="32" x2="226" y2="178"/><line x1="336" y1="32" x2="336" y2="178"/><line x1="446" y1="32" x2="446" y2="178"/><line x1="546" y1="32" x2="546" y2="178"/></g>
+        <g font-size="12" fill="#16142B"><text x="60" y="52" text-anchor="middle">기획</text><text x="60" y="82" text-anchor="middle">디자인</text><text x="60" y="112" text-anchor="middle">개발</text><text x="60" y="142" text-anchor="middle">테스트</text><text x="60" y="172" text-anchor="middle">배포</text></g>
+        <rect x="120" y="40" width="102" height="16" rx="3" fill="#5B3DF5"/>
+        <rect x="222" y="40" width="60" height="16" rx="3" fill="#C9BEFF"/>
+        <rect x="176" y="70" width="160" height="16" rx="3" fill="#0FB5A1"/>
+        <rect x="330" y="100" width="216" height="16" rx="3" fill="#E8B45A"/>
+        <rect x="440" y="130" width="106" height="16" rx="3" fill="#9B7BE8"/>
+        <path d="M566 160 L574 168 L566 176 L558 168 Z" fill="#E8537A"/>
+        <text x="286" y="53" font-size="10" fill="#8E8AAC">계획 대비 진행</text>
+        <text x="582" y="172" font-size="10" fill="#E8537A">배포일</text>
+      </svg>
+      <div class="cap">막대가 겹치는 구간이 곧 동시에 굴러가는 일이다</div>
+    </div>
+    <div class="keymsg"><span class="k">효과</span><div>앞 막대가 밀리면 <b>뒤 막대가 통째로 밀린다</b>. 배포일은 고정이라 결국 테스트 기간이 잘린다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="마크다운">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>기획</div>
+  <h2 class="s-title sm">기호 몇 개로 쓰는 문서</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">입력한 글자 그대로</span></div>
+          <pre><code># 회원 기능
+## 로그인
+- 아이디와 비밀번호로 확인한다
+- **비밀번호**는 저장하지 않는다</code></pre>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div><code>#</code> 개수가 제목의 크기다. <code>-</code> 는 목록, <code>**</code> 는 굵게.</div></div>
+        </div>
+      </div>
+      <div>
+        <table class="ctable">
+          <thead><tr><th>쓰는 곳</th><th>이유</th></tr></thead>
+          <tbody>
+            <tr><td>AI 에게 주는 지시문</td><td>제목과 목록으로 <b>구획이 나뉘어</b> 지시가 섞이지 않는다</td></tr>
+            <tr><td>깃허브 설명 문서</td><td>글자 그대로 올리면 <b>알아서 꾸며져</b> 보인다</td></tr>
+            <tr><td>회의록·기획서</td><td>워드 없이 <b>메모장</b>으로 쓸 수 있다</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">의의</span><div>AI 도구가 주고받는 문서는 거의 다 마크다운이다. <b>기호 넷만 알면</b> 읽고 쓸 수 있다.</div></div>
+  </div>
+</section>
+
+<section class="slide section" data-title="[섹션] 웹 서비스의 구조">
+  <div class="ghost">02</div>
+  <div class="seyebrow">CHAPTER 02</div>
+  <h2>웹 서비스의 구조</h2>
+  <div class="agenda"><span>화면</span><span>서버</span><span>저장소</span></div>
+</section>
+
+<section class="slide" data-title="세 덩어리">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>구조</div>
+  <h2 class="s-title sm">화면 · 서버 · 저장소</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="arch">
+      <div class="box"><div class="bt">프론트엔드</div><div class="bs">사용자가 보는 화면<br/>버튼 · 목록 · 입력칸</div></div>
+      <div class="conn"><svg viewBox="0 0 34 18"><path d="M0 9h26M20 4l6 5-6 5" stroke="currentColor" stroke-width="2" fill="none"/></svg>요청</div>
+      <div class="box api"><div class="bt">백엔드</div><div class="bs">요청을 받아 판단하고<br/>필요한 데이터를 찾는다</div></div>
+      <div class="conn"><svg viewBox="0 0 34 18"><path d="M0 9h26M20 4l6 5-6 5" stroke="currentColor" stroke-width="2" fill="none"/></svg>조회</div>
+      <div class="box"><div class="bt">데이터베이스</div><div class="bs">회원 · 주문 · 게시글이<br/>쌓여 있는 곳</div></div>
+    </div>
+    <table class="ctable">
+      <thead><tr><th></th><th>어디서 도는가</th><th>고장 나면</th></tr></thead>
+      <tbody>
+        <tr><td><b>프론트엔드</b></td><td>사용자의 브라우저</td><td>화면이 깨진다</td></tr>
+        <tr><td><b>백엔드</b></td><td>인터넷 어딘가의 서버</td><td>화면은 뜨는데 <b>내용이 비어 있다</b></td></tr>
+        <tr><td><b>데이터베이스</b></td><td>백엔드가 붙어 있는 저장소</td><td>저장·조회가 전부 멈춘다</td></tr>
+      </tbody>
+    </table>
+    <div class="keymsg"><span class="k">기준</span><div>화면이 뜨는데 목록만 비어 있다면 <b>프론트엔드는 살아 있고 백엔드가 죽은 것</b>이다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="요청이 지나는 길">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>구조</div>
+  <h2 class="s-title sm">클릭 한 번이 지나는 길</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="pipe">
+      <div class="step"><div class="si">1</div><div class="sn">클릭</div><div class="sd">뉴스 제목을 누른다</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="si">2</div><div class="sn">요청 전송</div><div class="sd">화면이 서버에 <q>3번 글 주세요</q></div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="si">3</div><div class="sn">조회</div><div class="sd">서버가 저장소에서 3번 글을 찾는다</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="si">4</div><div class="sn">응답</div><div class="sd">제목과 본문을 돌려준다</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="si">5</div><div class="sn">화면 갱신</div><div class="sd">받은 내용을 그려 넣는다</div></div>
+    </div>
+    <div class="twocol">
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div>화면에는 <b>글 내용이 들어 있지 않다</b>. 누를 때마다 서버에 물어본다.</div></div>
+          <div class="v"><span class="b">→</span><div>느리게 느껴지는 순간은 대부분 <b>3번 조회</b>에서 생긴다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="callout"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div><div class="ct"><h4>왕복이 매번 일어난다</h4><p>목록 20개를 보여 주려고 <b>스무 번을 물어보는</b> 화면이 흔한 실수다.</p></div></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">의의</span><div>화면은 <b>그리는 일</b>만 하고, 서버는 <b>고르는 일</b>만 한다. 이 분담이 웹 서비스의 뼈대다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="API">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>구조</div>
+  <h2 class="s-title sm">프론트엔드와 데이터 사이의 창구</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w2">
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>백엔드가 밖으로 열어 둔 <b>주소 목록</b>을 API 라 부른다.</div></div>
+          <div class="v"><span class="b">★</span><div>화면은 저장소에 직접 닿지 않는다. <b>창구에 정해진 말만</b> 건넨다.</div></div>
+          <div class="v"><span class="b">→</span><div>결제·지도·메일 같은 <b>외부 서비스</b>도 백엔드가 대신 부른다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">창구에 붙은 주소들</span></div>
+          <pre><code>GET  /posts        <span class="cm"># 글 목록을 달라</span>
+GET  /posts/3      <span class="cm"># 3번 글을 달라</span>
+POST /posts        <span class="cm"># 새 글을 저장해 달라</span></code></pre>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">효과</span><div>창구를 통해서만 오가므로, <b>저장소 구조가 바뀌어도</b> 화면은 고치지 않아도 된다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="백엔드가 필요한 때">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>구조</div>
+  <h2 class="s-title sm">백엔드가 있어야 되는 기능</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div><b>로그인</b> — 사람마다 다른 정보를 보여 주려면 누가 누구인지 서버가 알아야 한다.</div></div>
+          <div class="v"><span class="b">→</span><div><b>글쓰기·댓글</b> — 브라우저를 닫아도 남아 있어야 한다.</div></div>
+          <div class="v"><span class="b">→</span><div><b>장바구니·주문</b> — 다른 기기에서 열어도 같은 내용이 보여야 한다.</div></div>
+          <div class="v"><span class="b">→</span><div><b>검색·목록</b> — 수만 건 중에 조건에 맞는 것만 골라야 한다.</div></div>
+          <div class="v"><span class="b">★</span><div><b>보안</b> — 비밀번호를 화면 쪽에 두면 누구나 열어 볼 수 있다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="callout rose"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div><div class="ct"><h4>화면에 둔 것은 다 보인다</h4><p>브라우저에 내려온 코드와 값은 <b>누구나 열어 볼 수 있다</b>. 감출 것은 서버에 둔다.</p></div></div>
+        <div class="callout mint"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div class="ct"><h4>없어도 되는 경우</h4><p>계산기·타이머처럼 <b>저장할 것도 감출 것도 없는</b> 화면은 프론트엔드만으로 끝난다.</p></div></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div><b>남겨야 하거나 감춰야 하면</b> 백엔드가 필요하다. 둘 다 아니면 만들지 않는다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="백엔드가 멈추면">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>구조</div>
+  <h2 class="s-title sm">백엔드가 멈췄을 때의 화면</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twopane">
+      <div class="pane good">
+        <h4>백엔드가 돌고 있을 때</h4>
+        <div class="mini">GET /posts
+<b>200 OK</b>
+<i>[{ id: 3, title: "공지" }, ...]</i></div>
+        <p>목록이 채워지고 로그인·검색·저장이 전부 동작한다.</p>
+      </div>
+      <div class="pane bad">
+        <h4>백엔드가 꺼져 있을 때</h4>
+        <div class="mini">GET /posts
+<i>Failed to fetch</i>
+<i>ERR_CONNECTION_REFUSED</i></div>
+        <p>화면 껍데기는 뜬다. 목록만 비고, 버튼은 눌러도 아무 일이 없다.</p>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">함정</span><div>화면이 떴다고 서비스가 도는 것이 아니다. <b>배포할 때 백엔드를 먼저 띄우는</b> 이유다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="데이터베이스">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>구조</div>
+  <h2 class="s-title sm">데이터를 저장하고 꺼내는 곳</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c3">
+      <div class="card"><span class="n">1</span><h3>저장</h3><p>회원 정보 · 상품 · 게시글을 넣어 둔다.</p></div>
+      <div class="card"><span class="n">2</span><h3>관리</h3><p>수정하고 삭제하고 새로 추가한다.</p></div>
+      <div class="card"><span class="n">3</span><h3>조회</h3><p>수만 건 중 조건에 맞는 것만 빠르게 찾는다.</p></div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>엑셀과 다른 점은 <b>여러 사람이 동시에</b> 읽고 쓰는데도 값이 어긋나지 않는다는 것이다.</div></div>
+      <div class="v"><span class="b">→</span><div>요구사항 정의서의 <b>필수 데이터 칸</b>이 그대로 저장할 항목이 된다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>무엇을 저장할지는 <b>기획 단계에서 이미 정해진다</b>. 개발할 때 정하는 것이 아니다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="데이터베이스 종류">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>구조</div>
+  <h2 class="s-title sm">데이터베이스 다섯 종류</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable">
+      <thead><tr><th>종류</th><th>저장하는 모양</th><th>강한 곳</th><th>대표</th></tr></thead>
+      <tbody>
+        <tr><td class="hl">관계형</td><td>행과 열의 표</td><td>정확성이 중요한 거래 · 복잡한 조건 조회</td><td>PostgreSQL · MySQL</td></tr>
+        <tr><td>문서형</td><td>중첩이 자유로운 덩어리</td><td>항목이 제각각인 데이터 · 빠른 개발</td><td>MongoDB</td></tr>
+        <tr><td>키-값</td><td>이름표 하나에 값 하나</td><td>매우 빠른 읽기 · 임시 저장</td><td>Redis</td></tr>
+        <tr><td>컬럼형</td><td>열 단위로 모아 저장</td><td>대량 로그 집계</td><td>Cassandra</td></tr>
+        <tr><td>그래프</td><td>점과 점 사이의 연결</td><td>관계 추적 · 추천</td><td>Neo4j</td></tr>
+      </tbody>
+    </table>
+    <div class="keymsg"><span class="k">기준</span><div>정할 것이 없으면 <b>관계형</b>이다. 나머지 넷은 관계형으로 안 풀리는 문제를 만났을 때 꺼낸다.</div></div>
+  </div>
+</section>
+
+<section class="slide section" data-title="[섹션] 만들고 올리기">
+  <div class="ghost">03</div>
+  <div class="seyebrow">CHAPTER 03</div>
+  <h2>만들고 올리기</h2>
+  <div class="agenda"><span>백엔드 선택</span><span>AI 도구</span><span>배포</span></div>
+</section>
+
+<section class="slide" data-title="빌려 쓰는 백엔드">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>선택</div>
+  <h2 class="s-title sm">빌려 쓰는 백엔드</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="arch">
+      <div class="box"><div class="bt">웹 · 앱 화면</div><div class="bs">만들어야 할 것</div></div>
+      <div class="conn"><svg viewBox="0 0 34 18"><path d="M0 9h26M20 4l6 5-6 5" stroke="currentColor" stroke-width="2" fill="none"/></svg>호출</div>
+      <div class="box api"><div class="bt">BaaS</div><div class="bs">로그인 · 데이터베이스 · 파일 저장 ·<br/>실시간 동기화가 <b>이미 들어 있다</b></div></div>
+    </div>
+    <div class="twocol">
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div>서버를 직접 짜는 대신 <b>가입하고 설정만</b> 하면 백엔드가 생긴다.</div></div>
+          <div class="v"><span class="b">→</span><div>혼자서 <b>며칠 만에</b> 로그인 되는 서비스를 띄울 수 있다. Supabase 가 대표적이다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>대신 정책을 따라야 한다</h4><p>요금·기능·권한 규칙이 <b>그 회사가 정하는 대로</b> 바뀐다.</p></div></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>프로토타입이나 사내 소규모 도구라면 <b>거의 항상 빌려 쓰는 쪽</b>이 빠르다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="직접 만드는 경우">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>선택</div>
+  <h2 class="s-title sm">직접 만드는 편이 나은 경우</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div>사내 데이터를 <b>외부 클라우드에 둘 수 없을 때</b>.</div></div>
+          <div class="v"><span class="b">→</span><div>인터넷이 막힌 <b>폐쇄망</b>에서 돌려야 할 때.</div></div>
+          <div class="v"><span class="b">→</span><div>검증·계산 규칙이 복잡해 <b>세밀하게 제어</b>해야 할 때.</div></div>
+          <div class="v"><span class="b">→</span><div>AI 모델 실행이나 파일 처리처럼 <b>서버가 오래 붙잡고</b> 있어야 할 때.</div></div>
+          <div class="v"><span class="b">→</span><div>특정 회사의 정책 변경에 <b>휘둘리고 싶지 않을 때</b>.</div></div>
+        </div>
+      </div>
+      <div>
+        <table class="ctable">
+          <thead><tr><th></th><th>빌려 쓰기</th><th>직접 짓기</th></tr></thead>
+          <tbody>
+            <tr><td><b>시작</b></td><td class="yes">몇 시간</td><td class="no">며칠~몇 주</td></tr>
+            <tr><td><b>통제</b></td><td class="no">정책 안에서만</td><td class="yes">전부 내 손</td></tr>
+            <tr><td><b>운영</b></td><td class="yes">맡긴다</td><td class="no">직접 지킨다</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>다섯 중 <b>하나라도 걸리면</b> 직접 짓는 쪽을 검토한다. 특히 사내 데이터는 첫 줄에서 갈린다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="백엔드 프레임워크">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>선택</div>
+  <h2 class="s-title sm">언어별 백엔드 프레임워크</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable">
+      <thead><tr><th>언어</th><th>대표</th><th>성격</th><th>고르는 이유</th></tr></thead>
+      <tbody>
+        <tr><td class="hl">Python</td><td>FastAPI · Django · Flask</td><td>문법이 짧고 배우기 쉽다</td><td>데이터·AI 를 같은 언어로 잇는다</td></tr>
+        <tr><td class="hl">JavaScript</td><td>Express · NestJS</td><td>화면과 서버가 같은 언어다</td><td>한 사람이 양쪽을 다 만든다</td></tr>
+        <tr><td class="hl">Java</td><td>Spring Boot</td><td>규모가 커져도 버틴다</td><td>오래 운영하는 기업 시스템</td></tr>
+      </tbody>
+    </table>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>어느 것을 골라도 <b>하는 일은 같다</b> — 요청을 받아 데이터를 찾아 돌려준다.</div></div>
+      <div class="v"><span class="b">→</span><div>데이터 분석이나 AI 를 이미 파이썬으로 하고 있다면 <b>파이썬 쪽</b>이 이어 붙이기 쉽다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>성능 차이보다 <b>팀이 이미 쓰는 언어</b>가 중요하다. 아무도 모르는 언어가 가장 느리다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="FastAPI">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>선택</div>
+  <h2 class="s-title sm">FastAPI 의 최소 코드</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">main.py — 이게 서버 전부다</span></div>
+          <pre><code><span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI
+
+app = FastAPI()
+
+<span class="fn2">@app.get</span>(<span class="st">"/posts"</span>)     <span class="cm"># 이 주소로 오면</span>
+<span class="kw">def</span> <span class="fn2">read_posts</span>():
+    <span class="kw">return</span> [{<span class="st">"id"</span>: <span class="nm">3</span>, <span class="st">"title"</span>: <span class="st">"공지"</span>}]</code></pre>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div><code>@app.get("/posts")</code> 가 <b>창구 주소</b>다. 앞에서 본 API 목록이 이렇게 만들어진다.</div></div>
+          <div class="v"><span class="b">★</span><div>실행하면 <b>사용법 문서가 자동으로</b> 같이 뜬다. 따로 쓸 필요가 없다.</div></div>
+          <div class="v"><span class="b">→</span><div>돌려준 값은 화면 쪽에서 <b>그대로 목록</b>으로 받는다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">의의</span><div>서버라는 말이 거창하지만, 하는 일은 <b>주소마다 함수 하나</b>를 붙여 두는 것이다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="AI 도구로 만드는 네 단계">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>제작</div>
+  <h2 class="s-title sm">AI 도구로 만드는 네 단계</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="pipe">
+      <div class="step"><div class="si">1</div><div class="sn">기획</div><div class="sd">요구사항·화면 구성 초안을 AI 와 정리한다</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="si">2</div><div class="sn">디자인</div><div class="sd">화면 배치와 색을 AI 디자인 도구로 뽑는다</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="si">3</div><div class="sn">개발</div><div class="sd">AI 코딩 도구가 코드를 만들고 고친다</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="si">4</div><div class="sn">배포</div><div class="sd">호스팅에 올려 링크로 공유한다</div></div>
+    </div>
+    <div class="twocol">
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div>네 단계 중 <b>사람이 반드시 해야 하는 것은 1번</b>이다. 무엇을 만들지는 AI 가 정해 주지 않는다.</div></div>
+          <div class="v"><span class="b">→</span><div>앞 챕터의 문서 넷이 <b>2·3번의 입력</b>이 된다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="callout rose"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>만든 것을 읽을 줄은 알아야 한다</h4><p>AI 가 쓴 코드도 <b>틀린다</b>. 어디가 화면이고 어디가 서버인지는 알아야 고칠 수 있다.</p></div></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>지시가 흐리면 결과도 흐리다. <b>기획 문서의 정확도가 곧 결과물의 정확도</b>다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="에이전트 명세서">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>제작</div>
+  <h2 class="s-title sm">에이전트에게 넘기는 명세서</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">영수증 정리 에이전트 · 마크다운</span></div>
+          <pre><code># 도서 영수증 엑셀 변환
+
+## 역할
+영수증 이미지에서 항목을 뽑아 엑셀로 저장한다
+
+## 입력
+- JPG 또는 PNG 이미지 1장 이상
+
+## 출력
+- 파일명: 도서목록_YYYYMMDD.xlsx
+- 열: 날짜 · 도서명 · 가격 · 분류 · 수량</code></pre>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div><b>역할 · 입력 · 출력</b> 세 칸이면 지시가 선다. 나머지는 덧붙이는 것이다.</div></div>
+          <div class="v"><span class="b">→</span><div>출력 칸에 <b>열 이름까지</b> 적어 두면 결과 모양이 매번 같아진다.</div></div>
+          <div class="v"><span class="b">✕</span><div><q>보기 좋게 정리해 줘</q> 같은 문장은 지운다. 판정할 수 없는 지시다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>지시문은 대화가 아니라 <b>문서</b>다. 한 번 잘 써 두면 다음 사람이 그대로 다시 돌린다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="배포 순서">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>배포</div>
+  <h2 class="s-title sm">배포의 순서와 주소</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="pipe">
+      <div class="step"><div class="si">1</div><div class="sn">코드 올리기</div><div class="sd">화면과 서버를 깃허브 저장소에</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="si">2</div><div class="sn">백엔드 배포</div><div class="sd">서버를 먼저 띄우고 <b>주소를 받는다</b></div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="si">3</div><div class="sn">프론트 배포</div><div class="sd">받은 주소를 화면 설정에 넣고 올린다</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="si">4</div><div class="sn">연결 확인</div><div class="sd">목록이 채워지면 이어진 것이다</div></div>
+    </div>
+    <div class="twocol">
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div>순서가 정해진 이유는 하나다 — <b>화면이 서버 주소를 알아야</b> 하기 때문이다.</div></div>
+          <div class="v"><span class="b">→</span><div>서버 주소는 코드에 박지 않고 <b>설정값</b>으로 넣는다. 주소가 바뀌어도 코드는 그대로다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="callout"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 17V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10M2 17h20"/></svg></div><div class="ct"><h4>둘은 다른 곳에 올라간다</h4><p>화면과 서버는 <b>주소가 서로 다르다</b>. 한 덩어리로 올라가지 않는다.</p></div></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">함정</span><div>프론트를 먼저 올리면 <b>넣을 서버 주소가 아직 없다</b>. 백엔드가 항상 먼저다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="정리">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>정리</div>
+  <h2 class="s-title sm">고를 때 다시 보는 기준</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable">
+      <thead><tr><th>정할 것</th><th>물어볼 것</th><th>기본값</th></tr></thead>
+      <tbody>
+        <tr><td><b>방법론</b></td><td>규칙이 명확한가 → 예시 데이터가 있는가 → 이미지·음성인가</td><td class="hl">위에서 처음 &lsquo;예&rsquo; 나오는 것</td></tr>
+        <tr><td><b>백엔드 유무</b></td><td>남겨야 하거나 감춰야 할 것이 있는가</td><td class="hl">없으면 만들지 않는다</td></tr>
+        <tr><td><b>백엔드 방식</b></td><td>사내 데이터인가 · 폐쇄망인가</td><td class="hl">아니면 빌려 쓴다</td></tr>
+        <tr><td><b>데이터베이스</b></td><td>관계형으로 안 풀리는 이유가 있는가</td><td class="hl">없으면 관계형</td></tr>
+        <tr><td><b>배포 순서</b></td><td>화면이 서버 주소를 아는가</td><td class="hl">백엔드가 먼저</td></tr>
+      </tbody>
+    </table>
+    <div class="keymsg"><span class="k">의의</span><div>다섯 줄 모두 <b>기획 단계에서 답이 나온다</b>. 코드를 쓰기 전에 정해지는 것들이다.</div></div>
+  </div>
+</section>
+
+
+
+
+    </div>
+  </div>
+</main>
+<div class="overview" id="overview">
+  <div class="head"><h3>슬라이드 목차</h3><button id="ovClose">닫기 ✕</button></div>
+  <div class="ovgrid" id="ovgrid"></div>
+</div>
+
+<div class="controlbar">
+  <button class="ico" id="btnMenu" title="목차"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+  <span class="sep"></span>
+  <button class="ico" id="btnPrev" title="이전"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <span class="count"><b id="cur">1</b> / <span id="tot2">75</span></span>
+  <button class="ico" id="btnNext" title="다음"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 18l6-6-6-6"/></svg></button>
+  <span class="sep"></span>
+  <button class="zoom" id="btnOut" title="축소"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14"/></svg></button>
+  <button class="zoom" id="btnIn" title="확대"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></button>
+  <button class="zoom" id="btnFit" title="화면 맞춤"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 4H5a1 1 0 0 0-1 1v4M15 4h4a1 1 0 0 1 1 1v4M9 20H5a1 1 0 0 1-1-1v-4M15 20h4a1 1 0 0 0 1-1v-4"/></svg></button>
+  <button class="pdf" id="btnPdf" title="PDF로 저장 (인쇄 → PDF로 저장)">PDF</button>
+</div>
+
+<div class="hint">← → 또는 Space · 목차(≡) · 줌(−/+) · 숫자 입력 후 Enter로 이동</div>
+<div id="jumpHint"></div>
+<style>
+  #jumpHint{position:fixed; left:50%; bottom:74px; transform:translateX(-50%) translateY(6px); z-index:75;
+    background:#2B2B2E; color:#fff; font-family:Georgia,'Times New Roman',serif; font-style:italic;
+    font-size:20px; letter-spacing:.04em; padding:8px 20px; border-radius:999px;
+    box-shadow:0 12px 28px -10px rgba(0,0,0,.55); opacity:0; pointer-events:none;
+    transition:opacity .12s ease, transform .12s ease;}
+  #jumpHint.on{opacity:1; transform:translateX(-50%) translateY(0);}
+  @media print{ #jumpHint{display:none !important;} }
+</style>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const scaler = document.getElementById('scaler');
+  const sizer  = document.getElementById('sizer');
+  const stage  = document.getElementById('stage');
+  const total  = slides.length;
+  let idx = 0, userZoom = 1;
+  const BW = 1280, BH = 720;
+
+  document.getElementById('tot2').textContent = total;
+  slides.forEach((s, i) => {
+    const c = s.querySelector('.coord b');     if (c) c.textContent = String(i + 1).padStart(2, '0');
+    const t = s.querySelector('.coord .tot');  if (t) t.textContent = total;
+  });
+
+  const ovgrid = document.getElementById('ovgrid');
+  slides.forEach((s, i) => {
+    const b = document.createElement('button');
+    b.className = 'ovcard';
+    b.innerHTML = '<div class="ovn">' + String(i + 1).padStart(2, '0') + '</div><div class="ovt">' + (s.dataset.title || '') + '</div>';
+    b.addEventListener('click', () => { go(i); closeOverview(); });
+    ovgrid.appendChild(b);
+  });
+  const overview = document.getElementById('overview');
+  function openOverview(){ overview.classList.add('on'); }
+  function closeOverview(){ overview.classList.remove('on'); }
+  document.getElementById('btnMenu').addEventListener('click', openOverview);
+  document.getElementById('ovClose').addEventListener('click', closeOverview);
+  overview.addEventListener('click', (e) => { if (e.target === overview) closeOverview(); });
+
+  function fitScale(){
+    const availW = stage.clientWidth  - 60;
+    const availH = stage.clientHeight - 60;
+    return Math.min(availW / BW, availH / BH);
+  }
+  function applyScale(){
+    const eff = fitScale() * userZoom;
+    scaler.style.transform = 'scale(' + eff + ')';
+    sizer.style.width  = (BW * eff) + 'px';
+    sizer.style.height = (BH * eff) + 'px';
+  }
+  window.addEventListener('resize', applyScale);
+
+  function go(n){
+    idx = Math.max(0, Math.min(total - 1, n));
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    document.getElementById('cur').textContent = idx + 1;
+    document.getElementById('btnPrev').disabled = idx === 0;
+    document.getElementById('btnNext').disabled = idx === total - 1;
+    document.getElementById('pfill').style.width = (idx / (total - 1) * 100) + '%';
+    applyScale();
+    stage.scrollTop = 0; stage.scrollLeft = 0;
+  }
+  document.getElementById('btnPrev').addEventListener('click', () => go(idx - 1));
+  document.getElementById('btnNext').addEventListener('click', () => go(idx + 1));
+  document.getElementById('btnIn').addEventListener('click',  () => { userZoom = Math.min(2.4, userZoom + 0.15); applyScale(); });
+  document.getElementById('btnOut').addEventListener('click', () => { userZoom = Math.max(0.5, userZoom - 0.15); applyScale(); });
+  document.getElementById('btnFit').addEventListener('click', () => { userZoom = 1; applyScale(); });
+  document.getElementById('btnPdf').addEventListener('click', () => window.print());
+
+  // ---- 슬라이드 번호 입력 → Enter 로 점프 ----
+  let jumpBuf = '', jumpTimer = null;
+  const jumpHint = document.getElementById('jumpHint');
+  function showJump(){
+    if (!jumpHint) return;
+    if (jumpBuf){ jumpHint.textContent = '→ ' + jumpBuf; jumpHint.classList.add('on'); }
+    else { jumpHint.classList.remove('on'); }
+  }
+  function clearJump(){ jumpBuf = ''; if (jumpTimer) clearTimeout(jumpTimer); showJump(); }
+  function commitJump(){
+    if (jumpBuf){ const n = parseInt(jumpBuf, 10); if (!isNaN(n)) go(n - 1); }
+    clearJump();
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (overview.classList.contains('on')) { if (e.key === 'Escape') closeOverview(); return; }
+    if (/^[0-9]$/.test(e.key)){
+      e.preventDefault();
+      jumpBuf = (jumpBuf + e.key).slice(0, 3);
+      showJump();
+      if (jumpTimer) clearTimeout(jumpTimer);
+      jumpTimer = setTimeout(clearJump, 1600);
+      return;
+    }
+    if (e.key === 'Enter'){ e.preventDefault(); commitJump(); return; }
+    if (e.key === 'Escape'){ clearJump(); }
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown'){ e.preventDefault(); clearJump(); go(idx + 1); }
+    if (e.key === 'ArrowLeft'  || e.key === 'PageUp'){ e.preventDefault(); clearJump(); go(idx - 1); }
+    if (e.key === 'Home'){ clearJump(); go(0); } if (e.key === 'End'){ clearJump(); go(total - 1); }
+    if (e.key === '+' || e.key === '='){ userZoom = Math.min(2.4, userZoom + 0.15); applyScale(); }
+    if (e.key === '-'){ userZoom = Math.max(0.5, userZoom - 0.15); applyScale(); }
+  });
+
+  applyScale(); go(0);
+</script>
+</body>
+</html>
