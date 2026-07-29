@@ -8,7 +8,7 @@
 | Day 1 · 파이썬 문법 | [day1/index.html](day1/index.html) | 60 |
 | Day 2 · 데이터 다루기 | [day2/index.html](day2/index.html) | 48 |
 | Day 3 · 머신러닝 | [day3/index.html](day3/index.html) | 41 |
-| Day 4 · 딥러닝 | [day4/index.html](day4/index.html) | 43 |
+| Day 4 · 딥러닝 | [day4/index.html](day4/index.html) | 44 |
 | 특강 · AI 도구로 웹 서비스 만들기 | [special/index.html](special/index.html) | 41 |
 
 조작: `← →` 또는 Space · 숫자 입력 후 Enter로 점프 · `≡` 목차 · `−/+` 줌 · PDF 버튼(인쇄).
@@ -47,7 +47,7 @@ Day 4  딥러닝  — 손글씨 숫자(MNIST) 하나로 하루를 관통한다
   CH1 은닉층이 필요한 이유 새로 배우는 것 셋 · 규칙으로 못 쓰는 문제 · 무늬 하나 0.922 ·
                        은닉 둘만 쌓으면 0.926 · 활성화 함수 0.973 · 세 모델 비교
   CH2 텐서와 코드      텐서 · 차원 사다리 · shape 읽기 · Flatten · 행렬 곱 ·
-                       shape 이어짐 · 클래스가 필요해지는 순간 · nn.Module
+                       shape 이어짐 · 클래스가 필요해지는 순간 · nn.Module · 은닉 노드 수
   CH3 학습            미니배치 · 손실 함수 · 경사 하강법(3D) · 학습 루프 · zero_grad ·
                        역전파 · 옵티마이저 · 에폭 · 평가 · 다섯 에폭의 기록
   CH4 고장과 점검      shape 에러 · 손실이 안 줄 때 · 과적합 · 과적합 줄이기 ·

@@ -1159,7 +1159,32 @@ net = Net()</code></pre>
   </div>
 </section>
 
-<section class="slide section" data-title="[섹션] 학습">
+<section class="slide" data-title="은닉 노드 수">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>모델</div>
+  <h2 class="s-title sm">은닉 노드 수를 고르는 기준</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable">
+      <thead><tr><th>은닉층 1 · 2</th><th>정확도</th><th>1만 장 중 오답</th><th>계수 개수</th></tr></thead>
+      <tbody>
+        <tr><td>16 &middot; 16</td><td class="no">0.939</td><td>612장</td><td>13,002</td></tr>
+        <tr><td>32 &middot; 16</td><td>0.946</td><td>544장</td><td>25,818</td></tr>
+        <tr><td>64 &middot; 32</td><td>0.960</td><td>396장</td><td>52,650</td></tr>
+        <tr><td><b>128 &middot; 64</b></td><td class="yes">0.973</td><td class="yes">271장</td><td>109,386</td></tr>
+        <tr><td>256 &middot; 128</td><td>0.975</td><td>251장</td><td class="no">235,146</td></tr>
+      </tbody>
+    </table>
+    <div class="vlist">
+      <div class="v"><span class="b">&#9733;</span><div>노드 수는 <b>데이터가 정해 주지 않는다</b>. 직접 골라 넣는 숫자다.</div></div>
+      <div class="v"><span class="b">&rarr;</span><div>키울수록 좋아지지만 <b>얻는 것이 줄어든다</b>. 128에서 256으로 가면 계수가 두 배인데 오답은 20장 준다.</div></div>
+      <div class="v"><span class="b">&rarr;</span><div>그림에 흔히 그리는 <b>16개는 화면에 담으려고 줄인 것</b>이다. 실제로 쓰면 0.939 에 그친다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>작은 것부터 올려 보며 <b>점수가 더 안 오르는 지점</b>에서 멈춘다. 처음부터 크게 잡지 않는다.</div></div>
+  </div>
+</section>
+
+  <section class="slide section" data-title="[섹션] 학습">
   <div class="ghost">03</div>
   <div class="seyebrow">CHAPTER 03</div>
   <h2>학습</h2>
@@ -1180,7 +1205,6 @@ net = Net()</code></pre>
 torch.manual_seed(<span class="nm">42</span>)          <span class="cm"># 섞는 순서까지 고정한다</span>
 
 loader = DataLoader(train, batch_size=<span class="nm">128</span>, shuffle=<span class="kw">True</span>)
-test_loader = DataLoader(test, batch_size=<span class="nm">1000</span>)
 loss_fn = nn.CrossEntropyLoss()          <span class="cm"># 열 갈래용</span>
 opt = torch.optim.Adam(model.parameters(), lr=<span class="nm">0.001</span>)
 
@@ -1449,7 +1473,9 @@ opt = torch.optim.Adam(model.parameters(), lr=<span class="nm">0.001</span>)
       <div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">학습이 끝난 뒤 한 번</span></div>
-          <pre><code>correct = <span class="nm">0</span>
+          <pre><code>test_loader = DataLoader(test, batch_size=<span class="nm">1000</span>)
+
+correct = <span class="nm">0</span>
 <span class="kw">with</span> torch.no_grad():        <span class="cm"># 기울기를 기록하지 않는다</span>
     <span class="kw">for</span> xb, yb <span class="kw">in</span> test_loader:
         pred = model(xb).argmax(<span class="nm">1</span>)
