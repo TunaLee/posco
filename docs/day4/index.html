@@ -97,7 +97,7 @@
   .slide.section .agenda span{font-size:13px; font-weight:600; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3); padding:6px 12px; border-radius:999px;}
 
   .cards{display:grid; gap:16px;}
-  .cards.c2{grid-template-columns:repeat(2,1fr);} .cards.c3{grid-template-columns:repeat(3,1fr);} .cards.c4{grid-template-columns:repeat(4,1fr);}
+  .cards.c2{grid-template-columns:repeat(2,1fr);} .cards.c3{grid-template-columns:repeat(3,1fr);} .cards.c4{grid-template-columns:repeat(4,1fr);} .cards.c5{grid-template-columns:repeat(5,1fr);}
   .card{background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:17px 19px; display:flex; flex-direction:column; gap:7px; position:relative;}
   .card .ic{width:38px; height:38px; border-radius:4px; display:grid; place-items:center; background:transparent; border:1.5px solid var(--violet-300); color:var(--violet); margin-bottom:3px;}
   .card .ic svg{width:20px;height:20px;}
@@ -367,11 +367,12 @@
   <h2 class="s-title sm">오늘의 일정</h2>
   <div class="rule"></div>
   <div class="body">
-    <div class="cards c4">
-      <div class="card"><span class="n">CH0</span><h3>왜 층을 쌓는가</h3><p>직선 하나로 안 되는 관계 · 층 · 활성화 함수.</p></div>
+    <div class="cards c5">
+      <div class="card"><span class="n">CH0</span><h3>층을 쌓는 이유</h3><p>직선 하나로 안 되는 관계 · 층 · 활성화 함수.</p></div>
       <div class="card"><span class="n">CH1</span><h3>텐서와 모델</h3><p>데이터를 텐서로 · 층을 쌓아 모델 만들기.</p></div>
       <div class="card"><span class="n">CH2</span><h3>학습</h3><p>다섯 줄짜리 학습 루프 · 손실 곡선 · 평가.</p></div>
       <div class="card"><span class="n">CH3</span><h3>고장과 점검</h3><p>에러 읽는 법 · 손실이 안 줄 때 · 쓰지 않을 때.</p></div>
+      <div class="card"><span class="n">CH4</span><h3>이미지로 해 보기</h3><p>손글씨 숫자 · 열 갈래 분류 · 모델 비교.</p></div>
     </div>
     <div class="keymsg"><span class="k">기준</span><div>손실 &middot; 학습률 &middot; 경사 하강법은 <b>이미 배운 것</b>이다. 오늘 새로 배우는 것은 셋뿐이다.</div></div>
   </div>
@@ -1612,7 +1613,239 @@ cannot be multiplied (1071x12 and 10x16)</span></div>
   </div>
 </section>
 
-<section class="slide" data-title="딥러닝 정리">
+<section class="slide section" data-title="[섹션] 이미지로 해 보기">
+  <div class="ghost">04</div>
+  <div class="seyebrow">CHAPTER 04</div>
+  <h2>이미지로 해 보기</h2>
+  <div class="agenda"><span>손글씨 숫자</span><span>열 갈래 분류</span><span>모델 비교</span></div>
+</section>
+
+<section class="slide" data-title="이미지가 숫자인 이유">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>이미지</div>
+  <h2 class="s-title sm">그림 한 장이 숫자 784개</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="plot">
+      <svg viewBox="0 0 460 200">
+        <rect x="10" y="20" width="140" height="140" fill="#fff" stroke="#DCD6F0"/>
+        <g transform="translate(10,20)"><rect x="65" y="25" width="5" height="5" fill="#16142B" opacity="0.07"/><rect x="70" y="25" width="5" height="5" fill="#16142B" opacity="0.07"/><rect x="75" y="25" width="5" height="5" fill="#16142B" opacity="0.07"/><rect x="80" y="25" width="5" height="5" fill="#16142B" opacity="0.49"/><rect x="85" y="25" width="5" height="5" fill="#16142B" opacity="0.53"/><rect x="90" y="25" width="5" height="5" fill="#16142B" opacity="0.69"/><rect x="95" y="25" width="5" height="5" fill="#16142B" opacity="0.10"/><rect x="100" y="25" width="5" height="5" fill="#16142B" opacity="0.65"/><rect x="105" y="25" width="5" height="5" fill="#16142B" opacity="1.00"/><rect x="110" y="25" width="5" height="5" fill="#16142B" opacity="0.97"/><rect x="115" y="25" width="5" height="5" fill="#16142B" opacity="0.50"/><rect x="40" y="30" width="5" height="5" fill="#16142B" opacity="0.12"/><rect x="45" y="30" width="5" height="5" fill="#16142B" opacity="0.14"/><rect x="50" y="30" width="5" height="5" fill="#16142B" opacity="0.37"/><rect x="55" y="30" width="5" height="5" fill="#16142B" opacity="0.60"/><rect x="60" y="30" width="5" height="5" fill="#16142B" opacity="0.67"/><rect x="65" y="30" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="70" y="30" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="75" y="30" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="80" y="30" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="85" y="30" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="90" y="30" width="5" height="5" fill="#16142B" opacity="0.88"/><rect x="95" y="30" width="5" height="5" fill="#16142B" opacity="0.67"/><rect x="100" y="30" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="105" y="30" width="5" height="5" fill="#16142B" opacity="0.95"/><rect x="110" y="30" width="5" height="5" fill="#16142B" opacity="0.76"/><rect x="115" y="30" width="5" height="5" fill="#16142B" opacity="0.25"/><rect x="35" y="35" width="5" height="5" fill="#16142B" opacity="0.19"/><rect x="40" y="35" width="5" height="5" fill="#16142B" opacity="0.93"/><rect x="45" y="35" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="50" y="35" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="55" y="35" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="60" y="35" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="65" y="35" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="70" y="35" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="75" y="35" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="80" y="35" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="85" y="35" width="5" height="5" fill="#16142B" opacity="0.98"/><rect x="90" y="35" width="5" height="5" fill="#16142B" opacity="0.36"/><rect x="95" y="35" width="5" height="5" fill="#16142B" opacity="0.32"/><rect x="100" y="35" width="5" height="5" fill="#16142B" opacity="0.32"/><rect x="105" y="35" width="5" height="5" fill="#16142B" opacity="0.22"/><rect x="110" y="35" width="5" height="5" fill="#16142B" opacity="0.15"/><rect x="35" y="40" width="5" height="5" fill="#16142B" opacity="0.07"/><rect x="40" y="40" width="5" height="5" fill="#16142B" opacity="0.86"/><rect x="45" y="40" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="50" y="40" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="55" y="40" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="60" y="40" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="65" y="40" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="70" y="40" width="5" height="5" fill="#16142B" opacity="0.78"/><rect x="75" y="40" width="5" height="5" fill="#16142B" opacity="0.71"/><rect x="80" y="40" width="5" height="5" fill="#16142B" opacity="0.97"/><rect x="85" y="40" width="5" height="5" fill="#16142B" opacity="0.95"/><rect x="40" y="45" width="5" height="5" fill="#16142B" opacity="0.31"/><rect x="45" y="45" width="5" height="5" fill="#16142B" opacity="0.61"/><rect x="50" y="45" width="5" height="5" fill="#16142B" opacity="0.42"/><rect x="55" y="45" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="60" y="45" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="65" y="45" width="5" height="5" fill="#16142B" opacity="0.80"/><rect x="70" y="45" width="5" height="5" fill="#16142B" opacity="0.04"/><rect x="80" y="45" width="5" height="5" fill="#16142B" opacity="0.17"/><rect x="85" y="45" width="5" height="5" fill="#16142B" opacity="0.60"/><rect x="45" y="50" width="5" height="5" fill="#16142B" opacity="0.05"/><rect x="55" y="50" width="5" height="5" fill="#16142B" opacity="0.60"/><rect x="60" y="50" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="65" y="50" width="5" height="5" fill="#16142B" opacity="0.35"/><rect x="55" y="55" width="5" height="5" fill="#16142B" opacity="0.55"/><rect x="60" y="55" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="65" y="55" width="5" height="5" fill="#16142B" opacity="0.75"/><rect x="55" y="60" width="5" height="5" fill="#16142B" opacity="0.04"/><rect x="60" y="60" width="5" height="5" fill="#16142B" opacity="0.75"/><rect x="65" y="60" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="70" y="60" width="5" height="5" fill="#16142B" opacity="0.27"/><rect x="60" y="65" width="5" height="5" fill="#16142B" opacity="0.14"/><rect x="65" y="65" width="5" height="5" fill="#16142B" opacity="0.95"/><rect x="70" y="65" width="5" height="5" fill="#16142B" opacity="0.88"/><rect x="75" y="65" width="5" height="5" fill="#16142B" opacity="0.63"/><rect x="80" y="65" width="5" height="5" fill="#16142B" opacity="0.42"/><rect x="65" y="70" width="5" height="5" fill="#16142B" opacity="0.32"/><rect x="70" y="70" width="5" height="5" fill="#16142B" opacity="0.94"/><rect x="75" y="70" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="80" y="70" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="85" y="70" width="5" height="5" fill="#16142B" opacity="0.47"/><rect x="90" y="70" width="5" height="5" fill="#16142B" opacity="0.10"/><rect x="70" y="75" width="5" height="5" fill="#16142B" opacity="0.18"/><rect x="75" y="75" width="5" height="5" fill="#16142B" opacity="0.73"/><rect x="80" y="75" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="85" y="75" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="90" y="75" width="5" height="5" fill="#16142B" opacity="0.59"/><rect x="95" y="75" width="5" height="5" fill="#16142B" opacity="0.11"/><rect x="75" y="80" width="5" height="5" fill="#16142B" opacity="0.06"/><rect x="80" y="80" width="5" height="5" fill="#16142B" opacity="0.36"/><rect x="85" y="80" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="90" y="80" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="95" y="80" width="5" height="5" fill="#16142B" opacity="0.73"/><rect x="85" y="85" width="5" height="5" fill="#16142B" opacity="0.98"/><rect x="90" y="85" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="95" y="85" width="5" height="5" fill="#16142B" opacity="0.98"/><rect x="100" y="85" width="5" height="5" fill="#16142B" opacity="0.25"/><rect x="70" y="90" width="5" height="5" fill="#16142B" opacity="0.18"/><rect x="75" y="90" width="5" height="5" fill="#16142B" opacity="0.51"/><rect x="80" y="90" width="5" height="5" fill="#16142B" opacity="0.72"/><rect x="85" y="90" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="90" y="90" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="95" y="90" width="5" height="5" fill="#16142B" opacity="0.81"/><rect x="60" y="95" width="5" height="5" fill="#16142B" opacity="0.15"/><rect x="65" y="95" width="5" height="5" fill="#16142B" opacity="0.58"/><rect x="70" y="95" width="5" height="5" fill="#16142B" opacity="0.90"/><rect x="75" y="95" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="80" y="95" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="85" y="95" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="90" y="95" width="5" height="5" fill="#16142B" opacity="0.98"/><rect x="95" y="95" width="5" height="5" fill="#16142B" opacity="0.71"/><rect x="50" y="100" width="5" height="5" fill="#16142B" opacity="0.09"/><rect x="55" y="100" width="5" height="5" fill="#16142B" opacity="0.45"/><rect x="60" y="100" width="5" height="5" fill="#16142B" opacity="0.87"/><rect x="65" y="100" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="70" y="100" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="75" y="100" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="80" y="100" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="85" y="100" width="5" height="5" fill="#16142B" opacity="0.79"/><rect x="90" y="100" width="5" height="5" fill="#16142B" opacity="0.31"/><rect x="40" y="105" width="5" height="5" fill="#16142B" opacity="0.09"/><rect x="45" y="105" width="5" height="5" fill="#16142B" opacity="0.26"/><rect x="50" y="105" width="5" height="5" fill="#16142B" opacity="0.84"/><rect x="55" y="105" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="60" y="105" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="65" y="105" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="70" y="105" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="75" y="105" width="5" height="5" fill="#16142B" opacity="0.78"/><rect x="80" y="105" width="5" height="5" fill="#16142B" opacity="0.32"/><rect x="30" y="110" width="5" height="5" fill="#16142B" opacity="0.07"/><rect x="35" y="110" width="5" height="5" fill="#16142B" opacity="0.67"/><rect x="40" y="110" width="5" height="5" fill="#16142B" opacity="0.86"/><rect x="45" y="110" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="50" y="110" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="55" y="110" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="60" y="110" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="65" y="110" width="5" height="5" fill="#16142B" opacity="0.76"/><rect x="70" y="110" width="5" height="5" fill="#16142B" opacity="0.31"/><rect x="75" y="110" width="5" height="5" fill="#16142B" opacity="0.04"/><rect x="20" y="115" width="5" height="5" fill="#16142B" opacity="0.22"/><rect x="25" y="115" width="5" height="5" fill="#16142B" opacity="0.67"/><rect x="30" y="115" width="5" height="5" fill="#16142B" opacity="0.89"/><rect x="35" y="115" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="40" y="115" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="45" y="115" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="50" y="115" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="55" y="115" width="5" height="5" fill="#16142B" opacity="0.96"/><rect x="60" y="115" width="5" height="5" fill="#16142B" opacity="0.52"/><rect x="65" y="115" width="5" height="5" fill="#16142B" opacity="0.04"/><rect x="20" y="120" width="5" height="5" fill="#16142B" opacity="0.53"/><rect x="25" y="120" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="30" y="120" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="35" y="120" width="5" height="5" fill="#16142B" opacity="0.99"/><rect x="40" y="120" width="5" height="5" fill="#16142B" opacity="0.83"/><rect x="45" y="120" width="5" height="5" fill="#16142B" opacity="0.53"/><rect x="50" y="120" width="5" height="5" fill="#16142B" opacity="0.52"/><rect x="55" y="120" width="5" height="5" fill="#16142B" opacity="0.06"/></g>
+        <rect x="60" y="70" width="30" height="30" fill="none" stroke="#E8537A" stroke-width="1.8"/>
+        <line x1="90" y1="70" x2="238" y2="18" stroke="#E8537A" stroke-width="1" stroke-dasharray="3 3"/>
+        <line x1="90" y1="100" x2="238" y2="162" stroke="#E8537A" stroke-width="1" stroke-dasharray="3 3"/>
+        <text x="80" y="176" text-anchor="middle" font-size="10.5" fill="#8E8AAC">28 &times; 28 = 784칸</text>
+        <rect x="250" y="18" width="24" height="24" fill="#16142B" opacity="0.00" stroke="#DCD6F0" stroke-width="0.6"/><text x="262" y="34" text-anchor="middle" font-size="9" fill="#4A4766" font-family="ui-monospace,monospace">1</text><rect x="274" y="18" width="24" height="24" fill="#16142B" opacity="0.60" stroke="#DCD6F0" stroke-width="0.6"/><text x="286" y="34" text-anchor="middle" font-size="9" fill="#fff" font-family="ui-monospace,monospace">154</text><rect x="298" y="18" width="24" height="24" fill="#16142B" opacity="0.99" stroke="#DCD6F0" stroke-width="0.6"/><text x="310" y="34" text-anchor="middle" font-size="9" fill="#fff" font-family="ui-monospace,monospace">253</text><rect x="322" y="18" width="24" height="24" fill="#16142B" opacity="0.35" stroke="#DCD6F0" stroke-width="0.6"/><text x="334" y="34" text-anchor="middle" font-size="9" fill="#4A4766" font-family="ui-monospace,monospace">90</text><rect x="346" y="18" width="24" height="24" fill="#16142B" opacity="0.00" stroke="#DCD6F0" stroke-width="0.6"/><text x="358" y="34" text-anchor="middle" font-size="9" fill="#4A4766" font-family="ui-monospace,monospace">0</text><rect x="370" y="18" width="24" height="24" fill="#16142B" opacity="0.00" stroke="#DCD6F0" stroke-width="0.6"/><text x="382" y="34" text-anchor="middle" font-size="9" fill="#4A4766" font-family="ui-monospace,monospace">0</text><rect x="250" y="42" width="24" height="24" fill="#16142B" opacity="0.00" stroke="#DCD6F0" stroke-width="0.6"/><text x="262" y="58" text-anchor="middle" font-size="9" fill="#4A4766" font-family="ui-monospace,monospace">0</text><rect x="274" y="42" width="24" height="24" fill="#16142B" opacity="0.55" stroke="#DCD6F0" stroke-width="0.6"/><text x="286" y="58" text-anchor="middle" font-size="9" fill="#fff" font-family="ui-monospace,monospace">139</text><rect x="298" y="42" width="24" height="24" fill="#16142B" opacity="0.99" stroke="#DCD6F0" stroke-width="0.6"/><text x="310" y="58" text-anchor="middle" font-size="9" fill="#fff" font-family="ui-monospace,monospace">253</text><rect x="322" y="42" width="24" height="24" fill="#16142B" opacity="0.75" stroke="#DCD6F0" stroke-width="0.6"/><text x="334" y="58" text-anchor="middle" font-size="9" fill="#fff" font-family="ui-monospace,monospace">190</text><rect x="346" y="42" width="24" height="24" fill="#16142B" opacity="0.01" stroke="#DCD6F0" stroke-width="0.6"/><text x="358" y="58" text-anchor="middle" font-size="9" fill="#4A4766" font-family="ui-monospace,monospace">2</text><rect x="370" y="42" width="24" height="24" fill="#16142B" opacity="0.00" stroke="#DCD6F0" stroke-width="0.6"/><text x="382" y="58" text-anchor="middle" font-size="9" fill="#4A4766" font-family="ui-monospace,monospace">0</text><rect x="250" y="66" width="24" height="24" fill="#16142B" opacity="0.00" stroke="#DCD6F0" stroke-width="0.6"/><text x="262" y="82" text-anchor="middle" font-size="9" fill="#4A4766" font-family="ui-monospace,monospace">0</text><rect x="274" y="66" width="24" height="24" fill="#16142B" opacity="0.04" stroke="#DCD6F0" stroke-width="0.6"/><text x="286" y="82" text-anchor="middle" font-size="9" fill="#4A4766" font-family="ui-monospace,monospace">11</text><rect x="298" y="66" width="24" height="24" fill="#16142B" opacity="0.75" stroke="#DCD6F0" stroke-width="0.6"/><text x="310" y="82" text-anchor="middle" font-size="9" fill="#fff" font-family="ui-monospace,monospace">190</text><rect x="322" y="66" width="24" height="24" fill="#16142B" opacity="0.99" stroke="#DCD6F0" stroke-width="0.6"/><text x="334" y="82" text-anchor="middle" font-size="9" fill="#fff" font-family="ui-monospace,monospace">253</text><rect x="346" y="66" width="24" height="24" fill="#16142B" opacity="0.27" stroke="#DCD6F0" stroke-width="0.6"/><text x="358" y="82" text-anchor="middle" font-size="9" fill="#4A4766" font-family="ui-monospace,monospace">70</text><rect x="370" y="66" width="24" height="24" fill="#16142B" opacity="0.00" stroke="#DCD6F0" stroke-width="0.6"/><text x="382" y="82" text-anchor="middle" font-size="9" fill="#4A4766" font-family="ui-monospace,monospace">0</text><rect x="250" y="90" width="24" height="24" fill="#16142B" opacity="0.00" stroke="#DCD6F0" stroke-width="0.6"/><text x="262" y="106" text-anchor="middle" font-size="9" fill="#4A4766" font-family="ui-monospace,monospace">0</text><rect x="274" y="90" width="24" height="24" fill="#16142B" opacity="0.00" stroke="#DCD6F0" stroke-width="0.6"/><text x="286" y="106" text-anchor="middle" font-size="9" fill="#4A4766" font-family="ui-monospace,monospace">0</text><rect x="298" y="90" width="24" height="24" fill="#16142B" opacity="0.14" stroke="#DCD6F0" stroke-width="0.6"/><text x="310" y="106" text-anchor="middle" font-size="9" fill="#4A4766" font-family="ui-monospace,monospace">35</text><rect x="322" y="90" width="24" height="24" fill="#16142B" opacity="0.95" stroke="#DCD6F0" stroke-width="0.6"/><text x="334" y="106" text-anchor="middle" font-size="9" fill="#fff" font-family="ui-monospace,monospace">241</text><rect x="346" y="90" width="24" height="24" fill="#16142B" opacity="0.88" stroke="#DCD6F0" stroke-width="0.6"/><text x="358" y="106" text-anchor="middle" font-size="9" fill="#fff" font-family="ui-monospace,monospace">225</text><rect x="370" y="90" width="24" height="24" fill="#16142B" opacity="0.63" stroke="#DCD6F0" stroke-width="0.6"/><text x="382" y="106" text-anchor="middle" font-size="9" fill="#fff" font-family="ui-monospace,monospace">160</text><rect x="250" y="114" width="24" height="24" fill="#16142B" opacity="0.00" stroke="#DCD6F0" stroke-width="0.6"/><text x="262" y="130" text-anchor="middle" font-size="9" fill="#4A4766" font-family="ui-monospace,monospace">0</text><rect x="274" y="114" width="24" height="24" fill="#16142B" opacity="0.00" stroke="#DCD6F0" stroke-width="0.6"/><text x="286" y="130" text-anchor="middle" font-size="9" fill="#4A4766" font-family="ui-monospace,monospace">0</text><rect x="298" y="114" width="24" height="24" fill="#16142B" opacity="0.00" stroke="#DCD6F0" stroke-width="0.6"/><text x="310" y="130" text-anchor="middle" font-size="9" fill="#4A4766" font-family="ui-monospace,monospace">0</text><rect x="322" y="114" width="24" height="24" fill="#16142B" opacity="0.32" stroke="#DCD6F0" stroke-width="0.6"/><text x="334" y="130" text-anchor="middle" font-size="9" fill="#4A4766" font-family="ui-monospace,monospace">81</text><rect x="346" y="114" width="24" height="24" fill="#16142B" opacity="0.94" stroke="#DCD6F0" stroke-width="0.6"/><text x="358" y="130" text-anchor="middle" font-size="9" fill="#fff" font-family="ui-monospace,monospace">240</text><rect x="370" y="114" width="24" height="24" fill="#16142B" opacity="0.99" stroke="#DCD6F0" stroke-width="0.6"/><text x="382" y="130" text-anchor="middle" font-size="9" fill="#fff" font-family="ui-monospace,monospace">253</text><rect x="250" y="138" width="24" height="24" fill="#16142B" opacity="0.00" stroke="#DCD6F0" stroke-width="0.6"/><text x="262" y="154" text-anchor="middle" font-size="9" fill="#4A4766" font-family="ui-monospace,monospace">0</text><rect x="274" y="138" width="24" height="24" fill="#16142B" opacity="0.00" stroke="#DCD6F0" stroke-width="0.6"/><text x="286" y="154" text-anchor="middle" font-size="9" fill="#4A4766" font-family="ui-monospace,monospace">0</text><rect x="298" y="138" width="24" height="24" fill="#16142B" opacity="0.00" stroke="#DCD6F0" stroke-width="0.6"/><text x="310" y="154" text-anchor="middle" font-size="9" fill="#4A4766" font-family="ui-monospace,monospace">0</text><rect x="322" y="138" width="24" height="24" fill="#16142B" opacity="0.00" stroke="#DCD6F0" stroke-width="0.6"/><text x="334" y="154" text-anchor="middle" font-size="9" fill="#4A4766" font-family="ui-monospace,monospace">0</text><rect x="346" y="138" width="24" height="24" fill="#16142B" opacity="0.18" stroke="#DCD6F0" stroke-width="0.6"/><text x="358" y="154" text-anchor="middle" font-size="9" fill="#4A4766" font-family="ui-monospace,monospace">45</text><rect x="370" y="138" width="24" height="24" fill="#16142B" opacity="0.73" stroke="#DCD6F0" stroke-width="0.6"/><text x="382" y="154" text-anchor="middle" font-size="9" fill="#fff" font-family="ui-monospace,monospace">186</text>
+        <text x="310" y="180" text-anchor="middle" font-size="10.5" fill="#8E8AAC">칸마다 0~255 밝기 하나</text>
+      </svg>
+      <div class="cap">사람은 5 라고 읽고, 컴퓨터는 숫자 784개로 읽는다</div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>이미지도 결국 <b>숫자 표</b>다. 다만 열이 784개고 <b>이름을 붙일 수 없다</b> &mdash; 소성온도 같은 뜻이 칸마다 없다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="MNIST 받기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>이미지</div>
+  <h2 class="s-title sm">손글씨 숫자 7만 장</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">받아서 텐서로 바꾸는 것까지 한 번에</span></div>
+          <pre><code><span class="kw">from</span> torchvision <span class="kw">import</span> datasets, transforms
+
+train = datasets.MNIST(<span class="st">'data'</span>, train=<span class="kw">True</span>, download=<span class="kw">True</span>,
+                       transform=transforms.ToTensor())
+x, y = train[<span class="nm">0</span>]
+<span class="fn2">print</span>(x.shape, y, x.min().item(), x.max().item())</code></pre>
+          <div class="out">torch.Size([1, 28, 28]) 5 0.0 1.0</div>
+        </div>
+      </div>
+      <div>
+        <table class="ctable">
+          <thead><tr><th></th><th>수량</th></tr></thead>
+          <tbody>
+            <tr><td>훈련</td><td class="hl">60,000장</td></tr>
+            <tr><td>테스트</td><td>10,000장</td></tr>
+            <tr><td>정답</td><td>0 ~ 9 · 열 갈래</td></tr>
+          </tbody>
+        </table>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>앞의 <code>1</code> 은 <b>색이 한 장</b>이라는 뜻이다. 흑백이라 그렇고, 컬러면 3이 된다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div><code>ToTensor()</code> 가 0~255 를 <b>0~1 로 나눠 준다</b>. 앞에서 손으로 하던 스케일링이 여기 들어 있다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="펴서 넣기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>모델</div>
+  <h2 class="s-title sm">28 &times; 28 을 한 줄로 펴기</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">배운 층 그대로다</span></div>
+          <pre><code>model = nn.Sequential(
+    nn.Flatten(),          <span class="cm"># [1,28,28] → [784]</span>
+    nn.Linear(<span class="nm">784</span>, <span class="nm">128</span>),
+    nn.ReLU(),
+    nn.Linear(<span class="nm">128</span>, <span class="nm">10</span>))   <span class="cm"># 답이 열 갈래</span></code></pre>
+          <div class="out">파라미터 101,770개</div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div><code>nn.Flatten()</code> 이 <b>격자를 한 줄로 편다</b>. 첫 줄 28칸 뒤에 둘째 줄 28칸을 이어 붙인다.</div></div>
+          <div class="v"><span class="b">→</span><div>펴고 나면 <b>열 784개짜리 표</b>다. 지금까지 쓰던 <code>nn.Linear</code> 가 그대로 통한다.</div></div>
+          <div class="v"><span class="b">✕</span><div>펴는 순간 <b>위아래로 이웃이라는 정보가 사라진다</b>. 뒤에서 이 대가를 치른다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">구조</span><div>새로 배운 층은 <code>Flatten</code> 하나다. 나머지는 <b>배치 데이터에 쓰던 것과 똑같다</b>.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="열 갈래 분류">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>모델</div>
+  <h2 class="s-title sm">답이 열 갈래일 때의 출력</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w2">
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>양품/불량은 출력이 하나였다. 숫자 맞히기는 <b>0부터 9까지 열 개</b>를 낸다.</div></div>
+          <div class="v"><span class="b">★</span><div>열 개 중 <b>가장 큰 것을 고른다</b>. <code>argmax</code> 가 그 자리 번호를 돌려준다.</div></div>
+          <div class="v"><span class="b">→</span><div>손실 함수도 바뀐다. <code>BCEWithLogitsLoss</code> 대신 <code>CrossEntropyLoss</code> 다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="plot">
+          <svg viewBox="0 0 330 200">
+            <g font-size="10" fill="#8E8AAC" text-anchor="end"><text x="34" y="19">0</text><text x="34" y="37">1</text><text x="34" y="55">2</text><text x="34" y="73">3</text><text x="34" y="91">4</text><text x="34" y="109">5</text><text x="34" y="127">6</text><text x="34" y="145">7</text><text x="34" y="163">8</text><text x="34" y="181">9</text></g>
+            <line x1="150" y1="8" x2="150" y2="188" stroke="#DCD6F0" stroke-width="1"/>
+            <rect x="123" y="8" width="27" height="12" fill="#E8E4F8"/><text x="117" y="18" text-anchor="end" font-size="9" fill="#8E8AAC" font-family="ui-monospace,monospace">-4.49</text>
+            <rect x="98" y="26" width="52" height="12" fill="#E8E4F8"/><text x="92" y="36" text-anchor="end" font-size="9" fill="#8E8AAC" font-family="ui-monospace,monospace">-8.61</text>
+            <rect x="150" y="44" width="1" height="12" fill="#B7A9FF"/><text x="158" y="54" font-size="9" fill="#8E8AAC" font-family="ui-monospace,monospace">+0.03</text>
+            <rect x="150" y="62" width="13" height="12" fill="#B7A9FF"/><text x="171" y="72" font-size="9" fill="#8E8AAC" font-family="ui-monospace,monospace">+2.17</text>
+            <rect x="91" y="80" width="59" height="12" fill="#E8E4F8"/><text x="85" y="90" text-anchor="end" font-size="9" fill="#8E8AAC" font-family="ui-monospace,monospace">-9.80</text>
+            <rect x="126" y="98" width="24" height="12" fill="#E8E4F8"/><text x="120" y="108" text-anchor="end" font-size="9" fill="#8E8AAC" font-family="ui-monospace,monospace">-3.99</text>
+            <rect x="53" y="116" width="97" height="12" fill="#E8E4F8"/><text x="47" y="126" text-anchor="end" font-size="9" fill="#8E8AAC" font-family="ui-monospace,monospace">-16.14</text>
+            <rect x="150" y="134" width="51" height="12" fill="#5B3DF5"/><text x="209" y="144" font-size="9.5" font-weight="700" fill="#3A1FC9" font-family="ui-monospace,monospace">+8.53</text>
+            <rect x="130" y="152" width="20" height="12" fill="#E8E4F8"/><text x="124" y="162" text-anchor="end" font-size="9" fill="#8E8AAC" font-family="ui-monospace,monospace">-3.32</text>
+            <rect x="138" y="170" width="12" height="12" fill="#E8E4F8"/><text x="132" y="180" text-anchor="end" font-size="9" fill="#8E8AAC" font-family="ui-monospace,monospace">-2.06</text>
+            <text x="252" y="146" font-size="10.5" fill="#0A7F70">argmax &rarr; 7</text>
+          </svg>
+          <div class="cap">테스트 첫 장 &middot; 정답도 7 &middot; 확률로 바꾸면 0.998</div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>갈래가 몇이든 <b>마지막 층의 출력 수를 그만큼</b> 두면 된다. 나머지 구조는 손대지 않는다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="미니배치">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>학습</div>
+  <h2 class="s-title sm">6만 장을 나눠 넣는 이유</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">DataLoader 가 잘라서 내준다</span></div>
+          <pre><code><span class="kw">from</span> torch.utils.data <span class="kw">import</span> DataLoader
+loader = DataLoader(train, batch_size=<span class="nm">128</span>, shuffle=<span class="kw">True</span>)
+loss_fn = nn.CrossEntropyLoss()          <span class="cm"># 열 갈래용</span>
+opt = torch.optim.Adam(model.parameters(), lr=<span class="nm">0.001</span>)
+
+<span class="kw">for</span> epoch <span class="kw">in</span> <span class="fn2">range</span>(<span class="nm">5</span>):
+    <span class="kw">for</span> xb, yb <span class="kw">in</span> loader:      <span class="cm"># 128장씩 469번</span>
+        opt.zero_grad()
+        loss = loss_fn(model(xb), yb)
+        loss.backward(); opt.step()</code></pre>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">✕</span><div>6만 장을 한 번에 올리면 <b>메모리가 모자란다</b>. 배치 데이터 1071건과는 규모가 다르다.</div></div>
+          <div class="v"><span class="b">★</span><div>128장씩 끊으면 <b>한 에폭에 469번 갱신</b>한다. 통째로 넣을 때보다 훨씬 자주 움직인다.</div></div>
+          <div class="v"><span class="b">→</span><div>루프가 두 겹이 된다. <b>바깥이 에폭, 안이 배치</b>다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>다섯 줄은 그대로다. <b>감싸는 루프가 하나 늘었을 뿐</b>이다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="MNIST 학습 결과">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>결과</div>
+  <h2 class="s-title sm">다섯 에폭의 기록</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <table class="ctable">
+          <thead><tr><th>에폭</th><th>훈련 손실</th><th>테스트 정확도</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>0.410</td><td>0.934</td></tr>
+            <tr><td>2</td><td>0.193</td><td>0.954</td></tr>
+            <tr><td>3</td><td>0.140</td><td>0.960</td></tr>
+            <tr><td>4</td><td>0.109</td><td>0.968</td></tr>
+            <tr><td>5</td><td>0.088</td><td class="hl">0.971</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <table class="ctable">
+          <thead><tr><th>착각</th><th>건수</th></tr></thead>
+          <tbody>
+            <tr><td>9 를 4 로</td><td>14</td></tr>
+            <tr><td>3 을 8 로</td><td>13</td></tr>
+            <tr><td>4 를 9 로</td><td>12</td></tr>
+            <tr><td>3 을 5 로</td><td>11</td></tr>
+            <tr><td>7 을 2 로</td><td>11</td></tr>
+          </tbody>
+        </table>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>1만 장 중 <b>289장</b>을 틀렸다. 사람이 봐도 헷갈릴 짝끼리 틀린다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">결과</span><div>틀린 것을 <b>짝으로 세어 보면</b> 무엇이 부족한지 보인다. 정확도 하나만 보는 것보다 낫다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="MNIST 모델 비교">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>비교</div>
+  <h2 class="s-title sm">같은 데이터, 네 모델</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable">
+      <thead><tr><th>모델</th><th>정확도</th><th>학습 시간</th><th>이미지를 어떻게 보나</th></tr></thead>
+      <tbody>
+        <tr><td>로지스틱 회귀</td><td>0.916</td><td>2초</td><td>픽셀 784개의 가중합 한 번</td></tr>
+        <tr><td>랜덤 포레스트</td><td class="hl">0.969</td><td>4초</td><td>픽셀 값으로 질문을 나눈다</td></tr>
+        <tr><td>신경망</td><td class="hl">0.971</td><td>8초</td><td>펴서 넣는다 &mdash; 이웃 정보가 없다</td></tr>
+        <tr><td><b>CNN</b></td><td class="hl">0.984</td><td>42초</td><td><b>이웃한 픽셀을 묶어서</b> 본다</td></tr>
+      </tbody>
+    </table>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>펴서 넣은 신경망은 랜덤 포레스트와 <b>거의 같다</b>. 펴는 순간 이미지가 <b>그냥 784열짜리 표</b>가 되기 때문이다.</div></div>
+      <div class="v"><span class="b">→</span><div>이웃 픽셀을 묶어 보는 <b>CNN</b> 을 쓰면 오답이 289개에서 <b>161개로</b> 준다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">의의</span><div>딥러닝이 이기는 것은 <b>데이터의 생김새를 살려 쓸 때</b>다. 그냥 펴서 넣으면 트리와 다를 것이 없다.</div></div>
+  </div>
+</section>
+
+  <section class="slide" data-title="딥러닝 정리">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>정리</div>
   <h2 class="s-title sm">오늘 남는 것</h2>
@@ -1626,6 +1859,7 @@ cannot be multiplied (1071x12 and 10x16)</span></div>
         <tr><td>기울기는 누가 구하나</td><td><code>loss.backward()</code> 한 줄</td><td>계수가 몇 개든 같다</td></tr>
         <tr><td>스케일링은 필수인가</td><td>신경망에서는 필수다</td><td class="hl">0.828 → 0.914</td></tr>
         <tr><td>딥러닝이 항상 나은가</td><td>표 데이터에서는 아니다</td><td class="hl">랜덤 포레스트 0.933</td></tr>
+        <tr><td>펴서 넣으면 되나</td><td>이미지는 생김새를 살려야 한다</td><td class="hl">CNN 0.984 &middot; 편 신경망 0.971</td></tr>
       </tbody>
     </table>
     <div class="keymsg"><span class="k">의의</span><div>딥러닝은 <b>도구 하나가 늘어난 것</b>이다. 문제를 보고 고르는 눈이 도구보다 먼저다.</div></div>
