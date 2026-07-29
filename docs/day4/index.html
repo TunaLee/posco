@@ -808,8 +808,8 @@ x, y = train[<span class="nm">0</span>]
       <div>
         <div class="vlist">
           <div class="v"><span class="b">✕</span><div>층을 두 겹이나 늘렸는데 <b>0.4%p 밖에 안 오른다</b>. 사실상 그대로다.</div></div>
-          <div class="v"><span class="b">★</span><div>가중합을 세 번 해도 <b>결국 가중합 한 번</b>과 같다. 무늬가 늘어난 것이 아니다.</div></div>
-          <div class="v"><span class="b">→</span><div>층을 백 개 쌓아도 마찬가지다. <b>쌓는 것만으로는 얻는 것이 없다</b>.</div></div>
+          <div class="v"><span class="b">★</span><div>세 층의 계수를 <b>미리 곱해 두면</b> <code>784&times;10</code> 짜리 판 하나가 된다. 층이 몇 겹이든 <b>한 겹으로 접힌다</b>.</div></div>
+          <div class="v"><span class="b">→</span><div>그래서 층을 백 개 쌓아도 결과가 같다. <b>쌓는 것만으로는 얻는 것이 없다</b>.</div></div>
         </div>
       </div>
     </div>
@@ -855,7 +855,40 @@ x, y = train[<span class="nm">0</span>]
   </div>
 </section>
 
-<section class="slide" data-title="세 모델 비교">
+<section class="slide" data-title="켜고 끄는 스위치">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>구조</div>
+  <h2 class="s-title sm">입력마다 달라지는 노드 조합</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w2">
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">&rarr;</span><div>음수를 0 으로 만든다는 것은 <b>그 노드를 끈다</b>는 뜻이다. 뒤 층이 곱해도 0 이다.</div></div>
+          <div class="v"><span class="b">&#9733;</span><div>그래서 <b>어떤 그림이 들어오느냐에 따라 켜지는 노드가 달라진다</b>. 계수 판은 하나인데 쓰이는 부분이 매번 바뀐다.</div></div>
+          <div class="v"><span class="b">&rarr;</span><div>고정된 무늬 하나가 아니라 <b>상황마다 갈아 끼우는 여러 벌</b>이 된다. 이것이 점수가 오른 이유다.</div></div>
+        </div>
+      </div>
+      <div>
+        <table class="ctable">
+          <thead><tr><th>견준 두 장</th><th>같은 노드를 켜는 비율</th></tr></thead>
+          <tbody>
+            <tr><td>0 과 1</td><td class="no">36%</td></tr>
+            <tr><td>3 과 8</td><td class="no">37%</td></tr>
+            <tr><td>4 와 9</td><td>51%</td></tr>
+            <tr><td><b>2 와 또 다른 2</b></td><td class="yes">55%</td></tr>
+          </tbody>
+        </table>
+        <div class="vlist">
+          <div class="v"><span class="b">&rarr;</span><div>한 장에 켜지는 노드는 128개 중 <b>58~84개</b>다. 숫자마다 다르다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">원리</span><div>다른 숫자끼리는 <b>덜 겹치고</b> 같은 숫자끼리는 <b>더 겹친다</b>. ReLU 가 만든 이 갈림이 곧 모델이 배운 것이다.</div></div>
+  </div>
+</section>
+
+  <section class="slide" data-title="세 모델 비교">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>동기</div>
   <h2 class="s-title sm">한 줄이 갈라놓은 결과</h2>
