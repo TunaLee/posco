@@ -586,6 +586,73 @@
   </div>
 </section>
 
+  <section class="slide" data-title="마크다운">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>기획</div>
+  <h2 class="s-title sm">기호 몇 개로 쓰는 문서</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">입력한 글자 그대로</span></div>
+          <pre><code># 회원 기능
+## 로그인
+- 아이디와 비밀번호로 확인한다
+- **비밀번호**는 저장하지 않는다</code></pre>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div><code>#</code> 개수가 제목의 크기다. <code>-</code> 는 목록, <code>**</code> 는 굵게.</div></div>
+        </div>
+      </div>
+      <div>
+        <table class="ctable">
+          <thead><tr><th>쓰는 곳</th><th>이유</th></tr></thead>
+          <tbody>
+            <tr><td>AI 에게 주는 지시문</td><td>제목과 목록으로 <b>구획이 나뉘어</b> 지시가 섞이지 않는다</td></tr>
+            <tr><td>깃허브 설명 문서</td><td>글자 그대로 올리면 <b>알아서 꾸며져</b> 보인다</td></tr>
+            <tr><td>회의록·기획서</td><td>워드 없이 <b>메모장</b>으로 쓸 수 있다</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">의의</span><div>AI 도구가 주고받는 문서는 거의 다 마크다운이다. <b>기호 넷만 알면</b> 읽고 쓸 수 있다.</div></div>
+  </div>
+</section>
+
+  <section class="slide" data-title="프롬프트 세 칸">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>기획</div>
+  <h2 class="s-title sm">프롬프트를 이루는 세 칸</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">네 문서에 공통으로 쓰는 틀</span></div>
+          <pre><code># 무엇을 만드는가
+한두 문장으로 대상을 적는다
+
+## 형식
+표 · 목록 · Mermaid 중 무엇으로 받을지 적는다
+
+## 규칙
+하지 말아야 할 것을 적는다</code></pre>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div><b>형식</b> 칸을 빼면 문단으로 답한다. 표를 원하면 표라고 적는다.</div></div>
+          <div class="v"><span class="b">→</span><div><b>규칙</b> 칸은 금지 사항을 적는 자리다. 적지 않으면 한다.</div></div>
+          <div class="v"><span class="b">→</span><div>주고받으며 고치는 것보다 <b>처음에 세 칸을 다 채우는</b> 편이 결과가 고르다.</div></div>
+        </div>
+        <div class="callout"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4zM8 9h8M8 13h5"/></svg></div><div class="ct"><h4>마크다운으로 쓴다</h4><p><code>#</code> 로 칸이 나뉘어야 <b>지시가 서로 섞이지 않는다</b>.</p></div></div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>세 칸 중 <b>하나라도 비면 되묻게 된다</b>. 되묻는 횟수가 곧 프롬프트가 부실했다는 표시다.</div></div>
+  </div>
+</section>
+
 <section class="slide" data-title="요구사항 정의서">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>기획</div>
@@ -606,6 +673,42 @@
       <div class="v"><span class="b">→</span><div>필수 데이터 칸이 그대로 <b>데이터베이스 열 이름</b>이 된다.</div></div>
     </div>
     <div class="keymsg"><span class="k">기준</span><div>한 줄을 읽고 <b>만들 수 있는 그림이 그려지지 않으면</b> 아직 쪼갤 것이 남았다.</div></div>
+  </div>
+</section>
+
+  <section class="slide" data-title="요구사항 프롬프트">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>기획</div>
+  <h2 class="s-title sm">요구사항 정의서 프롬프트</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">그대로 붙여 넣는다</span></div>
+          <pre><code># 요구사항 정의서
+사내 비품 신청 시스템을 만든다.
+직원이 신청하면 관리자가 승인하거나 반려한다.
+
+## 형식
+표로 준다. 열은 기능ID · 기능명 · 상세 설명 · 필수 데이터
+
+## 규칙
+- 기능ID 는 영역 3글자 + 번호 2자리로 붙인다
+- 상세 설명은 동작 한 문장. 형용사는 쓰지 않는다</code></pre>
+          <div class="out">| MEM01_01 | 자체 로그인 | 아이디와 비밀번호를 …
+| REQ01_01 | 비품 신청  | 목록에서 품목과 수량을 …</div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div><q>형용사는 쓰지 않는다</q> 한 줄이 <q>편리하게 신청한다</q> 같은 <b>만들 수 없는 문장</b>을 막는다.</div></div>
+          <div class="v"><span class="b">→</span><div>한 번에 20~30행이 나온다. 사람이 할 일은 <b>빠진 기능을 찾아 채우는</b> 것이다.</div></div>
+          <div class="v"><span class="b">✕</span><div>나온 표를 그대로 쓰지 않는다. <b>안 만들 기능</b>까지 섞여 있다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>열 이름을 프롬프트에 박아 두면 <b>다음에 돌려도 같은 모양</b>이 나온다. 문서끼리 이어 붙일 수 있다.</div></div>
   </div>
 </section>
 
@@ -720,6 +823,42 @@
   </div>
 </section>
 
+  <section class="slide" data-title="흐름도 프롬프트">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>기획</div>
+  <h2 class="s-title sm">흐름도 프롬프트</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">앞에서 받은 표의 한 줄을 가리킨다</span></div>
+          <pre><code># 흐름도
+MEM01_01 자체 로그인의 흐름을 그린다.
+
+## 형식
+Mermaid flowchart 문법으로 준다.
+
+## 규칙
+- 판단에서 나가는 선마다 예 / 아니오 를 적는다
+- 틀렸을 때 어디로 돌아가는지 반드시 그린다</code></pre>
+          <div class="out">flowchart LR
+  A([시작]) --&gt; B[/아이디 입력/]
+  C{저장된 값과 같은가} --&gt;|아니오| E[재입력]</div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div><b>Mermaid</b> 는 글자로 쓰면 그림이 되는 문법이다. 노션이나 깃허브에 붙이면 그대로 그려진다.</div></div>
+          <div class="v"><span class="b">★</span><div>마지막 줄이 없으면 <b>성공하는 길만</b> 그려 준다. 실패 경로는 요구해야 나온다.</div></div>
+          <div class="v"><span class="b">→</span><div>글자라서 <b>고치기 쉽다</b>. 그림 도구를 열지 않고 한 줄만 바꾼다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">함정</span><div>AI 는 <b>잘 풀리는 경우를 먼저 그린다</b>. 예외를 적어 달라고 해야 예외가 나온다.</div></div>
+  </div>
+</section>
+
 <section class="slide" data-title="와이어프레임">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>기획</div>
@@ -759,6 +898,40 @@
       </div>
     </div>
     <div class="keymsg"><span class="k">기준</span><div>와이어프레임에서 <b>못 그리는 화면</b>은 디자인 도구를 열어도 못 그린다. 정보가 아직 안 정해진 것이다.</div></div>
+  </div>
+</section>
+
+  <section class="slide" data-title="와이어프레임 프롬프트">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>기획</div>
+  <h2 class="s-title sm">와이어프레임 프롬프트</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">위에서 아래 순서가 곧 배치다</span></div>
+          <pre><code># 와이어프레임
+비품을 신청하는 화면. 데스크톱 1280 폭.
+
+## 넣을 것
+- 상단: 로고 · 검색창 · 내 정보
+- 본문: 품목 목록(사진 · 이름 · 재고) · 수량 입력칸
+- 하단: 신청 버튼 하나
+
+## 규칙
+색과 실제 이미지는 넣지 않는다. 회색 상자와 선만 쓴다.</code></pre>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div>넣을 것을 <b>위에서 아래 순서로</b> 적는다. 그 순서가 그대로 화면 배치가 된다.</div></div>
+          <div class="v"><span class="b">→</span><div>폭을 적어야 한다. 안 적으면 <b>휴대폰 화면</b>으로 그려 놓는 경우가 잦다.</div></div>
+          <div class="v"><span class="b">✕</span><div>색을 지정하면 와이어프레임이 아니라 <b>디자인 시안</b>이 나온다. 고칠 것이 늘어난다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>프롬프트에 <b>못 적는 화면</b>은 아직 정해지지 않은 화면이다. AI 를 부르기 전에 정할 것이 남았다.</div></div>
   </div>
 </section>
 
@@ -819,41 +992,45 @@
   </div>
 </section>
 
-<section class="slide" data-title="마크다운">
+  <section class="slide" data-title="일정표 프롬프트">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>기획</div>
-  <h2 class="s-title sm">기호 몇 개로 쓰는 문서</h2>
+  <h2 class="s-title sm">일정표 프롬프트</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twocol">
       <div>
         <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">입력한 글자 그대로</span></div>
-          <pre><code># 회원 기능
-## 로그인
-- 아이디와 비밀번호로 확인한다
-- **비밀번호**는 저장하지 않는다</code></pre>
-        </div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div><code>#</code> 개수가 제목의 크기다. <code>-</code> 는 목록, <code>**</code> 는 굵게.</div></div>
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">겹치는 구간을 말로 적어 준다</span></div>
+          <pre><code># 일정표
+기획 · 디자인 · 개발 · 테스트 · 배포. 총 5주.
+
+## 형식
+Mermaid gantt 문법으로 준다.
+
+## 규칙
+- 디자인은 기획이 절반 끝나면 시작한다
+- 테스트는 개발과 2주 겹친다
+- 배포는 5주차 하루짜리로 표시한다</code></pre>
+          <div class="out">gantt
+  section 개발
+  개발 :a1, 2026-03-16, 3w
+  테스트 :after a1, 2w</div>
         </div>
       </div>
       <div>
-        <table class="ctable">
-          <thead><tr><th>쓰는 곳</th><th>이유</th></tr></thead>
-          <tbody>
-            <tr><td>AI 에게 주는 지시문</td><td>제목과 목록으로 <b>구획이 나뉘어</b> 지시가 섞이지 않는다</td></tr>
-            <tr><td>깃허브 설명 문서</td><td>글자 그대로 올리면 <b>알아서 꾸며져</b> 보인다</td></tr>
-            <tr><td>회의록·기획서</td><td>워드 없이 <b>메모장</b>으로 쓸 수 있다</td></tr>
-          </tbody>
-        </table>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div>겹침을 안 적으면 <b>다섯 개를 일렬로</b> 늘어놓는다. 그런 일정은 실제와 다르다.</div></div>
+          <div class="v"><span class="b">→</span><div>작업 사이의 관계를 <q>~가 끝나면</q>, <q>~와 겹친다</q>로 적는다.</div></div>
+          <div class="v"><span class="b">→</span><div>날짜가 밀리면 <b>규칙 한 줄만 고쳐</b> 다시 돌린다.</div></div>
+        </div>
       </div>
     </div>
-    <div class="keymsg"><span class="k">의의</span><div>AI 도구가 주고받는 문서는 거의 다 마크다운이다. <b>기호 넷만 알면</b> 읽고 쓸 수 있다.</div></div>
+    <div class="keymsg"><span class="k">의의</span><div>네 문서 모두 <b>같은 세 칸</b>으로 받아 냈다. 다음에 다른 서비스를 만들 때도 틀은 그대로다.</div></div>
   </div>
 </section>
 
-<section class="slide section" data-title="[섹션] 웹 서비스의 구조">
+  <section class="slide section" data-title="[섹션] 웹 서비스의 구조">
   <div class="ghost">02</div>
   <div class="seyebrow">CHAPTER 02</div>
   <h2>웹 서비스의 구조</h2>
