@@ -1192,29 +1192,32 @@ opt = torch.optim.Adam(model.parameters(), lr=<span class="nm">0.001</span>)
 <section class="slide" data-title="손실 함수">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>학습</div>
-  <h2 class="s-title sm">얼마나 틀렸는지를 숫자 하나로</h2>
+  <h2 class="s-title sm">틀린 정도를 숫자 하나로 만드는 계산</h2>
   <div class="rule"></div>
   <div class="body">
-    <div class="twocol w2">
-      <div>
-        <div class="vlist">
-          <div class="v"><span class="b">&rarr;</span><div>출력 열 개와 정답 하나를 견줘 <b>틀린 정도를 숫자 하나</b>로 만든다.</div></div>
-          <div class="v"><span class="b">&#9733;</span><div>정답 자리의 점수가 높을수록 손실이 작다. <b>0 에 가까울수록 잘 맞힌 것</b>이다.</div></div>
-          <div class="v"><span class="b">&rarr;</span><div>갈래가 열 개면 <code>nn.CrossEntropyLoss()</code> 를 쓴다. 안에서 확률로 바꾸는 것까지 한다.</div></div>
-        </div>
-      </div>
-      <div>
-        <table class="ctable">
-          <thead><tr><th>상황</th><th>정답 2의 확률</th><th>손실</th></tr></thead>
-          <tbody>
-            <tr><td>학습 전 &mdash; 아무거나 찍는다</td><td>0.10</td><td class="no">2.30</td></tr>
-            <tr><td>1 에폭 뒤</td><td>0.66</td><td>0.41</td></tr>
-            <tr><td>5 에폭 뒤</td><td class="hl">0.99</td><td class="yes">0.09</td></tr>
-          </tbody>
-        </table>
-      </div>
+    <div class="twocol">
+      <div><div class="plot">
+        <svg viewBox="0 0 330 210">
+          <text x="0" y="8" font-size="10.5" font-weight="700" fill="#8E8AAC">학습 전 &mdash; 계수가 난수</text>
+          <rect x="120" y="14" width="16" height="13" fill="#DCD6F0"/><text x="112" y="25" text-anchor="end" font-size="10" fill="#8E8AAC">0</text><text x="142" y="25" font-size="9" fill="#8E8AAC" font-family="ui-monospace,monospace">0.106</text><rect x="120" y="31" width="14" height="13" fill="#DCD6F0"/><text x="112" y="42" text-anchor="end" font-size="10" fill="#8E8AAC">1</text><text x="140" y="42" font-size="9" fill="#8E8AAC" font-family="ui-monospace,monospace">0.091</text><rect x="120" y="48" width="15" height="13" fill="#5B3DF5"/><text x="112" y="59" text-anchor="end" font-size="10" fill="#8E8AAC">2</text><text x="141" y="59" font-size="9" fill="#3A1FC9" font-family="ui-monospace,monospace">0.102</text><rect x="120" y="65" width="14" height="13" fill="#DCD6F0"/><text x="112" y="76" text-anchor="end" font-size="10" fill="#8E8AAC">3</text><text x="140" y="76" font-size="9" fill="#8E8AAC" font-family="ui-monospace,monospace">0.091</text><rect x="120" y="82" width="13" height="13" fill="#DCD6F0"/><text x="112" y="93" text-anchor="end" font-size="10" fill="#8E8AAC">4</text><text x="139" y="93" font-size="9" fill="#8E8AAC" font-family="ui-monospace,monospace">0.085</text><rect x="120" y="99" width="17" height="13" fill="#DCD6F0"/><text x="112" y="110" text-anchor="end" font-size="10" fill="#8E8AAC">5</text><text x="143" y="110" font-size="9" fill="#8E8AAC" font-family="ui-monospace,monospace">0.115</text><rect x="120" y="116" width="17" height="13" fill="#DCD6F0"/><text x="112" y="127" text-anchor="end" font-size="10" fill="#8E8AAC">6</text><text x="143" y="127" font-size="9" fill="#8E8AAC" font-family="ui-monospace,monospace">0.111</text><rect x="120" y="133" width="14" height="13" fill="#DCD6F0"/><text x="112" y="144" text-anchor="end" font-size="10" fill="#8E8AAC">7</text><text x="140" y="144" font-size="9" fill="#8E8AAC" font-family="ui-monospace,monospace">0.094</text><rect x="120" y="150" width="17" height="13" fill="#DCD6F0"/><text x="112" y="161" text-anchor="end" font-size="10" fill="#8E8AAC">8</text><text x="143" y="161" font-size="9" fill="#8E8AAC" font-family="ui-monospace,monospace">0.113</text><rect x="120" y="167" width="14" height="13" fill="#DCD6F0"/><text x="112" y="178" text-anchor="end" font-size="10" fill="#8E8AAC">9</text><text x="140" y="178" font-size="9" fill="#8E8AAC" font-family="ui-monospace,monospace">0.092</text>
+          <text x="0" y="200" font-size="11" fill="#16142B">정답 2의 확률 <tspan font-weight="700">0.102</tspan></text>
+        </svg>
+        <div class="cap">열 갈래에 고르게 퍼져 있다 &mdash; 아무거나 찍는 것과 같다</div>
+      </div></div>
+      <div><div class="plot">
+        <svg viewBox="0 0 330 210">
+          <text x="0" y="8" font-size="10.5" font-weight="700" fill="#3A1FC9">5 에폭 뒤</text>
+          <rect x="120" y="14" width="1" height="13" fill="#DCD6F0"/><text x="112" y="25" text-anchor="end" font-size="10" fill="#8E8AAC">0</text><text x="127" y="25" font-size="9" fill="#8E8AAC" font-family="ui-monospace,monospace">0.000</text><rect x="120" y="31" width="1" height="13" fill="#DCD6F0"/><text x="112" y="42" text-anchor="end" font-size="10" fill="#8E8AAC">1</text><text x="127" y="42" font-size="9" fill="#8E8AAC" font-family="ui-monospace,monospace">0.005</text><rect x="120" y="48" width="149" height="13" fill="#5B3DF5"/><text x="112" y="59" text-anchor="end" font-size="10" fill="#8E8AAC">2</text><text x="275" y="59" font-size="9" fill="#3A1FC9" font-family="ui-monospace,monospace">0.992</text><rect x="120" y="65" width="1" height="13" fill="#DCD6F0"/><text x="112" y="76" text-anchor="end" font-size="10" fill="#8E8AAC">3</text><text x="127" y="76" font-size="9" fill="#8E8AAC" font-family="ui-monospace,monospace">0.001</text><rect x="120" y="82" width="1" height="13" fill="#DCD6F0"/><text x="112" y="93" text-anchor="end" font-size="10" fill="#8E8AAC">4</text><text x="127" y="93" font-size="9" fill="#8E8AAC" font-family="ui-monospace,monospace">0.000</text><rect x="120" y="99" width="1" height="13" fill="#DCD6F0"/><text x="112" y="110" text-anchor="end" font-size="10" fill="#8E8AAC">5</text><text x="127" y="110" font-size="9" fill="#8E8AAC" font-family="ui-monospace,monospace">0.001</text><rect x="120" y="116" width="1" height="13" fill="#DCD6F0"/><text x="112" y="127" text-anchor="end" font-size="10" fill="#8E8AAC">6</text><text x="127" y="127" font-size="9" fill="#8E8AAC" font-family="ui-monospace,monospace">0.000</text><rect x="120" y="133" width="1" height="13" fill="#DCD6F0"/><text x="112" y="144" text-anchor="end" font-size="10" fill="#8E8AAC">7</text><text x="127" y="144" font-size="9" fill="#8E8AAC" font-family="ui-monospace,monospace">0.000</text><rect x="120" y="150" width="1" height="13" fill="#DCD6F0"/><text x="112" y="161" text-anchor="end" font-size="10" fill="#8E8AAC">8</text><text x="127" y="161" font-size="9" fill="#8E8AAC" font-family="ui-monospace,monospace">0.000</text><rect x="120" y="167" width="1" height="13" fill="#DCD6F0"/><text x="112" y="178" text-anchor="end" font-size="10" fill="#8E8AAC">9</text><text x="127" y="178" font-size="9" fill="#8E8AAC" font-family="ui-monospace,monospace">0.000</text>
+          <text x="0" y="200" font-size="11" fill="#16142B">정답 2의 확률 <tspan font-weight="700" fill="#3A1FC9">0.992</tspan></text>
+        </svg>
+        <div class="cap">2 한 자리에 몰렸다</div>
+      </div></div>
     </div>
-    <div class="keymsg"><span class="k">기준</span><div>손실은 <b>내려야 할 값</b>이다. 학습이란 이 숫자를 낮추는 방향으로 계수를 옮기는 일이다.</div></div>
+    <div class="formula">
+      <div class="big">손실 = &minus;ln(정답 자리의 확률)</div>
+      <div class="cap">학습 전 &minus;ln(0.102) = 2.286 &nbsp;&rarr;&nbsp; 5 에폭 뒤 &minus;ln(0.992) = 0.008</div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>정답 자리의 확률이 1 에 가까울수록 손실이 0 에 가깝다. <b>학습이란 이 숫자를 낮추는 일</b>이다.</div></div>
   </div>
 </section>
 
