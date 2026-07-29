@@ -556,6 +556,47 @@
   </div>
 </section>
 
+  <section class="slide" data-title="직선이 되는 이유">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>구조</div>
+  <h2 class="s-title sm">직선밖에 못 그리는 계산</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w2">
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div><code>nn.Linear</code> 가 하는 것은 <b>곱하기와 더하기뿐</b>이다. 제곱도 나눗셈도 없다.</div></div>
+          <div class="v"><span class="b">→</span><div>그래서 식이 <code>z = w &times; 온도 + b</code> 하나로 끝난다. <b>y = ax + b</b> 와 같은 식이다.</div></div>
+          <div class="v"><span class="b">→</span><div>노드마다 자기 <code>w</code> 와 <code>b</code> 를 갖는다 &mdash; 노드 4 는 <b>+1.135 와 +0.097</b>. 열여섯 개면 서른두 개다.</div></div>
+        </div>
+        <div class="callout mint"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div class="ct"><h4>꺾일 자리는 학습이 고른다</h4><p>이 모델은 <b>772 &middot; 841 &middot; 849 &middot; 873 &deg;C</b> 에서 꺾었다. 곡선이 많이 굽는 구간에 몰려 있다.</p></div></div>
+      </div>
+      <div>
+        <div class="plot">
+          <svg viewBox="0 0 330 200">
+            <line x1="46" y1="76" x2="310" y2="76" stroke="#DCD6F0" stroke-width="1.2" stroke-dasharray="4 3"/>
+            <text x="316" y="80" text-anchor="end" font-size="9" fill="#8E8AAC">0</text>
+            <line x1="46" y1="16" x2="46" y2="170" stroke="#8E8AAC" stroke-width="1.2"/>
+            <line x1="46" y1="170" x2="310" y2="170" stroke="#8E8AAC" stroke-width="1.2"/>
+            <line x1="46" y1="127.7" x2="300" y2="23.5" stroke="#5B3DF5" stroke-width="2.2"/>
+            <line x1="46" y1="46.2" x2="300" y2="111.7" stroke="#0FB5A1" stroke-width="2.2"/>
+            <line x1="46" y1="154.3" x2="300" y2="28" stroke="#E8537A" stroke-width="2.2"/>
+            <g><circle cx="172" cy="76" r="4" fill="#5B3DF5"/><circle cx="162" cy="76" r="4" fill="#0FB5A1"/><circle cx="204" cy="76" r="4" fill="#E8537A"/></g>
+            <text x="304" y="20" text-anchor="end" font-size="9.5" fill="#5B3DF5">노드 4</text>
+            <text x="304" y="118" text-anchor="end" font-size="9.5" fill="#0A7F70">노드 3</text>
+            <text x="92" y="162" font-size="9.5" fill="#E8537A">노드 9</text>
+            <text x="46" y="184" text-anchor="middle" font-size="9.5" fill="#8E8AAC">754</text>
+            <text x="300" y="184" text-anchor="middle" font-size="9.5" fill="#8E8AAC">946 &deg;C</text>
+            
+          </svg>
+          <div class="cap">점이 0 을 지나는 자리 &mdash; 그 노드가 꺾이는 온도다</div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">원리</span><div>곱하고 더하기만 하면 <b>직선 말고는 나올 수가 없다</b>. 학습이 정하는 것은 기울기와 절편, 서른두 개 숫자뿐이다.</div></div>
+  </div>
+</section>
+
 <section class="slide" data-title="활성화 함수">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>구조</div>
