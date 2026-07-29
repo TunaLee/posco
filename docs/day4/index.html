@@ -486,43 +486,38 @@
   </div>
 </section>
 
-<section class="slide" data-title="층을 쌓는다는 것">
+<section class="slide" data-title="직선을 여럿 준비한다">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>구조</div>
-  <h2 class="s-title sm">중간을 한 겹 거치는 계산</h2>
+  <h2 class="s-title sm">한꺼번에 준비하는 직선 열여섯 개</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twocol w2">
       <div>
         <div class="vlist">
-          <div class="v"><span class="b">→</span><div>입력에서 답으로 <b>바로 가지 않는다</b>. 중간에 값 16개를 만들고 그것으로 답을 낸다.</div></div>
-          <div class="v"><span class="b">★</span><div>중간의 값 하나하나가 <b>작은 선형 회귀</b>다. 열 12개에 계수를 곱해 더한 것이다.</div></div>
-          <div class="v"><span class="b">→</span><div>그 값들을 다시 <b>한 번 더 가중합</b>해 최종 답을 만든다.</div></div>
+          <div class="v"><span class="b">→</span><div>직선 하나로 안 되니 <b>서로 다른 직선 열여섯 개</b>를 한꺼번에 만든다.</div></div>
+          <div class="v"><span class="b">★</span><div>중간 값 하나가 <b>직선 하나</b>다. <code>w &times; 소성온도 + b</code> 이고, 기울기와 절편이 저마다 다르다.</div></div>
+          <div class="v"><span class="b">→</span><div>그 열여섯 개를 다시 가중합해 답을 낸다. <b>어느 직선을 얼마나 쓸지</b>도 학습이 정한다.</div></div>
         </div>
+        <div class="callout"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20 20 4M4 12h16"/></svg></div><div class="ct"><h4>열여섯은 정하는 값이다</h4><p>데이터가 정해 주지 않는다. 8이든 64든 <b>직접 골라 넣는 숫자</b>다.</p></div></div>
       </div>
       <div>
         <div class="plot">
-          <svg viewBox="0 0 320 200">
-            <g fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1.4">
-              <circle cx="42" cy="52" r="12"/><circle cx="42" cy="100" r="12"/><circle cx="42" cy="148" r="12"/>
-              <circle cx="168" cy="28" r="12"/><circle cx="168" cy="76" r="12"/><circle cx="168" cy="124" r="12"/><circle cx="168" cy="172" r="12"/>
-            </g>
-            <g stroke="#DCD6F0" stroke-width="0.9">
-              <line x1="54" y1="52" x2="156" y2="28"/><line x1="54" y1="52" x2="156" y2="76"/><line x1="54" y1="52" x2="156" y2="124"/><line x1="54" y1="52" x2="156" y2="172"/>
-              <line x1="54" y1="100" x2="156" y2="28"/><line x1="54" y1="100" x2="156" y2="76"/><line x1="54" y1="100" x2="156" y2="124"/><line x1="54" y1="100" x2="156" y2="172"/>
-              <line x1="54" y1="148" x2="156" y2="28"/><line x1="54" y1="148" x2="156" y2="76"/><line x1="54" y1="148" x2="156" y2="124"/><line x1="54" y1="148" x2="156" y2="172"/>
-              <line x1="180" y1="28" x2="266" y2="100"/><line x1="180" y1="76" x2="266" y2="100"/><line x1="180" y1="124" x2="266" y2="100"/><line x1="180" y1="172" x2="266" y2="100"/>
-            </g>
-            <circle cx="280" cy="100" r="14" fill="#5B3DF5"/>
-            <text x="42" y="182" text-anchor="middle" font-size="10" fill="#8E8AAC">입력 12개</text>
-            <text x="168" y="196" text-anchor="middle" font-size="10" fill="#8E8AAC">중간 16개</text>
-            <text x="280" y="132" text-anchor="middle" font-size="10" fill="#8E8AAC">답 1개</text>
+          <svg viewBox="0 0 300 200">
+            <g stroke="#DCD6F0" stroke-width="0.9"><line x1="55" y1="100" x2="153" y2="24"/><line x1="55" y1="100" x2="153" y2="58"/><line x1="55" y1="100" x2="153" y2="92"/><line x1="55" y1="100" x2="153" y2="142"/><line x1="55" y1="100" x2="153" y2="172"/><line x1="175" y1="24" x2="253" y2="100"/><line x1="175" y1="58" x2="253" y2="100"/><line x1="175" y1="92" x2="253" y2="100"/><line x1="175" y1="142" x2="253" y2="100"/><line x1="175" y1="172" x2="253" y2="100"/></g>
+            <circle cx="44" cy="100" r="14" fill="#F4F1FF" stroke="#B7A9FF" stroke-width="1.4"/>
+            <g fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1.4"><circle cx="164" cy="24" r="11"/><circle cx="164" cy="58" r="11"/><circle cx="164" cy="92" r="11"/><circle cx="164" cy="142" r="11"/><circle cx="164" cy="172" r="11"/></g>
+            <text x="182" y="27" font-size="9" fill="#4A4766">직선 1</text><text x="182" y="61" font-size="9" fill="#4A4766">직선 2</text><text x="182" y="95" font-size="9" fill="#4A4766">직선 3</text><text x="182" y="145" font-size="9" fill="#4A4766">직선 15</text><text x="182" y="175" font-size="9" fill="#4A4766">직선 16</text>
+            <text x="164" y="121" text-anchor="middle" font-size="13" fill="#8E8AAC">&#8942;</text>
+            <circle cx="266" cy="100" r="14" fill="#5B3DF5"/>
+            <text x="44" y="132" text-anchor="middle" font-size="10" fill="#8E8AAC">소성온도</text>
+            <text x="266" y="132" text-anchor="middle" font-size="10" fill="#8E8AAC">방전용량</text>
+            <text x="164" y="196" text-anchor="middle" font-size="10" fill="#8E8AAC">중간 16개 &mdash; 각각이 직선 하나</text>
           </svg>
-          <div class="cap">중간 한 겹을 은닉층이라 부른다</div>
         </div>
       </div>
     </div>
-    <div class="keymsg"><span class="k">구조</span><div>층 하나가 <b>가중합 한 번</b>이다. 층을 쌓는다는 것은 가중합을 이어서 한다는 뜻이다.</div></div>
+    <div class="keymsg"><span class="k">발상</span><div>은닉 노드 열여섯 개는 <b>후보 직선 열여섯 개</b>다. 하나로 안 되던 것을 여럿으로 풀어 보려는 시도다.</div></div>
   </div>
 </section>
 
@@ -543,8 +538,8 @@
           </tbody>
         </table>
         <div class="vlist">
-          <div class="v"><span class="b">✕</span><div>층을 쌓기만 하면 <b>점수가 그대로</b>다. 가중합을 두 번 해도 결국 가중합 한 번이다.</div></div>
-          <div class="v"><span class="b">★</span><div>사이에 <b>꺾인 함수</b>를 끼우는 순간 곡선이 만들어진다.</div></div>
+          <div class="v"><span class="b">✕</span><div><b>직선 열여섯 개를 더해도 결국 직선 하나</b>다. 그래서 점수가 0.594 에서 꿈쩍하지 않는다.</div></div>
+          <div class="v"><span class="b">★</span><div>직선 하나하나를 <b>미리 꺾어 두면</b> 이야기가 달라진다. 꺾인 선 열여섯 개를 더하면 곡선이 나온다.</div></div>
         </div>
       </div>
       <div>
