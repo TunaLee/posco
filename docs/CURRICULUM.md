@@ -8,7 +8,7 @@
 | Day 1 · 파이썬 문법 | [day1/index.html](day1/index.html) | 60 |
 | Day 2 · 데이터 다루기 | [day2/index.html](day2/index.html) | 48 |
 | Day 3 · 머신러닝 | [day3/index.html](day3/index.html) | 41 |
-| Day 4 · 딥러닝 | [day4/index.html](day4/index.html) | 26 |
+| Day 4 · 딥러닝 | [day4/index.html](day4/index.html) | 36 |
 | 특강 · AI 도구로 웹 서비스 만들기 | [special/index.html](special/index.html) | 41 |
 
 조작: `← →` 또는 Space · 숫자 입력 후 Enter로 점프 · `≡` 목차 · `−/+` 줌 · PDF 버튼(인쇄).
@@ -42,10 +42,13 @@ Day 3  머신러닝
                         정확도의 함정 · 정밀도와 재현율 · 회귀 평가 지표 · 새 배치 판정
 
 Day 4  딥러닝
-  CH0 객체지향 기초     클래스 · 인스턴스 · 상속과 재정의
-  CH1 신경망 구조       퍼셉트론과 XOR · 은닉층 · 활성화 함수 · 순전파 · shape
-  CH2 PyTorch           텐서 · nn.Module · 학습 루프 다섯 줄 · 역전파 · 옵티마이저
-  CH3 실전              에러 다섯 · shape 에러 · 점검 순서 · 미니 프로젝트
+  CH0 층을 쌓는 이유     새로 배우는 것 셋 · 곡선인 관계 · 직선의 한계 · 층 · 활성화 함수 ·
+                        직선과 곡선의 차이
+  CH1 텐서와 모델       데이터 준비 · 텐서 · 표를 텐서로 · 스케일링 · nn.Linear ·
+                        nn.Sequential · shape · 출력층과 손실 · 클래스가 필요해지는 순간 · nn.Module
+  CH2 학습             학습 루프 · zero_grad · backward · 옵티마이저 · 에폭 · 손실 곡선 · 평가
+  CH3 고장과 점검       shape 에러 · 손실이 안 줄 때 · 과적합 · 과적합 줄이기 ·
+                        쓰지 않을 때 · 전체 파이프라인 · 정리
 ```
 
 시각은 슬라이드에 넣지 않는다. 배분은 강사가 현장에서 조절한다.

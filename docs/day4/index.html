@@ -368,781 +368,966 @@
   <div class="rule"></div>
   <div class="body">
     <div class="cards c4">
-      <div class="card"><span class="n">CH0</span><h3>객체지향 기초</h3><p>클래스 · 인스턴스 · 상속. 모델을 정의하는 문법.</p></div>
-      <div class="card"><span class="n">CH1</span><h3>신경망 구조</h3><p>퍼셉트론 · 은닉층 · 활성화 함수 · 순전파.</p></div>
-      <div class="card"><span class="n">CH2</span><h3>PyTorch</h3><p>텐서 · nn.Module · 학습 루프 · 역전파.</p></div>
-      <div class="card"><span class="n">CH3</span><h3>미니 프로젝트</h3><p>에러 읽기 · 전체 파이프라인 · 회고.</p></div>
+      <div class="card"><span class="n">CH0</span><h3>왜 층을 쌓는가</h3><p>직선 하나로 안 되는 관계 · 층 · 활성화 함수.</p></div>
+      <div class="card"><span class="n">CH1</span><h3>텐서와 모델</h3><p>데이터를 텐서로 · 층을 쌓아 모델 만들기.</p></div>
+      <div class="card"><span class="n">CH2</span><h3>학습</h3><p>다섯 줄짜리 학습 루프 · 손실 곡선 · 평가.</p></div>
+      <div class="card"><span class="n">CH3</span><h3>고장과 점검</h3><p>에러 읽는 법 · 손실이 안 줄 때 · 쓰지 않을 때.</p></div>
     </div>
-    <div class="keymsg"><span class="k">기준</span><div>수식을 유도하지 않는다. <b>층 하나가 Wx + b라는 것</b>과 <b>학습 루프 다섯 줄</b>을 손에 넣는 것이 목표다.</div></div>
+    <div class="keymsg"><span class="k">기준</span><div>손실 &middot; 학습률 &middot; 경사 하강법은 <b>이미 배운 것</b>이다. 오늘 새로 배우는 것은 셋뿐이다.</div></div>
   </div>
 </section>
 
-<section class="slide section" data-title="[섹션] 객체지향 기초">
+<section class="slide section" data-title="[섹션] 층을 쌓는 이유">
   <div class="ghost">00</div>
   <div class="seyebrow">CHAPTER 00</div>
-  <h2>객체지향 기초</h2>
-  <div class="agenda"><span>클래스</span><span>인스턴스</span><span>메서드</span><span>상속</span></div>
+  <h2>층을 쌓는 이유</h2>
+  <div class="agenda"><span>곡선인 관계</span><span>층</span><span>활성화 함수</span></div>
 </section>
 
-<section class="slide" data-title="클래스가 필요한 때">
+<section class="slide" data-title="새로 배우는 것 셋">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>범위</div>
+  <h2 class="s-title sm">새로 배우는 것 셋</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c3">
+      <div class="card"><span class="n">1</span><h3>층을 쌓는다</h3><p>입력에서 답까지 한 번에 가지 않고, 중간을 한 겹 거친다.</p></div>
+      <div class="card"><span class="n">2</span><h3>사이에 굽은 것을 끼운다</h3><p>층만 쌓으면 여전히 직선이다. 활성화 함수가 있어야 곡선이 된다.</p></div>
+      <div class="card"><span class="n">3</span><h3>기울기를 자동으로 구한다</h3><p>손으로 미분하지 않는다. <code>backward()</code> 한 줄이 대신 구한다.</p></div>
+    </div>
+    <table class="ctable">
+      <thead><tr><th>이미 배운 것</th><th>오늘 그대로 쓴다</th></tr></thead>
+      <tbody>
+        <tr><td><b>손실 함수</b></td><td>예측과 정답의 차이를 숫자 하나로</td></tr>
+        <tr><td><b>경사 하강법 · 학습률</b></td><td>기울기 반대 방향으로 한 걸음씩</td></tr>
+        <tr><td><b>과적합 · 정확도</b></td><td>훈련만 잘 맞히는 모델을 걸러내는 법</td></tr>
+      </tbody>
+    </table>
+    <div class="keymsg"><span class="k">기준</span><div>딥러닝은 새 학문이 아니다. <b>같은 경사 하강법 위에 층 세 가지</b>가 얹힌 것이다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="곡선인 관계">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>동기</div>
-  <h2 class="s-title sm">함수로 안 되는 것</h2>
+  <h2 class="s-title sm">온도와 용량 사이의 곡선</h2>
   <div class="rule"></div>
   <div class="body">
-    <div class="twopane">
-      <div class="pane bad"><h4>함수만 쓸 때</h4><div class="mini">def add(records, bid, temp):
-    records.append({'id': bid, 'temp': temp})
-    return records
-
-records = []
-records = add(records, 'B1', 898)
-records = add(records, 'B2', 835)</div><p><code>records</code>를 <b>매번 넘기고 받아야</b> 한다.</p></div>
-      <div class="pane good"><h4>클래스를 쓸 때</h4><div class="mini">log = BatchLog()
-
-log.add('B1', 898)
-log.add('B2', 835)
-
-# records 는 log 안에 들어 있다</div><p>값과 동작을 <b>한 덩어리로</b> 묶는다. 이 <code>BatchLog</code>를 <b>바로 뒤에서 만든다</b>.</p></div>
-    </div>
-    <div class="vlist">
-      <div class="v"><span class="b">→</span><div>클래스는 <b>상태(값)를 계속 들고 있어야 하는 것</b>을 표현할 때 쓴다.</div></div>
-      <div class="v"><span class="b">★</span><div>신경망이 정확히 그렇다. <b>가중치를 지니고</b> 있고, 학습할 때마다 그 값이 바뀐다.</div></div>
-      <div class="v"><span class="b">→</span><div>앞서 쓴 <code>df.head()</code> <code>list.append()</code>도 전부 <b>클래스의 메서드</b>였다.</div></div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>값이 계속 바뀌면서 남아 있어야 하면 클래스, <b>넣으면 결과만 나오면 되는 것</b>은 함수다.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="클래스와 인스턴스">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>정의</div>
-  <h2 class="s-title sm">클래스와 인스턴스</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol">
+    <div class="twocol w2">
       <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">class · __init__ · self</span></div>
-          <pre><code><span class="kw">class</span> <span class="fn2">Counter</span>:
-    <span class="kw">def</span> <span class="fn2">__init__</span>(self, start=<span class="nm">0</span>):
-        self.count = start        <span class="cm"># 속성</span>
-
-    <span class="kw">def</span> <span class="fn2">tick</span>(self, n=<span class="nm">1</span>):        <span class="cm"># 메서드</span>
-        self.count = self.count + n
-        <span class="kw">return</span> self.count
-
-a = <span class="fn2">Counter</span>()          <span class="cm"># 인스턴스 1</span>
-b = <span class="fn2">Counter</span>(start=<span class="nm">100</span>) <span class="cm"># 인스턴스 2</span>
-
-a.tick(); a.tick()
-<span class="fn2">print</span>(a.count, b.count)</code></pre>
-          <div class="out">2 100</div>
-        </div>
+        <table class="ctable">
+          <thead><tr><th>소성온도</th><th>평균 용량</th></tr></thead>
+          <tbody>
+            <tr><td>770 &deg;C</td><td>153.0</td></tr>
+            <tr><td>830 &deg;C</td><td>170.7</td></tr>
+            <tr><td>870 &deg;C</td><td class="hl">177.4</td></tr>
+            <tr><td>890 &deg;C</td><td class="hl">177.3</td></tr>
+            <tr><td>930 &deg;C</td><td>174.8</td></tr>
+          </tbody>
+        </table>
       </div>
       <div>
-        <div class="biglist">
-          <div class="li"><div class="num">1</div><div class="tx"><h4>클래스는 설계도</h4><p><code>class Counter:</code> — 아직 아무것도 만들어지지 않았다.</p></div></div>
-          <div class="li"><div class="num">2</div><div class="tx"><h4>인스턴스는 찍어 낸 것</h4><p><code>Counter()</code>를 부를 때마다 <b>독립된 객체</b>가 하나씩 생긴다.</p></div></div>
-          <div class="li"><div class="num">3</div><div class="tx"><h4><code>__init__</code>은 만들 때 한 번</h4><p>인스턴스가 태어날 때 자동 호출되어 <b>초기 상태</b>를 정한다.</p></div></div>
-          <div class="li"><div class="num">4</div><div class="tx"><h4><code>self</code>는 자기 자신</h4><p>메서드의 첫 인자로 <b>자동으로 들어온다</b>. 호출할 때는 쓰지 않는다.</p></div></div>
+        <div class="plot">
+          <svg viewBox="0 0 330 200">
+            <line x1="46" y1="176" x2="316" y2="176" stroke="#8E8AAC" stroke-width="1.3"/>
+            <line x1="46" y1="16" x2="46" y2="176" stroke="#8E8AAC" stroke-width="1.3"/>
+            <polyline points="46,164 78.5,143.2 111,113.2 143.5,93.2 176,76.4 208.5,66.4 241,66.8 273.5,66.4 306,76.8" fill="none" stroke="#16142B" stroke-width="2.4"/>
+            <g fill="#16142B"><circle cx="46" cy="164" r="3.6"/><circle cx="78.5" cy="143.2" r="3.6"/><circle cx="111" cy="113.2" r="3.6"/><circle cx="143.5" cy="93.2" r="3.6"/><circle cx="176" cy="76.4" r="3.6"/><circle cx="208.5" cy="66.4" r="3.6"/><circle cx="241" cy="66.8" r="3.6"/><circle cx="273.5" cy="66.4" r="3.6"/><circle cx="306" cy="76.8" r="3.6"/></g>
+            <text x="46" y="190" text-anchor="middle" font-size="9.5" fill="#8E8AAC">770</text>
+            <text x="176" y="190" text-anchor="middle" font-size="9.5" fill="#8E8AAC">850</text>
+            <text x="306" y="190" text-anchor="middle" font-size="9.5" fill="#8E8AAC">930</text>
+            <text x="42" y="180" text-anchor="end" font-size="9.5" fill="#8E8AAC">150</text>
+            <text x="42" y="20" text-anchor="end" font-size="9.5" fill="#8E8AAC">190</text>
+            <text x="250" y="52" font-size="10" fill="#E8537A">890 &deg;C 지나면 내려온다</text>
+          </svg>
+          <div class="cap">온도 구간마다 평균 용량 &middot; 훈련 1071건</div>
         </div>
       </div>
     </div>
-    <div class="keymsg"><span class="k">기준</span><div><code>self.</code>가 붙은 값은 <b>그 인스턴스에 남는다</b>. 안 붙이면 메서드가 끝날 때 사라진다 — 함수의 지역 변수와 같다.</div></div>
+    <div class="keymsg"><span class="k">사실</span><div>올라가다 <b>890 &deg;C 부근에서 꺾인다</b>. 너무 낮아도 낮고, 너무 높아도 낮다.</div></div>
   </div>
 </section>
 
-<section class="slide" data-title="상속과 재정의">
+<section class="slide" data-title="직선의 한계">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>상속</div>
-  <h2 class="s-title sm">상속과 재정의</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">상속 — 괄호 안에 부모를 적는다</span></div>
-          <pre><code><span class="kw">class</span> <span class="fn2">StepCounter</span>(<span class="fn2">Counter</span>):      <span class="cm"># Counter 를 물려받는다</span>
-    <span class="kw">def</span> <span class="fn2">__init__</span>(self, step=<span class="nm">10</span>):
-        <span class="fn2">super</span>().<span class="fn2">__init__</span>(start=<span class="nm">0</span>)  <span class="cm"># 부모 초기화 먼저</span>
-        self.step = step
-
-    <span class="kw">def</span> <span class="fn2">tick</span>(self, n=<span class="kw">None</span>):        <span class="cm"># 재정의 overriding</span>
-        <span class="kw">return</span> <span class="fn2">super</span>().tick(self.step)
-
-c = <span class="fn2">StepCounter</span>(step=<span class="nm">5</span>)
-c.tick(); c.tick()
-<span class="fn2">print</span>(c.count)</code></pre>
-          <div class="out">10</div>
-        </div>
-      </div>
-      <div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div>부모의 속성과 메서드를 <b>그대로 물려받는다</b>. 필요한 것만 새로 쓴다.</div></div>
-          <div class="v"><span class="b">→</span><div>같은 이름으로 다시 정의하면 <b>재정의(overriding)</b>다. 부모 것 대신 이게 불린다.</div></div>
-          <div class="v"><span class="b">★</span><div><code>super().__init__()</code>을 빠뜨리면 부모가 준비하던 것이 없어 <b>나중에 에러가 난다</b>.</div></div>
-        </div>
-        <div class="callout mint"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div class="ct"><h4>PyTorch 모델이 이 모양이다</h4><p><code>class MLP(nn.Module)</code>로 상속받고, <code>super().__init__()</code>을 부르고, <code>forward()</code>를 재정의한다. <b>지금 배운 세 가지가 전부</b>다.</p></div></div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>딥러닝 프레임워크를 쓰는 데 필요한 객체지향은 <b>상속 · super · 메서드 재정의</b> 셋뿐이다.</div></div>
-  </div>
-</section>
-
-<section class="slide section" data-title="[섹션] 신경망 구조">
-  <div class="ghost">01</div>
-  <div class="seyebrow">CHAPTER 01</div>
-  <h2>신경망 구조</h2>
-  <div class="agenda"><span>퍼셉트론</span><span>은닉층</span><span>활성화 함수</span><span>순전파</span></div>
-</section>
-
-<section class="slide" data-title="퍼셉트론의 한계">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>배경</div>
-  <h2 class="s-title sm">선 하나로 못 가르는 경계</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol">
-      <div>
-        <div class="phase-label">AND — 직선으로 갈린다<span class="ln"></span></div>
-        <div class="plot"><svg viewBox="0 0 200 130">
-          <line x1="30" y1="110" x2="180" y2="110" stroke="#8E8AAC" stroke-width="1.2"/>
-          <line x1="30" y1="16" x2="30" y2="110" stroke="#8E8AAC" stroke-width="1.2"/>
-          <line x1="52" y1="16" x2="180" y2="98" stroke="#5B3DF5" stroke-width="2" stroke-dasharray="5 4"/>
-          <circle cx="50" cy="98" r="6" fill="#8E8AAC"/><circle cx="140" cy="98" r="6" fill="#8E8AAC"/><circle cx="50" cy="34" r="6" fill="#8E8AAC"/>
-          <circle cx="140" cy="34" r="6" fill="#0FB5A1"/>
-          <text x="36" y="126" font-size="10" fill="#8E8AAC">0</text><text x="136" y="126" font-size="10" fill="#8E8AAC">1</text>
-        </svg></div>
-        <div class="vlist"><div class="v"><span class="b">→</span><div>초록 하나만 떼어 내는 <b>직선이 존재한다</b>.</div></div></div>
-      </div>
-      <div>
-        <div class="phase-label">XOR — 직선으로 안 갈린다<span class="ln"></span></div>
-        <div class="plot"><svg viewBox="0 0 200 130">
-          <line x1="30" y1="110" x2="180" y2="110" stroke="#8E8AAC" stroke-width="1.2"/>
-          <line x1="30" y1="16" x2="30" y2="110" stroke="#8E8AAC" stroke-width="1.2"/>
-          <circle cx="50" cy="98" r="6" fill="#8E8AAC"/><circle cx="140" cy="34" r="6" fill="#8E8AAC"/>
-          <circle cx="140" cy="98" r="6" fill="#0FB5A1"/><circle cx="50" cy="34" r="6" fill="#0FB5A1"/>
-          <path d="M40 70 Q95 30 150 70 Q95 112 40 70" fill="none" stroke="#E8537A" stroke-width="2" stroke-dasharray="5 4"/>
-          <text x="36" y="126" font-size="10" fill="#8E8AAC">0</text><text x="136" y="126" font-size="10" fill="#8E8AAC">1</text>
-        </svg></div>
-        <div class="vlist"><div class="v"><span class="b">✕</span><div>대각선끼리 같은 편이다. <b>어떤 직선으로도 못 나눈다</b>.</div></div></div>
-      </div>
-    </div>
-    <div class="vlist">
-      <div class="v"><span class="b">→</span><div>로지스틱 회귀도 <b>직선(초평면) 하나</b>를 긋는 모델이다. XOR 같은 문제는 못 푼다.</div></div>
-      <div class="v"><span class="b">★</span><div>직선을 <b>여러 개 겹쳐</b> 쓰면 굽은 경계를 만들 수 있다. 그것이 은닉층이다.</div></div>
-    </div>
-    <div class="keymsg"><span class="k">의의</span><div>신경망이 필요한 이유는 성능이 아니라 <b>직선으로 안 되는 경계</b>가 실제로 있기 때문이다.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="은닉층">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>구조</div>
-  <h2 class="s-title sm">층을 쌓아 만드는 곡선</h2>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>동기</div>
+  <h2 class="s-title sm">직선 하나가 놓치는 것</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twocol w2">
       <div>
         <div class="vlist">
-          <div class="v"><span class="b">→</span><div>입력층과 출력층 사이에 낀 층을 <b>은닉층</b>이라 한다. 사람이 값을 직접 보지 않아서다.</div></div>
-          <div class="v"><span class="b">→</span><div>은닉층 하나가 <b>직선 여러 개</b>를 만들고, 다음 층이 그것들을 조합한다.</div></div>
-          <div class="v"><span class="b">★</span><div>층 수와 뉴런 수가 늘수록 표현력이 커진다. 동시에 <b>과적합 위험도 커진다</b>.</div></div>
-          <div class="v"><span class="b">✕</span><div>활성화 함수 없이 층만 쌓으면 <b>아무리 쌓아도 직선 하나</b>다. 다음 장이 그 이야기다.</div></div>
+          <div class="v"><span class="b">→</span><div>선형 회귀는 <b>직선 하나</b>만 그릴 수 있다. 꺾을 방법이 없다.</div></div>
+          <div class="v"><span class="b">✕</span><div>930 &deg;C 에서 <b>185.1 로 예측</b>한다. 실제는 174.8 이다 &mdash; 10 이나 높다.</div></div>
+          <div class="v"><span class="b">★</span><div>온도를 계속 올리면 좋다고 읽힌다. <b>공정 판단이 틀어진다</b>.</div></div>
+        </div>
+        <div class="callout rose"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>R&sup2; 0.594</h4><p>맞히기는 하는데 <b>양 끝에서 크게 빗나간다</b>.</p></div></div>
+      </div>
+      <div>
+        <div class="plot">
+          <svg viewBox="0 0 330 200">
+            <line x1="46" y1="176" x2="316" y2="176" stroke="#8E8AAC" stroke-width="1.3"/>
+            <line x1="46" y1="16" x2="46" y2="176" stroke="#8E8AAC" stroke-width="1.3"/>
+            <polyline points="46,164 78.5,143.2 111,113.2 143.5,93.2 176,76.4 208.5,66.4 241,66.8 273.5,66.4 306,76.8" fill="none" stroke="#16142B" stroke-width="2.4"/>
+            <line x1="46" y1="131.6" x2="306" y2="35.6" stroke="#5B3DF5" stroke-width="2.4"/>
+            <line x1="306" y1="76.8" x2="306" y2="35.6" stroke="#E8537A" stroke-width="2" stroke-dasharray="4 3"/>
+            <line x1="46" y1="164" x2="46" y2="131.6" stroke="#E8537A" stroke-width="2" stroke-dasharray="4 3"/>
+            <text x="300" y="30" text-anchor="end" font-size="10" fill="#5B3DF5">선형 회귀 185.1</text>
+            <text x="300" y="92" text-anchor="end" font-size="10" fill="#16142B">실제 174.8</text>
+            <text x="52" y="122" font-size="10" fill="#E8537A">여기도 어긋난다</text>
+            <text x="46" y="190" text-anchor="middle" font-size="9.5" fill="#8E8AAC">770</text>
+            <text x="306" y="190" text-anchor="middle" font-size="9.5" fill="#8E8AAC">930</text>
+          </svg>
+          <div class="cap">검은 선 실제 &middot; 보라 선 선형 회귀의 예측</div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">문제</span><div>관계가 굽었는데 <b>도구가 직선뿐</b>이다. 굽은 선을 만들 방법이 필요하다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="층을 쌓는다는 것">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>구조</div>
+  <h2 class="s-title sm">중간을 한 겹 거치는 계산</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w2">
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>입력에서 답으로 <b>바로 가지 않는다</b>. 중간에 값 16개를 만들고 그것으로 답을 낸다.</div></div>
+          <div class="v"><span class="b">★</span><div>중간의 값 하나하나가 <b>작은 선형 회귀</b>다. 열 12개에 계수를 곱해 더한 것이다.</div></div>
+          <div class="v"><span class="b">→</span><div>그 값들을 다시 <b>한 번 더 가중합</b>해 최종 답을 만든다.</div></div>
         </div>
       </div>
       <div>
         <div class="plot">
-          <svg viewBox="0 0 320 210">
-            <g stroke="#E8E4F8" stroke-width="1">
-              <line x1="56" y1="50" x2="150" y2="36"/><line x1="56" y1="50" x2="150" y2="86"/><line x1="56" y1="50" x2="150" y2="136"/><line x1="56" y1="50" x2="150" y2="176"/>
-              <line x1="56" y1="105" x2="150" y2="36"/><line x1="56" y1="105" x2="150" y2="86"/><line x1="56" y1="105" x2="150" y2="136"/><line x1="56" y1="105" x2="150" y2="176"/>
-              <line x1="56" y1="160" x2="150" y2="36"/><line x1="56" y1="160" x2="150" y2="86"/><line x1="56" y1="160" x2="150" y2="136"/><line x1="56" y1="160" x2="150" y2="176"/>
-              <line x1="150" y1="36" x2="256" y2="105"/><line x1="150" y1="86" x2="256" y2="105"/><line x1="150" y1="136" x2="256" y2="105"/><line x1="150" y1="176" x2="256" y2="105"/>
+          <svg viewBox="0 0 320 200">
+            <g fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1.4">
+              <circle cx="42" cy="52" r="12"/><circle cx="42" cy="100" r="12"/><circle cx="42" cy="148" r="12"/>
+              <circle cx="168" cy="28" r="12"/><circle cx="168" cy="76" r="12"/><circle cx="168" cy="124" r="12"/><circle cx="168" cy="172" r="12"/>
             </g>
-            <g fill="#B7A9FF"><circle cx="56" cy="50" r="13"/><circle cx="56" cy="105" r="13"/><circle cx="56" cy="160" r="13"/></g>
-            <g fill="#5B3DF5"><circle cx="150" cy="36" r="13"/><circle cx="150" cy="86" r="13"/><circle cx="150" cy="136" r="13"/><circle cx="150" cy="176" r="13"/></g>
-            <circle cx="256" cy="105" r="14" fill="#0FB5A1"/>
-            <g font-size="10.5" fill="#8E8AAC" text-anchor="middle">
-              <text x="56" y="192">입력층</text><text x="150" y="204">은닉층</text><text x="256" y="140">출력층</text>
+            <g stroke="#DCD6F0" stroke-width="0.9">
+              <line x1="54" y1="52" x2="156" y2="28"/><line x1="54" y1="52" x2="156" y2="76"/><line x1="54" y1="52" x2="156" y2="124"/><line x1="54" y1="52" x2="156" y2="172"/>
+              <line x1="54" y1="100" x2="156" y2="28"/><line x1="54" y1="100" x2="156" y2="76"/><line x1="54" y1="100" x2="156" y2="124"/><line x1="54" y1="100" x2="156" y2="172"/>
+              <line x1="54" y1="148" x2="156" y2="28"/><line x1="54" y1="148" x2="156" y2="76"/><line x1="54" y1="148" x2="156" y2="124"/><line x1="54" y1="148" x2="156" y2="172"/>
+              <line x1="180" y1="28" x2="266" y2="100"/><line x1="180" y1="76" x2="266" y2="100"/><line x1="180" y1="124" x2="266" y2="100"/><line x1="180" y1="172" x2="266" y2="100"/>
             </g>
-            <text x="56" y="24" text-anchor="middle" font-size="10" font-family="monospace" fill="#8E8AAC">3</text>
-            <text x="150" y="16" text-anchor="middle" font-size="10" font-family="monospace" fill="#8E8AAC">4</text>
-            <text x="256" y="80" text-anchor="middle" font-size="10" font-family="monospace" fill="#8E8AAC">1</text>
+            <circle cx="280" cy="100" r="14" fill="#5B3DF5"/>
+            <text x="42" y="182" text-anchor="middle" font-size="10" fill="#8E8AAC">입력 12개</text>
+            <text x="168" y="196" text-anchor="middle" font-size="10" fill="#8E8AAC">중간 16개</text>
+            <text x="280" y="132" text-anchor="middle" font-size="10" fill="#8E8AAC">답 1개</text>
           </svg>
-          <div class="cap">동그라미가 뉴런, 선이 가중치다</div>
+          <div class="cap">중간 한 겹을 은닉층이라 부른다</div>
         </div>
       </div>
     </div>
-    <div class="keymsg"><span class="k">정리</span><div>층을 쌓는다는 것은 <b>행렬 곱을 여러 번 이어 붙이는 것</b>이다. <code>@</code> 연산 그대로다.</div></div>
+    <div class="keymsg"><span class="k">구조</span><div>층 하나가 <b>가중합 한 번</b>이다. 층을 쌓는다는 것은 가중합을 이어서 한다는 뜻이다.</div></div>
   </div>
 </section>
 
 <section class="slide" data-title="활성화 함수">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>구조</div>
-  <h2 class="s-title sm">활성화 함수</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="cards c3">
-      <div class="card"><span class="n">ReLU</span><h3>은닉층의 기본</h3>
-        <div class="plot"><svg viewBox="0 0 180 100"><line x1="14" y1="80" x2="168" y2="80" stroke="#E8E4F8"/><line x1="90" y1="12" x2="90" y2="92" stroke="#E8E4F8"/><path d="M18 80 L90 80 L162 20" fill="none" stroke="#5B3DF5" stroke-width="2.6"/></svg></div>
-        <p><code>max(0, x)</code>. 음수는 0으로, 양수는 그대로. <b>계산이 가장 싸다</b>.</p></div>
-      <div class="card"><span class="n">Sigmoid</span><h3>이진 분류 출력</h3>
-        <div class="plot"><svg viewBox="0 0 180 100"><line x1="14" y1="80" x2="168" y2="80" stroke="#E8E4F8"/><line x1="90" y1="12" x2="90" y2="92" stroke="#E8E4F8"/><path d="M18 78 C60 76 76 72 90 46 C104 20 120 16 162 15" fill="none" stroke="#0FB5A1" stroke-width="2.6"/></svg></div>
-        <p>0~1로 눌러 담아 <b>확률</b>로 읽는다. 로지스틱 회귀와 같다.</p></div>
-      <div class="card"><span class="n">Softmax</span><h3>다중 분류 출력</h3>
-        <div class="plot"><svg viewBox="0 0 180 100"><line x1="14" y1="86" x2="168" y2="86" stroke="#E8E4F8"/><g fill="#F4A93C"><rect x="30" y="34" width="26" height="52"/><rect x="70" y="60" width="26" height="26"/><rect x="110" y="70" width="26" height="16"/></g><text x="30" y="24" font-size="9" fill="#8E8AAC">.62 .26 .12</text></svg></div>
-        <p>여러 칸의 합이 <b>1이 되도록</b> 만든다. 클래스별 확률.</p></div>
-    </div>
-    <div class="twocol">
-      <div>
-        <div class="callout rose"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>없으면 층을 쌓는 뜻이 없다</h4><p>직선을 직선에 통과시키면 여전히 직선이다. <b>중간에 굽혀야</b> 곡선 경계가 나온다.</p></div></div>
-      </div>
-      <div>
-        <div class="vlist">
-          <div class="v"><span class="b">★</span><div>은닉층은 <b>ReLU</b>, 출력층은 <b>과제에 맞춰</b> 고른다. 이 조합이 사실상 표준이다.</div></div>
-        </div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>고민할 것은 은닉층이 아니라 <b>출력층</b>이다. 회귀는 그대로, 이진 분류는 sigmoid, 다중 분류는 softmax.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="순전파">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>연산</div>
-  <h2 class="s-title sm">순전파의 식</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol w2">
-      <div>
-        <div class="formula">
-          <div class="big">y = f(W·x + b)</div>
-          <div class="cap">W 가중치 행렬 · b 편향 · f 활성화 함수</div>
-        </div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div>입력에 <b>가중치를 곱하고</b>, <b>편향을 더하고</b>, <b>활성화를 통과</b>시킨다. 층 하나가 이 세 단계다.</div></div>
-          <div class="v"><span class="b">→</span><div>층이 여러 개면 이 식을 <b>이어서 반복</b>한다. 앞 층의 출력이 다음 층의 입력이다.</div></div>
-          <div class="v"><span class="b">★</span><div>앞서 본 행렬 곱과 브로드캐스팅이 그대로 쓰인다. <b>새로운 연산이 없다</b>.</div></div>
-        </div>
-      </div>
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">NumPy로 직접 한 층</span></div>
-          <pre><code><span class="kw">import</span> numpy <span class="kw">as</span> np
-
-x  = np.random.randn(<span class="nm">4</span>, <span class="nm">8</span>)    <span class="cm"># 배치 4건, 특성 8개</span>
-W1 = np.random.randn(<span class="nm">8</span>, <span class="nm">16</span>)   <span class="cm"># 8 → 16</span>
-b1 = np.zeros(<span class="nm">16</span>)
-
-h = np.maximum(<span class="nm">0</span>, x @ W1 + b1)   <span class="cm"># ReLU</span>
-<span class="fn2">print</span>(h.shape)
-
-W2 = np.random.randn(<span class="nm">16</span>, <span class="nm">1</span>)   <span class="cm"># 16 → 1</span>
-out = h @ W2
-<span class="fn2">print</span>(out.shape)</code></pre>
-          <div class="out">(4, 16)
-(4, 1)</div>
-        </div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">정리</span><div>신경망 한 층은 <b>행렬 곱 한 번 · 덧셈 한 번 · 함수 한 번</b>이다. 나머지는 이것의 반복이다.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="층마다의 shape">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>연산</div>
-  <h2 class="s-title sm">층마다의 shape</h2>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>구조</div>
+  <h2 class="s-title sm">활성화 함수의 유무</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twocol w">
       <div>
         <table class="ctable">
-          <thead><tr><th>단계</th><th>연산</th><th>shape</th></tr></thead>
+          <thead><tr><th>구성</th><th>R&sup2;</th></tr></thead>
           <tbody>
-            <tr><td>입력 X</td><td>—</td><td><code>(N, 8)</code></td></tr>
-            <tr><td>Linear 1</td><td><code>X @ W1</code>, W1 <code>(8, 16)</code></td><td><code>(N, 16)</code></td></tr>
-            <tr><td>ReLU</td><td>모양 유지</td><td><code>(N, 16)</code></td></tr>
-            <tr><td>Linear 2</td><td><code>H @ W2</code>, W2 <code>(16, 1)</code></td><td><code>(N, 1)</code></td></tr>
-            <tr><td>정답 y</td><td>—</td><td class="hl"><code>(N, 1)</code></td></tr>
+            <tr><td>선형 회귀 &mdash; 직선 하나</td><td>0.594</td></tr>
+            <tr><td>층 두 개 &middot; <b>활성화 없음</b></td><td class="no">0.594</td></tr>
+            <tr><td>층 두 개 &middot; <b>사이에 ReLU</b></td><td class="yes">0.780</td></tr>
           </tbody>
         </table>
         <div class="vlist">
-          <div class="v"><span class="b">→</span><div><code>N</code>은 <b>배치 크기</b>다. 한 번에 몇 개를 밀어 넣느냐이고, 층 설계와 무관하다.</div></div>
+          <div class="v"><span class="b">✕</span><div>층을 쌓기만 하면 <b>점수가 그대로</b>다. 가중합을 두 번 해도 결국 가중합 한 번이다.</div></div>
+          <div class="v"><span class="b">★</span><div>사이에 <b>꺾인 함수</b>를 끼우는 순간 곡선이 만들어진다.</div></div>
         </div>
       </div>
       <div>
         <div class="plot">
-          <svg viewBox="0 0 320 170">
-            <g font-family="monospace" font-size="11">
-              <rect x="10" y="60" width="58" height="40" rx="6" fill="#EFEAFF" stroke="#B7A9FF"/><text x="39" y="85" text-anchor="middle" fill="#3A1FC9">(N,8)</text>
-              <path d="M72 80 h22 m-7 -5 l7 5 -7 5" stroke="#5B3DF5" stroke-width="1.8" fill="none"/>
-              <rect x="98" y="52" width="62" height="56" rx="6" fill="#5B3DF5"/><text x="129" y="76" text-anchor="middle" fill="#fff">W1</text><text x="129" y="94" text-anchor="middle" fill="#D8CFFF" font-size="10">(8,16)</text>
-              <path d="M164 80 h22 m-7 -5 l7 5 -7 5" stroke="#5B3DF5" stroke-width="1.8" fill="none"/>
-              <rect x="190" y="60" width="62" height="40" rx="6" fill="#EFEAFF" stroke="#B7A9FF"/><text x="221" y="85" text-anchor="middle" fill="#3A1FC9">(N,16)</text>
-              <path d="M256 80 h22 m-7 -5 l7 5 -7 5" stroke="#5B3DF5" stroke-width="1.8" fill="none"/>
-              <rect x="282" y="60" width="30" height="40" rx="6" fill="#0FB5A1"/><text x="297" y="85" text-anchor="middle" fill="#fff" font-size="10">(N,1)</text>
-            </g>
-            <path d="M60 112 L60 130 L214 130" stroke="#E8537A" stroke-width="1.6" fill="none" stroke-dasharray="4 3"/>
-            <text x="64" y="148" font-size="10.5" fill="#E8537A">가운데 8이 맞아야 곱해진다</text>
-            <text x="10" y="30" font-size="10.5" fill="#4A4766">앞 층의 출력 크기 = 다음 층의 입력 크기</text>
+          <svg viewBox="0 0 300 150">
+            <line x1="30" y1="110" x2="280" y2="110" stroke="#8E8AAC" stroke-width="1.2"/>
+            <line x1="150" y1="14" x2="150" y2="132" stroke="#E8E4F8" stroke-width="1.2"/>
+            <polyline points="30,110 150,110 270,20" fill="none" stroke="#5B3DF5" stroke-width="3"/>
+            <text x="80" y="126" text-anchor="middle" font-size="10.5" fill="#8E8AAC">음수는 0</text>
+            <text x="222" y="126" text-anchor="middle" font-size="10.5" fill="#8E8AAC">양수는 그대로</text>
+            <text x="264" y="36" text-anchor="end" font-size="11" fill="#5B3DF5">ReLU</text>
           </svg>
+          <div class="cap">꺾인 곳이 하나 있는 것으로 충분하다</div>
         </div>
       </div>
     </div>
-    <div class="keymsg"><span class="k">기준</span><div>모델을 설계할 때는 <b>층마다 shape를 종이에 먼저 적는다</b>. 코드보다 이게 빠르다.</div></div>
+    <div class="keymsg"><span class="k">원리</span><div>꺾인 함수 16개를 <b>겹쳐 더하면 곡선이 된다</b>. 딥러닝의 힘은 깊이가 아니라 여기서 나온다.</div></div>
   </div>
 </section>
 
-<section class="slide section mintbg" data-title="[섹션] PyTorch">
-  <div class="ghost">02</div>
-  <div class="lab-flag"><span class="sq"></span>HANDS-ON</div>
-  <div class="seyebrow">CHAPTER 02</div>
-  <h2>PyTorch</h2>
-  <div class="agenda"><span>텐서</span><span>nn.Module</span><span>학습 루프</span><span>역전파</span></div>
-</section>
-
-<section class="slide" data-title="텐서">
+<section class="slide" data-title="직선과 곡선의 차이">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag mint">CH2</span><span class="dot"></span>자료구조</div>
-  <h2 class="s-title sm">NumPy 배열의 확장</h2>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>동기</div>
+  <h2 class="s-title sm">직선과 곡선의 차이</h2>
   <div class="rule"></div>
   <div class="body">
-    <div class="twocol">
+    <div class="plot">
+      <svg viewBox="0 0 660 200">
+        <line x1="60" y1="176" x2="640" y2="176" stroke="#8E8AAC" stroke-width="1.3"/>
+        <line x1="60" y1="16" x2="60" y2="176" stroke="#8E8AAC" stroke-width="1.3"/>
+        <polyline points="60,164 132,143 205,113 277,93 350,76 422,66 495,67 567,66 640,77" fill="none" stroke="#16142B" stroke-width="2.6"/>
+        <line x1="60" y1="132" x2="640" y2="36" stroke="#5B3DF5" stroke-width="2.4"/>
+        <polyline points="60,165 132,141 205,118 277,94 350,78 422,65 495,66 567,70 640,74" fill="none" stroke="#0FB5A1" stroke-width="2.4" stroke-dasharray="7 4"/>
+        <text x="636" y="30" text-anchor="end" font-size="11" fill="#5B3DF5">선형 회귀 &middot; R&sup2; 0.594</text>
+        <text x="636" y="98" text-anchor="end" font-size="11" fill="#0FB5A1">신경망 &middot; R&sup2; 0.780</text>
+        <text x="470" y="118" font-size="11" fill="#16142B">실제 평균</text>
+        <text x="60" y="192" text-anchor="middle" font-size="10" fill="#8E8AAC">770</text>
+        <text x="350" y="192" text-anchor="middle" font-size="10" fill="#8E8AAC">850</text>
+        <text x="640" y="192" text-anchor="middle" font-size="10" fill="#8E8AAC">930 &deg;C</text>
+      </svg>
+      <div class="cap">초록 점선이 검은 선을 거의 덮는다 &mdash; 꺾이는 자리까지 따라간다</div>
+    </div>
+    <div class="keymsg"><span class="k">결과</span><div>같은 데이터, 같은 경사 하강법이다. <b>ReLU 한 줄</b>이 0.594 를 0.780 으로 만들었다.</div></div>
+  </div>
+</section>
+
+<section class="slide section" data-title="[섹션] 텐서와 모델">
+  <div class="ghost">01</div>
+  <div class="seyebrow">CHAPTER 01</div>
+  <h2>텐서와 모델</h2>
+  <div class="agenda"><span>데이터 준비</span><span>텐서</span><span>층 쌓기</span></div>
+</section>
+
+<section class="slide" data-title="데이터 준비">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>준비</div>
+  <h2 class="s-title sm">X_train 을 만드는 곳</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <!-- lint:code-ok 읽기부터 분할까지 한 셀로 이어져야 강의 중에 그대로 돌아간다 -->
+    <div class="twocol w">
       <div>
         <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">쓰는 법이 거의 같다</span></div>
-          <pre><code><span class="kw">import</span> torch
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">오늘 나오는 모든 코드가 이 셀 위에서 돈다</span></div>
+          <pre><code><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> train_test_split
 
-t = torch.tensor([[<span class="nm">1.</span>, <span class="nm">2.</span>], [<span class="nm">3.</span>, <span class="nm">4.</span>]])
-<span class="fn2">print</span>(t.shape, t.dtype)
-<span class="fn2">print</span>(t.reshape(<span class="nm">4</span>, <span class="nm">1</span>).shape)
-<span class="fn2">print</span>(t @ t)
+url = <span class="st">'https://tunalee.github.io/posco/data/batch_quality.csv'</span>
+df = pd.read_csv(url, thousands=<span class="st">','</span>, na_values=[<span class="st">'N/A'</span>, <span class="st">'-'</span>])
+df[<span class="st">'설비호기'</span>] = df[<span class="st">'설비호기'</span>].str.strip().str.upper()
+df[<span class="st">'입도'</span>]   = df[<span class="st">'입도'</span>].fillna(df[<span class="st">'입도'</span>].median())
+df = df.dropna(subset=[<span class="st">'수분율'</span>])
+d  = pd.get_dummies(df, columns=[<span class="st">'설비호기'</span>, <span class="st">'교대조'</span>], drop_first=<span class="kw">True</span>)
 
-<span class="cm"># NumPy 와 오간다</span>
-X_t = torch.from_numpy(X_train).<span class="fn2">float</span>()
-back = X_t.numpy()</code></pre>
-          <div class="out">torch.Size([2, 2]) torch.float32
-torch.Size([4, 1])
-tensor([[ 7., 10.],
-        [15., 22.]])</div>
+X = d.drop(columns=[<span class="st">'양품여부'</span>, <span class="st">'방전용량'</span>, <span class="st">'배치번호'</span>])
+y = d[<span class="st">'양품여부'</span>]
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=<span class="nm">0.2</span>, random_state=<span class="nm">42</span>, stratify=y)</code></pre>
         </div>
       </div>
       <div>
         <table class="ctable">
-          <thead><tr><th></th><th>NumPy</th><th>PyTorch</th></tr></thead>
+          <thead><tr><th></th><th>모양</th></tr></thead>
           <tbody>
-            <tr><td>이름</td><td><code>ndarray</code></td><td><code>Tensor</code></td></tr>
-            <tr><td>모양</td><td><code>.shape</code></td><td><code>.shape</code></td></tr>
-            <tr><td>행렬 곱</td><td><code>@</code></td><td><code>@</code></td></tr>
-            <tr><td>GPU</td><td class="no">불가</td><td class="yes"><code>.to('cuda')</code></td></tr>
-            <tr><td>미분</td><td class="no">불가</td><td class="yes">자동으로 추적</td></tr>
+            <tr><td><code>X_train</code></td><td class="hl">(1071, 12)</td></tr>
+            <tr><td><code>X_test</code></td><td>(268, 12)</td></tr>
+            <tr><td>양품 비율</td><td>훈련 81.1% &middot; 테스트 81.0%</td></tr>
           </tbody>
         </table>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>전처리와 분할은 <b>앞에서 한 그대로</b>다. 여기까지는 딥러닝이 아니다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="텐서">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>텐서</div>
+  <h2 class="s-title sm">NumPy 배열에 두 가지가 붙은 것</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">배열을 텐서로</span></div>
+          <pre><code><span class="kw">import</span> torch
+torch.manual_seed(<span class="nm">42</span>)   <span class="cm"># 돌릴 때마다 같은 결과가 나오게 고정한다</span>
+
+a = torch.tensor([[<span class="nm">1.0</span>, <span class="nm">2.0</span>], [<span class="nm">3.0</span>, <span class="nm">4.0</span>]])
+<span class="fn2">print</span>(a.shape, a.dtype)</code></pre>
+          <div class="out">torch.Size([2, 2]) torch.float32</div>
+        </div>
+      </div>
+      <div>
+        <table class="ctable">
+          <thead><tr><th></th><th>NumPy 배열</th><th>텐서</th></tr></thead>
+          <tbody>
+            <tr><td><b>모양</b></td><td><code>.shape</code></td><td>같다</td></tr>
+            <tr><td><b>연산</b></td><td>더하기 &middot; 행렬 곱</td><td>같다</td></tr>
+            <tr><td><b>GPU</b></td><td class="no">못 올린다</td><td class="yes">올린다</td></tr>
+            <tr><td><b>기울기</b></td><td class="no">직접 구한다</td><td class="yes">자동으로 구한다</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>새로 배울 자료 구조가 아니다. <b>이미 아는 배열에 두 가지가 더 붙은 것</b>이다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="표를 텐서로">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>텐서</div>
+  <h2 class="s-title sm">DataFrame 을 텐서로 바꾸는 두 줄</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">값만 꺼내 실수로 바꾼다</span></div>
+          <pre><code>X_tr = torch.tensor(X_train.values.astype(<span class="st">'float32'</span>))
+y_tr = torch.tensor(y_train.values.astype(<span class="st">'float32'</span>)).unsqueeze(<span class="nm">1</span>)
+y_te = torch.tensor(y_test.values.astype(<span class="st">'float32'</span>))   <span class="cm"># 테스트 정답도 지금 만든다</span>
+<span class="fn2">print</span>(X_tr.shape, y_tr.shape)</code></pre>
+          <div class="out">torch.Size([1071, 12]) torch.Size([1071, 1])</div>
+        </div>
+      </div>
+      <div>
         <div class="vlist">
-          <div class="v"><span class="b">★</span><div>텐서가 NumPy와 다른 점은 둘뿐이다 — <b>GPU에 올라가고, 미분을 스스로 추적한다</b>.</div></div>
-          <div class="v"><span class="b">✕</span><div>기본 dtype이 다르다. PyTorch는 <code>float32</code>를 기대하므로 <code>.float()</code>로 맞춘다.</div></div>
+          <div class="v"><span class="b">→</span><div><code>.values</code> 로 표에서 <b>숫자만</b> 꺼낸다. 열 이름은 따라오지 않는다.</div></div>
+          <div class="v"><span class="b">★</span><div><code>float32</code> 로 바꾼다. 정수나 <code>bool</code> 이 섞이면 <b>층을 통과하지 못한다</b>.</div></div>
+          <div class="v"><span class="b">→</span><div><code>unsqueeze(1)</code> 은 <b>(1071,) 을 (1071, 1) 로</b> 만든다. 정답도 열 하나짜리 표여야 한다.</div></div>
         </div>
       </div>
     </div>
-    <div class="keymsg"><span class="k">정리</span><div>앞서 배운 배열 조작이 그대로 통한다. <b>새로 외울 문법이 거의 없다</b>.</div></div>
+    <div class="keymsg"><span class="k">함정</span><div>딥러닝에서 나는 에러의 태반이 <b>이 두 줄의 dtype 과 모양</b>에서 온다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="스케일링">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>준비</div>
+  <h2 class="s-title sm">신경망에서 스케일링이 필수인 이유</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">텐서로 바꾸기 전에 넣는다</span></div>
+          <pre><code><span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> StandardScaler
+
+sc = StandardScaler().fit(X_train)
+X_tr = torch.tensor(sc.transform(X_train).astype(<span class="st">'float32'</span>))
+X_te = torch.tensor(sc.transform(X_test).astype(<span class="st">'float32'</span>))</code></pre>
+        </div>
+      </div>
+      <div>
+        <table class="ctable">
+          <thead><tr><th></th><th>스케일링 없음</th><th>있음</th></tr></thead>
+          <tbody>
+            <tr><td><b>정확도</b></td><td class="no">0.828</td><td class="yes">0.914</td></tr>
+            <tr><td><b>300회 뒤 손실</b></td><td class="no">0.409</td><td class="yes">0.077</td></tr>
+          </tbody>
+        </table>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div>소성온도는 800대, 수분율은 1 미만이다. <b>큰 열이 기울기를 독차지</b>해 작은 열이 학습되지 않는다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>트리 계열은 없어도 되지만 <b>신경망은 안 하면 손실이 멈춘다</b>. 빼먹으면 안 되는 한 줄이다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="층 하나">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>모델</div>
+  <h2 class="s-title sm">nn.Linear 하나가 하는 일</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">층 하나를 만들어 통과시킨다</span></div>
+          <pre><code><span class="kw">import</span> torch.nn <span class="kw">as</span> nn
+
+layer = nn.Linear(<span class="nm">12</span>, <span class="nm">1</span>)   <span class="cm"># 열 12개 → 값 1개</span>
+out = layer(X_tr)
+<span class="fn2">print</span>(out.shape)</code></pre>
+          <div class="out">torch.Size([1071, 1])</div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div><code>nn.Linear(12, 1)</code> 이 하는 계산은 <b>로지스틱 회귀의 가중합과 같다</b> &mdash; 열마다 계수를 곱해 더하고 절편을 얹는다.</div></div>
+          <div class="v"><span class="b">→</span><div>계수 12개와 절편 1개, 모두 <b>13개를 모델이 들고 있다</b>.</div></div>
+          <div class="v"><span class="b">→</span><div>다른 점은 하나다. 이 계수를 <b>경사 하강법으로 직접 굴린다</b>.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">의의</span><div>층 하나짜리 신경망은 <b>이미 배운 그 모델</b>이다. 여기서 시작해 층을 늘려 간다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="층 쌓기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>모델</div>
+  <h2 class="s-title sm">nn.Sequential 로 이어 붙이기</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">위에서 아래로 순서대로 통과한다</span></div>
+          <pre><code>model = nn.Sequential(
+    nn.Linear(<span class="nm">12</span>, <span class="nm">16</span>),
+    nn.ReLU(),
+    nn.Linear(<span class="nm">16</span>, <span class="nm">1</span>))
+<span class="fn2">print</span>(model(X_tr).shape)</code></pre>
+          <div class="out">torch.Size([1071, 1])</div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>적은 순서가 <b>통과하는 순서</b>다. 위에서 아래로 그대로 흐른다.</div></div>
+          <div class="v"><span class="b">★</span><div>앞 층의 출력 수와 뒤 층의 입력 수가 <b>같아야 한다</b>. 16 과 16 이 맞물려 있다.</div></div>
+          <div class="v"><span class="b">→</span><div>은닉 노드 수 16 은 <b>정하는 값</b>이다. 데이터가 정해 주지 않는다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>모델을 만드는 데 클래스가 필요 없다. <b>층을 순서대로 적는 것</b>으로 끝난다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="shape 이어짐">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>모델</div>
+  <h2 class="s-title sm">층을 지날 때마다 바뀌는 모양</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="plot">
+      <svg viewBox="0 0 660 130">
+        <rect x="6" y="34" width="112" height="44" rx="8" fill="#F4F1FF" stroke="#DCD6F0"/>
+        <text x="62" y="53" text-anchor="middle" font-size="11" fill="#8E8AAC">X_tr</text>
+        <text x="62" y="69" text-anchor="middle" font-size="13" font-weight="700" fill="#16142B" font-family="ui-monospace,monospace">[1071, 12]</text>
+        <text x="150" y="50" text-anchor="middle" font-size="11" fill="#5B3DF5">Linear(12,16)</text>
+        <line x1="122" y1="56" x2="176" y2="56" stroke="#B7A9FF" stroke-width="1.6"/><path d="M176 51 L186 56 L176 61 Z" fill="#B7A9FF"/>
+        <rect x="192" y="34" width="112" height="44" rx="8" fill="#EFEAFF" stroke="#B7A9FF"/>
+        <text x="248" y="53" text-anchor="middle" font-size="11" fill="#8E8AAC">중간</text>
+        <text x="248" y="69" text-anchor="middle" font-size="13" font-weight="700" fill="#3A1FC9" font-family="ui-monospace,monospace">[1071, 16]</text>
+        <text x="336" y="50" text-anchor="middle" font-size="11" fill="#5B3DF5">ReLU</text>
+        <line x1="308" y1="56" x2="362" y2="56" stroke="#B7A9FF" stroke-width="1.6"/><path d="M362 51 L372 56 L362 61 Z" fill="#B7A9FF"/>
+        <rect x="378" y="34" width="112" height="44" rx="8" fill="#EFEAFF" stroke="#B7A9FF"/>
+        <text x="434" y="53" text-anchor="middle" font-size="11" fill="#8E8AAC">모양 그대로</text>
+        <text x="434" y="69" text-anchor="middle" font-size="13" font-weight="700" fill="#3A1FC9" font-family="ui-monospace,monospace">[1071, 16]</text>
+        <text x="522" y="50" text-anchor="middle" font-size="11" fill="#5B3DF5">Linear(16,1)</text>
+        <line x1="494" y1="56" x2="548" y2="56" stroke="#B7A9FF" stroke-width="1.6"/><path d="M548 51 L558 56 L548 61 Z" fill="#B7A9FF"/>
+        <rect x="564" y="34" width="94" height="44" rx="8" fill="#E4F8F4" stroke="#8AD7CC"/>
+        <text x="611" y="53" text-anchor="middle" font-size="11" fill="#8E8AAC">예측</text>
+        <text x="611" y="69" text-anchor="middle" font-size="13" font-weight="700" fill="#0A7F70" font-family="ui-monospace,monospace">[1071, 1]</text>
+        <text x="62" y="104" text-anchor="middle" font-size="10" fill="#8E8AAC">행 수는 끝까지 안 바뀐다</text>
+        <text x="434" y="104" text-anchor="middle" font-size="10" fill="#8E8AAC">ReLU 는 값만 바꾼다 &mdash; 모양은 그대로</text>
+      </svg>
+      <div class="cap">앞 칸의 오른쪽 숫자와 다음 층의 왼쪽 숫자가 맞물린다</div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>모델이 안 돌 때 <b>이 줄을 하나씩 찍어 본다</b>. 어디서 모양이 어긋났는지가 바로 보인다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="출력층과 손실">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>모델</div>
+  <h2 class="s-title sm">출력층과 손실 함수의 짝</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable">
+      <thead><tr><th>맞히는 것</th><th>마지막 층</th><th>손실 함수</th><th>예측을 읽는 법</th></tr></thead>
+      <tbody>
+        <tr><td><b>양품 여부</b> (0/1)</td><td><code>nn.Linear(16, 1)</code></td><td class="hl"><code>nn.BCEWithLogitsLoss()</code></td><td>0 보다 크면 양품</td></tr>
+        <tr><td><b>방전용량</b> (숫자)</td><td><code>nn.Linear(16, 1)</code></td><td class="hl"><code>nn.MSELoss()</code></td><td>나온 값이 곧 답</td></tr>
+      </tbody>
+    </table>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>마지막 층은 <b>둘 다 같다</b>. 손실 함수만 갈아 끼운다.</div></div>
+      <div class="v"><span class="b">→</span><div><code>BCEWithLogitsLoss</code> 는 <b>시그모이드를 안에 품고 있다</b>. 모델에 따로 붙이지 않는다.</div></div>
+      <div class="v"><span class="b">✕</span><div>시그모이드를 붙이고 이 손실을 또 쓰면 <b>두 번 눌리는</b> 셈이라 학습이 느려진다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>분류냐 회귀냐는 <b>손실 함수 한 줄</b>로 갈린다. 모델 구조는 손대지 않는다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="클래스가 필요해지는 순간">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>모델</div>
+  <h2 class="s-title sm">nn.Sequential 로 안 되는 것</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twopane">
+      <div class="pane good">
+        <h4>순서대로만 흐를 때</h4>
+        <div class="mini">입력 → Linear → ReLU → Linear → 예측</div>
+        <p><code>nn.Sequential</code> 로 충분하다. 층을 적어 놓으면 끝이다.</p>
+      </div>
+      <div class="pane bad">
+        <h4>중간에 손을 대야 할 때</h4>
+        <div class="mini">입력 → Linear → ReLU → <b>중간값을 따로 꺼내 본다</b>
+                   → 조건에 따라 다른 층으로</div>
+        <p>순서만 적어서는 표현할 수 없다. <b>흐름을 직접 쓰는 자리</b>가 필요하다.</p>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>클래스는 문법 숙제가 아니다. <b>흐름을 내가 쓰고 싶어질 때</b> 꺼내는 도구다.</div></div>
   </div>
 </section>
 
 <section class="slide" data-title="nn.Module">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag mint">CH2</span><span class="dot"></span>모델</div>
-  <h2 class="s-title sm">nn.Module로 만드는 모델</h2>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>모델</div>
+  <h2 class="s-title sm">nn.Module 의 두 칸</h2>
   <div class="rule"></div>
   <div class="body">
-    <div class="twocol">
+    <div class="twocol w">
       <div>
         <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">nn.Module 을 상속한다</span></div>
-          <pre><code><span class="kw">import</span> torch.nn <span class="kw">as</span> nn
-
-<span class="kw">class</span> <span class="fn2">MLP</span>(nn.Module):
-    <span class="kw">def</span> <span class="fn2">__init__</span>(self, n_in):
-        <span class="fn2">super</span>().<span class="fn2">__init__</span>()          <span class="cm"># 부모 초기화</span>
-        self.fc1 = nn.Linear(n_in, <span class="nm">16</span>)
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">앞 장의 Sequential 과 같은 모델</span></div>
+          <pre><code><span class="kw">class</span> <span class="fn2">Net</span>(nn.Module):
+    <span class="kw">def</span> <span class="fn2">__init__</span>(self):     <span class="cm"># 1. 쓸 층을 만들어 둔다</span>
+        <span class="fn2">super</span>().__init__()
+        self.fc1 = nn.Linear(<span class="nm">12</span>, <span class="nm">16</span>)
         self.fc2 = nn.Linear(<span class="nm">16</span>, <span class="nm">1</span>)
 
-    <span class="kw">def</span> <span class="fn2">forward</span>(self, x):        <span class="cm"># 재정의</span>
-        h = torch.relu(self.fc1(x))
-        <span class="kw">return</span> self.fc2(h)
+    <span class="kw">def</span> <span class="fn2">forward</span>(self, x):   <span class="cm"># 2. 흐르는 순서를 쓴다</span>
+        x = torch.relu(self.fc1(x))
+        <span class="kw">return</span> self.fc2(x)
 
-model = <span class="fn2">MLP</span>(n_in=<span class="nm">8</span>)</code></pre>
+model = Net()</code></pre>
         </div>
       </div>
       <div>
         <div class="vlist">
-          <div class="v"><span class="b">→</span><div><code>nn.Linear(8, 16)</code>이 <code>Wx + b</code>를 담당한다. 가중치는 <b>알아서 초기화</b>된다.</div></div>
-          <div class="v"><span class="b">→</span><div><code>forward()</code>에 <b>데이터가 흐르는 순서</b>를 적는다. 앞 장의 식 그대로다.</div></div>
-          <div class="v"><span class="b">★</span><div>호출은 <code>model(x)</code>로 한다. <code>model.forward(x)</code>를 직접 부르지 않는다.</div></div>
-          <div class="v"><span class="b">✕</span><div><code>super().__init__()</code>을 빠뜨리면 파라미터가 등록되지 않아 <b>학습이 안 된다</b>.</div></div>
-          <div class="v"><span class="b">→</span><div><code>print(model)</code>로 층 구성을, <code>model(torch.randn(4, 8)).shape</code>로 출력 모양을 확인한다.</div></div>
+          <div class="v"><span class="b">→</span><div><code>__init__</code> 은 <b>재료를 꺼내 놓는 칸</b>이다. 층을 만들어 <code>self.</code> 에 붙여 둔다.</div></div>
+          <div class="v"><span class="b">★</span><div><code>forward</code> 는 <b>흐름을 쓰는 칸</b>이다. 여기 적은 대로 값이 지나간다.</div></div>
+          <div class="v"><span class="b">→</span><div><code>super().__init__()</code> 은 <b>PyTorch 가 층을 찾을 수 있게</b> 등록하는 한 줄이다. 빠지면 학습이 안 된다.</div></div>
+          <div class="v"><span class="b">→</span><div><code>model(X_tr)</code> 라고 쓰면 <code>forward</code> 가 불린다. 직접 부르지 않는다.</div></div>
         </div>
       </div>
     </div>
-    <div class="keymsg"><span class="k">기준</span><div>모델을 만들면 <b>학습 전에 랜덤 입력을 한 번 통과</b>시켜 본다. shape 에러를 여기서 다 잡는다.</div></div>
+    <div class="keymsg"><span class="k">기준</span><div>외울 것은 두 칸뿐이다 &mdash; <b>재료를 놓는 칸과 흐름을 쓰는 칸</b>.</div></div>
   </div>
+</section>
+
+<section class="slide section" data-title="[섹션] 학습">
+  <div class="ghost">02</div>
+  <div class="seyebrow">CHAPTER 02</div>
+  <h2>학습</h2>
+  <div class="agenda"><span>학습 루프</span><span>손실 곡선</span><span>평가</span></div>
 </section>
 
 <section class="slide" data-title="학습 루프">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag mint">CH2</span><span class="dot"></span>학습</div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>학습</div>
   <h2 class="s-title sm">학습 루프 다섯 줄</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twocol w">
       <div>
         <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">이 다섯 줄이 모든 딥러닝의 심장이다</span></div>
-          <pre><code>loss_fn   = nn.BCEWithLogitsLoss()
-optimizer = torch.optim.Adam(model.parameters(), lr=<span class="nm">0.01</span>)
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">이 다섯 줄이 모든 딥러닝 코드에 있다</span></div>
+          <pre><code>loss_fn = nn.BCEWithLogitsLoss()
+opt = torch.optim.Adam(model.parameters(), lr=<span class="nm">0.01</span>)
 
-<span class="kw">for</span> epoch <span class="kw">in</span> <span class="fn2">range</span>(<span class="nm">100</span>):
-    pred = model(X_t)                  <span class="cm"># 1. 예측</span>
-    loss = loss_fn(pred, y_t)          <span class="cm"># 2. 오차</span>
-    optimizer.zero_grad()              <span class="cm"># 3. 기울기 초기화</span>
-    loss.backward()                    <span class="cm"># 4. 역전파</span>
-    optimizer.step()                   <span class="cm"># 5. 가중치 갱신</span>
-
-    <span class="kw">if</span> epoch % <span class="nm">20</span> == <span class="nm">0</span>:
-        <span class="fn2">print</span>(epoch, <span class="fn2">round</span>(loss.item(), <span class="nm">4</span>))</code></pre>
-          <div class="out">0  0.7104
-20 0.5218
-40 0.4611
-60 0.4402
-80 0.4331</div>
+<span class="kw">for</span> epoch <span class="kw">in</span> <span class="fn2">range</span>(<span class="nm">300</span>):
+    opt.zero_grad()            <span class="cm"># 1. 지난 기울기를 비운다</span>
+    pred = model(X_tr)         <span class="cm"># 2. 예측한다</span>
+    loss = loss_fn(pred, y_tr) <span class="cm"># 3. 얼마나 틀렸나</span>
+    loss.backward()            <span class="cm"># 4. 기울기를 구한다</span>
+    opt.step()                 <span class="cm"># 5. 한 걸음 옮긴다</span></code></pre>
         </div>
       </div>
       <div>
-        <div class="biglist">
-          <div class="li"><div class="num">1</div><div class="tx"><h4>예측</h4><p>순전파. 앞 장의 <code>f(Wx+b)</code>가 실행된다.</p></div></div>
-          <div class="li"><div class="num">2</div><div class="tx"><h4>오차</h4><p>앞 장의 손실 함수. 숫자 하나가 나온다.</p></div></div>
-          <div class="li"><div class="num">3</div><div class="tx"><h4>초기화</h4><p>안 하면 이전 기울기에 <b>계속 더해진다</b>.</p></div></div>
-          <div class="li"><div class="num">4</div><div class="tx"><h4>역전파</h4><p>각 가중치가 오차에 얼마나 기여했는지 계산.</p></div></div>
-          <div class="li"><div class="num">5</div><div class="tx"><h4>갱신</h4><p>경사 하강법 <code>w −= lr × grad</code>.</p></div></div>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div>4번과 5번이 <b>경사 하강법 그대로</b>다. 기울기를 구해 반대 방향으로 학습률만큼 간다.</div></div>
+          <div class="v"><span class="b">→</span><div>달라진 것은 하나다 &mdash; 기울기를 <b>손으로 구하지 않는다</b>.</div></div>
+          <div class="v"><span class="b">→</span><div>모델을 바꿔도 <b>이 다섯 줄은 그대로</b>다. 외워 두면 끝까지 쓴다.</div></div>
         </div>
       </div>
     </div>
-    <div class="vlist">
-          <div class="v"><span class="b">→</span><div>손실 함수는 <b>문제에 맞춰 고른다</b>. 양품/불량 판정이면 <code>nn.BCEWithLogitsLoss()</code>, 용량 같은 <b>숫자를 맞히면</b> <code>nn.MSELoss()</code>다.</div></div>
-    </div>
-    <div class="keymsg"><span class="k">함정</span><div><code>zero_grad()</code>를 빠뜨리는 것이 가장 흔한 실수다. 손실이 <b>이상하게 튀면</b> 이 줄부터 확인한다.</div></div>
+    <div class="keymsg"><span class="k">기준</span><div>순서가 정해져 있다. <b>비우고 · 예측하고 · 재고 · 기울기 구하고 · 옮긴다.</b></div></div>
   </div>
 </section>
 
-<section class="slide" data-title="역전파">
+<section class="slide" data-title="zero_grad">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag mint">CH2</span><span class="dot"></span>원리</div>
-  <h2 class="s-title sm">loss.backward()가 하는 일</h2>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>학습</div>
+  <h2 class="s-title sm">기울기를 비우는 한 줄</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twopane">
+      <div class="pane good">
+        <h4><code>opt.zero_grad()</code> 를 넣으면</h4>
+        <div class="mini">1회차 기울기  <b>0.42</b>
+2회차 기울기  <b>0.31</b>
+3회차 기울기  <b>0.25</b></div>
+        <p>매번 이번 회차의 기울기만 남는다. 손실이 고르게 줄어든다.</p>
+      </div>
+      <div class="pane bad">
+        <h4>빼먹으면</h4>
+        <div class="mini">1회차 기울기  <b>0.42</b>
+2회차 기울기  <b>0.73</b>  <i>← 0.42 + 0.31</i>
+3회차 기울기  <b>0.98</b>  <i>← 계속 쌓인다</i></div>
+        <p>기울기가 더해져 걸음이 점점 커진다. 손실이 튀거나 발산한다.</p>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">함정</span><div>PyTorch 는 기울기를 <b>지우지 않고 더한다</b>. 그것이 기본 동작이라 매 회차 직접 비워야 한다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="backward">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>학습</div>
+  <h2 class="s-title sm">backward 가 대신 해 주는 계산</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twocol w2">
       <div>
         <div class="vlist">
-          <div class="v"><span class="b">→</span><div>경사 하강법에는 <b>기울기</b>가 필요했다. 층이 여러 개면 각 가중치의 기울기를 따로 구해야 한다.</div></div>
-          <div class="v"><span class="b">→</span><div>출력 쪽 오차를 <b>입력 쪽으로 거슬러</b> 나눠 보내며 계산한다. 이것이 역전파다.</div></div>
-          <div class="v"><span class="b">→</span><div>수학적으로는 <b>연쇄 법칙(Chain Rule)</b>이다. 곱해 가며 뒤로 전달한다.</div></div>
-          <div class="v"><span class="b">★</span><div>PyTorch가 <b>전부 자동으로</b> 한다. 순전파를 적으면 역전파는 따라온다.</div></div>
-        </div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">직접 확인해 보면</span></div>
-          <pre><code>w = torch.tensor(<span class="nm">3.0</span>, requires_grad=<span class="kw">True</span>)
-loss = w ** <span class="nm">2</span>          <span class="cm"># f(w) = w²</span>
-loss.backward()
-<span class="fn2">print</span>(w.grad)          <span class="cm"># df/dw = 2w = 6</span></code></pre>
-          <div class="out">tensor(6.)</div>
+          <div class="v"><span class="b">→</span><div>계산을 하는 동안 PyTorch 가 <b>거쳐 온 길을 기록</b>해 둔다.</div></div>
+          <div class="v"><span class="b">★</span><div><code>loss.backward()</code> 는 그 길을 <b>거꾸로 되짚으며</b> 계수마다 기울기를 채운다.</div></div>
+          <div class="v"><span class="b">→</span><div>계수가 13개든 13만 개든 <b>한 줄로 끝난다</b>. 이것이 셋째로 새로 배운 것이다.</div></div>
         </div>
       </div>
       <div>
         <div class="plot">
-          <svg viewBox="0 0 320 210">
-            <g font-family="monospace" font-size="10.5">
-              <rect x="14" y="24" width="54" height="34" rx="6" fill="#EFEAFF" stroke="#B7A9FF"/><text x="41" y="45" text-anchor="middle" fill="#3A1FC9">x</text>
-              <rect x="98" y="24" width="54" height="34" rx="6" fill="#5B3DF5"/><text x="125" y="45" text-anchor="middle" fill="#fff">W1</text>
-              <rect x="182" y="24" width="54" height="34" rx="6" fill="#5B3DF5"/><text x="209" y="45" text-anchor="middle" fill="#fff">W2</text>
-              <rect x="256" y="24" width="52" height="34" rx="6" fill="#0FB5A1"/><text x="282" y="45" text-anchor="middle" fill="#fff">loss</text>
-            </g>
-            <g stroke="#B7A9FF" stroke-width="2" fill="none">
-              <path d="M70 41 h24 m-7 -5 l7 5 -7 5"/><path d="M154 41 h24 m-7 -5 l7 5 -7 5"/><path d="M238 41 h14 m-6 -5 l6 5 -6 5"/>
-            </g>
-            <text x="14" y="16" font-size="10" fill="#8E8AAC">순전파 →</text>
-
-            <g stroke="#E8537A" stroke-width="2" fill="none" stroke-dasharray="5 4">
-              <path d="M252 98 h-14 m7 -5 l-7 5 7 5"/><path d="M178 98 h-24 m7 -5 l-7 5 7 5"/><path d="M94 98 h-24 m7 -5 l-7 5 7 5"/>
-            </g>
-            <text x="256" y="102" font-size="10.5" fill="#E8537A">← 역전파</text>
-            <text x="118" y="126" font-size="10" fill="#E8537A">각 W가 오차에 얼마나 기여했나</text>
-
-            <rect x="14" y="146" width="294" height="52" rx="8" fill="#1C1933"/>
-            <text x="28" y="166" font-size="11" font-family="monospace" fill="#ECEAFF">loss.backward()   → 모든 W.grad 를 채운다</text>
-            <text x="28" y="186" font-size="11" font-family="monospace" fill="#9C97D6">optimizer.step()  → 그 grad 만큼 W 를 옮긴다</text>
+          <svg viewBox="0 0 320 160">
+            <rect x="6" y="18" width="72" height="34" rx="7" fill="#F4F1FF" stroke="#DCD6F0"/>
+            <text x="42" y="40" text-anchor="middle" font-size="11.5" fill="#16142B">입력</text>
+            <rect x="102" y="18" width="72" height="34" rx="7" fill="#EFEAFF" stroke="#B7A9FF"/>
+            <text x="138" y="40" text-anchor="middle" font-size="11.5" fill="#3A1FC9">층 계산</text>
+            <rect x="198" y="18" width="72" height="34" rx="7" fill="#EFEAFF" stroke="#B7A9FF"/>
+            <text x="234" y="40" text-anchor="middle" font-size="11.5" fill="#3A1FC9">예측</text>
+            <g stroke="#B7A9FF" stroke-width="1.6" fill="none"><line x1="78" y1="35" x2="96" y2="35"/><line x1="174" y1="35" x2="192" y2="35"/></g>
+            <g fill="#B7A9FF"><path d="M96 30 L102 35 L96 40 Z"/><path d="M192 30 L198 35 L192 40 Z"/></g>
+            <text x="160" y="12" text-anchor="middle" font-size="10" fill="#8E8AAC">앞으로 — 예측을 만든다</text>
+            <rect x="198" y="96" width="72" height="34" rx="7" fill="#16142B"/>
+            <text x="234" y="118" text-anchor="middle" font-size="11.5" fill="#9BE8DC">손실</text>
+            <line x1="234" y1="52" x2="234" y2="90" stroke="#B7A9FF" stroke-width="1.6"/><path d="M229 90 L234 96 L239 90 Z" fill="#B7A9FF"/>
+            <g stroke="#E8537A" stroke-width="1.8" fill="none"><line x1="192" y1="113" x2="174" y2="113"/><line x1="96" y1="113" x2="78" y2="113"/></g>
+            <rect x="102" y="96" width="72" height="34" rx="7" fill="#FDE8EE" stroke="#F0A9BC"/>
+            <text x="138" y="118" text-anchor="middle" font-size="11.5" fill="#C9405B">기울기</text>
+            <rect x="6" y="96" width="72" height="34" rx="7" fill="#FDE8EE" stroke="#F0A9BC"/>
+            <text x="42" y="118" text-anchor="middle" font-size="11.5" fill="#C9405B">기울기</text>
+            <g fill="#E8537A"><path d="M180 108 L174 113 L180 118 Z"/><path d="M84 108 L78 113 L84 118 Z"/></g>
+            <text x="160" y="150" text-anchor="middle" font-size="10" fill="#E8537A">거꾸로 — 계수마다 기울기를 채운다</text>
           </svg>
         </div>
       </div>
     </div>
-    <div class="keymsg"><span class="k">정리</span><div>역전파를 손으로 계산할 일은 없다. 알아야 할 것은 <b><code>backward()</code>가 기울기를 채우고 <code>step()</code>이 가중치를 옮긴다</b>는 것뿐이다.</div></div>
+    <div class="keymsg"><span class="k">의의</span><div>층이 몇 겹이든 미분을 손으로 하지 않는다. <b>딥러닝이 실용화된 이유</b>가 이 한 줄이다.</div></div>
   </div>
 </section>
 
 <section class="slide" data-title="옵티마이저">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag mint">CH2</span><span class="dot"></span>최적화</div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>학습</div>
   <h2 class="s-title sm">SGD 와 Adam</h2>
   <div class="rule"></div>
   <div class="body">
-    <div class="twopane">
-      <div class="pane good"><h4>SGD</h4><div class="mini">torch.optim.SGD(
-    model.parameters(), lr=0.01)</div><p>앞 장에서 배운 그대로. <b>기울기 × 학습률</b>만큼 옮긴다. 학습률을 사람이 잘 잡아야 한다.</p></div>
-      <div class="pane good"><h4>Adam</h4><div class="mini">torch.optim.Adam(
-    model.parameters(), lr=0.001)</div><p>가중치마다 <b>걸음 크기를 스스로 조절</b>한다. 기본값으로도 잘 도는 편이다.</p></div>
-    </div>
-    <div class="vlist">
-      <div class="v"><span class="b">★</span><div>처음에는 <b>Adam · lr=0.001</b>로 시작한다. 안 되면 학습률을 10배씩 바꿔 본다.</div></div>
-      <div class="v"><span class="b">→</span><div><code>model.parameters()</code>가 <b>학습할 가중치 전부</b>를 넘겨준다. <code>nn.Module</code>이 자동으로 모아 둔 것이다.</div></div>
-      <div class="v"><span class="b">→</span><div>배치 크기는 한 번에 밀어 넣는 행 수다. 크면 <b>안정적이지만 메모리를 쓴다</b>.</div></div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>옵티마이저 종류로 고민할 시간에 <b>학습률과 데이터 품질</b>을 본다. 성능 차이가 그쪽에서 훨씬 크게 난다.</div></div>
-  </div>
-</section>
-
-<section class="slide section" data-title="[섹션] 실전">
-  <div class="ghost">03</div>
-  <div class="seyebrow">CHAPTER 03</div>
-  <h2>실전</h2>
-  <div class="agenda"><span>에러 읽기</span><span>점검 순서</span><span>미니 프로젝트</span></div>
-</section>
-
-<section class="slide" data-title="자주 만나는 에러">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>디버깅</div>
-  <h2 class="s-title sm">자주 만나는 에러 다섯</h2>
-  <div class="rule"></div>
-  <div class="body">
     <table class="ctable">
-      <thead><tr><th>메시지</th><th>진짜 원인</th><th>고치는 곳</th></tr></thead>
+      <thead><tr><th></th><th>걸음을 정하는 방식</th><th>쓰는 자리</th></tr></thead>
       <tbody>
-        <tr><td><code>mat1 and mat2 shapes cannot be multiplied</code></td><td>층의 입력 크기가 안 맞는다</td><td><code>nn.Linear</code>의 첫 인자</td></tr>
-        <tr><td><code>expected scalar type Float but found Double</code></td><td>NumPy는 float64, torch는 float32</td><td><code>.float()</code> 붙이기</td></tr>
-        <tr><td><code>Expected all tensors on the same device</code></td><td>모델은 GPU, 데이터는 CPU</td><td>둘 다 <code>.to(device)</code></td></tr>
-        <tr><td><code>element 0 of tensors does not require grad</code></td><td><code>torch.no_grad()</code> 안에서 학습</td><td>블록 밖으로 빼기</td></tr>
-        <tr><td>loss가 <code>nan</code></td><td>학습률이 너무 크거나 입력에 결측</td><td>lr 낮추기 · 전처리 확인</td></tr>
+        <tr><td><code>SGD</code></td><td>기울기 &times; 학습률. 배운 그대로다</td><td>동작을 이해할 때</td></tr>
+        <tr><td class="hl"><code>Adam</code></td><td>열마다 <b>걸음 크기를 따로</b> 조절한다. 많이 움직인 계수는 걸음을 줄인다</td><td>거의 항상 이쪽</td></tr>
       </tbody>
     </table>
-    <div class="callout mint"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div class="ct"><h4>에러 메시지는 맨 아래부터 읽는다</h4><p>가운데는 라이브러리 내부 호출이다. <b>마지막 줄의 에러 종류</b>와 <b>내 코드가 나오는 줄</b> 두 곳만 본다.</p></div></div>
-    <div class="keymsg"><span class="k">기준</span><div>이 다섯 가지가 실습 에러의 대부분이다. <b>메시지를 그대로 검색</b>하는 것도 정당한 해결 방법이다.</div></div>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>이름만 바꾸면 된다. <code>torch.optim.SGD</code> ↔ <code>torch.optim.Adam</code>, <b>나머지 코드는 그대로</b>다.</div></div>
+      <div class="v"><span class="b">→</span><div>학습률 기본값은 <code>Adam</code> 이 <code>0.001</code> 이다. 손실이 너무 천천히 줄면 <code>0.01</code> 로 올려 본다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>고민할 자리가 아니다. <b>Adam 으로 시작</b>하고, 안 되면 그때 학습률을 건드린다.</div></div>
   </div>
 </section>
 
-<section class="slide" data-title="shape 에러 읽기">
+<section class="slide" data-title="에폭">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>디버깅</div>
-  <h2 class="s-title sm">shape 에러를 읽는 순서</h2>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>학습</div>
+  <h2 class="s-title sm">에폭이라는 단위</h2>
   <div class="rule"></div>
   <div class="body">
-    <div class="twocol">
+    <div class="twocol w2">
       <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">실제로 나오는 메시지</span></div>
-          <pre><code>model = MLP(n_in=<span class="nm">10</span>)   <span class="cm"># 특성이 8개인데 10 이라 적었다</span>
-out = model(X_t)</code></pre>
-          <div class="out"><span class="err">RuntimeError: mat1 and mat2 shapes
-cannot be multiplied (712x8 and 10x16)</span></div>
-        </div>
         <div class="vlist">
-          <div class="v"><span class="b">→</span><div><code>712x8</code>이 내 데이터, <code>10x16</code>이 층의 가중치다.</div></div>
-          <div class="v"><span class="b">★</span><div><b>가운데 두 수 8과 10이 달라서</b> 곱이 안 된다. 행렬 곱 규칙 그대로다.</div></div>
+          <div class="v"><span class="b">→</span><div>훈련 데이터 <b>1071건을 한 번 다 본 것</b>이 1 에폭이다.</div></div>
+          <div class="v"><span class="b">★</span><div>한 번 봐서는 못 배운다. <b>같은 데이터를 수백 번 되풀이</b>해 본다.</div></div>
+          <div class="v"><span class="b">✕</span><div>많이 돌린다고 좋아지지 않는다. 어느 지점부터 <b>훈련만 잘 맞히기 시작</b>한다.</div></div>
         </div>
       </div>
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">고치는 순서</span></div>
-          <pre><code><span class="cm"># 1. 내 데이터의 shape 를 찍는다</span>
-<span class="fn2">print</span>(X_t.shape)
-
-<span class="cm"># 2. 층이 기대하는 크기를 본다</span>
-<span class="fn2">print</span>(model.fc1)
-
-<span class="cm"># 3. 맞춘다</span>
-model = MLP(n_in=X_t.shape[<span class="nm">1</span>])   <span class="cm"># 하드코딩하지 않는다</span></code></pre>
-          <div class="out">torch.Size([712, 8])
-Linear(in_features=10, out_features=16)</div>
-        </div>
-        <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>원-핫 인코딩 뒤에 자주 터진다</h4><p><code>get_dummies</code>로 열 수가 바뀐다. <b>숫자를 직접 적지 말고</b> <code>X.shape[1]</code>을 쓴다.</p></div></div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>shape 에러는 <b>거의 항상 두 숫자만 보면</b> 풀린다. 메시지 안의 괄호 두 개를 먼저 찾는다.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="학습이 안 될 때">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>디버깅</div>
-  <h2 class="s-title sm">학습이 안 될 때의 점검 순서</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="pipe">
-      <div class="step"><div class="si">01</div><div class="sn">손실이 찍히나</div><div class="sd">epoch마다 출력부터 넣는다</div></div>
-      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
-      <div class="step"><div class="si">02</div><div class="sn">줄고는 있나</div><div class="sd">안 줄면 lr · zero_grad 확인</div></div>
-      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
-      <div class="step"><div class="si">03</div><div class="sn">입력이 맞나</div><div class="sd">스케일링 · 결측 · dtype</div></div>
-      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
-      <div class="step"><div class="si">04</div><div class="sn">과적합인가</div><div class="sd">훈련만 좋으면 층·epoch 줄이기</div></div>
-    </div>
-    <div class="twocol">
       <div>
         <table class="ctable">
-          <thead><tr><th>증상</th><th>먼저 볼 곳</th></tr></thead>
+          <thead><tr><th>에폭</th><th>훈련 손실</th></tr></thead>
           <tbody>
-            <tr><td>손실이 <b>전혀 안 준다</b></td><td><code>zero_grad()</code> 누락 · lr 너무 작음</td></tr>
-            <tr><td>손실이 <b>튀거나 nan</b></td><td>lr 너무 큼 · 스케일링 누락</td></tr>
-            <tr><td>손실은 주는데 <b>정확도가 안 오른다</b></td><td>출력층·손실 함수 짝이 틀림</td></tr>
-            <tr><td>훈련만 좋고 <b>검증이 나쁘다</b></td><td>과적합 — 조기 종료</td></tr>
+            <tr><td>1</td><td>0.788</td></tr>
+            <tr><td>10</td><td>0.565</td></tr>
+            <tr><td>50</td><td>0.243</td></tr>
+            <tr><td>100</td><td>0.162</td></tr>
+            <tr><td>300</td><td class="hl">0.082</td></tr>
           </tbody>
         </table>
       </div>
-      <div>
-        <div class="callout mint"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div class="ct"><h4>작게 먼저 되게 한다</h4><p>데이터 <b>20행</b>만 떼어 일부러 외우게 해 본다. 손실이 0 근처로 안 가면 <b>코드가 잘못된 것</b>이지 데이터 문제가 아니다.</p></div></div>
-        <div class="vlist">
-          <div class="v"><span class="b">★</span><div><b>기준선</b>과 비교한다. 신경망이 로지스틱 회귀보다 못하면 문제가 있다.</div></div>
-        </div>
-      </div>
     </div>
-    <div class="keymsg"><span class="k">기준</span><div>모델 구조를 바꾸기 전에 <b>입력과 학습률</b>부터 본다. 실패 원인의 대부분이 그 둘이다.</div></div>
+    <div class="keymsg"><span class="k">기준</span><div>몇 에폭이 맞는지는 <b>테스트 점수가 정한다</b>. 훈련 손실만 보고 정하지 않는다.</div></div>
   </div>
 </section>
 
-<section class="slide" data-title="미니 프로젝트 — 목표">
+<section class="slide" data-title="손실 곡선">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag mint">CH3</span><span class="dot"></span>프로젝트</div>
-  <h2 class="s-title sm">한 노트북에 담는 전체 파이프라인</h2>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>학습</div>
+  <h2 class="s-title sm">손실 곡선의 모양</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w2">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">매 회차 손실을 모아 그린다</span></div>
+          <pre><code>losses = []
+<span class="kw">for</span> epoch <span class="kw">in</span> <span class="fn2">range</span>(<span class="nm">300</span>):
+    ...
+    losses.append(loss.item())
+
+plt.plot(losses)</code></pre>
+        </div>
+      </div>
+      <div>
+        <div class="plot">
+          <svg viewBox="0 0 330 200">
+            <line x1="46" y1="176" x2="316" y2="176" stroke="#8E8AAC" stroke-width="1.3"/>
+            <line x1="46" y1="16" x2="46" y2="176" stroke="#8E8AAC" stroke-width="1.3"/>
+            <polyline points="46.9,22.3 53.7,65.9 88.4,128.6 131.8,144.4 218.6,155.2 305.3,160.1" fill="none" stroke="#5B3DF5" stroke-width="2.6"/>
+            <g fill="#5B3DF5"><circle cx="46.9" cy="22.3" r="3.4"/><circle cx="88.4" cy="128.6" r="3.4"/><circle cx="305.3" cy="160.1" r="3.4"/></g>
+            <text x="60" y="20" font-size="10" fill="#8E8AAC">0.788</text>
+            <text x="300" y="152" text-anchor="end" font-size="10" fill="#8E8AAC">0.082</text>
+            <text x="46" y="190" text-anchor="middle" font-size="9.5" fill="#8E8AAC">1</text>
+            <text x="305" y="190" text-anchor="middle" font-size="9.5" fill="#8E8AAC">300 에폭</text>
+          </svg>
+          <div class="cap">가파르게 떨어지다 완만해지는 것이 정상이다</div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>곡선 하나로 <b>학습이 되는지 안 되는지</b>를 안다. 숫자를 세는 것보다 그려 보는 편이 빠르다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="평가">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>평가</div>
+  <h2 class="s-title sm">테스트 데이터로 재는 정확도</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">학습이 끝난 뒤 한 번</span></div>
+          <pre><code><span class="kw">with</span> torch.no_grad():        <span class="cm"># 기울기를 기록하지 않는다</span>
+    out = model(X_te)
+    pred = (out &gt; <span class="nm">0</span>).float()  <span class="cm"># 0 보다 크면 양품</span>
+
+acc = (pred.squeeze() == y_te).float().mean()
+<span class="fn2">print</span>(acc.item())</code></pre>
+          <div class="out">0.9141790866851807</div>
+        </div>
+      </div>
+      <div>
+        <table class="ctable">
+          <thead><tr><th>모델</th><th>테스트 정확도</th></tr></thead>
+          <tbody>
+            <tr><td>로지스틱 회귀</td><td>0.884</td></tr>
+            <tr><td class="hl">신경망</td><td class="hl">0.914</td></tr>
+            <tr><td>랜덤 포레스트</td><td>0.933</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">결과</span><div>로지스틱보다 <b>3.0%p 올랐다</b>. 그런데 랜덤 포레스트가 더 높다 &mdash; 이 사실을 그냥 넘기지 않는다.</div></div>
+  </div>
+</section>
+
+<section class="slide section" data-title="[섹션] 고장과 점검">
+  <div class="ghost">03</div>
+  <div class="seyebrow">CHAPTER 03</div>
+  <h2>고장과 점검</h2>
+  <div class="agenda"><span>에러 읽기</span><span>과적합</span><span>쓰지 않을 때</span></div>
+</section>
+
+<section class="slide" data-title="shape 에러">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>에러</div>
+  <h2 class="s-title sm">shape 에러를 읽는 순서</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">가장 자주 만나는 에러</span></div>
+          <pre><code>model = nn.Sequential(nn.Linear(<span class="nm">10</span>, <span class="nm">16</span>), nn.ReLU())
+model(X_tr)</code></pre>
+          <div class="out"><span class="err">RuntimeError: mat1 and mat2 shapes
+cannot be multiplied (1071x12 and 10x16)</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>괄호 안의 <b>네 숫자만</b> 본다. 앞의 긴 문장은 읽지 않아도 된다.</div></div>
+          <div class="v"><span class="b">★</span><div><code>1071x12</code> 는 <b>넣은 데이터</b>, <code>10x16</code> 은 <b>층이 기다리던 모양</b>이다.</div></div>
+          <div class="v"><span class="b">→</span><div>가운데 둘 &mdash; <code>12</code> 와 <code>10</code> &mdash; 이 <b>안 맞아서</b> 난 에러다. 층을 <code>Linear(12, 16)</code> 로 고친다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>규칙은 하나다. <b>안쪽 두 숫자가 같아야 한다.</b> 다르면 그 자리가 틀린 것이다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="손실이 안 줄 때">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>점검</div>
+  <h2 class="s-title sm">손실이 안 줄 때의 점검 순서</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable">
+      <thead><tr><th></th><th>확인할 것</th><th>증상</th></tr></thead>
+      <tbody>
+        <tr><td><b>1</b></td><td><code>opt.zero_grad()</code> 가 루프 안에 있는가</td><td>손실이 튀거나 커진다</td></tr>
+        <tr><td><b>2</b></td><td>스케일링을 했는가</td><td>손실이 0.4 근처에서 <b>멈춘다</b></td></tr>
+        <tr><td><b>3</b></td><td>학습률이 너무 크거나 작은가</td><td>발산하거나, 거의 안 움직인다</td></tr>
+        <tr><td><b>4</b></td><td>활성화 함수를 끼웠는가</td><td>층을 늘려도 점수가 <b>그대로다</b></td></tr>
+        <tr><td><b>5</b></td><td>손실 함수가 과제와 맞는가</td><td>0/1 정답에 <code>MSELoss</code> 를 썼다</td></tr>
+      </tbody>
+    </table>
+    <div class="keymsg"><span class="k">기준</span><div>위에서부터 순서대로 본다. <b>1번과 2번이 태반</b>이고, 모델 구조를 의심하는 것은 맨 나중이다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="신경망의 과적합">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>점검</div>
+  <h2 class="s-title sm">훈련을 다 맞히는 모델</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w2">
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">✕</span><div>은닉 노드를 128개로 키우고 3000회를 돌리면 <b>훈련을 하나도 안 틀린다</b>.</div></div>
+          <div class="v"><span class="b">★</span><div>그런데 테스트는 <b>0.907 로 오히려 낮다</b>. 훈련 데이터를 외운 것이다.</div></div>
+          <div class="v"><span class="b">→</span><div>훈련 손실 <code>0.0000</code> 은 좋은 신호가 아니라 <b>경고</b>다.</div></div>
+        </div>
+      </div>
+      <div>
+        <table class="ctable">
+          <thead><tr><th>에폭</th><th>훈련</th><th>테스트</th></tr></thead>
+          <tbody>
+            <tr><td>100</td><td>0.999</td><td>0.910</td></tr>
+            <tr><td>300</td><td>1.000</td><td class="hl">0.922</td></tr>
+            <tr><td>1000</td><td>1.000</td><td>0.914</td></tr>
+            <tr><td>3000</td><td>1.000</td><td class="no">0.907</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>훈련 점수는 <b>올라가기만 한다</b>. 멈출 때를 알려 주는 것은 테스트 점수뿐이다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="과적합 줄이기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>점검</div>
+  <h2 class="s-title sm">외우지 못하게 하는 세 가지</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c3">
+      <div class="card"><span class="n">1</span><h3>모델을 줄인다</h3><p>은닉 노드를 128에서 16으로. 외울 자리 자체를 줄인다.</p></div>
+      <div class="card"><span class="n">2</span><h3>일찍 멈춘다</h3><p>테스트 점수가 안 오르기 시작하는 지점에서 학습을 끊는다.</p></div>
+      <div class="card"><span class="n">3</span><h3>데이터를 늘린다</h3><p>가장 확실하지만 가장 비싸다. 늘 가능한 것은 아니다.</p></div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>세 가지 다 <b>이미 배운 것</b>이다. 결정 트리의 <code>max_depth</code> 를 줄이던 것과 같은 이야기다.</div></div>
+      <div class="v"><span class="b">→</span><div>순서가 있다. <b>1번을 먼저</b> 해 본다. 가장 싸고 효과가 크다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>딥러닝의 과적합 대책은 새로운 것이 아니다. <b>모델을 작게, 학습을 짧게.</b></div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="쓰지 않을 때">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>판단</div>
+  <h2 class="s-title sm">딥러닝을 쓰지 않는 경우</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w2">
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div>오늘 데이터에서 <b>랜덤 포레스트가 더 높다</b>. 0.933 대 0.914 다.</div></div>
+          <div class="v"><span class="b">→</span><div>표로 된 데이터는 <b>트리 계열이 강하다</b>. 열 수가 수십 개 수준이면 더 그렇다.</div></div>
+          <div class="v"><span class="b">→</span><div>딥러닝은 <b>스케일링·에폭·학습률</b>을 다 맞춰야 그 점수가 나온다. 손이 더 든다.</div></div>
+          <div class="v"><span class="b">✕</span><div>어느 열이 얼마나 작용했는지 <b>설명하기 어렵다</b>. 공정 보고에는 불리하다.</div></div>
+        </div>
+      </div>
+      <div>
+        <table class="ctable">
+          <thead><tr><th>데이터</th><th>먼저 꺼낼 것</th></tr></thead>
+          <tbody>
+            <tr><td>표 (행과 열)</td><td class="hl">랜덤 포레스트 &middot; 부스팅</td></tr>
+            <tr><td>이미지</td><td>딥러닝</td></tr>
+            <tr><td>음성 &middot; 자연어</td><td>딥러닝</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>딥러닝이 언제나 낫지 않다. <b>표로 정리되는 데이터면 트리부터</b> 재 보고, 그보다 나을 때만 쓴다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="전체 파이프라인">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>정리</div>
+  <h2 class="s-title sm">노트북 한 벌의 순서</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="pipe">
-      <div class="step"><div class="si">01</div><div class="sn">전처리</div><div class="sd">결측 · 인코딩 · 분할 · 스케일링</div></div>
-      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
-      <div class="step"><div class="si">02</div><div class="sn">기준선</div><div class="sd">로지스틱 회귀 · 랜덤 포레스트</div></div>
-      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
-      <div class="step"><div class="si">03</div><div class="sn">MLP</div><div class="sd">nn.Module · 학습 루프</div></div>
-      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
-      <div class="step"><div class="si">04</div><div class="sn">평가</div><div class="sd">같은 테스트셋 · 같은 지표</div></div>
+      <div class="step"><div class="si">1</div><div class="sn">읽고 손보기</div><div class="sd">결측 · 표기 · 더미</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="si">2</div><div class="sn">나누고 스케일링</div><div class="sd">train_test_split · StandardScaler</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="si">3</div><div class="sn">텐서로</div><div class="sd">float32 · unsqueeze</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="si">4</div><div class="sn">모델</div><div class="sd">Sequential 또는 Module</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="si">5</div><div class="sn">학습 다섯 줄</div><div class="sd">비우고 · 예측 · 손실 · 기울기 · 갱신</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="si">6</div><div class="sn">평가</div><div class="sd">no_grad · 테스트 정확도</div></div>
     </div>
-    <div class="twocol w">
-      <div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div>과제는 <b>공정 배치의 양품 예측</b>이다. 앞서 전처리해 둔 그 표를 그대로 쓴다.</div></div>
-          <div class="v"><span class="b">★</span><div>목표는 최고 점수가 아니라 <b>파이프라인을 끝까지 한 번 통과</b>시키는 것이다.</div></div>
-          <div class="v"><span class="b">→</span><div>스켈레톤 노트북을 받아 <code># TODO</code> 여덟 곳을 채운다.</div></div>
-        </div>
-      </div>
-      <div>
-        <div class="deliv"><div class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div><div class="dt"><b>제출물</b><span>GitHub에 올린 .ipynb 링크 하나</span></div></div>
-      </div>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>1번과 2번은 <b>딥러닝이 아니다</b>. 앞에서 배운 전처리가 그대로 앞에 붙는다.</div></div>
+      <div class="v"><span class="b">→</span><div>새로 배운 것은 <b>3번부터 5번까지</b>다. 여섯 칸 중 셋이다.</div></div>
     </div>
-    <div class="keymsg"><span class="k">기준</span><div>세 모델을 <b>같은 테스트셋 · 같은 지표</b>로 비교한 표 한 줄이 이 프로젝트의 결론이다.</div></div>
+    <div class="keymsg"><span class="k">기준</span><div>새 데이터를 만나도 이 여섯 칸을 그대로 채운다. <b>바뀌는 것은 열 이름과 층 크기뿐</b>이다.</div></div>
   </div>
 </section>
 
-<section class="slide" data-title="미니 프로젝트 — 스켈레톤">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag mint">CH3</span><span class="dot"></span>프로젝트</div>
-  <h2 class="s-title sm">채워야 할 여덟 곳</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">project_skeleton.ipynb — 전반부</span></div>
-          <pre><code><span class="cm"># TODO 1: CSV 를 읽어 df 에 담는다</span>
-df = ...
-
-<span class="cm"># TODO 2: 안 쓸 열을 지운다</span>
-<span class="cm">#   배치번호, 방전용량</span>
-
-<span class="cm"># TODO 3: 입도 결측을 중앙값으로 채운다</span>
-<span class="cm">#   수분율 결측 행은 지운다</span>
-
-<span class="cm"># TODO 4: 설비호기, 교대조 를 원-핫 인코딩</span>
-
-<span class="cm"># TODO 5: X, y 로 나누고 train_test_split</span>
-<span class="cm">#   test_size=0.2, stratify=y, random_state=42</span></code></pre>
-        </div>
-      </div>
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">후반부</span></div>
-          <pre><code><span class="cm"># TODO 6: StandardScaler 로 스케일링</span>
-<span class="cm">#   훈련셋에 fit_transform, 테스트셋에 transform</span>
-
-<span class="cm"># TODO 7: MLP 클래스를 완성한다</span>
-<span class="kw">class</span> <span class="fn2">MLP</span>(nn.Module):
-    <span class="kw">def</span> <span class="fn2">__init__</span>(self, n_in):
-        <span class="fn2">super</span>().<span class="fn2">__init__</span>()
-        ...
-    <span class="kw">def</span> <span class="fn2">forward</span>(self, x):
-        ...
-
-<span class="cm"># TODO 8: 학습 루프 다섯 줄 + 손실 곡선 그리기</span></code></pre>
-        </div>
-        <div class="vlist">
-          <div class="v"><span class="b">★</span><div>각 TODO 아래에 <b>기대 출력</b>이 주석으로 적혀 있다. 그것과 맞는지 확인하며 넘어간다.</div></div>
-        </div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>막히면 다음 칸으로 넘어가지 않는다. <b>TODO 하나가 끝날 때마다 출력을 확인</b>하고 다음으로 간다.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="미니 프로젝트 — 제출 기준">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag mint">CH3</span><span class="dot"></span>프로젝트</div>
-  <h2 class="s-title sm">노트북에 남아야 할 것</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="cards c4">
-      <div class="card"><span class="n">01</span><h3>전처리 근거</h3><p>왜 그 열을 지웠고 결측을 무엇으로 채웠는지 <b>마크다운 셀</b>로 한 줄씩.</p></div>
-      <div class="card"><span class="n">02</span><h3>손실 곡선</h3><p>훈련·검증 두 선. 과적합 여부를 그림으로 보인다.</p></div>
-      <div class="card"><span class="n">03</span><h3>모델 비교표</h3><p>기준선 · 로지스틱 · 랜덤 포레스트 · MLP 네 줄.</p></div>
-      <div class="card"><span class="n">04</span><h3>혼동 행렬</h3><p>정확도만 쓰지 않는다. 정밀도·재현율까지.</p></div>
-    </div>
-    <div class="twocol">
-      <div>
-        <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>제출 전 마지막 한 가지</h4><p><code>런타임 → 런타임 초기화 후 모두 실행</code>. 노트북 재현성 검증이다. 여기서 깨지면 남이 못 돌린다.</p></div></div>
-      </div>
-      <div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div>점수는 채점 대상이 아니다. <b>과정이 재현되는지</b>가 기준이다.</div></div>
-          <div class="v"><span class="b">★</span><div>MLP가 랜덤 포레스트보다 나쁘게 나와도 정상이다. <b>그 이유를 한 줄 적는 것</b>이 더 중요하다.</div></div>
-        </div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>좋은 노트북은 <b>남이 위에서 아래로 읽고 그대로 재현할 수 있는</b> 노트북이다.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="Day 4 정리">
+<section class="slide" data-title="딥러닝 정리">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>정리</div>
-  <h2 class="s-title sm">딥러닝 정리</h2>
+  <h2 class="s-title sm">오늘 남는 것</h2>
   <div class="rule"></div>
   <div class="body">
-    <div class="biglist">
-      <div class="li"><div class="num">1</div><div class="tx"><h4>클래스는 상태를 지닌 것에 쓴다</h4><p>가중치를 계속 들고 있어야 하므로 모델은 클래스다. 상속 · <code>super()</code> · 메서드 재정의 셋이면 된다.</p></div></div>
-      <div class="li"><div class="num">2</div><div class="tx"><h4>층 하나는 f(Wx + b)</h4><p>행렬 곱 한 번, 덧셈 한 번, 활성화 한 번. 활성화가 없으면 아무리 쌓아도 직선이다.</p></div></div>
-      <div class="li"><div class="num">3</div><div class="tx"><h4>학습 루프는 다섯 줄이다</h4><p>예측 · 오차 · <code>zero_grad</code> · <code>backward</code> · <code>step</code>. 역전파는 프레임워크가 한다.</p></div></div>
-      <div class="li"><div class="num">4</div><div class="tx"><h4>shape 를 먼저 확인한다</h4><p>학습 전에 랜덤 입력을 한 번 통과시킨다. 에러 메시지의 괄호 두 개만 보면 풀린다.</p></div></div>
-      <div class="li"><div class="num">5</div><div class="tx"><h4>안 되면 입력과 학습률부터</h4><p>구조를 바꾸기 전에 스케일링·dtype·lr을 본다. 20행으로 일부러 외우게 해 보는 것이 가장 빠른 진단이다.</p></div></div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>신경망이라고 원리가 달라지지 않는다. <b>손실을 정하고 기울기 반대로 내려가는 것</b>은 그대로다.</div></div>
+    <table class="ctable">
+      <thead><tr><th>물음</th><th>답</th><th>근거</th></tr></thead>
+      <tbody>
+        <tr><td>층을 왜 쌓나</td><td>직선 하나로 안 되는 관계가 있다</td><td class="hl">R&sup2; 0.594 → 0.780</td></tr>
+        <tr><td>층만 쌓으면 되나</td><td>안 된다. 활성화 함수를 끼워야 한다</td><td class="hl">쌓기만 하면 0.594 그대로</td></tr>
+        <tr><td>기울기는 누가 구하나</td><td><code>loss.backward()</code> 한 줄</td><td>계수가 몇 개든 같다</td></tr>
+        <tr><td>스케일링은 필수인가</td><td>신경망에서는 필수다</td><td class="hl">0.828 → 0.914</td></tr>
+        <tr><td>딥러닝이 항상 나은가</td><td>표 데이터에서는 아니다</td><td class="hl">랜덤 포레스트 0.933</td></tr>
+      </tbody>
+    </table>
+    <div class="keymsg"><span class="k">의의</span><div>딥러닝은 <b>도구 하나가 늘어난 것</b>이다. 문제를 보고 고르는 눈이 도구보다 먼저다.</div></div>
   </div>
 </section>
+
 
 
 

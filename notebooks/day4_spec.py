@@ -28,62 +28,7 @@ def tensors(target='양품여부'):
 
 CELLS = [
     # ══════════════════════════════════════════════════════════════════
-    h(2, "1. 클래스"),
-
-    lab("클래스는 설계도, 인스턴스는 그 설계도로 만든 물건이다."),
-    code("""
-class Batch:
-    def __init__(self, bid, temp):
-        self.bid = bid
-        self.temp = temp
-
-    def is_hot(self):
-        return self.temp >= 880
-
-b = Batch("B00115", 898.9)
-print(b.bid, b.temp, b.is_hot())
-"""),
-
-    Ex(1, "`Batch` 에 **최적 온도(890)에서 벗어난 정도**를 돌려주는 `gap()` 메서드를 넣는다.",
-       setup="class Batch:\n"
-             "    def __init__(self, bid, temp):\n"
-             "        self.bid = bid\n"
-             "        self.temp = temp\n",
-       blank="    def gap(self):\n        return ___\n\nb = Batch('B00115', 898.9)",
-       answer="    def gap(self):\n        return abs(self.temp - 890)\n\nb = Batch('B00115', 898.9)",
-       check="assert abs(b.gap() - 8.9) < 1e-6, f'실제 {b.gap()}'\nprint('통과')"),
-
-    lab("상속은 부모의 기능을 물려받고 필요한 것만 고쳐 쓴다."),
-    code("""
-class Machine:
-    def __init__(self, name):
-        self.name = name
-    def describe(self):
-        return f"{self.name} 설비"
-
-class Kiln(Machine):
-    def __init__(self, name, rated):
-        super().__init__(name)        # 부모 초기화
-        self.rated = rated
-    def describe(self):               # 재정의
-        return f"{self.name} 소성로 (정격 {self.rated}°C)"
-
-print(Machine("A").describe())
-print(Kiln("C", 870).describe())
-"""),
-
-    Ex(2, "`Kiln` 에 정격 온도를 넘었는지 판정하는 `over(temp)` 를 넣는다.",
-       setup="class Machine:\n"
-             "    def __init__(self, name):\n        self.name = name\n\n"
-             "class Kiln(Machine):\n"
-             "    def __init__(self, name, rated):\n"
-             "        super().__init__(name)\n        self.rated = rated\n",
-       blank="    def over(self, temp):\n        return ___\n\nk = Kiln('C', 870)",
-       answer="    def over(self, temp):\n        return temp > self.rated\n\nk = Kiln('C', 870)",
-       check="assert k.over(898) is True and k.over(850) is False, '판정이 틀렸다'\nprint('통과')"),
-
-    # ══════════════════════════════════════════════════════════════════
-    h(2, "2. 텐서"),
+    h(2, "1. 텐서"),
 
     lab("텐서는 NumPy 배열과 거의 같다. GPU 로 옮길 수 있고 기울기를 기억한다."),
     code("""
@@ -121,9 +66,28 @@ print(w.grad)            # d(loss)/dw = 2(w-5) = -4
        check="assert abs(g - (-10.0)) < 1e-6, f'기대 -10.0, 실제 {g}'\nprint('통과')"),
 
     # ══════════════════════════════════════════════════════════════════
-    h(2, "3. 모델과 학습 루프"),
+    h(2, "2. 모델과 학습 루프"),
 
-    lab("nn.Module 을 상속해 층을 쌓고, forward 에 흐르는 순서를 적는다."),
+    lab("층을 순서대로 적기만 하면 모델이 된다. 클래스가 필요 없다."),
+    code(f"""
+{PREP}
+
+X_tr, X_te, y_tr, y_te = tensors()
+
+model = nn.Sequential(
+    nn.Linear(X_tr.shape[1], 16),
+    nn.ReLU(),
+    nn.Linear(16, 1))
+print(model(X_tr).shape)
+"""),
+
+    Ex(1, "은닉층을 **8개**로 줄인 모델을 `nn.Sequential` 로 만들어 `small` 에 담는다.",
+       setup="import torch, torch.nn as nn\ntorch.manual_seed(42)\nx = torch.zeros(4, 12)",
+       blank="small = ___",
+       answer="small = nn.Sequential(nn.Linear(12, 8), nn.ReLU(), nn.Linear(8, 1))",
+       check="assert small(x).shape == (4, 1), f'기대 (4, 1), 실제 {tuple(small(x).shape)}'\nprint('통과')"),
+
+    lab("흐름에 손을 대야 할 때는 nn.Module 을 상속해 forward 에 직접 쓴다."),
     code(f"""
 {PREP}
 
@@ -271,7 +235,7 @@ for epoch in range(1, 101):
                "assert losses[-1] < losses[0] / 2, f'절반 아래로 떨어져야 한다: {losses[0]:.3f} → {losses[-1]:.3f}'\nprint('통과')"),
 
     # ══════════════════════════════════════════════════════════════════
-    h(2, "4. 평가"),
+    h(2, "3. 평가"),
 
     lab("출력은 로짓이다. 확률로 바꾸려면 시그모이드를 통과시킨다."),
     code(f"""
@@ -295,8 +259,7 @@ for _ in range(300):
 
 model.eval()
 with torch.no_grad():
-    prob = torch.sigmoid(model(X_te))
-    pred = (prob >= 0.5).float()
+    pred = (model(X_te) > 0).float()      # 로짓이 0 보다 크면 양품
     acc = (pred == y_te).float().mean().item()
 print('테스트 정확도', round(acc, 3))
 """),
@@ -320,7 +283,7 @@ print('테스트 정확도', round(acc, 3))
              "    opt.zero_grad(); loss.backward(); opt.step()",
        blank="with torch.no_grad():\n    pred = ___\n    acc = ___",
        answer="with torch.no_grad():\n"
-              "    pred = (torch.sigmoid(model(X_te)) >= 0.5).float()\n"
+              "    pred = (model(X_te) > 0).float()\n"
               "    acc = (pred == y_te).float().mean().item()",
        check="assert acc > 0.85, f'0.85 는 넘어야 한다: {acc}'\nprint('통과 — 정확도', round(acc, 3))"),
 
@@ -337,7 +300,7 @@ print('테스트 정확도', round(acc, 3))
          check="assert 'mat1' in msg or 'shape' in msg.lower(), f'shape 관련 메시지여야 한다: {msg}'\nprint('통과')"),
 
     # ══════════════════════════════════════════════════════════════════
-    h(2, "5. 종합 문제"),
+    h(2, "4. 종합 문제"),
 
     Task(3, "**은닉층 크기를 바꿔 가며** 정확도를 비교한다.\n"
             "8 · 16 · 32 · 64 로 각각 300회 학습해 `results` 딕셔너리에 담고 출력한다.",
@@ -358,7 +321,7 @@ print('테스트 정확도', round(acc, 3))
                 "        loss = lossfn(m(X_tr), y_tr)\n"
                 "        opt.zero_grad(); loss.backward(); opt.step()\n"
                 "    with torch.no_grad():\n"
-                "        pred = (torch.sigmoid(m(X_te)) >= 0.5).float()\n"
+                "        pred = (m(X_te) > 0).float()\n"
                 "        return (pred == y_te).float().mean().item()\n\n"
                 "results = {h: run(h) for h in (8, 16, 32, 64)}\n"
                 "for k, v in results.items():\n"
@@ -404,7 +367,7 @@ print('테스트 정확도', round(acc, 3))
 
 MODES = {
     # 1. 클래스
-    ("ex", 1): "together", ("ex", 2): "solo",
+    ("ex", 1): "together",
     # 2. 텐서
     ("ex", 3): "together", ("ex", 4): "solo",
     # 3. 모델과 학습 루프
