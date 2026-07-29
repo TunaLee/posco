@@ -769,7 +769,10 @@ x, y = train[<span class="nm">0</span>]
       <div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">층이 하나뿐인 모델</span></div>
-          <pre><code>model = nn.Sequential(
+          <pre><code><span class="kw">import</span> torch
+<span class="kw">import</span> torch.nn <span class="kw">as</span> nn
+
+model = nn.Sequential(
     nn.Flatten(),
     nn.Linear(<span class="nm">784</span>, <span class="nm">10</span>))   <span class="cm"># 픽셀 784 → 숫자 10</span></code></pre>
           <div class="out">5 에폭 뒤 테스트 정확도 0.922</div>
@@ -777,7 +780,7 @@ x, y = train[<span class="nm">0</span>]
       </div>
       <div>
         <div class="vlist">
-          <div class="v"><span class="b">→</span><div>숫자 하나마다 <b>784칸짜리 무늬 하나</b>를 갖는다. 들어온 그림과 겹쳐 보고 점수를 낸다.</div></div>
+          <div class="v"><span class="b">→</span><div><code>nn</code> 은 층을 모아 둔 꾸러미다. 숫자 하나마다 <b>784칸짜리 무늬 하나</b>를 갖는 모델이 된다.</div></div>
           <div class="v"><span class="b">✕</span><div>2를 쓰는 방법은 여러 가지인데 <b>무늬는 하나뿐</b>이다. 하나로 다 담을 수 없다.</div></div>
           <div class="v"><span class="b">★</span><div>열 장 중 여덟 장은 맞힌다. <b>나머지 한 장이 문제다</b>.</div></div>
         </div>
@@ -871,12 +874,12 @@ x, y = train[<span class="nm">0</span>]
       </div>
       <div>
         <table class="ctable">
-          <thead><tr><th>견준 두 장</th><th>같은 노드를 켜는 비율</th></tr></thead>
+          <thead><tr><th>넣은 두 그림</th><th>켜지는 노드가 겹치는 비율</th></tr></thead>
           <tbody>
             <tr><td>0 과 1</td><td class="no">36%</td></tr>
             <tr><td>3 과 8</td><td class="no">37%</td></tr>
             <tr><td>4 와 9</td><td>51%</td></tr>
-            <tr><td><b>2 와 또 다른 2</b></td><td class="yes">55%</td></tr>
+            <tr><td><b>2 와 다른 2</b></td><td class="yes">55%</td></tr>
           </tbody>
         </table>
         <div class="vlist">
@@ -927,10 +930,7 @@ x, y = train[<span class="nm">0</span>]
       <div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">배열을 텐서로</span></div>
-          <pre><code><span class="kw">import</span> torch
-torch.manual_seed(<span class="nm">42</span>)   <span class="cm"># 돌릴 때마다 같은 결과가 나오게 고정한다</span>
-
-a = torch.tensor([[<span class="nm">1.0</span>, <span class="nm">2.0</span>], [<span class="nm">3.0</span>, <span class="nm">4.0</span>]])
+          <pre><code>a = torch.tensor([[<span class="nm">1.0</span>, <span class="nm">2.0</span>], [<span class="nm">3.0</span>, <span class="nm">4.0</span>]])
 <span class="fn2">print</span>(a.shape, a.dtype)</code></pre>
           <div class="out">torch.Size([2, 2]) torch.float32</div>
         </div>
@@ -1515,7 +1515,7 @@ correct = <span class="nm">0</span>
         correct += (pred == yb).sum().item()
 
 <span class="fn2">print</span>(correct / <span class="nm">10000</span>)</code></pre>
-          <div class="out">0.9731</div>
+          <div class="out">0.9734</div>
         </div>
       </div>
       <div>
