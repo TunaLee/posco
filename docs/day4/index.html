@@ -1331,7 +1331,7 @@ opt = torch.optim.Adam(model.parameters(), lr=<span class="nm">0.001</span>)
             <g class="an d2"><circle cx="514" cy="132" r="8" fill="#fff" stroke="#E8537A" stroke-width="2.6"/><text x="514" y="136" text-anchor="middle" font-size="10" font-weight="700" fill="#E8537A">2</text><text x="532" y="137" font-size="12.5" fill="#16142B">손실 <tspan font-weight="700" font-family="ui-monospace,monospace">0.34</tspan></text></g>
             <g class="an d3"><circle cx="514" cy="166" r="8" fill="#fff" stroke="#E8537A" stroke-width="2.6"/><text x="514" y="170" text-anchor="middle" font-size="10" font-weight="700" fill="#E8537A">3</text><text x="532" y="171" font-size="12.5" fill="#16142B">손실 <tspan font-weight="700" font-family="ui-monospace,monospace">0.11</tspan></text></g>
           </svg>
-      <div class="cap">그림에는 계수 두 개만 그렸다 &mdash; 실제 모델은 109,386개라 그릴 수가 없다. 걸음을 옮기는 방식은 같다</div>
+      <div class="cap">그림에는 계수 두 개만 그렸다 &mdash; 실제 모델은 109,386개다. 걸음은 <code>opt.step()</code> 한 줄이고, 5 에폭이면 2,345번 일어난다</div>
     </div>
     <div class="keymsg"><span class="k">원리</span><div>기울어진 쪽을 재서 <b>반대 방향으로 학습률만큼</b> 간다. 걸음을 되풀이하면 바닥에 닿는다.</div></div>
   </div>
@@ -1360,9 +1360,10 @@ opt = torch.optim.Adam(model.parameters(), lr=<span class="nm">0.001</span>)
       </div>
       <div>
         <div class="vlist">
-          <div class="v"><span class="b">★</span><div>4번이 <b>역전파</b>, 5번이 <b>경사 하강법</b>이다. 앞에서 본 걸음이 이 두 줄이다.</div></div>
+          <div class="v"><span class="b">★</span><div><code>opt.step()</code> 이 <b>경사 하강법의 한 걸음</b>이다. SGD 라면 계수마다 <code>w &minus; 학습률&times;기울기</code> 를 실제로 계산해 넣는다.</div></div>
           <div class="v"><span class="b">→</span><div>달라진 것은 하나다 &mdash; 기울기를 <b>손으로 구하지 않는다</b>.</div></div>
-          <div class="v"><span class="b">→</span><div>모델을 바꿔도 <b>이 다섯 줄은 그대로</b>다. 외워 두면 끝까지 쓴다.</div></div>
+          <div class="v"><span class="b">→</span><div>배치가 469개라 <b>1 에폭에 469 걸음</b>이다. 5 에폭이면 2,345 걸음 &mdash; 그릇 그림의 걸음이 그만큼 되풀이된다.</div>
+          <div class="v"><span class="b">&rarr;</span><div>모델을 바꿔도 <b>이 다섯 줄은 그대로</b>다.</div></div></div>
         </div>
       </div>
     </div>
