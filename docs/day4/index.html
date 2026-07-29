@@ -1441,10 +1441,73 @@ loss.backward()
   </div>
 </section>
 
-<section class="slide" data-title="옵티마이저">
+<section class="slide" data-title="같은 걸음의 문제">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>학습</div>
-  <h2 class="s-title sm">걸음 크기를 정하는 두 방식</h2>
+  <h2 class="s-title sm">계수마다 다른 기울기 크기</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w2">
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">&rarr;</span><div>한 배치에서 계수 109,386개의 기울기를 재 보면 <b>크기가 제각각</b>이다.</div></div>
+          <div class="v"><span class="b">&#9733;</span><div>가장 큰 것이 중앙값의 <b>556배</b>다. 게다가 <b>36%는 사실상 0</b> &mdash; 켜지지 않은 노드의 계수다.</div></div>
+          <div class="v"><span class="b">✕</span><div><code>SGD</code> 는 <b>걸음 = 학습률 &times; 기울기</b> 라 이 차이가 그대로 간다.</div></div>
+        </div>
+      </div>
+      <div>
+        <table class="ctable">
+          <thead><tr><th>계수</th><th>기울기</th><th>SGD 의 걸음<br/>(lr 0.1)</th></tr></thead>
+          <tbody>
+            <tr><td>중앙값짜리</td><td>0.000093</td><td class="no">0.0000093</td></tr>
+            <tr><td>상위 10%</td><td>0.00130</td><td>0.00013</td></tr>
+            <tr><td>가장 큰 것</td><td>0.0515</td><td class="hl">0.00515</td></tr>
+          </tbody>
+        </table>
+        <div class="vlist">
+          <div class="v"><span class="b">✕</span><div>중앙값짜리는 <b>백만 분의 구</b>만큼 움직인다. 사실상 제자리다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">문제</span><div>학습률을 키우면 <b>큰 계수가 튀고</b>, 줄이면 <b>작은 계수가 안 움직인다</b>. 하나로 맞출 수가 없다.</div></div>
+  </div>
+</section>
+
+  <section class="slide" data-title="옵티마이저">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>학습</div>
+  <h2 class="s-title sm">Adam 이 걸음을 고르게 만드는 법</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w2">
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">&#9733;</span><div>계수마다 <b>지금까지 얼마나 움직였는지를 기억</b>해 둔다. 많이 움직인 계수는 나눠서 걸음을 줄인다.</div></div>
+          <div class="v"><span class="b">&rarr;</span><div>최근 방향도 기억한다. 왔다 갔다 하지 않고 <b>가던 쪽으로 이어서</b> 간다.</div></div>
+          <div class="v"><span class="b">&rarr;</span><div>그래서 <code>SGD</code> 를 <code>Adam</code> 으로 <b>이름만 바꿔도</b> 학습률을 안 만져도 된다.</div></div>
+        </div>
+      </div>
+      <div>
+        <table class="ctable">
+          <thead><tr><th></th><th>기울기 차이</th><th>실제 옮긴 거리 차이</th></tr></thead>
+          <tbody>
+            <tr><td>재 보면</td><td class="no">556배</td><td class="yes">5.1배</td></tr>
+          </tbody>
+        </table>
+        <div class="vlist">
+          <div class="v"><span class="b">&rarr;</span><div>100회 갱신 뒤 계수들이 실제로 옮겨 간 거리는 중앙값 <b>0.017</b>, 가장 큰 것도 <b>0.085</b>다.</div></div>
+          <div class="v"><span class="b">&#9733;</span><div>기울기의 <b>556배 차이가 5.1배로 눌렸다</b>. 모든 계수가 비슷한 속도로 움직인다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>고민할 자리가 아니다. <b>Adam 으로 시작</b>한다. 학습률을 못 맞춰 못 배우는 일이 거의 없다.</div></div>
+  </div>
+</section>
+
+  <section class="slide" data-title="SGD 와 Adam 결과">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>학습</div>
+  <h2 class="s-title sm">같은 학습률로 갈리는 결과</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twocol w2">
