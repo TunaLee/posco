@@ -1513,9 +1513,9 @@ loss.backward()
     <div class="twocol w2">
       <div>
         <div class="vlist">
-          <div class="v"><span class="b">→</span><div><code>SGD</code> 는 <b>모든 계수에 같은 걸음</b>을 준다. 기울기 &times; 학습률, 배운 그대로다.</div></div>
-          <div class="v"><span class="b">✕</span><div>그래서 <b>학습률을 잘 맞춰야</b> 한다. 100배 작게 잡으면 5에폭을 돌려도 절반밖에 못 맞힌다.</div></div>
-          <div class="v"><span class="b">★</span><div><code>Adam</code> 은 <b>계수마다 걸음을 따로</b> 조절한다. 많이 움직인 계수는 줄이고, 안 움직인 계수는 키운다.</div></div>
+          <div class="v"><span class="b">→</span><div><code>SGD</code> 로 <code>0.001</code> 을 쓰면 5에폭을 돌려도 <b>절반밖에 못 맞힌다</b>. 걸음이 너무 작다.</div></div>
+          <div class="v"><span class="b">✕</span><div>100배 키운 <code>0.1</code> 로 맞추면 그제야 간다. <b>맞는 값을 찾아 헤매야</b> 한다.</div></div>
+          <div class="v"><span class="b">★</span><div><code>Adam</code> 은 같은 <code>0.001</code> 로 바로 간다. <b>찾아 헤맬 일이 없다</b>.</div></div>
         </div>
       </div>
       <div>
@@ -1547,6 +1547,7 @@ loss.backward()
         <div class="vlist">
           <div class="v"><span class="b">→</span><div>훈련 데이터 <b>6만 장을 한 번 다 본 것</b>이 1 에폭이다.</div></div>
           <div class="v"><span class="b">★</span><div>한 번 봐서는 못 배운다. <b>같은 데이터를 수백 번 되풀이</b>해 본다.</div></div>
+          <div class="v"><span class="b">★</span><div>학습률은 <b>한 걸음의 크기</b>, 에폭은 <b>몇 바퀴 도느냐</b>다. 걸음이 작으면 더 여러 바퀴 돌아야 한다.</div></div>
           <div class="v"><span class="b">✕</span><div>많이 돌린다고 좋아지지 않는다. 어느 지점부터 <b>훈련만 잘 맞히기 시작</b>한다.</div></div>
         </div>
       </div>
@@ -1554,11 +1555,11 @@ loss.backward()
         <table class="ctable">
           <thead><tr><th>에폭</th><th>훈련 손실</th></tr></thead>
           <tbody>
-            <tr><td>1</td><td>0.788</td></tr>
-            <tr><td>10</td><td>0.565</td></tr>
-            <tr><td>50</td><td>0.243</td></tr>
-            <tr><td>100</td><td>0.162</td></tr>
-            <tr><td>300</td><td class="hl">0.082</td></tr>
+            <tr><td>1 &mdash; 6만 장을 한 번</td><td>0.415</td></tr>
+            <tr><td>2</td><td>0.173</td></tr>
+            <tr><td>3</td><td>0.124</td></tr>
+            <tr><td>4</td><td>0.092</td></tr>
+            <tr><td>5</td><td class="hl">0.074</td></tr>
           </tbody>
         </table>
       </div>
@@ -1622,13 +1623,13 @@ correct = <span class="nm">0</span>
       </div>
       <div>
         <table class="ctable">
-          <thead><tr><th>착각</th><th>건수</th></tr></thead>
+          <thead><tr><th>실제 숫자</th><th>모델이 낸 답</th><th>건수</th></tr></thead>
           <tbody>
-            <tr><td>4 를 9 로</td><td>21</td></tr>
-            <tr><td>6 을 5 로</td><td>13</td></tr>
-            <tr><td>7 을 2 로</td><td>9</td></tr>
-            <tr><td>5 를 3 으로</td><td>9</td></tr>
-            <tr><td>9 를 3 으로</td><td>10</td></tr>
+            <tr><td>4</td><td class="hl">9</td><td>21</td></tr>
+            <tr><td>6</td><td class="hl">5</td><td>13</td></tr>
+            <tr><td>9</td><td class="hl">3</td><td>10</td></tr>
+            <tr><td>7</td><td class="hl">2</td><td>9</td></tr>
+            <tr><td>5</td><td class="hl">3</td><td>9</td></tr>
           </tbody>
         </table>
         <div class="vlist">
