@@ -8,7 +8,7 @@
 | Day 1 · 파이썬 문법 | [day1/index.html](day1/index.html) | 60 |
 | Day 2 · 데이터 다루기 | [day2/index.html](day2/index.html) | 48 |
 | Day 3 · 머신러닝 | [day3/index.html](day3/index.html) | 41 |
-| Day 4 · 딥러닝 | [day4/index.html](day4/index.html) | 40 |
+| Day 4 · 딥러닝 | [day4/index.html](day4/index.html) | 43 |
 | 특강 · AI 도구로 웹 서비스 만들기 | [special/index.html](special/index.html) | 41 |
 
 조작: `← →` 또는 Space · 숫자 입력 후 Enter로 점프 · `≡` 목차 · `−/+` 줌 · PDF 버튼(인쇄).
@@ -46,8 +46,9 @@ Day 4  딥러닝
                         꺾은선으로 흉내 내기 · 은닉층의 직선들 · 활성화 함수 ·
                         직선과 곡선의 차이
   CH1 텐서와 모델       데이터 준비 · 텐서 · 차원 사다리 · shape 읽기 · 표를 텐서로 ·
-                        unsqueeze · 스케일링 · nn.Linear · nn.Sequential · shape 이어짐 ·
-                        출력층과 손실 · 클래스가 필요해지는 순간 · nn.Module
+                        unsqueeze · 스케일링 · nn.Linear · 행렬 곱 · nn.Sequential ·
+                        shape 이어짐 · 순전파 · ReLU 가 끄는 직선 · 출력층과 손실 ·
+                        클래스가 필요해지는 순간 · nn.Module
   CH2 학습             학습 루프 · zero_grad · backward · 옵티마이저 · 에폭 · 손실 곡선 · 평가
   CH3 고장과 점검       shape 에러 · 손실이 안 줄 때 · 과적합 · 과적합 줄이기 ·
                         쓰지 않을 때 · 전체 파이프라인 · 정리
