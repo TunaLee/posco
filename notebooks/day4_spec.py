@@ -143,19 +143,20 @@ print(net(xb).shape)"""),
 print('배치', len(loader), '개 · 3 에폭이면', len(loader) * 3, '걸음')
 print('준비 셀에서 이미 3 에폭 돌렸다 — 정확도', round(score(model), 4))"""),
 
-    Ex(7, "**학습 루프 다섯 줄을 순서대로** 쓴다. `flat_model` 을 1 에폭 돌린 뒤 마지막 손실을 찍는다.\n"
+    Ex(7, "**학습 루프 다섯 줄을 순서대로** 쓴다. 층 하나짜리 `one` 을 1 에폭 돌린 뒤 마지막 손실을 찍는다.\n"
           "> 비우기 → 예측 → 손실 → 역전파 → 갱신.",
-       setup="opt = torch.optim.Adam(flat_model.parameters(), lr=0.001)\n"
+       setup="one = nn.Sequential(nn.Flatten(), nn.Linear(784, 10))\n"
+             "opt = torch.optim.Adam(one.parameters(), lr=0.001)\n"
              "loss_fn = nn.CrossEntropyLoss()\n\n"
              "for xb2, yb2 in loader:",
        blank="    ___\n    ___\n    ___\n    ___\n    ___\n\nprint('마지막 손실', round(loss.item(), 4))",
        answer="    opt.zero_grad()\n"
-              "    pred = flat_model(xb2)\n"
+              "    pred = one(xb2)\n"
               "    loss = loss_fn(pred, yb2)\n"
               "    loss.backward()\n"
               "    opt.step()\n\n"
               "print('마지막 손실', round(loss.item(), 4))",
-       check="acc = score(flat_model)\nassert acc > 0.85, f'0.85 는 넘어야 한다: {acc}'\n"
+       check="acc = score(one)\nassert acc > 0.85, f'0.85 는 넘어야 한다: {acc}'\n"
              "print('통과 — 층 하나짜리 정확도', round(acc, 4))"),
 
     Ex(8, "**`opt.zero_grad()` 를 빼면** 기울기가 쌓이는 것을 눈으로 본다. 다섯 회차의 기울기 크기를 찍는다.",
@@ -209,7 +210,8 @@ print('준비 셀에서 이미 3 에폭 돌렸다 — 정확도', round(score(mo
 print('은닉 둘 + ReLU', round(score(model), 4))
 print('층 하나       ', round(score(flat_model), 4))"""),
 
-    Ex(9, "**활성화 함수가 없으면** 층을 쌓아도 소용없다는 것을 확인한다. `no_relu` 를 3 에폭 돌려 정확도를 `acc_no_relu` 에 담는다.",
+    Ex(9, "**활성화 함수가 없으면** 층을 쌓아도 소용없다는 것을 확인한다.\n"
+      "> 앞에서 만든 `no_relu` 와 `flat_model` 을 쓴다. 3 에폭 돌려 정확도를 `acc_no_relu` 에 담는다.",
        blank="acc_no_relu = ___",
        answer="acc_no_relu = score(fit(no_relu, epochs=3))",
        check="print('활성화 없음', round(acc_no_relu, 4))\n"
@@ -283,8 +285,9 @@ print('한 장', c_train[0][0].shape, '→ 펴면 3 × 32 × 32 =', 3 * 32 * 32,
                 "acc_big = score(big, c_test_loader)\n"
                 "print('작은 모델', round(acc_animal, 4), '· 계수', sum(p.numel() for p in animal.parameters()))\n"
                 "print('큰 모델  ', round(acc_big, 4),    '· 계수', sum(p.numel() for p in big.parameters()))",
-         check="assert acc_big - acc_animal < 0.15, '차이가 이렇게 크면 다시 확인한다'\n"
-               "print('계수를 늘려도 얻는 것이 적다 — 다음 단계는 CNN 이다')"),
+         check="assert acc_big - acc_animal < 0.06, '차이가 이렇게 크면 다시 확인한다'\n"
+               "print('계수가 네 배인데 점수는 1%p 도 안 오른다')\n"
+               "print('펴서 넣는 방식의 한계다 — 다음 단계는 이웃 픽셀을 묶어 보는 CNN 이다')"),
 ]
 
 MODES = {
