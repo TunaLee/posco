@@ -255,6 +255,13 @@ c_test_loader = DataLoader(c_test,  batch_size=1000)
 print(c_train.classes)
 print('한 장', c_train[0][0].shape, '→ 펴면 3 × 32 × 32 =', 3 * 32 * 32, '칸')"""),
 
+    Ex(11, "동물 사진 **한 장을 그려 본다.**\n"
+           "> 토치는 `[3, 32, 32]` 로 담는데 `imshow` 는 `[32, 32, 3]` 을 원한다. 축 순서를 바꿔야 한다.",
+        setup="import matplotlib.pyplot as plt\n\nimg, lab = c_train[0]\nprint(img.shape)",
+        blank="plt.imshow(___)\nplt.title(c_train.classes[lab])\nplt.axis('off')\nplt.show()",
+        answer="plt.imshow(img.permute(1, 2, 0))\nplt.title(c_train.classes[lab])\nplt.axis('off')\nplt.show()",
+        check="print('정답은', c_train.classes[lab])"),
+
     Ex(10, "MNIST 에 쓰던 모델을 **입력 칸 수만 바꿔** 동물용으로 만든다. `animal` 에 담는다.\n"
            "> 3 × 32 × 32 가 몇 칸인지 먼저 세어 본다.",
         blank="animal = nn.Sequential(\n    nn.Flatten(),\n    nn.Linear(___, 128), nn.ReLU(),\n"
@@ -274,6 +281,23 @@ print('한 장', c_train[0][0].shape, '→ 펴면 3 × 32 × 32 =', 3 * 32 * 32,
          check="assert 0.2 < acc_animal < 0.7, f'0.2~0.7 사이가 나와야 한다: {acc_animal}'\n"
                "print('숫자보다 한참 낮다 — 왜 그럴까')"),
 
+    Task(7, "**열 갈래를 한 장씩** 뽑아 격자로 그린다. 2행 5열로 늘어놓고 각 사진 위에 갈래 이름을 적는다.\n"
+            "> 아직 못 본 갈래가 나오면 담아 두는 식으로 열 장을 모으면 된다.",
+         answer="import matplotlib.pyplot as plt\n\n"
+                "seen = {}\n"
+                "for img, lab in c_train:\n"
+                "    if lab not in seen:\n"
+                "        seen[lab] = img\n"
+                "    if len(seen) == 10:\n"
+                "        break\n\n"
+                "fig, axes = plt.subplots(2, 5, figsize=(9, 4))\n"
+                "for ax, lab in zip(axes.flat, sorted(seen)):\n"
+                "    ax.imshow(seen[lab].permute(1, 2, 0))\n"
+                "    ax.set_title(c_train.classes[lab], fontsize=9)\n"
+                "    ax.axis('off')\n"
+                "plt.show()",
+         check="assert len(seen) == 10, f'열 갈래를 다 모아야 한다: {len(seen)}'\nprint('통과 — 열 장')"),
+
     Task(6, "**은닉층을 키워도 크게 안 오르는 것**을 확인한다. 128·64 를 512·256 으로 늘려 3 에폭 돌린 뒤 앞의 정확도와 견준다.\n"
             "> 계수가 몇 배 늘어도 점수는 조금 오른다. 펴는 순간 이웃 정보를 잃기 때문이다.",
          answer="big = nn.Sequential(\n"
@@ -288,6 +312,28 @@ print('한 장', c_train[0][0].shape, '→ 펴면 3 × 32 × 32 =', 3 * 32 * 32,
          check="assert acc_big - acc_animal < 0.06, '차이가 이렇게 크면 다시 확인한다'\n"
                "print('계수가 네 배인데 점수는 1%p 도 안 오른다')\n"
                "print('펴서 넣는 방식의 한계다 — 다음 단계는 이웃 픽셀을 묶어 보는 CNN 이다')"),
+
+    Task(8, "**틀린 사진을 눈으로 본다.** 학습한 `animal` 이 틀린 것 여덟 장을 골라, 실제 갈래와 모델의 답을 제목에 적어 그린다.\n"
+            "> 사람이 봐도 헷갈릴 짝인지 살펴본다.",
+         answer="import matplotlib.pyplot as plt\n\n"
+                "wrong = []\n"
+                "with torch.no_grad():\n"
+                "    for xb, yb in c_test_loader:\n"
+                "        pred = animal(xb).argmax(1)\n"
+                "        for i in range(len(yb)):\n"
+                "            if pred[i] != yb[i] and len(wrong) < 8:\n"
+                "                wrong.append((xb[i], yb[i].item(), pred[i].item()))\n"
+                "        if len(wrong) == 8:\n"
+                "            break\n\n"
+                "fig, axes = plt.subplots(2, 4, figsize=(9, 5))\n"
+                "for ax, (img, real, said) in zip(axes.flat, wrong):\n"
+                "    ax.imshow(img.permute(1, 2, 0))\n"
+                "    ax.set_title(f'{c_train.classes[real]} → {c_train.classes[said]}', fontsize=8)\n"
+                "    ax.axis('off')\n"
+                "plt.show()",
+         check="assert len(wrong) == 8, f'여덟 장을 모아야 한다: {len(wrong)}'\n"
+               "for _, real, said in wrong:\n"
+               "    print(f'{c_train.classes[real]:10s} 인데 {c_train.classes[said]} 라고')"),
 ]
 
 MODES = {
@@ -300,7 +346,8 @@ MODES = {
     # 4. 평가와 진단
     ("ex", 9): "together", ("task", 3): "solo", ("task", 4): "solo",
     # 5. 동물 사진
-    ("ex", 10): "together", ("task", 5): "team", ("task", 6): "team",
+    ("ex", 11): "together", ("ex", 10): "together", ("task", 7): "solo",
+    ("task", 5): "team", ("task", 6): "team", ("task", 8): "team",
 }
 
 SPEC = ("딥러닝", "손글씨 숫자로 배우고 동물 사진으로 확인한다", CELLS, MODES)
