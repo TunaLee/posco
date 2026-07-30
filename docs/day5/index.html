@@ -464,7 +464,7 @@
       <div class="card"><span class="n">CH3</span><h3>전이학습</h3><p>이미 배운 모델의 마지막 층만 바꾼다.</p></div>
       <div class="card"><span class="n">CH4</span><h3>고르는 기준</h3><p>에러 읽는 법 · 세 방식 중 무엇을 쓸까.</p></div>
     </div>
-    <div class="keymsg"><span class="k">줄기</span><div>학습할 계수는 <b>394,634 → 60,362 → 5,130</b> 으로 줄어드는데 정확도는 <b>0.299 → 0.458 → 0.853</b> 으로 오른다.</div></div>
+    <div class="keymsg"><span class="k">줄기</span><div>학습할 계수는 <b>394,634 → 60,362 → 5,130</b> 으로 줄어드는데 정확도는 <b>0.335 → 0.479 → 0.853</b> 으로 오른다.</div></div>
   </div>
 </section>
 
@@ -472,7 +472,7 @@
   <div class="ghost">00</div>
   <div class="seyebrow">CHAPTER 00</div>
   <h2>펴는 방식의 한계</h2>
-  <div class="agenda"><span>3072칸</span><span>사라지는 이웃</span><span>0.3744</span></div>
+  <div class="agenda"><span>3072칸</span><span>사라지는 이웃</span><span>0.4470</span></div>
 </section>
 
 <section class="slide" data-title="어제까지 한 방식">
@@ -684,7 +684,7 @@ test_loader = DataLoader(test, batch_size=<span class="nm">1000</span>)</code></
 <section class="slide" data-title="같은 방식으로 사진을 하면">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>측정</div>
-  <h2 class="s-title sm">손글씨 0.973 과 컬러 사진 0.3744</h2>
+  <h2 class="s-title sm">손글씨 0.973 과 컬러 사진 0.4470</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twocol w">
@@ -695,7 +695,7 @@ test_loader = DataLoader(test, batch_size=<span class="nm">1000</span>)</code></
     nn.Flatten(),
     nn.Linear(<span class="nm">3072</span>, <span class="nm">128</span>), nn.ReLU(),
     nn.Linear(<span class="nm">128</span>, <span class="nm">10</span>))</code></pre>
-          <div class="out">5만 장 3에폭 → 0.3744
+          <div class="out">5만 장 6에폭 → 0.4470
 계수 394,634개</div>
         </div>
       </div>
@@ -704,11 +704,11 @@ test_loader = DataLoader(test, batch_size=<span class="nm">1000</span>)</code></
           <thead><tr><th>데이터</th><th>펴서 Linear</th><th>찍기</th></tr></thead>
           <tbody>
             <tr><td>손글씨 숫자</td><td class="yes">0.973</td><td>0.100</td></tr>
-            <tr><td>컬러 사진 10종</td><td class="no">0.374</td><td>0.100</td></tr>
+            <tr><td>컬러 사진 10종</td><td class="no">0.447</td><td>0.100</td></tr>
           </tbody>
         </table>
         <div class="vlist">
-          <div class="v"><span class="b">→</span><div>찍기보다는 낫지만 <b>열 장에 여섯 장을 틀린다</b>. 쓸 수 있는 수준이 아니다.</div></div>
+          <div class="v"><span class="b">→</span><div>찍기보다는 낫지만 <b>열 장에 다섯 장 넘게 틀린다</b>. 쓸 수 있는 수준이 아니다.</div></div>
           <div class="v"><span class="b">★</span><div>모델을 키워도 이 벽은 잘 안 넘는다. <b>구조를 바꿔야 한다.</b></div></div>
         </div>
       </div>
@@ -1191,7 +1191,7 @@ torch.Size([1, 32, 16, 16])</div>
   <div class="ghost">02</div>
   <div class="seyebrow">CHAPTER 02</div>
   <h2>CNN 만들기</h2>
-  <div class="agenda"><span>세 줄 한 묶음</span><span>shape</span><span>0.458</span></div>
+  <div class="agenda"><span>세 줄 한 묶음</span><span>shape</span><span>0.479</span></div>
 </section>
 
 <section class="slide" data-title="세 줄이 한 묶음">
@@ -1362,12 +1362,12 @@ opt = torch.optim.Adam(model.parameters(), lr=<span class="nm">0.001</span>)
     <table class="ctable">
       <thead><tr><th>모델</th><th>계수</th><th>훈련 5천 장</th><th>훈련 5만 장</th><th>5만 장 학습 시간</th></tr></thead>
       <tbody>
-        <tr><td>펴서 <code>Linear</code></td><td>394,634</td><td class="no">0.2990</td><td class="no">0.3744</td><td>6초</td></tr>
-        <tr><td class="hl">CNN</td><td class="yes">60,362</td><td class="yes">0.4580</td><td class="yes">0.6292</td><td>48초</td></tr>
+        <tr><td>펴서 <code>Linear</code></td><td>394,634</td><td class="no">0.3350</td><td class="no">0.4470</td><td>12초</td></tr>
+        <tr><td class="hl">CNN</td><td class="yes">60,362</td><td class="yes">0.4790</td><td class="yes">0.6843</td><td>127초</td></tr>
       </tbody>
     </table>
     <div class="vlist">
-      <div class="v"><span class="b">★</span><div>데이터가 적을 때 차이가 더 크다. 5천 장에서 <b>0.299 대 0.458</b> 이다.</div></div>
+      <div class="v"><span class="b">★</span><div>데이터가 적을 때 차이가 더 크다. 5천 장에서 <b>0.335 대 0.479</b> 이다.</div></div>
       <div class="v"><span class="b">→</span><div>계수가 적은 쪽이 이겼다. <b>계수 수와 성능은 비례하지 않는다.</b></div></div>
       <div class="v"><span class="b">✕</span><div>학습 시간은 CNN 이 더 걸린다. <b>계수는 적지만 곱셈 횟수는 많다.</b> 필터를 1,024번 미끄러뜨리기 때문이다.</div></div>
     </div>
@@ -1426,15 +1426,15 @@ opt = torch.optim.Adam(model.parameters(), lr=<span class="nm">0.001</span>)
           <text x="44" y="16" font-size="10" fill="#8E8AAC">정확도</text>
           <line x1="44" y1="150" x2="410" y2="150" stroke="#8E8AAC" stroke-width="1.2"/>
           <line x1="44" y1="20" x2="44" y2="150" stroke="#E8E4F8" stroke-width="1.2"/>
-          <g class="an d1"><rect x="81" y="103" width="26" height="47" fill="#F1B9C9"/><text x="94" y="97" text-anchor="middle" font-size="11" font-weight="700" fill="#E8537A">0.374</text></g>
-          <g class="an d1"><rect x="113" y="71" width="26" height="79" fill="#B7A9FF"/><text x="126" y="65" text-anchor="middle" font-size="11" font-weight="700" fill="#5B3DF5">0.629</text></g>
+          <g class="an d1"><rect x="81" y="94" width="26" height="56" fill="#F1B9C9"/><text x="94" y="88" text-anchor="middle" font-size="11" font-weight="700" fill="#E8537A">0.447</text></g>
+          <g class="an d1"><rect x="113" y="64" width="26" height="86" fill="#B7A9FF"/><text x="126" y="58" text-anchor="middle" font-size="11" font-weight="700" fill="#5B3DF5">0.684</text></g>
           <text x="110" y="166" text-anchor="middle" font-size="10.5" fill="#8E8AAC">훈련 5만 장</text>
-          <g class="an d2"><rect x="191" y="112" width="26" height="38" fill="#F1B9C9"/><text x="204" y="106" text-anchor="middle" font-size="11" font-weight="700" fill="#E8537A">0.299</text></g>
-          <g class="an d2"><rect x="223" y="92" width="26" height="58" fill="#B7A9FF"/><text x="236" y="86" text-anchor="middle" font-size="11" font-weight="700" fill="#5B3DF5">0.458</text></g>
+          <g class="an d2"><rect x="191" y="108" width="26" height="42" fill="#F1B9C9"/><text x="204" y="102" text-anchor="middle" font-size="11" font-weight="700" fill="#E8537A">0.335</text></g>
+          <g class="an d2"><rect x="223" y="90" width="26" height="60" fill="#B7A9FF"/><text x="236" y="84" text-anchor="middle" font-size="11" font-weight="700" fill="#5B3DF5">0.479</text></g>
           <text x="220" y="166" text-anchor="middle" font-size="10.5" fill="#8E8AAC">훈련 5천 장</text>
           <g class="an d3">
-            <rect x="301" y="112" width="26" height="38" fill="none" stroke="#DCD6F0" stroke-width="1.2" stroke-dasharray="3 3"/>
-            <rect x="333" y="112" width="26" height="38" fill="none" stroke="#DCD6F0" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <rect x="301" y="108" width="26" height="42" fill="none" stroke="#DCD6F0" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <rect x="333" y="108" width="26" height="42" fill="none" stroke="#DCD6F0" stroke-width="1.2" stroke-dasharray="3 3"/>
             <text x="314" y="106" text-anchor="middle" font-size="13" font-weight="700" fill="#8E8AAC">?</text>
             <text x="346" y="106" text-anchor="middle" font-size="13" font-weight="700" fill="#8E8AAC">?</text>
             <text x="330" y="166" text-anchor="middle" font-size="10.5" fill="#8E8AAC">훈련 몇백 장</text>
@@ -1442,7 +1442,7 @@ opt = torch.optim.Adam(model.parameters(), lr=<span class="nm">0.001</span>)
           </g>
           <g class="an d1"><rect x="252" y="24" width="10" height="10" fill="#F1B9C9"/><text x="268" y="33" font-size="10.5" fill="#8E8AAC">펴서 Linear</text></g>
           <g class="an d1"><rect x="252" y="40" width="10" height="10" fill="#B7A9FF"/><text x="268" y="49" font-size="10.5" fill="#8E8AAC">CNN</text></g>
-          <text class="an d3" x="44" y="186" font-size="10.5" fill="#8E8AAC">몇백 장에서는 재 보지도 않았다. 이 방향으로는 답이 없다.</text>
+          <text class="an d3" x="44" y="186" font-size="10.5" fill="#8E8AAC">이 방향으로 더 내려가면 쓸 수 없는 수준이 된다.</text>
         </svg>
           <div class="cap">훈련 장수를 10분의 1로 줄이면 둘 다 크게 떨어진다</div>
         </div>
@@ -1649,17 +1649,59 @@ net.eval()
     <table class="ctable">
       <thead><tr><th>방식</th><th>학습할 계수</th><th>정확도</th><th>1,000장 중 오답</th></tr></thead>
       <tbody>
-        <tr><td>펴서 <code>Linear</code></td><td>394,634</td><td class="no">0.2990</td><td>701장</td></tr>
-        <tr><td>CNN 처음부터</td><td>60,362</td><td>0.4580</td><td>542장</td></tr>
+        <tr><td>펴서 <code>Linear</code></td><td>394,634</td><td class="no">0.3350</td><td>665장</td></tr>
+        <tr><td>CNN 처음부터</td><td>60,362</td><td>0.4790</td><td>521장</td></tr>
         <tr><td class="hl">resnet18 특징 + <code>Linear</code></td><td class="yes">5,130</td><td class="yes">0.8530</td><td class="yes">147장</td></tr>
       </tbody>
     </table>
     <div class="vlist">
       <div class="v"><span class="b">★</span><div>세 줄 모두 <b>훈련 5,000장 · 테스트 1,000장</b> 같은 조건이다.</div></div>
       <div class="v"><span class="b">→</span><div>학습할 계수가 <b>77분의 1</b> 인데 정확도는 <b>2.9배</b>다. 계수 수로 성능을 가늠할 수 없다.</div></div>
-      <div class="v"><span class="b">→</span><div>오답이 <b>542장에서 147장으로</b> 줄었다. 이제 열 장 중 여덟 장 반을 맞힌다.</div></div>
+      <div class="v"><span class="b">→</span><div>오답이 <b>521장에서 147장으로</b> 줄었다. 이제 열 장 중 여덟 장 반을 맞힌다.</div></div>
     </div>
     <div class="keymsg"><span class="k">결과</span><div>데이터가 적을 때 가장 크게 오르는 것은 <b>모델을 키우는 것이 아니라 남의 학습을 가져오는 것</b>이다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="200장에서 벌어지는 격차">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>측정</div>
+  <h2 class="s-title sm">사진 200장에서 0.2990 대 0.7230</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="plot">
+      <svg viewBox="0 0 900 200">
+          <text x="30" y="16" font-size="11" font-weight="700" fill="#3A1FC9">전이학습 · 훈련 장수를 줄여 가며</text>
+          <line x1="30" y1="148" x2="410" y2="148" stroke="#8E8AAC" stroke-width="1.2"/>
+          <g class="an d1"><rect x="48" y="47" width="30" height="101" fill="#B7A9FF"/><text x="63" y="41" text-anchor="middle" font-size="11.5" font-weight="700" fill="#5B3DF5">0.853</text></g>
+          <text x="63" y="164" text-anchor="middle" font-size="10.5" fill="#8E8AAC">5,000장</text>
+          <g class="an d2"><rect x="136" y="48" width="30" height="100" fill="#B7A9FF"/><text x="151" y="42" text-anchor="middle" font-size="11.5" font-weight="700" fill="#5B3DF5">0.844</text></g>
+          <text x="151" y="164" text-anchor="middle" font-size="10.5" fill="#8E8AAC">2,000장</text>
+          <g class="an d3"><rect x="224" y="55" width="30" height="93" fill="#B7A9FF"/><text x="239" y="49" text-anchor="middle" font-size="11.5" font-weight="700" fill="#5B3DF5">0.784</text></g>
+          <text x="239" y="164" text-anchor="middle" font-size="10.5" fill="#8E8AAC">500장</text>
+          <g class="an d4"><rect x="312" y="63" width="30" height="85" fill="#B7A9FF"/><text x="327" y="57" text-anchor="middle" font-size="11.5" font-weight="700" fill="#5B3DF5">0.723</text></g>
+          <text x="327" y="164" text-anchor="middle" font-size="10.5" fill="#8E8AAC">200장</text>
+          <text class="an d4" x="30" y="186" font-size="11" fill="#8E8AAC">25분의 1로 줄여도 0.72 를 지킨다</text>
+          <line x1="452" y1="148" x2="452" y2="20" stroke="#E8E4F8" stroke-width="1.2"/>
+          <text x="486" y="16" font-size="11" font-weight="700" fill="#E8537A">같은 200장으로 두 방식</text>
+          <line x1="470" y1="148" x2="880" y2="148" stroke="#8E8AAC" stroke-width="1.2"/>
+          <g class="an d5"><rect x="520" y="113" width="56" height="35" fill="#F1B9C9"/><text x="548" y="107" text-anchor="middle" font-size="11.5" font-weight="700" fill="#E8537A">0.299</text></g>
+          <text class="an d5" x="548" y="164" text-anchor="middle" font-size="10.5" fill="#8E8AAC">CNN 처음부터</text>
+          <text class="an d5" x="548" y="180" text-anchor="middle" font-size="10" fill="#8E8AAC">계수 60,362</text>
+          <g class="an d6"><rect x="660" y="63" width="56" height="85" fill="#B7A9FF"/><text x="688" y="57" text-anchor="middle" font-size="11.5" font-weight="700" fill="#5B3DF5">0.723</text></g>
+          <text class="an d6" x="688" y="164" text-anchor="middle" font-size="10.5" fill="#8E8AAC">전이학습</text>
+          <text class="an d6" x="688" y="180" text-anchor="middle" font-size="10" fill="#8E8AAC">계수 5,130</text>
+          <text class="an d6" x="770" y="60" font-size="12" font-weight="800" fill="#16142B">2.4배</text>
+          <text class="an d6" x="770" y="80" font-size="11" fill="#8E8AAC">계수는 12분의 1 인데</text>
+          <text class="an d6" x="770" y="98" font-size="11" fill="#8E8AAC">정확도는 2.4배다.</text>
+        </svg>
+      <div class="cap">왼쪽은 이미 뽑아 둔 특징을 잘라 쓴 것이고, 오른쪽은 같은 200장으로 두 방식을 견준 것이다</div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>전이학습은 <b>5,000장에서 200장으로 줄여도</b> 0.8530 에서 0.7230 으로만 떨어진다.</div></div>
+      <div class="v"><span class="b">✕</span><div>같은 200장으로 CNN 을 처음부터 학습시키면 <b>0.2990</b> 이다. 배울 계수가 많아 200장으로는 채울 수 없다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">결론</span><div>데이터가 적을수록 <b>전이학습과의 격차가 벌어진다</b>. 현장에 쓸 방법이 여기서 정해진다.</div></div>
   </div>
 </section>
 
@@ -1688,7 +1730,7 @@ net.eval()
           <div class="v"><span class="b">→</span><div><code>Resize(224)</code> 다. 이 모델은 <b>224&times;224 로 학습됐다</b>. 32&times;32 를 그대로 넣으면 배운 것이 잘 안 맞는다.</div></div>
           <div class="v"><span class="b">→</span><div><code>Normalize</code> 는 <b>색마다 평균을 빼고 표준편차로 나누는 것</b>이다. 학습할 때 그렇게 했으니 쓸 때도 그렇게 해야 한다.</div></div>
           <div class="v"><span class="b">✕</span><div>이 셋 중 하나만 빠져도 정확도가 떨어진다. <b>에러는 나지 않는다</b> — 그래서 놓치기 쉽다.</div></div>
-          <div class="v"><span class="b">★</span><div>32&times;32 로 넣고 마지막 층만 학습했을 때는 <b>0.5955</b> 였다. 224로 맞추자 0.8530 이 됐다.</div></div>
+          <div class="v"><span class="b">★</span><div><code>Normalize</code> 만 빼고 나머지를 똑같이 해서 재 봤다. <b>0.8530 이 0.7430 으로</b> 떨어진다.</div></div>
         </div>
       </div>
     </div>
@@ -1813,7 +1855,7 @@ net.fc = nn.Linear(<span class="nm">512</span>, <span class="nm">10</span>)</cod
         </div>
       </div>
     </div>
-    <div class="keymsg"><span class="k">정리</span><div>하루에 늘어난 것은 <b>다섯 줄</b>이다. 그 다섯 줄로 0.299 가 0.853 이 됐다.</div></div>
+    <div class="keymsg"><span class="k">정리</span><div>하루에 늘어난 것은 <b>다섯 줄</b>이다. 그 다섯 줄로 0.335 가 0.853 이 됐다.</div></div>
   </div>
 </section>
 
@@ -1824,7 +1866,7 @@ net.fc = nn.Linear(<span class="nm">512</span>, <span class="nm">10</span>)</cod
   <div class="rule"></div>
   <div class="body">
     <div class="cards c3">
-      <div class="card"><span class="n">오늘</span><h3>남의 데이터</h3><p>공개 사진 열 종류로 세 방식을 비교했다. 0.299 → 0.458 → 0.853.</p></div>
+      <div class="card"><span class="n">오늘</span><h3>남의 데이터</h3><p>공개 사진 열 종류로 세 방식을 비교했다. 0.335 → 0.479 → 0.853.</p></div>
       <div class="card"><span class="n">내일</span><h3>내 데이터</h3><p>폴더에 모은 사진으로 분류기를 만든다. 사진이 적을 때 늘리는 방법.</p></div>
       <div class="card"><span class="n">모레</span><h3>판정 근거</h3><p>모델이 사진의 어디를 보고 판정했는지 그림으로 확인한다.</p></div>
     </div>
