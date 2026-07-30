@@ -24,6 +24,13 @@ def lab(text):
     """따라 해 보는 실습 안내"""
     return md(f"**실습.** {text}")
 
+
+def prep(src):
+    """세 벌 모두에 들어가는 준비 셀 — 문제들이 쓰는 이름을 만든다"""
+    c = code(src)
+    c["metadata"] = {"always": True}
+    return c
+
 MODES = {
     "together": "같이 풀기",
     "solo":     "스스로",
@@ -180,8 +187,8 @@ def build(day, title, subtitle, spec, variant, modes=None, renumber=False,
             section_open = item
             cells.append(item)
         else:
-            # 데모·설명 셀은 lecture 에만 담는다
-            if variant == "lecture":
+            # 준비 셀은 세 벌 모두에, 데모·설명 셀은 lecture 에만 담는다
+            if item.get("metadata", {}).get("always") or variant == "lecture":
                 cells.append(item)
     flush()
 

@@ -1033,8 +1033,10 @@ model = nn.Sequential(
     nn.ReLU(),
     nn.Linear(<span class="nm">128</span>, <span class="nm">64</span>),
     nn.ReLU(),
-    nn.Linear(<span class="nm">64</span>, <span class="nm">10</span>))    <span class="cm"># 답이 열 갈래</span></code></pre>
-          <div class="out">파라미터 109,386개</div>
+    nn.Linear(<span class="nm">64</span>, <span class="nm">10</span>))    <span class="cm"># 답이 열 갈래</span>
+
+<span class="fn2">print</span>(<span class="fn2">sum</span>(p.numel() <span class="kw">for</span> p <span class="kw">in</span> model.parameters()))</code></pre>
+          <div class="out">109386</div>
         </div>
       </div>
       <div>
