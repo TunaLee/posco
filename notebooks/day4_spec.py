@@ -243,9 +243,9 @@ print('층 하나       ', round(score(flat_model), 4))"""),
     # ══════════════════════════════════════════════════════════════════
     h(2, "5. 동물 사진으로 갈아 끼우기"),
 
-    lab("CIFAR-10 은 32×32 컬러 사진 6만 장이다. 열 갈래 중 여섯이 동물이다."),
-    code("""
-c_train = datasets.CIFAR10('data', train=True,  download=True, transform=transforms.ToTensor())
+    md("CIFAR-10 은 32×32 컬러 사진 6만 장이다. 열 갈래 중 여섯이 동물이다.\n\n"
+       "아래 셀을 **먼저 한 번** 실행한다. 170MB 를 받으므로 30초쯤 걸린다."),
+    prep("""c_train = datasets.CIFAR10('data', train=True,  download=True, transform=transforms.ToTensor())
 c_test  = datasets.CIFAR10('data', train=False, download=True, transform=transforms.ToTensor())
 c_loader      = DataLoader(c_train, batch_size=128, shuffle=True)
 c_test_loader = DataLoader(c_test,  batch_size=1000)
