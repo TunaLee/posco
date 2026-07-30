@@ -143,14 +143,15 @@ print(net(xb).shape)"""),
 print('배치', len(loader), '개 · 3 에폭이면', len(loader) * 3, '걸음')
 print('준비 셀에서 이미 3 에폭 돌렸다 — 정확도', round(score(model), 4))"""),
 
-    Ex(7, "**학습 루프 다섯 줄을 순서대로** 쓴다. 층 하나짜리 `one` 을 1 에폭 돌린 뒤 마지막 손실을 찍는다.\n"
-          "> 비우기 → 예측 → 손실 → 역전파 → 갱신.",
+    Ex(7, "**학습 루프를 통째로** 쓴다. `loader` 를 한 바퀴 돌며 `one` 을 학습시키고 마지막 손실을 찍는다.\n"
+          "> 배치를 꺼내는 for 문부터 쓴다. 안쪽은 비우기 → 예측 → 손실 → 역전파 → 갱신 다섯 줄이다.",
        setup="one = nn.Sequential(nn.Flatten(), nn.Linear(784, 10))\n"
              "opt = torch.optim.Adam(one.parameters(), lr=0.001)\n"
-             "loss_fn = nn.CrossEntropyLoss()\n\n"
-             "for xb2, yb2 in loader:",
-       blank="    ___\n    ___\n    ___\n    ___\n    ___\n\nprint('마지막 손실', round(loss.item(), 4))",
-       answer="    opt.zero_grad()\n"
+             "loss_fn = nn.CrossEntropyLoss()",
+       blank="for xb2, yb2 in loader:\n    ___\n    ___\n    ___\n    ___\n    ___\n\n"
+             "print('마지막 손실', round(loss.item(), 4))",
+       answer="for xb2, yb2 in loader:\n"
+              "    opt.zero_grad()\n"
               "    pred = one(xb2)\n"
               "    loss = loss_fn(pred, yb2)\n"
               "    loss.backward()\n"

@@ -13,7 +13,7 @@ import day1_spec, day2_spec, day3_spec, day4_spec
 
 if __name__ == "__main__":
     print("생성:")
-    emit(1, *day1_spec.SPEC)
-    emit(2, *day2_spec.SPEC)
+    emit(1, *day1_spec.SPEC, renumber=True, no_blank=True, lab=True)
+    emit(2, *day2_spec.SPEC, renumber=True, no_blank=True, lab=True)
     emit(3, *day3_spec.SPEC, renumber=True, no_blank=True, lab=True)
     emit(4, *day4_spec.SPEC, renumber=True, no_blank=True, lab=True)
