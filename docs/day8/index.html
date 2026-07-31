@@ -1,0 +1,1839 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Day 8 · 말을 이어 쓰는 모델</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#16142B; --ink-soft:#4A4766; --mut:#8E8AAC;
+    --violet:#5B3DF5; --violet-700:#3A1FC9; --violet-300:#B7A9FF;
+    --wash:#F4F1FF; --wash-2:#FAF9FF; --line:#E8E4F8;
+    --paper:#FFFFFF; --mint:#0FB5A1; --mint-soft:#E4F8F4;
+    --amber:#F4A93C; --rose:#E8537A;
+    --code-bg:#1C1933; --code-ink:#ECEAFF; --code-dim:#9C97D6;
+    --sw:1280px; --sh:720px;
+    --shadow:0 24px 60px -24px rgba(43,28,120,.45);
+    --serif: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:var(--serif); color:var(--ink);
+    background:
+      radial-gradient(1200px 600px at 15% -10%, #ECE7FF 0%, rgba(236,231,255,0) 60%),
+      radial-gradient(1000px 700px at 110% 10%, #F0EBFF 0%, rgba(240,235,255,0) 55%),
+      #EAE7F4;
+    min-height:100vh; -webkit-font-smoothing:antialiased;
+  }
+  .progress{position:fixed; top:0; left:0; right:0; height:3px; z-index:60; background:transparent;}
+  .progress .fill{height:100%; width:0; background:linear-gradient(90deg,var(--violet),#9B7BFF); transition:width .2s ease;}
+
+  .stage{
+    position:fixed; inset:0 0 0 0; z-index:10;
+    display:flex; justify-content:safe center; align-items:safe center;
+    overflow:auto; padding:30px 30px 96px;
+  }
+  .sizer{position:relative;}
+  .scaler{ width:var(--sw); height:var(--sh); transform-origin:top left; position:relative; }
+
+  .slide{
+    width:var(--sw); height:var(--sh);
+    background:var(--paper); border:1px solid var(--line);
+    border-radius:22px; box-shadow:var(--shadow);
+    overflow:hidden; display:none; flex-direction:column;
+    padding:50px 60px 46px; position:relative;
+  }
+  .slide.active{display:flex;}
+
+  .eyebrow{display:inline-flex; align-items:center; gap:10px; font-family:var(--mono); font-size:13px; font-weight:700; letter-spacing:.04em; color:var(--violet); text-transform:uppercase;}
+  .eyebrow .tag{color:#fff; background:var(--violet); border-radius:6px; padding:3px 8px; font-size:11px; letter-spacing:.05em;}
+  .eyebrow .tag.mint{background:var(--mint);}
+  .eyebrow .dot{width:5px;height:5px;border-radius:50%;background:var(--violet-300);}
+  .coord{position:absolute; top:30px; right:40px; font-family:var(--mono); font-size:12px; color:var(--mut); font-weight:600; letter-spacing:.05em;}
+  .coord b{color:var(--ink);}
+
+  .s-title{font-size:39px; line-height:1.12; letter-spacing:-.025em; font-weight:800; margin:14px 0 4px;}
+  .s-title.sm{font-size:32px;} .s-title.xs{font-size:28px;}
+  .s-sub{font-size:17px; color:var(--ink-soft); font-weight:500; line-height:1.5; max-width:64ch;}
+  .rule{height:4px; width:54px; border-radius:3px; background:var(--violet); margin:13px 0 6px;}
+  .body{flex:1; min-height:0; display:flex; flex-direction:column; justify-content:center;}
+  .body.top{justify-content:flex-start; padding-top:6px;}
+
+  .slide.cover{ padding:0; justify-content:center;
+    background:
+      radial-gradient(900px 520px at 100% 0%, #6B4BFF 0%, rgba(107,75,255,0) 58%),
+      radial-gradient(700px 600px at -5% 110%, #3A1FC9 0%, rgba(58,31,201,0) 55%),
+      linear-gradient(135deg,#2A1B8C 0%, #4226D6 48%, #5B3DF5 100%);
+    color:#fff; border:none; }
+  .cover .aperture{position:absolute; top:-120px; right:-120px; width:460px; height:460px; border-radius:50%; background:radial-gradient(circle at 35% 35%, rgba(255,255,255,.5), rgba(255,255,255,0) 62%); filter:blur(2px);}
+  .cover .ring{position:absolute; right:60px; top:60px; width:120px; height:120px; border-radius:50%; border:1.5px solid rgba(255,255,255,.4);}
+  .cover .ring::after{content:""; position:absolute; inset:18px; border-radius:50%; border:1.5px dashed rgba(255,255,255,.35);}
+  .cover .wrap{padding:60px 70px; position:relative; z-index:2; width:100%;}
+  .cover .kick{font-family:var(--mono); letter-spacing:.18em; font-size:13.5px; font-weight:600; color:rgba(255,255,255,.86); text-transform:uppercase; display:flex; align-items:center; gap:14px;}
+  .cover .kick .pill{border:1px solid rgba(255,255,255,.45); border-radius:999px; padding:4px 12px;}
+  .cover h1{font-size:58px; line-height:1.08; letter-spacing:-.03em; font-weight:800; margin:24px 0 16px; max-width:21ch;}
+  .cover .lead{font-size:18px; line-height:1.55; color:rgba(255,255,255,.9); max-width:56ch; font-weight:400;}
+  .cover .meta{margin-top:36px; display:flex; gap:24px; flex-wrap:wrap; font-size:14px;}
+  .cover .meta .it{display:flex; flex-direction:column; gap:3px;}
+  .cover .meta .it .k{font-family:var(--mono); font-size:11px; letter-spacing:.1em; color:rgba(255,255,255,.6); text-transform:uppercase;}
+  .cover .meta .it .v{font-size:15px; font-weight:700; color:#fff;}
+
+  .slide.section{ background:linear-gradient(140deg,#3A1FC9 0%, #5B3DF5 70%, #7A5BFF 100%); color:#fff; border:none; justify-content:center; padding:60px 70px; }
+  .slide.section.mintbg{ background:linear-gradient(140deg,#0A8A7A 0%, #0FB5A1 70%, #34D6C2 100%); }
+  .slide.section .ghost{position:absolute; right:34px; bottom:-66px; font-family:var(--mono); font-weight:700; font-size:330px; line-height:.8; color:rgba(255,255,255,.10); letter-spacing:-.04em;}
+  .slide.section .lab-flag{display:inline-flex; align-items:center; gap:9px; align-self:flex-start; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.4); padding:7px 14px; border-radius:999px; font-weight:700; font-size:13px; font-family:var(--mono); letter-spacing:.06em;}
+  .slide.section .lab-flag .sq{width:9px;height:9px;border-radius:3px;background:#fff;}
+  .slide.section .seyebrow{font-family:var(--mono); letter-spacing:.16em; font-size:14px; color:rgba(255,255,255,.85); text-transform:uppercase; margin-bottom:14px;}
+  .slide.section h2{font-size:48px; line-height:1.1; letter-spacing:-.025em; font-weight:800; margin:0 0 14px; max-width:24ch; position:relative; z-index:2;}
+  .slide.section p{font-size:18px; color:rgba(255,255,255,.92); max-width:54ch; line-height:1.55; position:relative; z-index:2;}
+  .slide.section .agenda{display:flex; gap:10px; flex-wrap:wrap; margin-top:22px; position:relative; z-index:2;}
+  .slide.section .agenda span{font-size:13px; font-weight:600; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3); padding:6px 12px; border-radius:999px;}
+
+  .cards{display:grid; gap:16px;}
+  .cards.c2{grid-template-columns:repeat(2,1fr);} .cards.c3{grid-template-columns:repeat(3,1fr);} .cards.c4{grid-template-columns:repeat(4,1fr);} .cards.c5{grid-template-columns:repeat(5,1fr);}
+  .card{background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:17px 19px; display:flex; flex-direction:column; gap:7px; position:relative;}
+  .card .ic{width:38px; height:38px; border-radius:4px; display:grid; place-items:center; background:transparent; border:1.5px solid var(--violet-300); color:var(--violet); margin-bottom:3px;}
+  .card .ic svg{width:20px;height:20px;}
+  .card h3{font-size:17px; font-weight:800; letter-spacing:-.01em; margin:0 0 1px; padding-bottom:8px; border-bottom:1px solid var(--line);}
+  .card p{font-size:14px; color:var(--ink-soft); line-height:1.5; margin:0;}
+  .card .n{font-family:var(--mono); font-size:11.5px; color:var(--violet); font-weight:700;}
+
+  .biglist{display:flex; flex-direction:column; gap:13px;}
+  .biglist .li{display:flex; gap:15px; align-items:flex-start;}
+  .biglist .li .num{flex:none; width:34px; height:34px; border-radius:10px; background:var(--violet); color:#fff; font-family:var(--mono); font-weight:700; display:grid; place-items:center; font-size:14px; margin-top:1px;}
+  .biglist .li .tx h4{margin:0 0 3px; font-size:17.5px; font-weight:800;}
+  .biglist .li .tx p{margin:0; font-size:14px; color:var(--ink-soft); line-height:1.5;}
+
+  .phase-label{font-family:var(--mono); font-size:12px; font-weight:700; letter-spacing:.08em; color:var(--violet); text-transform:uppercase; margin:0 0 10px; display:flex; align-items:center; gap:9px;}
+  .phase-label .ln{height:1px; flex:1; background:var(--line);}
+  .pipe{display:flex; align-items:stretch; gap:0; margin-bottom:20px;}
+  .pipe .step{flex:1; background:var(--paper); border:1px solid var(--line); border-top:3px solid var(--violet); border-radius:4px; padding:12px 10px; text-align:center; min-width:0;}
+  .pipe .step .si{font-family:var(--mono); font-size:11px; color:var(--violet); font-weight:700;}
+  .pipe .step .sn{font-size:14.5px; font-weight:800; margin-top:3px; letter-spacing:-.01em;}
+  .pipe .step .sd{font-size:11px; color:var(--mut); margin-top:2px; line-height:1.3;}
+  .pipe .arrow{display:flex; align-items:center; padding:0 5px; color:var(--violet-300);}
+  .pipe .arrow svg{width:17px;height:17px;}
+  .pipe.q .step{background:var(--paper); border-color:var(--line); border-top-color:var(--mint);} .pipe.q .step .si{color:var(--mint);} .pipe.q .arrow{color:#8AD7CC;}
+
+  .code{background:var(--code-bg); border-radius:14px; overflow:hidden; border:1px solid #2A2548; box-shadow:0 18px 40px -22px rgba(28,25,51,.7);}
+  .code .bar{display:flex; align-items:center; gap:7px; padding:10px 15px; border-bottom:1px solid #2A2548; background:#171430;}
+  .code .bar .dot{width:11px;height:11px;border-radius:50%;}
+  .code .bar .r{background:#FF6058;} .code .bar .y{background:#FFC130;} .code .bar .g{background:#28CA42;}
+  .code .bar .fn{margin-left:8px; font-family:var(--mono); font-size:12px; color:var(--code-dim);}
+  .code pre{margin:0; padding:16px 18px; overflow:auto;}
+  .code code{font-family:var(--mono); font-size:13px; line-height:1.6; color:var(--code-ink); white-space:pre;}
+  .code.sm code{font-size:12px; line-height:1.55;}
+  .cm{color:#7D78B8;} .kw{color:#C792FF;} .st{color:#9DE39A;} .fn2{color:#82D3FF;} .nm{color:#FFD479;}
+
+  .callout{border-radius:4px; padding:15px 18px; display:flex; gap:13px; align-items:flex-start; background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet);}
+  .callout .ci{flex:none; width:34px;height:34px;border-radius:4px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .callout .ci svg{width:18px;height:18px;}
+  .callout .ct h4{margin:0 0 3px; font-size:15.5px; font-weight:800;}
+  .callout .ct p{margin:0; font-size:13.5px; color:var(--ink-soft); line-height:1.5;}
+  .callout.mint{border-left-color:var(--mint);} .callout.mint .ci{background:var(--mint);}
+  .callout.amber{border-left-color:var(--amber);} .callout.amber .ci{background:var(--amber);}
+  .callout.rose{border-left-color:var(--rose);} .callout.rose .ci{background:var(--rose);}
+
+  .lab-badge{display:inline-flex; align-items:center; gap:9px; background:var(--mint-soft); color:#0A7F70; border:1px solid #BFE9E1; padding:7px 13px; border-radius:999px; font-weight:700; font-size:13px; font-family:var(--mono); letter-spacing:.04em;}
+  .lab-badge .sq{width:9px;height:9px;border-radius:3px;background:var(--mint);}
+
+  .twocol{display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start;}
+  .twocol.w{grid-template-columns:1.15fr .85fr;} .twocol.w2{grid-template-columns:.85fr 1.15fr;}
+
+  .chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{font-size:12.5px; font-weight:600; color:var(--ink-soft); background:#fff; border:1px solid var(--line); padding:6px 12px; border-radius:999px;}
+  .chip b{color:var(--violet);}
+
+  .deliv{background:var(--paper); border:1px dashed var(--violet-300); border-left:3px solid var(--violet); border-radius:4px; padding:15px 18px; display:flex; align-items:center; gap:13px;}
+  .deliv .di{flex:none;width:36px;height:36px;border-radius:4px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .deliv .di svg{width:19px;height:19px;}
+  .deliv .dt b{display:block;font-size:11px;font-family:var(--mono);letter-spacing:.08em;color:var(--violet);text-transform:uppercase;}
+  .deliv .dt span{font-size:15px;font-weight:700;}
+
+  .vlist{display:flex;flex-direction:column;gap:10px;}
+  .vlist .v{display:flex;gap:11px;align-items:flex-start;font-size:14.5px;color:var(--ink-soft);line-height:1.45;}
+  .vlist .v .b{flex:none;width:22px;height:22px;border-radius:7px;background:var(--wash);color:var(--violet);display:grid;place-items:center;font-family:var(--mono);font-size:12px;font-weight:700;margin-top:1px;}
+  .vlist .v b{color:var(--ink);font-weight:700;}
+
+  .keymsg{margin-top:auto; background:var(--ink); color:#fff; border-radius:4px; padding:15px 20px; display:flex; gap:13px; align-items:center; font-size:15px; line-height:1.5;}
+  .keymsg .k{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;color:var(--violet-300);text-transform:uppercase;flex:none;}
+  .keymsg b{color:#fff;}
+
+  .formula{display:flex; flex-direction:column; gap:10px; background:var(--code-bg); border-radius:13px; padding:20px; color:#fff; font-family:var(--mono);}
+  .formula .big{font-size:21px; text-align:center;}
+
+  .ctable{width:100%; border-collapse:separate; border-spacing:0; font-size:14px; border:1px solid var(--line); border-radius:13px; overflow:hidden;}
+  .ctable th,.ctable td{padding:13px 16px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top;}
+  .ctable thead th{background:var(--wash); color:var(--violet); font-family:var(--mono); font-size:12px; letter-spacing:.04em; text-transform:uppercase; font-weight:700;}
+  .ctable tbody tr:last-child td{border-bottom:none;}
+  .ctable td b{color:var(--ink);} .ctable .hl{color:var(--violet); font-weight:700;}
+  .ctable .yes{color:var(--mint); font-weight:700;} .ctable .no{color:var(--rose); font-weight:700;}
+
+  .timeline{display:flex; gap:0; align-items:stretch; margin-top:6px;}
+  .timeline .t{flex:1; position:relative; padding:0 6px;}
+  .timeline .t .yr{font-family:var(--mono); font-size:13px; font-weight:700; color:var(--violet);}
+  .timeline .t .ev{font-size:13px; font-weight:700; margin-top:30px; line-height:1.3;}
+  .timeline .t .ds{font-size:11.5px; color:var(--mut); margin-top:3px; line-height:1.35;}
+  .timeline .t::before{content:""; position:absolute; left:0; right:0; top:26px; height:2px; background:var(--line);}
+  .timeline .t::after{content:""; position:absolute; left:8px; top:21px; width:12px; height:12px; border-radius:50%; background:var(--violet); border:3px solid #fff; box-shadow:0 0 0 1px var(--violet-300);}
+
+  .quote{background:var(--wash-2); border-left:4px solid var(--violet); border-radius:0 13px 13px 0; padding:18px 22px;}
+  .quote p{margin:0; font-size:18px; line-height:1.5; font-weight:600; color:var(--ink);}
+  .quote .src{margin-top:10px; font-size:12.5px; color:var(--mut); font-family:var(--mono);}
+  .refbox{background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:14px 16px; display:flex; gap:12px; align-items:flex-start;}
+  .refbox .rk{font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; color:var(--violet); text-transform:uppercase; font-weight:700;}
+  .refbox h4{margin:2px 0 3px; font-size:14.5px; font-weight:800;}
+  .refbox p{margin:0; font-size:12.5px; color:var(--ink-soft); line-height:1.45;}
+  .refbox .ri{flex:none;width:30px;height:30px;border-radius:8px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .refbox .ri svg{width:16px;height:16px;}
+
+  .arch{display:flex; align-items:center; gap:18px; justify-content:center; margin:6px 0;}
+  .arch .box{border:1.5px solid var(--line); border-radius:14px; padding:18px 20px; text-align:center; background:var(--wash-2); min-width:160px;}
+  .arch .box .bt{font-size:15px; font-weight:800;} .arch .box .bs{font-size:12px; color:var(--mut); margin-top:3px; line-height:1.35;}
+  .arch .box.local{border-style:dashed; border-color:var(--violet-300); background:#fff;}
+  .arch .box.api{background:linear-gradient(135deg,#EFEAFF,#F8F5FF); border-color:var(--violet-300);}
+  .arch .conn{display:flex; flex-direction:column; align-items:center; gap:4px; color:var(--violet); font-family:var(--mono); font-size:11px; font-weight:700;}
+  .arch .conn svg{width:34px;height:18px;}
+
+  .stat-row{display:flex; gap:16px;}
+  .stat{flex:1; background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:16px 18px;}
+  .stat .num{font-size:30px; font-weight:800; letter-spacing:-.02em; color:var(--violet); font-family:var(--mono);}
+  .stat .lab{font-size:13px; color:var(--ink-soft); margin-top:4px; line-height:1.4;}
+
+  .twopane{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .pane{border:1px solid var(--line); border-radius:4px; padding:16px 18px; background:var(--paper);}
+  .pane.bad{border-left:3px solid var(--rose);} .pane.good{border-left:3px solid var(--mint);}
+  .pane h4{margin:0 0 9px; font-size:14px; font-weight:800; display:flex; align-items:center; gap:7px;}
+  .pane.bad h4{color:#C9405B;} .pane.good h4{color:#0E9E6E;}
+  .pane p{margin:0; font-size:13px; color:var(--ink-soft); line-height:1.5;}
+  .pane .mini{font-family:var(--mono); font-size:13.5px; background:#16142B; border:1px solid #2A2545; border-radius:6px; padding:13px 15px; color:#E8E4F5; line-height:1.7; margin-top:10px; white-space:pre-wrap;}
+  .mini b{color:#9BE8DC; font-weight:700;}          /* 강조할 토큰 */
+  .mini i{color:#8E8AAC; font-style:normal;}        /* 주석 */
+  .pane.good .mini{background:#0E2A26; border-color:#1C4A43;}
+
+  .controlbar{
+    position:fixed; left:50%; bottom:18px; transform:translateX(-50%); z-index:70;
+    display:flex; align-items:center; gap:4px;
+    background:#2B2B2E; border-radius:999px; padding:8px 10px;
+    box-shadow:0 16px 40px -12px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.04) inset;
+  }
+  .controlbar button{appearance:none; border:none; background:transparent; cursor:pointer; color:#C9C9D2; display:grid; place-items:center; border-radius:999px; transition:.12s ease; font-family:var(--serif);}
+  .controlbar .ico{width:38px; height:38px;}
+  .controlbar .ico svg{width:19px;height:19px;}
+  .controlbar .ico:hover{color:#fff; background:rgba(255,255,255,.1);}
+  .controlbar .ico:disabled{color:#5C5C66; cursor:not-allowed; background:transparent;}
+  .controlbar .sep{width:1px; height:24px; background:rgba(255,255,255,.16); margin:0 6px;}
+  .controlbar .count{ color:#EDEDF2; font-style:italic; font-family:Georgia,'Times New Roman',serif; font-size:17px; min-width:78px; text-align:center; letter-spacing:.02em; user-select:none;}
+  .controlbar .count b{font-style:italic; font-weight:600;}
+  .controlbar .zoom{width:32px;height:38px; color:#9A9AA6; font-size:18px;}
+  .controlbar .zoom:hover{color:#fff;}
+  .controlbar .zoom svg{width:17px;height:17px;}
+  .controlbar .pdf{
+    margin-left:6px; background:#7CB342; color:#fff; font-weight:800; font-size:14px; letter-spacing:.06em;
+    padding:0 22px; height:38px; border-radius:999px; display:flex; align-items:center;
+    box-shadow:0 6px 16px -6px rgba(124,179,66,.8);
+  }
+  .controlbar .pdf:hover{background:#86BD4B; color:#fff;}
+
+  .overview{position:fixed; inset:0; z-index:80; background:rgba(22,20,43,.55); backdrop-filter:blur(8px); display:none; padding:40px; overflow:auto;}
+  .overview.on{display:block;}
+  .overview .head{display:flex; align-items:center; justify-content:space-between; max-width:1100px; margin:0 auto 18px; color:#fff;}
+  .overview .head h3{margin:0; font-size:18px; font-weight:800;}
+  .overview .head button{appearance:none;border:1px solid rgba(255,255,255,.3); background:rgba(255,255,255,.1); color:#fff; border-radius:10px; padding:8px 14px; cursor:pointer; font-family:var(--serif); font-weight:700; font-size:13px;}
+  .ovgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; max-width:1100px; margin:0 auto;}
+  .ovcard{background:#fff; border:1px solid var(--line); border-radius:11px; padding:13px 15px; cursor:pointer; transition:.12s; text-align:left;}
+  .ovcard:hover{transform:translateY(-2px); box-shadow:0 12px 22px -12px rgba(0,0,0,.4); border-color:var(--violet);}
+  .ovcard .ovn{font-family:var(--mono); font-size:11px; color:var(--violet); font-weight:700;}
+  .ovcard .ovt{font-size:13.5px; font-weight:700; margin-top:4px; line-height:1.3; color:var(--ink);}
+
+  .hint{position:fixed; left:18px; bottom:24px; z-index:65; font-size:11px; color:var(--mut); font-family:var(--mono);}
+
+
+  /* ===== 이미지 / 도해 컴포넌트 (덱 하네스 추가분) ===== */
+  .figure{border:1px solid var(--line); border-radius:4px; background:var(--wash-2); overflow:hidden; display:flex; flex-direction:column; min-height:0;}
+  .figure img{display:block; width:100%; height:auto; object-fit:contain; min-height:0;}
+  .figure figcaption{font-family:var(--mono); font-size:11px; color:var(--mut); padding:7px 11px; border-top:1px solid var(--line); background:#fff;}
+  .figure.tight img{max-height:330px; object-fit:contain; background:#fff;}
+  /* 원본이 검은 여백을 달고 있는 캡처용 */
+  .figure.dark{background:#16142B; border-color:#2A2548;}
+  .figure.dark img{background:#16142B;}
+  .figure.dark figcaption{background:#1C1933; color:#9C97D6; border-top-color:#2A2548;}
+
+  /* 스크린샷: 창 프레임을 씌워 원본 캡처임을 드러낸다 */
+  .shot{border:1px solid var(--line); border-radius:9px; overflow:hidden; background:#fff; box-shadow:0 10px 26px -18px rgba(28,25,51,.6); display:flex; flex-direction:column; min-height:0;}
+  .shot .sbar{display:flex; align-items:center; gap:6px; padding:7px 11px; background:var(--wash); border-bottom:1px solid var(--line);}
+  .shot .sbar .d{width:9px;height:9px;border-radius:50%;background:var(--violet-300);}
+  .shot .sbar .t{margin-left:6px; font-family:var(--mono); font-size:11px; color:var(--mut);}
+  .shot img{display:block; width:100%; height:auto; max-height:400px; object-fit:contain; min-height:0;}
+
+  /* 도구 두 가지를 나란히 처음 보여줄 때 — 그림과 한 줄만 */
+  .duo{display:grid; grid-template-columns:1fr 1fr; gap:30px;}
+  .duo .side{border:1px solid var(--line); border-radius:18px; background:var(--wash-2);
+    padding:34px 30px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:20px; text-align:center;}
+  .duo .side img{max-height:92px; max-width:78%; width:auto; display:block;}
+  .duo .side .tagline{font-family:var(--mono); font-size:11.5px; letter-spacing:.12em;
+    color:var(--violet); text-transform:uppercase; font-weight:700;}
+  .duo .side h3{margin:0; font-size:23px; font-weight:800; letter-spacing:-.02em;}
+  .duo .side p{margin:0; font-size:15px; color:var(--ink-soft); line-height:1.55; max-width:30ch;}
+
+  /* 제품·도구 로고 — 작은 브랜드 마크 */
+  .brandmark{display:flex; align-items:center; gap:15px; margin-bottom:18px;}
+  .brandmark img{height:46px; width:auto; display:block;}
+  .brandmark .bt{font-size:13.5px; color:var(--ink-soft); line-height:1.45;}
+  .brandmark .bt b{color:var(--ink);}
+
+  /* 채워야 할 이미지 자리 — 인쇄에도 남으므로 발표 전 반드시 교체 */
+  .need-img{border:2px dashed var(--violet-300); border-radius:4px; background:repeating-linear-gradient(135deg,#FBFAFF,#FBFAFF 10px,#F4F1FF 10px,#F4F1FF 20px);
+    display:flex; flex-direction:column; justify-content:center; gap:6px; padding:20px 22px; min-height:150px;}
+  .need-img .nk{font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:.1em; color:var(--violet); text-transform:uppercase;}
+  .need-img .nd{font-size:14px; font-weight:700; color:var(--ink); line-height:1.4;}
+  .need-img .nm2{font-family:var(--mono); font-size:11.5px; color:var(--mut);}
+  .need-img.sm{min-height:92px; padding:14px 16px; align-items:center; text-align:center;}
+
+  /* 코드 실행 결과 */
+  .code .out{border-top:1px dashed #38325C; background:#141127; padding:11px 18px; font-family:var(--mono); font-size:12.5px; line-height:1.55; color:#9DE39A; white-space:pre; overflow:auto;}
+  .code .out .ol{color:#7D78B8;}
+  .code .err{color:#FF8E8E;}
+
+  /* 메모리 슬롯 도해 */
+  .slots{display:flex; gap:8px; flex-wrap:wrap; align-items:flex-start;}
+  .slot{border:1.5px solid var(--line); border-radius:8px; min-width:74px; padding:9px 11px; text-align:center; background:#fff;}
+  .slot .adr{font-family:var(--mono); font-size:10px; color:var(--mut); letter-spacing:.02em;}
+  .slot .val{font-family:var(--mono); font-size:15px; font-weight:700; color:var(--ink); margin-top:2px;}
+  .slot .nm{font-size:11px; color:var(--violet); font-weight:700; margin-top:3px;}
+  .slot.ref{border-style:dashed; border-color:var(--violet-300); background:var(--wash-2);}
+  .slot.dim{opacity:.45;}
+  .ptr{display:grid; place-items:center; color:var(--violet); font-family:var(--mono); font-size:18px; font-weight:700; padding:0 2px; align-self:center;}
+
+  /* 인라인 SVG 차트 */
+  /* 애니메이션 — 슬라이드에 도착할 때 한 번 돈다. 인쇄에서는 최종 상태만 남는다 */
+  .an{opacity:0;}
+  .slide.active .an{animation:anIn .6s ease forwards;}
+  @keyframes anIn{from{opacity:0} to{opacity:1}}
+  .slide.active .an.d1{animation-delay:.30s} .slide.active .an.d2{animation-delay:.85s}
+  .slide.active .an.d3{animation-delay:1.40s} .slide.active .an.d4{animation-delay:1.95s}
+  .slide.active .an.d5{animation-delay:2.50s} .slide.active .an.d6{animation-delay:3.05s}
+  .fl{opacity:0;}
+  .slide.active .fl{animation:anFlash .22s linear forwards;}
+  @keyframes anFlash{0%{opacity:0} 25%{opacity:1} 75%{opacity:1} 100%{opacity:0}}
+  @media print{ .an{opacity:1 !important; animation:none !important;} .fl{opacity:0 !important; animation:none !important;} }
+  .fly{transform-box:view-box;}
+  @keyframes fly0{from{transform:translate(20px,20px) scale(1)}to{transform:translate(28px,206px) scale(0.2)}}
+  .slide.active .f0{animation:fly0 1s ease-in-out forwards;animation-delay:0.30s}
+  @media print{.f0{animation:none !important;transform:translate(28px,206px) scale(0.2) !important}}
+  @keyframes fly1{from{transform:translate(20px,25px) scale(1)}to{transform:translate(56px,206px) scale(0.2)}}
+  .slide.active .f1{animation:fly1 1s ease-in-out forwards;animation-delay:0.44s}
+  @media print{.f1{animation:none !important;transform:translate(56px,206px) scale(0.2) !important}}
+  @keyframes fly2{from{transform:translate(20px,30px) scale(1)}to{transform:translate(84px,206px) scale(0.2)}}
+  .slide.active .f2{animation:fly2 1s ease-in-out forwards;animation-delay:0.58s}
+  @media print{.f2{animation:none !important;transform:translate(84px,206px) scale(0.2) !important}}
+  @keyframes fly3{from{transform:translate(20px,35px) scale(1)}to{transform:translate(112px,206px) scale(0.2)}}
+  .slide.active .f3{animation:fly3 1s ease-in-out forwards;animation-delay:0.72s}
+  @media print{.f3{animation:none !important;transform:translate(112px,206px) scale(0.2) !important}}
+  @keyframes fly4{from{transform:translate(20px,40px) scale(1)}to{transform:translate(140px,206px) scale(0.2)}}
+  .slide.active .f4{animation:fly4 1s ease-in-out forwards;animation-delay:0.86s}
+  @media print{.f4{animation:none !important;transform:translate(140px,206px) scale(0.2) !important}}
+  @keyframes fly5{from{transform:translate(20px,45px) scale(1)}to{transform:translate(168px,206px) scale(0.2)}}
+  .slide.active .f5{animation:fly5 1s ease-in-out forwards;animation-delay:1.00s}
+  @media print{.f5{animation:none !important;transform:translate(168px,206px) scale(0.2) !important}}
+  @keyframes fly6{from{transform:translate(20px,50px) scale(1)}to{transform:translate(196px,206px) scale(0.2)}}
+  .slide.active .f6{animation:fly6 1s ease-in-out forwards;animation-delay:1.14s}
+  @media print{.f6{animation:none !important;transform:translate(196px,206px) scale(0.2) !important}}
+  @keyframes fly7{from{transform:translate(20px,55px) scale(1)}to{transform:translate(224px,206px) scale(0.2)}}
+  .slide.active .f7{animation:fly7 1s ease-in-out forwards;animation-delay:1.28s}
+  @media print{.f7{animation:none !important;transform:translate(224px,206px) scale(0.2) !important}}
+  @keyframes fly8{from{transform:translate(20px,60px) scale(1)}to{transform:translate(252px,206px) scale(0.2)}}
+  .slide.active .f8{animation:fly8 1s ease-in-out forwards;animation-delay:1.42s}
+  @media print{.f8{animation:none !important;transform:translate(252px,206px) scale(0.2) !important}}
+  @keyframes fly9{from{transform:translate(20px,65px) scale(1)}to{transform:translate(280px,206px) scale(0.2)}}
+  .slide.active .f9{animation:fly9 1s ease-in-out forwards;animation-delay:1.56s}
+  @media print{.f9{animation:none !important;transform:translate(280px,206px) scale(0.2) !important}}
+  @keyframes fly10{from{transform:translate(20px,70px) scale(1)}to{transform:translate(308px,206px) scale(0.2)}}
+  .slide.active .f10{animation:fly10 1s ease-in-out forwards;animation-delay:1.70s}
+  @media print{.f10{animation:none !important;transform:translate(308px,206px) scale(0.2) !important}}
+  @keyframes fly11{from{transform:translate(20px,75px) scale(1)}to{transform:translate(336px,206px) scale(0.2)}}
+  .slide.active .f11{animation:fly11 1s ease-in-out forwards;animation-delay:1.84s}
+  @media print{.f11{animation:none !important;transform:translate(336px,206px) scale(0.2) !important}}
+  @keyframes fly12{from{transform:translate(20px,80px) scale(1)}to{transform:translate(364px,206px) scale(0.2)}}
+  .slide.active .f12{animation:fly12 1s ease-in-out forwards;animation-delay:1.98s}
+  @media print{.f12{animation:none !important;transform:translate(364px,206px) scale(0.2) !important}}
+  @keyframes fly13{from{transform:translate(20px,85px) scale(1)}to{transform:translate(392px,206px) scale(0.2)}}
+  .slide.active .f13{animation:fly13 1s ease-in-out forwards;animation-delay:2.12s}
+  @media print{.f13{animation:none !important;transform:translate(392px,206px) scale(0.2) !important}}
+  @keyframes fly14{from{transform:translate(20px,90px) scale(1)}to{transform:translate(420px,206px) scale(0.2)}}
+  .slide.active .f14{animation:fly14 1s ease-in-out forwards;animation-delay:2.26s}
+  @media print{.f14{animation:none !important;transform:translate(420px,206px) scale(0.2) !important}}
+  @keyframes fly15{from{transform:translate(20px,95px) scale(1)}to{transform:translate(448px,206px) scale(0.2)}}
+  .slide.active .f15{animation:fly15 1s ease-in-out forwards;animation-delay:2.40s}
+  @media print{.f15{animation:none !important;transform:translate(448px,206px) scale(0.2) !important}}
+  @keyframes fly16{from{transform:translate(20px,100px) scale(1)}to{transform:translate(476px,206px) scale(0.2)}}
+  .slide.active .f16{animation:fly16 1s ease-in-out forwards;animation-delay:2.54s}
+  @media print{.f16{animation:none !important;transform:translate(476px,206px) scale(0.2) !important}}
+  @keyframes fly17{from{transform:translate(20px,105px) scale(1)}to{transform:translate(504px,206px) scale(0.2)}}
+  .slide.active .f17{animation:fly17 1s ease-in-out forwards;animation-delay:2.68s}
+  @media print{.f17{animation:none !important;transform:translate(504px,206px) scale(0.2) !important}}
+  @keyframes fly18{from{transform:translate(20px,110px) scale(1)}to{transform:translate(532px,206px) scale(0.2)}}
+  .slide.active .f18{animation:fly18 1s ease-in-out forwards;animation-delay:2.82s}
+  @media print{.f18{animation:none !important;transform:translate(532px,206px) scale(0.2) !important}}
+  @keyframes fly19{from{transform:translate(20px,115px) scale(1)}to{transform:translate(560px,206px) scale(0.2)}}
+  .slide.active .f19{animation:fly19 1s ease-in-out forwards;animation-delay:2.96s}
+  @media print{.f19{animation:none !important;transform:translate(560px,206px) scale(0.2) !important}}
+  @keyframes fly20{from{transform:translate(20px,120px) scale(1)}to{transform:translate(588px,206px) scale(0.2)}}
+  .slide.active .f20{animation:fly20 1s ease-in-out forwards;animation-delay:3.10s}
+  @media print{.f20{animation:none !important;transform:translate(588px,206px) scale(0.2) !important}}
+  @keyframes fly21{from{transform:translate(20px,125px) scale(1)}to{transform:translate(616px,206px) scale(0.2)}}
+  .slide.active .f21{animation:fly21 1s ease-in-out forwards;animation-delay:3.24s}
+  @media print{.f21{animation:none !important;transform:translate(616px,206px) scale(0.2) !important}}
+  @keyframes fly22{from{transform:translate(20px,130px) scale(1)}to{transform:translate(644px,206px) scale(0.2)}}
+  .slide.active .f22{animation:fly22 1s ease-in-out forwards;animation-delay:3.38s}
+  @media print{.f22{animation:none !important;transform:translate(644px,206px) scale(0.2) !important}}
+  @keyframes fly23{from{transform:translate(20px,135px) scale(1)}to{transform:translate(672px,206px) scale(0.2)}}
+  .slide.active .f23{animation:fly23 1s ease-in-out forwards;animation-delay:3.52s}
+  @media print{.f23{animation:none !important;transform:translate(672px,206px) scale(0.2) !important}}
+  @keyframes fly24{from{transform:translate(20px,140px) scale(1)}to{transform:translate(700px,206px) scale(0.2)}}
+  .slide.active .f24{animation:fly24 1s ease-in-out forwards;animation-delay:3.66s}
+  @media print{.f24{animation:none !important;transform:translate(700px,206px) scale(0.2) !important}}
+  @keyframes fly25{from{transform:translate(20px,145px) scale(1)}to{transform:translate(728px,206px) scale(0.2)}}
+  .slide.active .f25{animation:fly25 1s ease-in-out forwards;animation-delay:3.80s}
+  @media print{.f25{animation:none !important;transform:translate(728px,206px) scale(0.2) !important}}
+  @keyframes fly26{from{transform:translate(20px,150px) scale(1)}to{transform:translate(756px,206px) scale(0.2)}}
+  .slide.active .f26{animation:fly26 1s ease-in-out forwards;animation-delay:3.94s}
+  @media print{.f26{animation:none !important;transform:translate(756px,206px) scale(0.2) !important}}
+  @keyframes fly27{from{transform:translate(20px,155px) scale(1)}to{transform:translate(784px,206px) scale(0.2)}}
+  .slide.active .f27{animation:fly27 1s ease-in-out forwards;animation-delay:4.08s}
+  @media print{.f27{animation:none !important;transform:translate(784px,206px) scale(0.2) !important}}
+  @media (prefers-reduced-motion:reduce){ .an{opacity:1 !important; animation:none !important;} .fl{opacity:0 !important; animation:none !important;} }
+  .plot{background:var(--wash-2); border:1px solid var(--line); border-radius:4px; padding:14px; display:grid; place-items:center; min-height:0;}
+  .plot svg{width:100%; height:auto; display:block; max-height:300px;}
+  .plot .cap{font-family:var(--mono); font-size:11px; color:var(--mut); margin-top:8px; text-align:center;}
+  .formula .cap{font-family:var(--mono); font-size:11.5px; color:var(--code-dim); text-align:center;}
+
+  /* 수정·보강 표시 (원본 pptx에 없던 내용) */
+  .newmark{position:absolute; top:30px; right:112px; font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.08em;
+    color:var(--mint); border:1px solid #BFE9E1; background:var(--mint-soft); border-radius:999px; padding:3px 9px;}
+
+  @media print{
+    @page{ size:1280px 720px; margin:0; }
+    body{background:#fff !important;}
+    .controlbar,.progress,.hint,.overview{display:none !important;}
+    .stage{position:static; inset:auto; overflow:visible; display:block; padding:0;}
+    .sizer{width:auto !important; height:auto !important;}
+    .scaler{transform:none !important; width:auto !important; height:auto !important;}
+    .slide{ display:flex !important; width:1280px !important; height:720px !important;
+      border-radius:0 !important; border:none !important; box-shadow:none !important;
+      page-break-after:always; break-after:page;
+      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .slide:last-child{page-break-after:auto;}
+  }
+</style>
+</head>
+<body>
+
+<div class="progress"><div class="fill" id="pfill"></div></div>
+
+<main class="stage" id="stage">
+  <div class="sizer" id="sizer">
+    <div class="scaler" id="scaler">
+<section class="slide cover active" data-title="표지 · Day 8">
+  <div class="aperture"></div><div class="ring"></div>
+  <div class="wrap">
+    <div class="kick"><span class="pill">WEEK 2 · DAY 4</span><span>LLM &amp; PROMPTING</span></div>
+    <h1>말을 이어 쓰는 모델</h1>
+  </div>
+</section>
+
+<section class="slide" data-title="오늘의 일정">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">AGENDA</span><span class="dot"></span>일정</div>
+  <h2 class="s-title sm">오늘의 일정</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c5">
+      <div class="card"><span class="n">CH0</span><h3>다음 한 토큰</h3><p>모델이 실제로 하는 일 하나 · 토큰 · 확률 · 온도.</p></div>
+      <div class="card"><span class="n">CH1</span><h3>여기까지 온 길</h3><p>순서대로 읽던 방식의 한계 · 어텐션 · 크기.</p></div>
+      <div class="card"><span class="n">CH2</span><h3>어텐션</h3><p>질문 &middot; 열쇠 &middot; 값 · 실제 가중치를 뽑아 본다.</p></div>
+      <div class="card"><span class="n">CH3</span><h3>프롬프팅의 원리</h3><p>프롬프트가 왜 듣는가 · 왜 안 듣는가.</p></div>
+      <div class="card"><span class="n">CH4</span><h3>쓰는 틀</h3><p>네 칸으로 적는 법 · 고치는 순서.</p></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>오늘의 모든 수치는 <b>모델을 직접 열어</b> 뽑은 것이다. 쓴 모델은 계수 15억 개짜리 한 대다.</div></div>
+  </div>
+</section>
+
+<section class="slide section" data-title="[섹션] 다음 한 토큰">
+  <div class="ghost">00</div>
+  <div class="seyebrow">CHAPTER 00</div>
+  <h2>다음 한 토큰</h2>
+  <div class="agenda"><span>토큰</span><span>확률</span><span>온도</span></div>
+</section>
+
+<section class="slide" data-title="하는 일은 하나뿐">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>원리</div>
+  <h2 class="s-title sm">앞을 보고 다음 한 조각을 고르는 일</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="plot">
+      <svg viewBox="0 0 900 210">
+        <g class="an d1">
+          <rect x="20" y="40" width="330" height="46" rx="8" fill="#F4F1FF" stroke="#DCD6F0"/>
+          <text x="185" y="69" text-anchor="middle" font-size="16" font-weight="700" fill="#16142B">소성로 온도가 높으면 불량이</text>
+          <text x="185" y="30" text-anchor="middle" font-size="10.5" fill="#8E8AAC">지금까지의 글 — 앞부분</text>
+        </g>
+        <path class="an d2" d="M362 63 L410 63" stroke="#8E8AAC" stroke-width="1.6" marker-end="url(#a1)"/>
+        <g class="an d2">
+          <rect x="422" y="24" width="150" height="78" rx="8" fill="#16142B"/>
+          <text x="497" y="56" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">모델</text>
+          <text x="497" y="78" text-anchor="middle" font-size="10.5" fill="#8E8AAC">계수 15억 개</text>
+        </g>
+        <path class="an d3" d="M584 63 L632 63" stroke="#8E8AAC" stroke-width="1.6" marker-end="url(#a1)"/>
+        <text class="an d3" x="742" y="30" text-anchor="middle" font-size="10.5" fill="#8E8AAC">다음에 올 조각마다 붙는 점수</text>
+        <g class="an d3" font-size="12.5">
+          <rect x="644" y="38" width="196" height="20" rx="4" fill="#EFEAFF"/><rect x="644" y="38" width="61" height="20" rx="4" fill="#B7A9FF"/>
+          <text x="652" y="53" fill="#16142B" font-weight="700">발생</text><text x="832" y="53" text-anchor="end" fill="#3A1FC9" font-weight="700">0.311</text>
+          <rect x="644" y="62" width="196" height="20" rx="4" fill="#EFEAFF"/><rect x="644" y="62" width="20" height="20" rx="4" fill="#B7A9FF"/>
+          <text x="652" y="77" fill="#16142B">될</text><text x="832" y="77" text-anchor="end" fill="#8E8AAC">0.102</text>
+          <rect x="644" y="86" width="196" height="20" rx="4" fill="#EFEAFF"/><rect x="644" y="86" width="12" height="20" rx="4" fill="#B7A9FF"/>
+          <text x="652" y="101" fill="#16142B">되</text><text x="832" y="101" text-anchor="end" fill="#8E8AAC">0.061</text>
+        </g>
+        <text class="an d4" x="742" y="126" text-anchor="middle" font-size="11" fill="#8E8AAC">이런 점수가 <tspan font-weight="700" fill="#16142B">151,665개</tspan> 나온다</text>
+        <g class="an d5">
+          <path d="M742 140 L742 162" stroke="#8E8AAC" stroke-width="1.4"/>
+          <rect x="660" y="166" width="164" height="30" rx="6" fill="#EFEAFF" stroke="#B7A9FF"/>
+          <text x="742" y="186" text-anchor="middle" font-size="13" font-weight="700" fill="#3A1FC9">하나를 골라 뒤에 붙인다</text>
+        </g>
+        <text class="an d6" x="185" y="130" text-anchor="middle" font-size="11.5" fill="#8E8AAC">붙인 글을 다시 앞부분으로 넣는다</text>
+        <path class="an d6" d="M660 181 L185 181 L185 146" stroke="#B7A9FF" stroke-width="1.4" stroke-dasharray="4 3" fill="none" marker-end="url(#a2)"/>
+        <defs>
+          <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#8E8AAC"/></marker>
+          <marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#B7A9FF"/></marker>
+        </defs>
+      </svg>
+      <div class="cap">글 한 편이 나오는 것은 이 고리를 수백 번 돈 결과다</div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>모델은 <b>문장을 계획하지 않는다</b>. 매번 <b>다음 한 조각</b>만 고른다.</div></div>
+      <div class="v"><span class="b">→</span><div>사진을 가르던 분류기와 같은 구조다. 열 종류 대신 <b>151,665 종류</b>를 놓고 고를 뿐이다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">핵심</span><div>이 한 줄에서 나머지가 전부 나온다. <b>앞부분을 받아 다음 조각의 확률을 낸다.</b></div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="토큰">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>토큰</div>
+  <h2 class="s-title sm">글자도 단어도 아닌 조각 &middot; 토큰</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="plot">
+          <svg viewBox="0 0 460 200">
+            <text x="14" y="16" font-size="11" font-weight="700" fill="#3A1FC9">모델이 실제로 받는 조각</text>
+            <g class="an d1" font-size="13">
+              <rect x="14" y="28" width="66" height="26" rx="4" fill="#EFEAFF" stroke="#B7A9FF"/><text x="47" y="46" text-anchor="middle" fill="#16142B">Hello</text>
+              <rect x="84" y="28" width="66" height="26" rx="4" fill="#EFEAFF" stroke="#B7A9FF"/><text x="117" y="46" text-anchor="middle" fill="#16142B">␣world</text>
+              <text x="168" y="46" font-size="11" fill="#8E8AAC">2개</text>
+            </g>
+            <g class="an d2" font-size="13">
+              <rect x="14" y="66" width="34" height="26" rx="4" fill="#EFEAFF" stroke="#B7A9FF"/><text x="31" y="84" text-anchor="middle" fill="#16142B">이</text>
+              <rect x="52" y="66" width="34" height="26" rx="4" fill="#EFEAFF" stroke="#B7A9FF"/><text x="69" y="84" text-anchor="middle" fill="#16142B">차</text>
+              <rect x="90" y="66" width="34" height="26" rx="4" fill="#EFEAFF" stroke="#B7A9FF"/><text x="107" y="84" text-anchor="middle" fill="#16142B">전</text>
+              <rect x="128" y="66" width="34" height="26" rx="4" fill="#EFEAFF" stroke="#B7A9FF"/><text x="145" y="84" text-anchor="middle" fill="#16142B">지</text>
+              <text x="176" y="84" font-size="11" fill="#8E8AAC">4개</text>
+            </g>
+            <g class="an d3" font-size="12">
+              <text x="14" y="118" font-size="11" font-weight="700" fill="#E8537A">한 단어가 여러 조각으로 갈리기도 한다</text>
+              <rect x="14" y="128" width="30" height="24" rx="4" fill="#FDE8EE" stroke="#F1B9C9"/><text x="29" y="145" text-anchor="middle" fill="#16142B">소</text>
+              <rect x="48" y="128" width="30" height="24" rx="4" fill="#FDE8EE" stroke="#F1B9C9"/><text x="63" y="145" text-anchor="middle" fill="#16142B">성</text>
+              <rect x="82" y="128" width="30" height="24" rx="4" fill="#FDE8EE" stroke="#F1B9C9"/><text x="97" y="145" text-anchor="middle" fill="#16142B">로</text>
+              <text x="122" y="145" font-size="11" fill="#8E8AAC">&ldquo;소성로&rdquo; 한 낱말이 3개</text>
+            </g>
+            <g class="an d4" font-size="12">
+              <rect x="14" y="160" width="30" height="24" rx="4" fill="#FDE8EE" stroke="#F1B9C9"/><text x="29" y="177" text-anchor="middle" fill="#16142B">8</text>
+              <rect x="48" y="160" width="30" height="24" rx="4" fill="#FDE8EE" stroke="#F1B9C9"/><text x="63" y="177" text-anchor="middle" fill="#16142B">2</text>
+              <rect x="82" y="160" width="30" height="24" rx="4" fill="#FDE8EE" stroke="#F1B9C9"/><text x="97" y="177" text-anchor="middle" fill="#16142B">0</text>
+              <text x="122" y="177" font-size="11" fill="#8E8AAC">숫자 &ldquo;820&rdquo; 도 한 자씩 갈린다</text>
+            </g>
+          </svg>
+          <div class="cap">자주 붙어 나오는 조각일수록 한 덩이로 묶여 있다</div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>토큰은 <b>자주 함께 나오는 글자 뭉치</b>다. 사람이 정한 낱말 단위가 아니다.</div></div>
+          <div class="v"><span class="b">→</span><div>모델이 세는 단위가 토큰이라 <b>요금도 토큰으로</b> 매긴다.</div></div>
+          <div class="v"><span class="b">★</span><div>숫자가 한 자씩 갈리는 것이 <b>계산을 못하는 이유</b> 중 하나다. 820을 한 덩이로 보지 않는다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">읽는 법</span><div>모델은 글자를 보지 않고 <b>토큰 번호</b>를 본다. 151,665개 중 하나씩이다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="한글이 더 비싼 이유">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>토큰</div>
+  <h2 class="s-title sm">같은 뜻에 한글이 더 먹는 토큰</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable">
+      <thead><tr><th>문장</th><th>지금 토크나이저</th><th>2019년 것</th></tr></thead>
+      <tbody>
+        <tr><td><code>Hello world</code></td><td>2개</td><td>2개</td></tr>
+        <tr><td><code>이차전지</code></td><td class="yes">4개</td><td class="no">11개</td></tr>
+        <tr><td>소성로 온도가 820도를 넘으면 불량이 늘어난다</td><td class="hl">23개</td><td>53개</td></tr>
+        <tr><td>If the kiln temperature exceeds 820 degrees, defects increase</td><td>14개</td><td>11개</td></tr>
+      </tbody>
+    </table>
+    <div class="vlist">
+      <div class="v"><span class="b">→</span><div>같은 뜻의 두 문장이 <b>한글 23개 · 영어 14개</b>다. 요금과 문맥 한도에서 그만큼 손해다.</div></div>
+      <div class="v"><span class="b">★</span><div>2019년 토크나이저는 같은 문장을 <b>53조각</b>으로 부쉈다. 한글을 아예 모르는 셈이었다.</div></div>
+      <div class="v"><span class="b">→</span><div>모델이 좋아진 데에는 <b>토크나이저가 좋아진 몫</b>도 있다. 같은 문장을 4분의 1 길이로 읽는다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">실무</span><div>긴 한글 문서를 다룰 때 <b>토큰 수를 먼저 세어 본다</b>. 글자 수의 절반쯤이 토큰 수다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="확률에서 하나를 고른다">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>온도</div>
+  <h2 class="s-title sm">확률을 얼마나 눌러 고를지 정하는 값 &middot; 온도</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="plot">
+          <svg viewBox="0 0 440 210">
+            <text x="14" y="16" font-size="11" font-weight="700" fill="#3A1FC9">같은 점수를 온도만 바꿔 확률로</text>
+            <g class="an d1">
+              <text x="14" y="42" font-size="11.5" font-weight="700" fill="#16142B">T = 0.2</text>
+              <rect x="76" y="30" width="220" height="16" rx="3" fill="#EFEAFF"/><rect x="76" y="30" width="118" height="16" rx="3" fill="#5B3DF5"/>
+              <text x="306" y="43" font-size="11.5" font-weight="700" fill="#3A1FC9">0.537</text>
+              <rect x="76" y="50" width="220" height="16" rx="3" fill="#EFEAFF"/><rect x="76" y="50" width="76" height="16" rx="3" fill="#B7A9FF"/>
+              <text x="306" y="63" font-size="11.5" fill="#8E8AAC">0.345</text>
+            </g>
+            <g class="an d2">
+              <text x="14" y="98" font-size="11.5" font-weight="700" fill="#16142B">T = 1.0</text>
+              <rect x="76" y="86" width="220" height="16" rx="3" fill="#EFEAFF"/><rect x="76" y="86" width="7" height="16" rx="3" fill="#5B3DF5"/>
+              <text x="306" y="99" font-size="11.5" font-weight="700" fill="#3A1FC9">0.034</text>
+              <rect x="76" y="106" width="220" height="16" rx="3" fill="#EFEAFF"/><rect x="76" y="106" width="7" height="16" rx="3" fill="#B7A9FF"/>
+              <text x="306" y="119" font-size="11.5" fill="#8E8AAC">0.031</text>
+            </g>
+            <g class="an d3">
+              <text x="14" y="154" font-size="11.5" font-weight="700" fill="#16142B">T = 2.0</text>
+              <rect x="76" y="142" width="220" height="16" rx="3" fill="#EFEAFF"/><rect x="76" y="142" width="1" height="16" rx="3" fill="#5B3DF5"/>
+              <text x="306" y="155" font-size="11.5" font-weight="700" fill="#3A1FC9">0.004</text>
+              <rect x="76" y="162" width="220" height="16" rx="3" fill="#EFEAFF"/><rect x="76" y="162" width="1" height="16" rx="3" fill="#B7A9FF"/>
+              <text x="306" y="175" font-size="11.5" fill="#8E8AAC">0.003</text>
+            </g>
+            <text class="an d4" x="14" y="198" font-size="11" fill="#8E8AAC">낮을수록 1등에 몰리고, 높을수록 모두가 비슷해진다</text>
+          </svg>
+          <div class="cap">1등과 2등의 점수 차는 그대로다. 바뀐 것은 그 차를 얼마나 크게 볼지다</div>
+        </div>
+      </div>
+      <div>
+        <div class="mini">T = 0.2 로 두 번 돌린 결과
+<q><b>소성로는 물과 석회석을 이용해
+만들어진 고급 소금 생산 공정입니다.</b>
+<b>소성로는 소금과 물을 섞어 만든
+음식이며, 한국의 전통 요리입니다.</b></q>
+
+T = 1.2 로 두 번 돌린 결과
+<i>소성로는 고유의 종류와 색상이有的
+고유의 특징가 있는 고기류鱼类으로</i></div>
+        <div class="vlist">
+          <div class="v"><span class="b">✕</span><div>온도를 올리면 <b>문장이 무너진다</b>. 확률이 낮은 조각까지 뽑히기 때문이다.</div></div>
+          <div class="v"><span class="b">★</span><div>온도를 낮춰도 <b>내용은 여전히 틀렸다</b>. 소성로를 소금 만드는 것으로 안다. 온도는 <b>맞고 틀림과 무관</b>하다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>일 시킬 때는 <b>0에 가깝게</b> 둔다. 온도는 다양성을 정하는 값이지 정확도를 정하는 값이 아니다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="계산기가 아니다">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>한계</div>
+  <h2 class="s-title sm">17 &times; 24 를 308 이라고 답하는 이유</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">그대로 물었을 때</span></div>
+          <pre><code>17 x 24 = </code></pre>
+          <div class="out"><span class="err">308</span>      정답은 408</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>계산을 한 것이 아니다. <b>&ldquo;17 x 24 = &rdquo; 뒤에 그럴듯한 세 자리 수</b>를 고른 것이다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>숫자가 <code>8</code> <code>2</code> <code>0</code> 처럼 <b>한 자씩 토큰으로 갈린다</b>. 자릿수를 맞춰 곱하는 구조가 없다.</div></div>
+          <div class="v"><span class="b">★</span><div>모델이 잘하는 것은 <b>본 적 있는 무늬를 잇는 것</b>이다. 정확한 계산은 그 무늬에 없다.</div></div>
+          <div class="v"><span class="b">→</span><div>그래서 실무에서는 <b>계산을 시키지 않고 계산기를 붙인다</b>. 이것이 도구 호출을 배우는 이유다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">경계</span><div>확신에 찬 말투와 정답률은 <b>아무 관계가 없다</b>. 308도 408만큼 자신 있게 나온다.</div></div>
+  </div>
+</section>
+
+<section class="slide section" data-title="[섹션] 여기까지 온 길">
+  <div class="ghost">01</div>
+  <div class="seyebrow">CHAPTER 01</div>
+  <h2>여기까지 온 길</h2>
+  <div class="agenda"><span>순서대로 읽기</span><span>어텐션</span><span>크기</span></div>
+</section>
+
+<section class="slide" data-title="단어를 숫자로">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>출발</div>
+  <h2 class="s-title sm">토큰 하나를 숫자 1,536칸으로 바꾸는 표</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="plot">
+      <svg viewBox="0 0 900 190">
+        <g class="an d1">
+          <rect x="20" y="60" width="80" height="34" rx="6" fill="#EFEAFF" stroke="#B7A9FF"/>
+          <text x="60" y="83" text-anchor="middle" font-size="14" font-weight="700" fill="#16142B">온도</text>
+          <text x="60" y="46" text-anchor="middle" font-size="10.5" fill="#8E8AAC">토큰</text>
+        </g>
+        <path class="an d2" d="M112 77 L156 77" stroke="#8E8AAC" stroke-width="1.6" marker-end="url(#a3)"/>
+        <text class="an d2" x="134" y="69" text-anchor="middle" font-size="10" fill="#8E8AAC">번호</text>
+        <g class="an d2">
+          <rect x="168" y="60" width="70" height="34" rx="6" fill="#F7F7F9" stroke="#DCD6F0"/>
+          <text x="203" y="83" text-anchor="middle" font-size="14" font-weight="700" fill="#16142B">36,127</text>
+        </g>
+        <path class="an d3" d="M250 77 L294 77" stroke="#8E8AAC" stroke-width="1.6" marker-end="url(#a3)"/>
+        <text class="an d3" x="272" y="69" text-anchor="middle" font-size="10" fill="#8E8AAC">표에서 찾기</text>
+        <g class="an d3">
+          <rect x="306" y="52" width="470" height="50" rx="6" fill="#F4F1FF" stroke="#DCD6F0"/>
+          <g font-size="12" font-family="ui-monospace,monospace" fill="#3A1FC9">
+            <text x="322" y="82">0.14  -0.87  0.02  0.55  -0.31  0.09  &hellip;  -0.42</text>
+          </g>
+          <text x="541" y="36" text-anchor="middle" font-size="10.5" fill="#8E8AAC">칸 1,536개짜리 숫자 줄</text>
+        </g>
+        <text class="an d4" x="541" y="124" text-anchor="middle" font-size="11.5" fill="#8E8AAC">이 1,536개도 <tspan font-weight="700" fill="#16142B">학습으로 정해진 계수</tspan>다</text>
+        <g class="an d5">
+          <rect x="306" y="140" width="470" height="34" rx="6" fill="#16142B"/>
+          <text x="541" y="162" text-anchor="middle" font-size="12.5" font-weight="700" fill="#fff">토큰 151,665개 &times; 칸 1,536개 = 2억 3천만 개</text>
+        </g>
+        <text class="an d5" x="60" y="162" font-size="11" fill="#8E8AAC">표 하나에만</text>
+        <defs><marker id="a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#8E8AAC"/></marker></defs>
+      </svg>
+      <div class="cap">글자를 숫자로 바꾸지 않으면 곱셈도 덧셈도 못 한다</div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">→</span><div>사진을 <b>픽셀 숫자</b>로 받은 것과 같다. 글은 <b>토큰 번호 → 숫자 줄</b>로 받는다.</div></div>
+      <div class="v"><span class="b">★</span><div>이 숫자 줄이 <b>뜻을 담는다</b>. 비슷한 뜻의 토큰은 비슷한 줄을 갖도록 학습된다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">출발점</span><div>여기까지는 사진을 다룰 때와 같다. <b>남은 문제는 하나</b> &mdash; 이 줄들을 어떻게 섞어 문맥을 만드는가.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="순서대로 읽던 방식">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>이전 방식</div>
+  <h2 class="s-title sm">앞에서부터 한 칸씩 읽어 나가던 구조</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="plot">
+      <svg viewBox="0 0 900 200">
+        <text x="20" y="18" font-size="11" font-weight="700" fill="#3A1FC9">2014년 무렵의 방식 · 한 칸씩 넘긴다</text>
+        <g class="an d1">
+          <rect x="20" y="52" width="96" height="30" rx="6" fill="#F4F1FF" stroke="#DCD6F0"/><text x="68" y="72" text-anchor="middle" font-size="12" fill="#16142B">소성로의</text>
+          <rect x="150" y="52" width="96" height="30" rx="6" fill="#F4F1FF" stroke="#DCD6F0"/><text x="198" y="72" text-anchor="middle" font-size="12" fill="#16142B">온도가</text>
+          <rect x="280" y="52" width="96" height="30" rx="6" fill="#F4F1FF" stroke="#DCD6F0"/><text x="328" y="72" text-anchor="middle" font-size="12" fill="#16142B">어제부터</text>
+          <rect x="410" y="52" width="96" height="30" rx="6" fill="#F4F1FF" stroke="#DCD6F0"/><text x="458" y="72" text-anchor="middle" font-size="12" fill="#16142B">계속</text>
+          <rect x="540" y="52" width="96" height="30" rx="6" fill="#F4F1FF" stroke="#DCD6F0"/><text x="588" y="72" text-anchor="middle" font-size="12" fill="#16142B">높아서</text>
+          <rect x="670" y="52" width="96" height="30" rx="6" fill="#FDE8EE" stroke="#E8537A"/><text x="718" y="72" text-anchor="middle" font-size="12" font-weight="700" fill="#16142B">그것을</text>
+        </g>
+        <g class="an d2">
+          <path d="M118 67 L146 67 M248 67 L276 67 M378 67 L406 67 M508 67 L536 67 M638 67 L666 67"
+                stroke="#5B3DF5" stroke-width="1.8" marker-end="url(#a4)"/>
+          <text x="392" y="40" text-anchor="middle" font-size="11" fill="#5B3DF5">앞의 요약 하나만 넘긴다</text>
+        </g>
+        <g class="an d3">
+          <text x="68" y="106" text-anchor="middle" font-size="10.5" fill="#8E8AAC">여기서 본 것이</text>
+          <path d="M68 116 L68 134 L718 134 L718 116" stroke="#E8537A" stroke-width="1.4" stroke-dasharray="4 3" fill="none"/>
+          <text x="393" y="150" text-anchor="middle" font-size="12" font-weight="800" fill="#E8537A">다섯 칸을 지나오며 흐려진다</text>
+        </g>
+        <g class="an d4">
+          <rect x="20" y="164" width="410" height="26" rx="6" fill="#FDE8EE" stroke="#F1B9C9"/>
+          <text x="225" y="182" text-anchor="middle" font-size="11.5" fill="#16142B">한계 1 &mdash; 먼 곳의 단어를 잊는다</text>
+          <rect x="446" y="164" width="410" height="26" rx="6" fill="#FDE8EE" stroke="#F1B9C9"/>
+          <text x="651" y="182" text-anchor="middle" font-size="11.5" fill="#16142B">한계 2 &mdash; 앞 칸이 끝나야 다음 칸을 한다</text>
+        </g>
+        <defs><marker id="a4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5B3DF5"/></marker></defs>
+      </svg>
+      <div class="cap">칸마다 앞의 내용을 한 덩이로 압축해 넘기는 구조였다</div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">✕</span><div><b>먼 곳을 잊는다.</b> &ldquo;그것을&rdquo; 이 무엇인지 알려면 여섯 칸 앞을 봐야 하는데, 그 정보가 압축되며 사라진다.</div></div>
+      <div class="v"><span class="b">✕</span><div><b>한꺼번에 못 한다.</b> 앞 칸이 끝나야 다음 칸을 시작한다. GPU 를 아무리 붙여도 순서를 못 건너뛴다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">벽</span><div>두 한계는 같은 뿌리다. <b>정보가 한 줄로만 흐른다</b>는 것이다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="어텐션이라는 착안">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>전환</div>
+  <h2 class="s-title sm">한 줄로 흘리는 대신 필요한 곳을 직접 보기</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="plot">
+      <svg viewBox="0 0 900 190">
+        <g class="an d1">
+          <rect x="20" y="46" width="96" height="30" rx="6" fill="#F4F1FF" stroke="#DCD6F0"/><text x="68" y="66" text-anchor="middle" font-size="12" fill="#16142B">소성로의</text>
+          <rect x="150" y="46" width="96" height="30" rx="6" fill="#F4F1FF" stroke="#DCD6F0"/><text x="198" y="66" text-anchor="middle" font-size="12" fill="#16142B">온도가</text>
+          <rect x="280" y="46" width="96" height="30" rx="6" fill="#F4F1FF" stroke="#DCD6F0"/><text x="328" y="66" text-anchor="middle" font-size="12" fill="#16142B">어제부터</text>
+          <rect x="410" y="46" width="96" height="30" rx="6" fill="#F4F1FF" stroke="#DCD6F0"/><text x="458" y="66" text-anchor="middle" font-size="12" fill="#16142B">계속</text>
+          <rect x="540" y="46" width="96" height="30" rx="6" fill="#F4F1FF" stroke="#DCD6F0"/><text x="588" y="66" text-anchor="middle" font-size="12" fill="#16142B">높아서</text>
+          <rect x="670" y="46" width="96" height="30" rx="6" fill="#FDE8EE" stroke="#E8537A" stroke-width="2"/><text x="718" y="66" text-anchor="middle" font-size="12" font-weight="700" fill="#16142B">그것을</text>
+        </g>
+        <g class="an d2">
+          <path d="M700 84 Q 400 150 90 84" stroke="#5B3DF5" stroke-width="3" fill="none" opacity="0.85" marker-end="url(#a5)"/>
+          <path d="M706 84 Q 460 132 210 84" stroke="#B7A9FF" stroke-width="1.4" fill="none" opacity="0.6" marker-end="url(#a5)"/>
+          <path d="M712 84 Q 600 116 600 84" stroke="#DCD6F0" stroke-width="1" fill="none" opacity="0.6"/>
+        </g>
+        <text class="an d3" x="300" y="168" text-anchor="middle" font-size="12" font-weight="800" fill="#5B3DF5">여섯 칸 떨어져 있어도 한 번에 닿는다</text>
+        <g class="an d4">
+          <rect x="596" y="150" width="290" height="26" rx="6" fill="#EFEAFF" stroke="#B7A9FF"/>
+          <text x="741" y="168" text-anchor="middle" font-size="11.5" fill="#3A1FC9">모든 칸이 동시에 계산된다</text>
+        </g>
+        <text class="an d2" x="393" y="26" text-anchor="middle" font-size="11" fill="#8E8AAC">선의 굵기가 얼마나 보는지다</text>
+        <defs><marker id="a5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5B3DF5"/></marker></defs>
+      </svg>
+      <div class="cap">거리를 지나며 흐려지는 것이 아니라 곧바로 잇는다</div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>거리와 상관없이 <b>한 번의 곱셈으로 닿는다</b>. 첫째 한계가 풀린다.</div></div>
+      <div class="v"><span class="b">★</span><div>칸끼리 순서를 기다릴 필요가 없어 <b>전부 한꺼번에 계산</b>된다. 둘째 한계가 풀린다. GPU 를 붙인 만큼 빨라진다.</div></div>
+      <div class="v"><span class="b">→</span><div>둘째가 풀린 덕에 <b>모델을 크게 키울 수 있게</b> 됐다. 오늘날의 크기는 여기서 나왔다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">전환점</span><div>2017년에 <b>순서대로 읽는 부분을 아예 버리고</b> 어텐션만 남긴 구조가 나왔다. 그것이 트랜스포머다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="크기를 키우자 생긴 일">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>크기</div>
+  <h2 class="s-title sm">오늘 여는 모델 한 대의 속내</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="mini">계수        <b>1,543,714,304</b>
+층          <b>28</b>
+어텐션 머리  <b>12</b>
+토큰 한 칸   <b>1,536</b>
+어휘        <b>151,665</b>
+한 번에 볼 토큰 <b>32,768</b></div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>사진 분류에 만든 CNN 이 <b>6만 개</b>였다. 이것은 <b>15억 개</b>다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>구조는 사진을 다룰 때와 같다. <b>층을 쌓고 계수를 학습</b>한다. 층이 28겹일 뿐이다.</div></div>
+          <div class="v"><span class="b">★</span><div>바뀐 것은 <b>양</b>이다. 인터넷 규모의 글을 읽히자 문법 · 사실 · 번역 · 요약이 <b>따로 가르치지 않았는데</b> 생겼다.</div></div>
+          <div class="v"><span class="b">→</span><div>이 모델은 작은 축이다. 현업에서 쓰는 것은 이보다 <b>수백 배</b> 크다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">읽는 법</span><div>&ldquo;몇 B 모델&rdquo; 은 <b>계수가 몇십억 개인가</b>를 말한다. 이 모델은 1.5B 다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="대답하게 만들기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>마무리 학습</div>
+  <h2 class="s-title sm">이어 쓰던 모델을 대답하게 만든 한 단계</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twopane">
+      <div class="pane bad">
+        <h4>글만 읽힌 상태</h4>
+        <div class="mini">입력   프랑스의 수도는
+출력   <i>루이즈로, 이곳에서 178</i></div>
+        <p>인터넷 글을 이어 쓸 뿐이다. <b>질문에 답한다는 개념 자체가 없다.</b></p>
+      </div>
+      <div class="pane good">
+        <h4>질문·답 짝을 더 학습한 뒤</h4>
+        <div class="mini">입력   질문: 프랑스의 수도는 어디인가?
+       답:
+출력   <q><b>프랑스의 수도는 파리입니다.</b></q></div>
+        <p>사람이 만든 <b>질문과 좋은 답 짝</b>을 학습시키면 답하는 형태로 이어 쓴다.</p>
+      </div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>두 경우 모두 <b>하는 일은 같다</b>. 다음 토큰을 고른다. 달라진 것은 <b>어떤 이어 쓰기가 그럴듯한가</b>다.</div></div>
+      <div class="v"><span class="b">→</span><div>&ldquo;대답한다&rdquo; 는 것도 결국 <b>학습된 형태</b>다. 모델이 뜻을 알아들어 응하는 것이 아니다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">핵심</span><div>이 단계 덕에 <b>프롬프트가 듣는다</b>. 지시문 뒤에 지시를 따른 글이 오도록 배웠기 때문이다.</div></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 어텐션">
+  <div class="ghost">02</div>
+  <div class="seyebrow">CHAPTER 02</div>
+  <h2>어텐션</h2>
+  <div class="agenda"><span>질문 · 열쇠 · 값</span><span>비율</span><span>실측</span></div>
+</section>
+
+<section class="slide" data-title="같은 단어 다른 뜻">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>문제</div>
+  <h2 class="s-title sm">같은 토큰인데 주변에 따라 달라지는 뜻</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="plot">
+      <svg viewBox="0 0 900 170">
+        <g class="an d1">
+          <text x="20" y="20" font-size="11" font-weight="700" fill="#3A1FC9">문장 하나</text>
+          <rect x="20" y="32" width="380" height="34" rx="6" fill="#F4F1FF" stroke="#DCD6F0"/>
+          <text x="210" y="55" text-anchor="middle" font-size="14" fill="#16142B">은행 에서 돈 을 찾았다</text>
+          <rect x="34" y="36" width="46" height="26" rx="4" fill="none" stroke="#5B3DF5" stroke-width="2"/>
+        </g>
+        <g class="an d2">
+          <text x="480" y="20" font-size="11" font-weight="700" fill="#3A1FC9">다른 문장</text>
+          <rect x="480" y="32" width="380" height="34" rx="6" fill="#F4F1FF" stroke="#DCD6F0"/>
+          <text x="670" y="55" text-anchor="middle" font-size="14" fill="#16142B">은행 나무 아래 에서 쉬었다</text>
+          <rect x="494" y="36" width="46" height="26" rx="4" fill="none" stroke="#E8537A" stroke-width="2"/>
+        </g>
+        <g class="an d3">
+          <path d="M57 74 L57 92" stroke="#5B3DF5" stroke-width="1.4"/>
+          <text x="57" y="108" text-anchor="middle" font-size="11.5" font-weight="700" fill="#5B3DF5">돈 다루는 곳</text>
+          <path d="M517 74 L517 92" stroke="#E8537A" stroke-width="1.4"/>
+          <text x="517" y="108" text-anchor="middle" font-size="11.5" font-weight="700" fill="#E8537A">나무</text>
+        </g>
+        <g class="an d4">
+          <text x="210" y="136" text-anchor="middle" font-size="11" fill="#8E8AAC">뜻을 정한 것은 <tspan font-weight="700" fill="#16142B">&ldquo;돈&rdquo;</tspan></text>
+          <text x="670" y="136" text-anchor="middle" font-size="11" fill="#8E8AAC">뜻을 정한 것은 <tspan font-weight="700" fill="#16142B">&ldquo;나무&rdquo;</tspan></text>
+          <text x="440" y="162" text-anchor="middle" font-size="12.5" font-weight="800" fill="#16142B">표에서 꺼낸 숫자 줄은 두 경우가 똑같다</text>
+        </g>
+      </svg>
+      <div class="cap">토큰 번호가 같으면 처음 꺼내는 숫자 줄도 같다</div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">→</span><div>그러니 <b>주변 토큰의 숫자를 섞어 넣어야</b> 한다. 그래야 두 &ldquo;은행&rdquo; 이 달라진다.</div></div>
+      <div class="v"><span class="b">★</span><div>문제는 <b>누구의 숫자를 얼마나 섞을 것인가</b>다. 어텐션이 정하는 것이 그 비율이다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">할 일</span><div>어텐션은 <b>주변 토큰을 섞는 비율을 정하는 계산</b>이다. 그 이상도 이하도 아니다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="벡터 셋">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>구성</div>
+  <h2 class="s-title sm">토큰마다 만드는 숫자 줄 세 벌</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="plot">
+          <svg viewBox="0 0 440 200">
+            <g class="an d1">
+              <rect x="14" y="76" width="86" height="34" rx="6" fill="#F4F1FF" stroke="#DCD6F0"/>
+              <text x="57" y="99" text-anchor="middle" font-size="13" font-weight="700" fill="#16142B">소성로</text>
+              <text x="57" y="66" text-anchor="middle" font-size="10" fill="#8E8AAC">토큰의 숫자 줄</text>
+            </g>
+            <g class="an d2">
+              <path d="M108 84 L146 50" stroke="#8E8AAC" stroke-width="1.4" marker-end="url(#a6)"/>
+              <path d="M108 93 L146 93" stroke="#8E8AAC" stroke-width="1.4" marker-end="url(#a6)"/>
+              <path d="M108 102 L146 136" stroke="#8E8AAC" stroke-width="1.4" marker-end="url(#a6)"/>
+              <text x="127" y="118" text-anchor="middle" font-size="9.5" fill="#8E8AAC">표 3개</text>
+            </g>
+            <g class="an d3" font-size="12">
+              <rect x="156" y="34" width="120" height="30" rx="6" fill="#EFEAFF" stroke="#B7A9FF"/>
+              <text x="216" y="54" text-anchor="middle" font-weight="700" fill="#3A1FC9">질문 Q</text>
+              <text x="288" y="54" font-size="10.5" fill="#8E8AAC">무엇을 찾는가</text>
+              <rect x="156" y="78" width="120" height="30" rx="6" fill="#FDE8EE" stroke="#F1B9C9"/>
+              <text x="216" y="98" text-anchor="middle" font-weight="700" fill="#E8537A">열쇠 K</text>
+              <text x="288" y="98" font-size="10.5" fill="#8E8AAC">나는 무엇인가</text>
+              <rect x="156" y="122" width="120" height="30" rx="6" fill="#E8F7EF" stroke="#8ED6AE"/>
+              <text x="216" y="142" text-anchor="middle" font-weight="700" fill="#1E8A56">값 V</text>
+              <text x="288" y="142" font-size="10.5" fill="#8E8AAC">넘겨줄 내용</text>
+            </g>
+            <text class="an d4" x="216" y="180" text-anchor="middle" font-size="11" fill="#8E8AAC">표 3개도 전부 학습으로 정해진 계수다</text>
+            <defs><marker id="a6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#8E8AAC"/></marker></defs>
+          </svg>
+          <div class="cap">토큰 하나가 세 가지 역할을 동시에 맡는다</div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div><b>질문</b>은 그 토큰이 <b>어떤 정보를 필요로 하는지</b> 적은 줄이다.</div></div>
+          <div class="v"><span class="b">→</span><div><b>열쇠</b>는 그 토큰이 <b>어떤 정보를 갖고 있는지</b> 적은 명패다.</div></div>
+          <div class="v"><span class="b">→</span><div><b>값</b>은 실제로 <b>넘겨줄 내용</b>이다. 질문과 열쇠가 맞으면 이 값이 건너간다.</div></div>
+          <div class="v"><span class="b">★</span><div>셋 다 <b>같은 숫자 줄에 표를 곱해</b> 만든다. 표 세 개가 학습되는 계수다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">외울 것</span><div>질문과 열쇠는 <b>얼마나 볼지 정하는 데만</b> 쓴다. 실제로 건너가는 것은 <b>값</b>뿐이다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="점수에서 비율로">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>계산</div>
+  <h2 class="s-title sm">질문과 열쇠를 곱해 얻는 세 개의 비율</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="plot">
+      <svg viewBox="0 0 900 214">
+        <text x="20" y="18" font-size="11.5" font-weight="700" fill="#3A1FC9">&ldquo;그것&rdquo; 의 질문 q = [ 2 , 0 ]</text>
+        <text x="250" y="18" font-size="10.5" fill="#8E8AAC">칸1 = 장비인가 · 칸2 = 수치인가 &mdash; 설명을 위해 칸 두 개로 줄인 그림이다</text>
+        <g font-size="12" font-weight="700" fill="#8E8AAC">
+          <text x="20" y="46">토큰</text><text x="104" y="46">열쇠 k</text><text x="210" y="46">q · k</text>
+          <text x="376" y="46">÷ √2</text><text x="464" y="46">e 를 그만큼 거듭</text><text x="600" y="46">전체로 나눈 비율</text>
+        </g>
+        <line x1="20" y1="54" x2="880" y2="54" stroke="#DCD6F0"/>
+        <g class="an d1" font-size="13">
+          <text x="20" y="84" font-weight="700" fill="#16142B">소성로</text>
+          <text x="104" y="84" font-family="ui-monospace,monospace" fill="#E8537A">[ 2 , 0 ]</text>
+          <text x="210" y="84" font-family="ui-monospace,monospace">2&times;2 + 0&times;0 = 4.0</text>
+          <text x="376" y="84" font-family="ui-monospace,monospace">2.828</text>
+          <text x="464" y="84" font-family="ui-monospace,monospace">16.919</text>
+          <rect x="600" y="70" width="140" height="18" rx="3" fill="#EFEAFF"/><rect x="600" y="70" width="116" height="18" rx="3" fill="#5B3DF5"/>
+          <text x="756" y="84" font-weight="800" fill="#3A1FC9">0.768</text>
+        </g>
+        <g class="an d2" font-size="13">
+          <text x="20" y="114" font-weight="700" fill="#16142B">온도</text>
+          <text x="104" y="114" font-family="ui-monospace,monospace" fill="#E8537A">[ 0 , 2 ]</text>
+          <text x="210" y="114" font-family="ui-monospace,monospace">2&times;0 + 0&times;2 = 0.0</text>
+          <text x="376" y="114" font-family="ui-monospace,monospace">0.000</text>
+          <text x="464" y="114" font-family="ui-monospace,monospace">1.000</text>
+          <rect x="600" y="100" width="140" height="18" rx="3" fill="#EFEAFF"/><rect x="600" y="100" width="7" height="18" rx="3" fill="#5B3DF5"/>
+          <text x="756" y="114" font-weight="400" fill="#8E8AAC">0.045</text>
+        </g>
+        <g class="an d3" font-size="13">
+          <text x="20" y="144" font-weight="700" fill="#16142B">불량</text>
+          <text x="104" y="144" font-family="ui-monospace,monospace" fill="#E8537A">[ 1 , 0 ]</text>
+          <text x="210" y="144" font-family="ui-monospace,monospace">2&times;1 + 0&times;0 = 2.0</text>
+          <text x="376" y="144" font-family="ui-monospace,monospace">1.414</text>
+          <text x="464" y="144" font-family="ui-monospace,monospace">4.113</text>
+          <rect x="600" y="130" width="140" height="18" rx="3" fill="#EFEAFF"/><rect x="600" y="130" width="28" height="18" rx="3" fill="#5B3DF5"/>
+          <text x="756" y="144" font-weight="400" fill="#8E8AAC">0.187</text>
+        </g>
+        <line x1="440" y1="156" x2="880" y2="156" stroke="#16142B" stroke-width="1.2"/>
+        <g class="an d4" font-size="13">
+          <text x="464" y="176" font-family="ui-monospace,monospace" font-weight="700">22.032</text>
+          <text x="600" y="176" font-size="11" fill="#8E8AAC">합이 정확히 1이 된다</text>
+          <text x="756" y="176" font-weight="800" fill="#16142B">1.000</text>
+        </g>
+        <text class="an d5" x="20" y="202" font-size="11.5" fill="#8E8AAC">√2 로 나누는 것은 칸 수가 늘수록 점수가 커지는 것을 눌러 두려는 것이다</text>
+      </svg>
+      <div class="cap">질문과 열쇠가 같은 방향일수록 점수가 크고, 어긋나면 0에 가깝다</div>
+    </div>
+    <div class="keymsg"><span class="k">원리</span><div>어텐션의 계산은 <b>곱해서 더하고, 비율로 만들기</b>다. 이미 배운 가중합에 나눗셈 하나가 붙은 것이다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="값을 섞는다">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>계산</div>
+  <h2 class="s-title sm">그 비율로 값을 섞은 한 줄</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="plot">
+          <svg viewBox="0 0 440 190">
+            <g font-size="13" font-family="ui-monospace,monospace">
+              <g class="an d1">
+                <text x="14" y="34" font-family="Pretendard,sans-serif" font-weight="700" fill="#16142B">소성로</text>
+                <text x="96" y="34" fill="#3A1FC9">0.768</text>
+                <text x="152" y="34" fill="#8E8AAC">&times;</text>
+                <text x="172" y="34" fill="#1E8A56">[ 1 , 0 ]</text>
+                <text x="262" y="34" fill="#8E8AAC">=</text>
+                <text x="284" y="34">[ 0.768 , 0.000 ]</text>
+              </g>
+              <g class="an d2">
+                <text x="14" y="62" font-family="Pretendard,sans-serif" font-weight="700" fill="#16142B">온도</text>
+                <text x="96" y="62" fill="#3A1FC9">0.045</text>
+                <text x="152" y="62" fill="#8E8AAC">&times;</text>
+                <text x="172" y="62" fill="#1E8A56">[ 0 , 1 ]</text>
+                <text x="262" y="62" fill="#8E8AAC">=</text>
+                <text x="284" y="62">[ 0.000 , 0.045 ]</text>
+              </g>
+              <g class="an d3">
+                <text x="14" y="90" font-family="Pretendard,sans-serif" font-weight="700" fill="#16142B">불량</text>
+                <text x="96" y="90" fill="#3A1FC9">0.187</text>
+                <text x="152" y="90" fill="#8E8AAC">&times;</text>
+                <text x="172" y="90" fill="#1E8A56">[ 1 , 1 ]</text>
+                <text x="262" y="90" fill="#8E8AAC">=</text>
+                <text x="284" y="90">[ 0.187 , 0.187 ]</text>
+              </g>
+              <line class="an d4" x1="284" y1="102" x2="424" y2="102" stroke="#16142B" stroke-width="1.2"/>
+              <g class="an d4">
+                <text x="172" y="126" font-family="Pretendard,sans-serif" font-size="12" fill="#8E8AAC">모두 더하면</text>
+                <rect x="278" y="110" width="148" height="26" rx="5" fill="#16142B"/>
+                <text x="352" y="128" text-anchor="middle" fill="#fff" font-weight="700">[ 0.955 , 0.232 ]</text>
+              </g>
+            </g>
+            <text class="an d5" x="14" y="162" font-size="11" fill="#8E8AAC">&ldquo;그것&rdquo; 의 숫자 줄이 이만큼 바뀐다</text>
+            <text class="an d5" x="14" y="180" font-size="11" fill="#8E8AAC">이제 &ldquo;그것&rdquo; 안에 소성로 쪽 내용이 들어 있다</text>
+          </svg>
+          <div class="cap">비율이 큰 쪽의 값이 많이 섞인다</div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>결과는 <b>숫자 줄 하나</b>다. 이것이 다음 층으로 넘어간다.</div></div>
+          <div class="v"><span class="b">★</span><div>&ldquo;그것&rdquo; 이 소성로를 <b>가리킨다고 판단한 것이 아니다</b>. 소성로의 숫자를 76.8% 만큼 섞었을 뿐이다.</div></div>
+          <div class="v"><span class="b">→</span><div>실제 모델은 칸이 <b>1,536개</b>다. 계산 방법은 똑같고 줄이 길어질 뿐이다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">정리</span><div>어텐션 한 번 = <b>점수 내기 → 비율로 바꾸기 → 값 섞기</b>. 세 단계가 전부다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="실제로 재 보면">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>실측</div>
+  <h2 class="s-title sm">14층 0번 머리가 실제로 본 곳</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="plot">
+      <svg viewBox="0 0 900 190">
+        <text x="20" y="18" font-size="11" font-weight="700" fill="#3A1FC9">넣은 문장 — 마지막 &ldquo;철수는&rdquo; 자리에서 앞을 본다</text>
+        <g font-size="13">
+          <text x="20" y="44" fill="#16142B">철수는  사과를  좋아한다.  영희는  포도를  좋아한다.  <tspan font-weight="800" fill="#E8537A">철수는</tspan></text>
+        </g>
+        <g class="an d1">
+          <rect x="20" y="62" width="150" height="22" rx="4" fill="#EFEAFF"/><rect x="20" y="62" width="71" height="22" rx="4" fill="#5B3DF5"/>
+          <text x="182" y="78" font-size="12.5" font-weight="800" fill="#3A1FC9">0.476</text>
+          <text x="236" y="78" font-size="13" font-weight="700" fill="#16142B">사과</text>
+          <text x="290" y="78" font-size="11" fill="#8E8AAC">앞의 &ldquo;철수는&rdquo; 바로 뒤에 왔던 것</text>
+        </g>
+        <g class="an d2">
+          <rect x="20" y="90" width="150" height="22" rx="4" fill="#EFEAFF"/><rect x="20" y="90" width="32" height="22" rx="4" fill="#B7A9FF"/>
+          <text x="182" y="106" font-size="12.5" fill="#8E8AAC">0.212</text>
+          <text x="236" y="106" font-size="13" fill="#16142B">철수</text>
+          <text x="290" y="106" font-size="11" fill="#8E8AAC">같은 낱말이 앞에 있던 자리</text>
+        </g>
+        <g class="an d3">
+          <rect x="20" y="118" width="150" height="22" rx="4" fill="#EFEAFF"/><rect x="20" y="118" width="24" height="22" rx="4" fill="#B7A9FF"/>
+          <text x="182" y="134" font-size="12.5" fill="#8E8AAC">0.162</text>
+          <text x="236" y="134" font-size="13" fill="#16142B">포도</text>
+          <text x="290" y="134" font-size="11" fill="#8E8AAC">다른 사람 쪽에 왔던 것</text>
+        </g>
+        <g class="an d4">
+          <rect x="20" y="146" width="150" height="22" rx="4" fill="#EFEAFF"/><rect x="20" y="146" width="10" height="22" rx="4" fill="#DCD6F0"/>
+          <text x="182" y="162" font-size="12.5" fill="#8E8AAC">0.069</text>
+          <text x="236" y="162" font-size="13" fill="#8E8AAC">.</text>
+          <text x="290" y="162" font-size="11" fill="#8E8AAC">나머지는 전부 0.02 아래다</text>
+        </g>
+        <g class="an d5">
+          <rect x="596" y="58" width="288" height="112" rx="8" fill="#F4F1FF" stroke="#DCD6F0"/>
+          <text x="740" y="82" text-anchor="middle" font-size="12.5" font-weight="800" fill="#16142B">이 머리가 하는 일</text>
+          <text x="614" y="106" font-size="11.5" fill="#8E8AAC">앞에 나온 같은 낱말을 찾고,</text>
+          <text x="614" y="126" font-size="11.5" fill="#8E8AAC">그 <tspan font-weight="700" fill="#16142B">바로 뒤에 왔던 것</tspan>을 본다.</text>
+          <text x="614" y="152" font-size="11.5" fill="#5B3DF5">&ldquo;저번에 이 다음에 뭐가 왔더라&rdquo;</text>
+        </g>
+      </svg>
+      <div class="cap">머리 336개 중 하나를 골라 그 가중치를 그대로 옮긴 것이다</div>
+    </div>
+    <div class="keymsg"><span class="k">확인</span><div>어텐션은 그림으로만 있는 것이 아니다. <b>층과 머리를 지정하면 숫자로 꺼내 볼 수 있다.</b></div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="뜻 없는 말에서도">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>검증</div>
+  <h2 class="s-title sm">뜻 모르는 낱말에서도 짚는 같은 자리</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable">
+      <thead><tr><th>넣은 문장 (마지막 낱말에서 앞을 본다)</th><th>가장 많이 본 곳</th><th>그 다음</th></tr></thead>
+      <tbody>
+        <tr><td>철수는 사과를&hellip; 영희는 포도를&hellip; <b>철수는</b></td><td class="yes">사과 0.476</td><td>포도 0.162</td></tr>
+        <tr><td>철수는 사과를&hellip; 영희는 포도를&hellip; <b>영희는</b></td><td class="yes">포도 0.667</td><td>사과 0.090</td></tr>
+        <tr><td>영희는 포도를&hellip; 철수는 사과를&hellip; <b>철수는</b></td><td class="yes">사과 0.749</td><td>포도 0.063</td></tr>
+        <tr><td class="hl">가나는 다라를&hellip; 마바는 사아를&hellip; <b>가나는</b></td><td class="yes">다라 0.627</td><td>사아 0.163</td></tr>
+        <tr><td class="hl">가나는 다라를&hellip; 마바는 사아를&hellip; <b>마바는</b></td><td class="yes">사아 0.751</td><td>다라 0.069</td></tr>
+      </tbody>
+    </table>
+    <div class="vlist">
+      <div class="v"><span class="b">→</span><div>순서를 바꿔도, 묻는 낱말을 바꿔도 <b>매번 맞는 자리</b>를 짚는다. 첫 낱말을 무조건 보는 것이 아니다.</div></div>
+      <div class="v"><span class="b">★</span><div>아래 두 줄은 <b>뜻이 없는 낱말</b>이다. 사과도 포도도 모르는데 짚는다. <b>의미가 아니라 무늬로</b> 작동한다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">결론</span><div>이 머리는 <b>&ldquo;A 다음에 B&rdquo; 를 봤으면, 다시 A 가 나올 때 B 를 본다</b>. 다음 장에서 이것이 프롬프팅과 이어진다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="머리와 층">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>구조</div>
+  <h2 class="s-title sm">한 층에 머리 12개 &middot; 층은 28겹</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="plot">
+          <svg viewBox="0 0 440 190">
+            <text x="14" y="16" font-size="11" font-weight="700" fill="#3A1FC9">한 층 안의 머리 12개</text>
+            <g class="an d1">
+              <g font-size="9.5" text-anchor="middle">
+                <rect x="14" y="26" width="60" height="26" rx="4" fill="#EFEAFF" stroke="#B7A9FF"/><text x="44" y="43" fill="#3A1FC9">머리 0</text>
+                <rect x="80" y="26" width="60" height="26" rx="4" fill="#F7F7F9" stroke="#DCD6F0"/><text x="110" y="43" fill="#8E8AAC">머리 1</text>
+                <rect x="146" y="26" width="60" height="26" rx="4" fill="#F7F7F9" stroke="#DCD6F0"/><text x="176" y="43" fill="#8E8AAC">머리 2</text>
+                <rect x="212" y="26" width="60" height="26" rx="4" fill="#F7F7F9" stroke="#DCD6F0"/><text x="242" y="43" fill="#8E8AAC">&hellip;</text>
+                <rect x="278" y="26" width="70" height="26" rx="4" fill="#F7F7F9" stroke="#DCD6F0"/><text x="313" y="43" fill="#8E8AAC">머리 11</text>
+              </g>
+              <text x="14" y="70" font-size="11" fill="#8E8AAC">머리마다 <tspan font-weight="700" fill="#16142B">질문·열쇠·값 표가 따로</tspan> 있다</text>
+              <text x="14" y="88" font-size="11" fill="#8E8AAC">그래서 저마다 다른 곳을 본다</text>
+            </g>
+            <g class="an d2">
+              <text x="14" y="118" font-size="11" font-weight="700" fill="#3A1FC9">층 28겹</text>
+              <rect x="14" y="126" width="334" height="14" rx="3" fill="#EFEAFF"/>
+              <rect x="14" y="144" width="334" height="14" rx="3" fill="#EFEAFF"/>
+              <rect x="14" y="162" width="334" height="14" rx="3" fill="#B7A9FF"/>
+              <text x="360" y="137" font-size="10" fill="#8E8AAC">28층</text>
+              <text x="360" y="173" font-size="10" fill="#8E8AAC">1층</text>
+            </g>
+            <text class="an d3" x="368" y="60" font-size="15" font-weight="800" fill="#16142B">336</text>
+            <text class="an d3" x="368" y="78" font-size="10" fill="#8E8AAC">장의 지도</text>
+          </svg>
+          <div class="cap">12 &times; 28 = 336. 앞 장에서 본 것은 그중 한 장이다</div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>머리마다 <b>다른 것을 찾도록</b> 학습된다. 앞 낱말을 보는 머리, 문장 끝을 보는 머리가 따로 생긴다.</div></div>
+          <div class="v"><span class="b">→</span><div>한 층의 결과가 <b>다음 층의 입력</b>이 된다. 층을 지날수록 더 넓은 관계가 담긴다.</div></div>
+          <div class="v"><span class="b">★</span><div>사람이 <b>무엇을 볼지 정해 준 적이 없다</b>. 다음 토큰을 잘 맞히다 보니 이런 머리들이 생겼다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">규모</span><div>어텐션은 한 번 하는 계산이 아니다. <b>336번 하고 그 결과를 겹쳐 쓴다.</b></div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="문맥이 길면">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>비용</div>
+  <h2 class="s-title sm">토큰이 두 배면 계산은 네 배</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <table class="ctable">
+          <thead><tr><th>토큰 수</th><th>점수 개수</th></tr></thead>
+          <tbody>
+            <tr><td>10개</td><td>100개</td></tr>
+            <tr><td>100개</td><td>10,000개</td></tr>
+            <tr><td>1,000개</td><td>1,000,000개</td></tr>
+            <tr><td class="hl">128,000개</td><td class="no">16,384,000,000개</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>토큰 하나가 <b>앞의 모든 토큰</b>과 점수를 낸다. 그래서 토큰 수의 <b>제곱</b>이다.</div></div>
+          <div class="v"><span class="b">✕</span><div>긴 문서를 통째로 넣으면 <b>느리고 비싸다</b>. 열 배 길면 백 배다.</div></div>
+          <div class="v"><span class="b">★</span><div>그래서 <b>필요한 부분만 찾아 넣는 방법</b>이 필요해진다. 그것이 RAG 다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">비용</span><div>어텐션이 강한 이유와 비싼 이유가 <b>같다</b>. 모든 토큰이 모든 토큰을 보기 때문이다.</div></div>
+  </div>
+</section>
+
+<section class="slide section" data-title="[섹션] 프롬프팅의 원리">
+  <div class="ghost">03</div>
+  <div class="seyebrow">CHAPTER 03</div>
+  <h2>프롬프팅의 원리</h2>
+  <div class="agenda"><span>왜 듣는가</span><span>예시</span><span>왜 안 듣는가</span></div>
+</section>
+
+<section class="slide" data-title="프롬프트는 앞부분이다">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>원리</div>
+  <h2 class="s-title sm">같은 모델에 앞부분만 바꿔 넣은 세 번</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable">
+      <thead><tr><th>넣은 앞부분</th><th>모델이 이어 쓴 것</th></tr></thead>
+      <tbody>
+        <tr><td><code>이 제품 정말 좋아요.</code></td><td>편안하고, 깔끔한 느낌이 좋았어요.</td></tr>
+        <tr><td class="hl"><code>다음 문장이 칭찬인지 불만인지 한 단어로 답하라.<br>문장: 이 제품 정말 좋아요.<br>답:</code></td><td class="yes"><b>칭찬</b></td></tr>
+        <tr><td class="hl"><code>사과 → apple<br>바나나 → banana<br>딸기 → strawberry<br>포도 →</code></td><td class="yes"><b>grape</b></td></tr>
+      </tbody>
+    </table>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>세 번 모두 <b>같은 모델 · 같은 계수</b>다. 학습을 다시 시킨 적이 없다.</div></div>
+      <div class="v"><span class="b">→</span><div>모델은 <b>명령을 받은 것이 아니다</b>. 그 앞부분 뒤에 올 법한 글을 이어 썼을 뿐이다.</div></div>
+      <div class="v"><span class="b">→</span><div>셋째 줄에는 <b>&ldquo;번역하라&rdquo; 는 말이 없다</b>. 그런데 번역이 나왔다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">핵심</span><div>프롬프트는 <b>지시가 아니라 앞부분</b>이다. 다음에 올 것이 정해지도록 앞을 깔아 주는 일이다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="같은 질문 다른 형태">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>측정</div>
+  <h2 class="s-title sm">형태만 바꿔 틀린 답이 맞는 답이 되는 자리</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable">
+      <thead><tr><th>넣은 앞부분</th><th>이어 쓴 것</th><th>판정</th></tr></thead>
+      <tbody>
+        <tr><td><code>프랑스의 수도는</code></td><td>루이즈로, 이곳에서 178&hellip;</td><td class="no">틀림</td></tr>
+        <tr><td><code>질문: 프랑스의 수도는 어디인가?<br>답:</code></td><td><q>프랑스의 수도는 파리입니다.</q></td><td class="yes">맞음</td></tr>
+        <tr><td class="hl"><code>질문: 프랑스의 수도는 어디인가?<br>도시 이름만 한 단어로 답하라.<br>답:</code></td><td class="hl">파리</td><td class="yes">맞음 · 원하는 형식</td></tr>
+      </tbody>
+    </table>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>모델이 파리를 <b>몰랐던 것이 아니다</b>. 첫째 줄은 <b>답을 내는 자리가 아니라고</b> 판단해 그냥 이어 썼다.</div></div>
+      <div class="v"><span class="b">→</span><div><code>질문:</code> / <code>답:</code> 이라는 <b>형태</b>가 답이 오도록 앞을 깔았다.</div></div>
+      <div class="v"><span class="b">→</span><div>셋째 줄의 한 문장이 <b>출력 형식까지</b> 정했다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">교훈</span><div>답이 이상할 때 <b>모델을 바꾸기 전에 앞부분을 바꾼다</b>. 같은 모델에서 틀림이 맞음이 된다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="예시를 넣으면">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>측정</div>
+  <h2 class="s-title sm">예시 세 줄이 확률을 몰아 준 자리</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twopane">
+      <div class="pane bad">
+        <h4>예시 없이</h4>
+        <div class="mini">포도 →</div>
+        <p>가장 높은 것이 <b>0.050</b> 이다. 뜻 없는 조각들이 고만고만하게 늘어선다. 무엇을 하라는 것인지 정해지지 않았다.</p>
+      </div>
+      <div class="pane good">
+        <h4>예시 세 줄을 앞에 두면</h4>
+        <div class="mini">사과 → apple
+바나나 → banana
+딸기 → strawberry
+포도 →</div>
+        <p><b>grape 0.313 · plum 0.165 · fig 0.140</b>. 위쪽이 전부 <b>과일의 영어 이름</b>이다.</p>
+      </div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>&ldquo;한국어를 영어로 바꿔라&rdquo; 라고 <b>한 번도 말하지 않았다</b>. 예시 세 줄이 그 자리를 만들었다.</div></div>
+      <div class="v"><span class="b">→</span><div>2등 3등이 <code>plum</code> <code>fig</code> 인 것에 주목한다. <b>규칙은 잡았고 낱말만 헷갈린다</b>.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">기법</span><div>설명하기 어려운 일일수록 <b>예시를 두세 개 보여 주는 편</b>이 빠르다. 규칙을 말로 적을 필요가 없다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="예시가 듣는 이유">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>원리</div>
+  <h2 class="s-title sm">예시가 듣는 이유 &middot; 무늬를 쫓는 머리</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="plot">
+      <svg viewBox="0 0 900 176">
+        <g class="an d1" font-size="13">
+          <text x="20" y="34" fill="#8E8AAC">사과</text><text x="70" y="34" fill="#8E8AAC">→</text><text x="98" y="34" font-weight="700" fill="#16142B">apple</text>
+          <text x="20" y="60" fill="#8E8AAC">바나나</text><text x="70" y="60" fill="#8E8AAC">→</text><text x="98" y="60" font-weight="700" fill="#16142B">banana</text>
+          <text x="20" y="86" fill="#8E8AAC">딸기</text><text x="70" y="86" fill="#8E8AAC">→</text><text x="98" y="86" font-weight="700" fill="#16142B">strawberry</text>
+          <text x="20" y="112" fill="#E8537A" font-weight="800">포도</text><text x="70" y="112" fill="#E8537A" font-weight="800">→</text>
+        </g>
+        <g class="an d2">
+          <path d="M84 104 Q 150 84 84 44" stroke="#5B3DF5" stroke-width="2" fill="none" marker-end="url(#a7)"/>
+          <text x="176" y="80" font-size="11.5" fill="#5B3DF5">같은 무늬 &ldquo;→&rdquo; 를 앞에서 찾고</text>
+        </g>
+        <g class="an d3">
+          <path d="M112 40 L112 26 L200 26" stroke="#5B3DF5" stroke-width="2" fill="none" marker-end="url(#a7)"/>
+          <text x="212" y="30" font-size="11.5" fill="#5B3DF5">그 바로 뒤에 온 것을 본다</text>
+        </g>
+        <g class="an d4">
+          <rect x="420" y="52" width="460" height="98" rx="8" fill="#F4F1FF" stroke="#DCD6F0"/>
+          <text x="440" y="78" font-size="12.5" font-weight="800" fill="#16142B">CH2 에서 잰 것과 같은 일이다</text>
+          <text x="440" y="102" font-size="11.5" fill="#8E8AAC">&ldquo;철수는 → 사과&rdquo; 를 봤으니 다시 &ldquo;철수는&rdquo; 이 나오면</text>
+          <text x="440" y="122" font-size="11.5" fill="#8E8AAC">사과를 0.476 만큼 본다.</text>
+          <text x="440" y="144" font-size="11.5" font-weight="700" fill="#5B3DF5">예시가 듣는 것은 이 머리가 있기 때문이다.</text>
+        </g>
+        <defs><marker id="a7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#5B3DF5"/></marker></defs>
+      </svg>
+      <div class="cap">뜻 없는 낱말에서도 작동했던 이유가 여기 있다 &mdash; 무늬만 보기 때문이다</div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>그래서 예시는 <b>형식을 똑같이 맞춰야</b> 한다. 화살표를 쓰다 콜론으로 바꾸면 무늬가 깨진다.</div></div>
+      <div class="v"><span class="b">→</span><div>예시가 <b>서로 다른 답</b>을 보여야 한다. 셋 다 같은 답이면 그 답만 베낀다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">연결</span><div>프롬프팅은 요령이 아니다. <b>어텐션이 무늬를 쫓는다는 성질을 쓰는 것</b>이다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="형식을 지정하면">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>측정</div>
+  <h2 class="s-title sm">여는 괄호 하나가 만든 0.872</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">그냥 물으면</span></div>
+          <pre><code>소성 공정의 불량 원인을 알려 줘.</code></pre>
+          <div class="out">'-' 0.174 · '그리고' 0.129 · '(' 0.044</div>
+        </div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">형식을 못 박으면</span></div>
+          <pre><code>소성 공정의 불량 원인을 알려 줘. JSON 으로만 답하라.
+{</code></pre>
+          <div class="out">'"' <span class="ok">0.872</span> · 개행 0.092 · 나머지 0.01 아래</div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>그냥 물으면 <b>불릿으로 시작할 확률이 0.174</b> 다. 무엇이 나올지 모른다.</div></div>
+          <div class="v"><span class="b">★</span><div>여는 괄호 <code>{</code> 를 <b>직접 적어 준 것</b>이 크다. 그 뒤에는 따옴표가 올 수밖에 없다.</div></div>
+          <div class="v"><span class="b">→</span><div>이것이 <b>출력 형식을 고정하는 방법</b>이다. 말로 부탁하는 것보다 <b>시작 부분을 적어 주는 편</b>이 세다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기법</span><div>원하는 형식이 있으면 <b>그 형식의 첫 글자까지 적어 준다</b>. 다음 토큰이 그쪽으로 갇힌다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="messages 도 앞부분이다">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>구조</div>
+  <h2 class="s-title sm">역할을 나눠 보내도 이어 붙는 한 줄</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">보낼 때는 이렇게 나눈다</span></div>
+          <pre><code>[{<span class="st">"role"</span>: <span class="st">"system"</span>,
+  <span class="st">"content"</span>: <span class="st">"너는 소성 공정 엔지니어다."</span>},
+ {<span class="st">"role"</span>: <span class="st">"user"</span>,
+  <span class="st">"content"</span>: <span class="st">"소성로 온도를 어떻게 정하나?"</span>}]</code></pre>
+        </div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">모델이 실제로 받는 것</span></div>
+          <pre><code>&lt;|im_start|&gt;system
+너는 소성 공정 엔지니어다.&lt;|im_end|&gt;
+&lt;|im_start|&gt;user
+소성로 온도를 어떻게 정하나?&lt;|im_end|&gt;
+&lt;|im_start|&gt;assistant</code></pre>
+        </div>
+      </div>
+      <div>
+        <div class="mini">사용자가 친 글자    <b>12 토큰</b>
+틀이 차지하는 것     <b>26 토큰</b>
+합계               <b>38 토큰</b></div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div><code>&lt;|im_start|&gt;</code> 같은 것은 <b>역할을 표시하려고 만든 특별한 토큰</b>이다.</div></div>
+          <div class="v"><span class="b">★</span><div>역할이 나뉘어 보이지만 모델이 받는 것은 <b>이어 붙인 글 한 줄</b>이다. 여전히 다음 토큰을 고를 뿐이다.</div></div>
+          <div class="v"><span class="b">→</span><div>마지막 줄이 <code>assistant</code> 로 끝난다. <b>이제 답할 차례라는 자리</b>를 만들어 준 것이다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">읽는 법</span><div><code>system</code> 이 잘 듣는 이유도 같다. <b>맨 앞에 놓이니 뒤의 모든 토큰이 그것을 본다.</b></div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="지어내는 자리">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>한계</div>
+  <h2 class="s-title sm">없는 장비의 온도를 125도라고 답하는 자리</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twopane">
+      <div class="pane bad">
+        <h4>없는 것을 물었을 때</h4>
+        <div class="mini">소성로 XR-7000 모델의
+최대 사용 온도는 몇 도인가?
+
+→ <q><span class="err">125도입니다.</span> 이 정보는 일반적인
+   상황에서만 적용되며&hellip;</q></div>
+        <p><b>XR-7000 은 없는 모델</b>이다. 그런데 숫자를 냈다. 소성로에 125도는 말도 안 되는 값이다.</p>
+      </div>
+      <div class="pane good">
+        <h4>거절하기도 한다</h4>
+        <div class="mini">2031년 노벨 화학상 수상자는
+누구인가?
+
+→ <q>2031년에 노벨 화학상을 수상하는
+   사람은 <b>아직 알려져 있지 않습니다.</b></q></div>
+        <p>이쪽은 제대로 거절했다. <b>거절하는 무늬를 학습</b>했기 때문이지, 모른다는 것을 알아서가 아니다.</p>
+      </div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>모델에는 <b>&ldquo;내가 아는가&rdquo; 를 재는 장치가 없다</b>. 그럴듯한 다음 토큰을 고를 뿐이다.</div></div>
+      <div class="v"><span class="b">→</span><div>그래서 <b>회사 안의 사실</b>은 물어봐야 소용이 없다. 학습에 없던 것이다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">해법</span><div>지어내는 것을 프롬프트로는 못 막는다. <b>근거 문서를 같이 넣어 줘야</b> 한다. 그것이 RAG 다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="듣는 것과 안 듣는 것">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>정리</div>
+  <h2 class="s-title sm">프롬프트가 바꿀 수 있는 것과 없는 것</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twopane">
+      <div class="pane good">
+        <h4>바꿀 수 있다</h4>
+        <p><b>무엇을 할지</b> &mdash; 이어 쓰기에서 분류로 (칭찬)<br>
+           <b>어떤 형식으로</b> &mdash; 불릿에서 JSON 으로 (0.872)<br>
+           <b>얼마나 자세히</b> &mdash; 한 단어로 (파리)<br>
+           <b>어떤 규칙으로</b> &mdash; 예시 세 줄로 (grape)</p>
+      </div>
+      <div class="pane bad">
+        <h4>바꿀 수 없다</h4>
+        <p><b>모르는 사실</b> &mdash; 학습에 없던 것은 지어낸다<br>
+           <b>계산 능력</b> &mdash; 17 &times; 24 는 여전히 308<br>
+           <b>최신 정보</b> &mdash; 학습이 끝난 시점 이후는 모른다<br>
+           <b>회사 내부 자료</b> &mdash; 본 적이 없다</p>
+      </div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>왼쪽은 <b>확률 분포를 옮기는 일</b>이라 프롬프트로 된다. 오른쪽은 <b>없는 것을 만드는 일</b>이라 안 된다.</div></div>
+      <div class="v"><span class="b">→</span><div>오른쪽을 풀려면 <b>바깥에서 가져와 넣어야</b> 한다. 문서를 넣으면 RAG, 계산기를 붙이면 도구 호출이다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>프롬프트를 고쳐도 안 되는 문제가 있다. <b>어느 쪽인지 먼저 가른다.</b></div></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 쓰는 틀">
+  <div class="ghost">04</div>
+  <div class="seyebrow">CHAPTER 04</div>
+  <h2>쓰는 틀</h2>
+  <div class="agenda"><span>네 칸</span><span>검증</span><span>고치는 순서</span></div>
+</section>
+
+<section class="slide" data-title="네 칸으로 적는다">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>틀</div>
+  <h2 class="s-title sm">역할 &middot; 기준 &middot; 입력 &middot; 형식 네 칸</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w2">
+      <div>
+        <div class="code">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">네 칸을 채운 프롬프트</span></div>
+          <pre><code><span class="cm"># 역할</span>
+너는 소성 공정 판정기다.
+
+<span class="cm"># 기준</span>
+온도가 800도에서 830도 사이면 정상,
+벗어나면 이상이다.
+
+<span class="cm"># 입력</span>
+값: 소성로 온도 845도
+
+<span class="cm"># 형식</span>
+아래 형식으로만 답하라. 다른 말은 쓰지 마라.
+{<span class="st">"판정"</span>: <span class="st">"정상 또는 이상"</span>, <span class="st">"이유"</span>: <span class="st">"한 문장"</span>}
+{</code></pre>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">1</span><div><b>역할</b> &mdash; 무엇을 하는 자리인지. 맨 앞에 둔다.</div></div>
+          <div class="v"><span class="b">2</span><div><b>기준</b> &mdash; 판단에 필요한 것을 <b>직접 적어 넣는다</b>. 모델이 안다고 가정하지 않는다.</div></div>
+          <div class="v"><span class="b">3</span><div><b>입력</b> &mdash; 이번에 처리할 것. 기준과 <b>확실히 구분</b>되게 이름표를 붙인다.</div></div>
+          <div class="v"><span class="b">4</span><div><b>형식</b> &mdash; 원하는 모양을 적고 <b>첫 글자까지 깔아 준다</b>. 앞 장에서 본 <code>{</code> 다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">틀</span><div>네 칸은 <b>확률을 좁히는 순서</b>다. 자리를 정하고, 근거를 주고, 대상을 주고, 출구를 좁힌다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="틀이 있고 없고">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>측정</div>
+  <h2 class="s-title sm">같은 일을 두 방식으로 시킨 결과</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twopane">
+      <div class="pane bad">
+        <h4>그냥 물었을 때</h4>
+        <div class="mini">소성로 온도 845도. 어때?
+
+→ <q><span class="err">- 뉴스와이어
+2019년 7월 3일 금요일, 16:00
+서울--(뉴스와이어) 2019년 7월 3일 --</span></q></div>
+        <p>판정이 아니라 <b>기사처럼 이어 썼다</b>. 이 앞부분 뒤에 올 법한 글을 골랐을 뿐이다.</p>
+      </div>
+      <div class="pane good">
+        <h4>네 칸을 채웠을 때</h4>
+        <div class="mini">→ {"판정": "정상",
+   "이유": "온도가 800도에서
+            830도 사이에 있다."}</div>
+        <p>형식이 <b>정확히 맞는다</b>. 프로그램이 그대로 읽어 쓸 수 있는 모양이다.</p>
+      </div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>같은 모델이다. <b>형식은 프롬프트로 확실히 잡힌다</b> &mdash; 앞 장의 0.872 가 이것이다.</div></div>
+      <div class="v"><span class="b">✕</span><div>그런데 <b>판정이 틀렸다</b>. 845도는 830도를 넘었으니 이상이다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">주의</span><div>형식이 맞았다고 내용이 맞은 것이 아니다. <b>다음 장에서 이 문제를 정면으로 본다.</b></div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="형식은 잡히고 판단은 안 잡힌다">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>측정</div>
+  <h2 class="s-title sm">세 값을 넣어도 모두 정상이라 답하는 자리</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable">
+      <thead><tr><th>넣은 값</th><th>정답</th><th>모델의 답</th><th>모델이 붙인 이유</th></tr></thead>
+      <tbody>
+        <tr><td>845도</td><td class="hl">이상</td><td class="no">정상</td><td>온도가 800도에서 830도 사이에 있다</td></tr>
+        <tr><td>815도</td><td class="hl">정상</td><td class="yes">정상</td><td>온도가 800도에서 830도 사이에 있다</td></tr>
+        <tr><td>770도</td><td class="hl">이상</td><td class="no">정상</td><td>온도가 800도에서 830도 사이에 있다</td></tr>
+      </tbody>
+    </table>
+    <div class="vlist">
+      <div class="v"><span class="b">✕</span><div>값을 바꿔도 <b>답과 이유가 한 글자도 안 바뀐다</b>. 숫자를 비교한 적이 없다는 뜻이다.</div></div>
+      <div class="v"><span class="b">✕</span><div>이유가 <b>거짓이다</b>. 845도는 그 사이에 있지 않다. 그럴듯한 문장을 이어 썼을 뿐이다.</div></div>
+      <div class="v"><span class="b">★</span><div>형식이 완벽해서 <b>더 위험하다</b>. 사람이 보면 제대로 판정한 것처럼 보인다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">경계</span><div>숫자 비교 · 계산 · 사실 확인은 <b>프롬프트로 풀 문제가 아니다</b>. 코드로 하고 모델에는 말만 맡긴다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="정하는 값 둘">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>설정</div>
+  <h2 class="s-title sm">부를 때마다 정해야 하는 값 둘</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable">
+      <thead><tr><th>값</th><th>뜻</th><th>업무에 쓸 때</th><th>글을 만들 때</th></tr></thead>
+      <tbody>
+        <tr><td><code>temperature</code></td><td>확률을 얼마나 눌러서 고를지</td><td class="hl">0 ~ 0.2</td><td>0.7 ~ 1.0</td></tr>
+        <tr><td><code>max_tokens</code></td><td>몇 토큰까지 이어 쓸지</td><td class="hl">필요한 만큼만</td><td>넉넉히</td></tr>
+      </tbody>
+    </table>
+    <div class="vlist">
+      <div class="v"><span class="b">→</span><div>판정 · 추출 · 분류처럼 <b>답이 하나인 일</b>은 온도를 0 가까이 둔다. 같은 입력에 같은 답이 나와야 하기 때문이다.</div></div>
+      <div class="v"><span class="b">→</span><div><code>max_tokens</code> 는 <b>요금과 직결</b>된다. 한 단어면 되는 일에 500토큰을 열어 둘 이유가 없다.</div></div>
+      <div class="v"><span class="b">✕</span><div>온도를 0으로 둬도 <b>틀린 답이 맞는 답이 되지는 않는다</b>. 앞 장의 세 줄이 그 증거다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>업무용은 <b>온도 0 · 길이는 짧게</b>가 기본이다. 여기서 시작해 필요할 때만 올린다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="고치는 순서">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>절차</div>
+  <h2 class="s-title sm">답이 이상할 때 손대는 순서</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="pipe">
+      <div class="st an d1"><b>1. 형식이 틀렸는가</b><span>원하는 모양의 첫 글자를 적어 준다 · 예시를 한 줄 붙인다</span></div>
+      <div class="ar">↓</div>
+      <div class="st an d2"><b>2. 할 일을 잘못 알았는가</b><span>역할과 지시를 맨 앞에 둔다 · 입력에 이름표를 붙여 구분한다</span></div>
+      <div class="ar">↓</div>
+      <div class="st an d3"><b>3. 규칙을 못 잡았는가</b><span>말로 설명하는 대신 예시를 두세 개 보여 준다</span></div>
+      <div class="ar">↓</div>
+      <div class="st an d4"><b>4. 근거가 없는가</b><span>판단에 필요한 문서·기준을 프롬프트 안에 직접 넣는다</span></div>
+      <div class="ar">↓</div>
+      <div class="st an d5"><b>5. 여기까지 해도 안 되면</b><span>프롬프트로 풀 문제가 아니다 · 코드로 하거나 도구를 붙인다</span></div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>순서가 정해져 있다. <b>싸고 빠른 것부터</b> 시도한다. 모델을 바꾸는 것은 가장 마지막이다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">절차</span><div>프롬프트를 <b>한 번에 하나만</b> 바꾼다. 여러 곳을 고치면 무엇이 들었는지 알 수 없다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="실습 · 프롬프트 고치기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">LAB</span><span class="dot"></span>실습</div>
+  <h2 class="s-title sm">확률이 어떻게 움직이는지 직접 보기</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">노트북 · 다음 토큰 확률 보기</span></div>
+          <pre><code>probs = next_token_probs(<span class="st">"포도 →"</span>)
+show_top(probs, <span class="nm">5</span>)</code></pre>
+          <div class="out">'　' 0.050 · '포' 0.037 · &hellip;</div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">1</span><div>같은 문장을 <b>토크나이저에 넣어</b> 몇 조각으로 갈리는지 본다. 한글과 영어를 비교한다.</div></div>
+          <div class="v"><span class="b">2</span><div>예시를 <b>0개 · 1개 · 3개</b>로 늘려 가며 1등 확률이 어떻게 오르는지 적는다.</div></div>
+          <div class="v"><span class="b">3</span><div>온도를 <b>0.2 · 1.0 · 2.0</b> 으로 바꿔 같은 문장을 세 번씩 이어 쓰게 한다.</div></div>
+          <div class="v"><span class="b">4</span><div>내 업무 프롬프트를 <b>네 칸으로 다시 적고</b> 고치기 전후를 나란히 남긴다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">확인</span><div>바꾼 것 하나마다 <b>1등 확률과 실제 출력</b>을 함께 적는다. 감이 아니라 숫자로 비교한다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="오늘 얻은 것">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>정리</div>
+  <h2 class="s-title sm">한 줄로 줄인 오늘</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c3">
+      <div class="card"><span class="n">원리</span><h3>다음 한 토큰</h3><p>앞부분을 받아 151,665개 중 하나의 확률을 낸다. 그것을 반복한다.</p></div>
+      <div class="card"><span class="n">구조</span><h3>어텐션</h3><p>점수 → 비율 → 값 섞기. 머리 12개 × 층 28겹 = 336번.</p></div>
+      <div class="card"><span class="n">활용</span><h3>프롬프트</h3><p>명령이 아니라 앞부분이다. 확률을 옮길 뿐 없는 것은 못 만든다.</p></div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>프롬프트로 <b>안 되는 것</b>이 다음 이틀의 주제다. 없는 근거는 <b>RAG</b> 로 넣고, 못 하는 계산은 <b>도구</b>를 붙인다.</div></div>
+      <div class="v"><span class="b">→</span><div>오늘 배운 것 하나만 남긴다면 이것이다 &mdash; <b>모델은 답을 아는 것이 아니라 그럴듯한 다음 조각을 고른다.</b></div></div>
+    </div>
+    <div class="keymsg"><span class="k">다음</span><div>내일은 <b>근거 문서를 찾아 넣는 법</b>을 만든다. 오늘 본 &ldquo;지어내는 자리&rdquo; 를 막는 방법이다.</div></div>
+  </div>
+</section>
+
+
+
+
+
+    </div>
+  </div>
+</main>
+<div class="overview" id="overview">
+  <div class="head"><h3>슬라이드 목차</h3><button id="ovClose">닫기 ✕</button></div>
+  <div class="ovgrid" id="ovgrid"></div>
+</div>
+
+<div class="controlbar">
+  <button class="ico" id="btnMenu" title="목차"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+  <span class="sep"></span>
+  <button class="ico" id="btnPrev" title="이전"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <span class="count"><b id="cur">1</b> / <span id="tot2">75</span></span>
+  <button class="ico" id="btnNext" title="다음"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 18l6-6-6-6"/></svg></button>
+  <span class="sep"></span>
+  <button class="zoom" id="btnOut" title="축소"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14"/></svg></button>
+  <button class="zoom" id="btnIn" title="확대"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></button>
+  <button class="zoom" id="btnFit" title="화면 맞춤"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 4H5a1 1 0 0 0-1 1v4M15 4h4a1 1 0 0 1 1 1v4M9 20H5a1 1 0 0 1-1-1v-4M15 20h4a1 1 0 0 0 1-1v-4"/></svg></button>
+  <button class="pdf" id="btnPdf" title="PDF로 저장 (인쇄 → PDF로 저장)">PDF</button>
+</div>
+
+<div class="hint">← → 또는 Space · 목차(≡) · 줌(−/+) · 숫자 입력 후 Enter로 이동</div>
+<div id="jumpHint"></div>
+<style>
+  #jumpHint{position:fixed; left:50%; bottom:74px; transform:translateX(-50%) translateY(6px); z-index:75;
+    background:#2B2B2E; color:#fff; font-family:Georgia,'Times New Roman',serif; font-style:italic;
+    font-size:20px; letter-spacing:.04em; padding:8px 20px; border-radius:999px;
+    box-shadow:0 12px 28px -10px rgba(0,0,0,.55); opacity:0; pointer-events:none;
+    transition:opacity .12s ease, transform .12s ease;}
+  #jumpHint.on{opacity:1; transform:translateX(-50%) translateY(0);}
+  @media print{ #jumpHint{display:none !important;} }
+</style>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const scaler = document.getElementById('scaler');
+  const sizer  = document.getElementById('sizer');
+  const stage  = document.getElementById('stage');
+  const total  = slides.length;
+  let idx = 0, userZoom = 1;
+  const BW = 1280, BH = 720;
+
+  document.getElementById('tot2').textContent = total;
+  slides.forEach((s, i) => {
+    const c = s.querySelector('.coord b');     if (c) c.textContent = String(i + 1).padStart(2, '0');
+    const t = s.querySelector('.coord .tot');  if (t) t.textContent = total;
+  });
+
+  const ovgrid = document.getElementById('ovgrid');
+  slides.forEach((s, i) => {
+    const b = document.createElement('button');
+    b.className = 'ovcard';
+    b.innerHTML = '<div class="ovn">' + String(i + 1).padStart(2, '0') + '</div><div class="ovt">' + (s.dataset.title || '') + '</div>';
+    b.addEventListener('click', () => { go(i); closeOverview(); });
+    ovgrid.appendChild(b);
+  });
+  const overview = document.getElementById('overview');
+  function openOverview(){ overview.classList.add('on'); }
+  function closeOverview(){ overview.classList.remove('on'); }
+  document.getElementById('btnMenu').addEventListener('click', openOverview);
+  document.getElementById('ovClose').addEventListener('click', closeOverview);
+  overview.addEventListener('click', (e) => { if (e.target === overview) closeOverview(); });
+
+  function fitScale(){
+    const availW = stage.clientWidth  - 60;
+    const availH = stage.clientHeight - 60;
+    return Math.min(availW / BW, availH / BH);
+  }
+  function applyScale(){
+    const eff = fitScale() * userZoom;
+    scaler.style.transform = 'scale(' + eff + ')';
+    sizer.style.width  = (BW * eff) + 'px';
+    sizer.style.height = (BH * eff) + 'px';
+  }
+  window.addEventListener('resize', applyScale);
+
+  function go(n){
+    idx = Math.max(0, Math.min(total - 1, n));
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    document.getElementById('cur').textContent = idx + 1;
+    document.getElementById('btnPrev').disabled = idx === 0;
+    document.getElementById('btnNext').disabled = idx === total - 1;
+    document.getElementById('pfill').style.width = (idx / (total - 1) * 100) + '%';
+    applyScale();
+    stage.scrollTop = 0; stage.scrollLeft = 0;
+  }
+  document.getElementById('btnPrev').addEventListener('click', () => go(idx - 1));
+  document.getElementById('btnNext').addEventListener('click', () => go(idx + 1));
+  document.getElementById('btnIn').addEventListener('click',  () => { userZoom = Math.min(2.4, userZoom + 0.15); applyScale(); });
+  document.getElementById('btnOut').addEventListener('click', () => { userZoom = Math.max(0.5, userZoom - 0.15); applyScale(); });
+  document.getElementById('btnFit').addEventListener('click', () => { userZoom = 1; applyScale(); });
+  document.getElementById('btnPdf').addEventListener('click', () => window.print());
+
+  // ---- 슬라이드 번호 입력 → Enter 로 점프 ----
+  let jumpBuf = '', jumpTimer = null;
+  const jumpHint = document.getElementById('jumpHint');
+  function showJump(){
+    if (!jumpHint) return;
+    if (jumpBuf){ jumpHint.textContent = '→ ' + jumpBuf; jumpHint.classList.add('on'); }
+    else { jumpHint.classList.remove('on'); }
+  }
+  function clearJump(){ jumpBuf = ''; if (jumpTimer) clearTimeout(jumpTimer); showJump(); }
+  function commitJump(){
+    if (jumpBuf){ const n = parseInt(jumpBuf, 10); if (!isNaN(n)) go(n - 1); }
+    clearJump();
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (overview.classList.contains('on')) { if (e.key === 'Escape') closeOverview(); return; }
+    if (/^[0-9]$/.test(e.key)){
+      e.preventDefault();
+      jumpBuf = (jumpBuf + e.key).slice(0, 3);
+      showJump();
+      if (jumpTimer) clearTimeout(jumpTimer);
+      jumpTimer = setTimeout(clearJump, 1600);
+      return;
+    }
+    if (e.key === 'Enter'){ e.preventDefault(); commitJump(); return; }
+    if (e.key === 'Escape'){ clearJump(); }
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown'){ e.preventDefault(); clearJump(); go(idx + 1); }
+    if (e.key === 'ArrowLeft'  || e.key === 'PageUp'){ e.preventDefault(); clearJump(); go(idx - 1); }
+    if (e.key === 'Home'){ clearJump(); go(0); } if (e.key === 'End'){ clearJump(); go(total - 1); }
+    if (e.key === '+' || e.key === '='){ userZoom = Math.min(2.4, userZoom + 0.15); applyScale(); }
+    if (e.key === '-'){ userZoom = Math.max(0.5, userZoom - 0.15); applyScale(); }
+  });
+
+  applyScale(); go(0);
+</script>
+</body>
+</html>
