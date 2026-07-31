@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Day 8 · 말을 이어 쓰는 모델</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#16142B; --ink-soft:#4A4766; --mut:#8E8AAC;
+    --violet:#5B3DF5; --violet-700:#3A1FC9; --violet-300:#B7A9FF;
+    --wash:#F4F1FF; --wash-2:#FAF9FF; --line:#E8E4F8;
+    --paper:#FFFFFF; --mint:#0FB5A1; --mint-soft:#E4F8F4;
+    --amber:#F4A93C; --rose:#E8537A;
+    --code-bg:#1C1933; --code-ink:#ECEAFF; --code-dim:#9C97D6;
+    --sw:1280px; --sh:720px;
+    --shadow:0 24px 60px -24px rgba(43,28,120,.45);
+    --serif: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:var(--serif); color:var(--ink);
+    background:
+      radial-gradient(1200px 600px at 15% -10%, #ECE7FF 0%, rgba(236,231,255,0) 60%),
+      radial-gradient(1000px 700px at 110% 10%, #F0EBFF 0%, rgba(240,235,255,0) 55%),
+      #EAE7F4;
+    min-height:100vh; -webkit-font-smoothing:antialiased;
+  }
+  .progress{position:fixed; top:0; left:0; right:0; height:3px; z-index:60; background:transparent;}
+  .progress .fill{height:100%; width:0; background:linear-gradient(90deg,var(--violet),#9B7BFF); transition:width .2s ease;}
+
+  .stage{
+    position:fixed; inset:0 0 0 0; z-index:10;
+    display:flex; justify-content:safe center; align-items:safe center;
+    overflow:auto; padding:30px 30px 96px;
+  }
+  .sizer{position:relative;}
+  .scaler{ width:var(--sw); height:var(--sh); transform-origin:top left; position:relative; }
+
+  .slide{
+    width:var(--sw); height:var(--sh);
+    background:var(--paper); border:1px solid var(--line);
+    border-radius:22px; box-shadow:var(--shadow);
+    overflow:hidden; display:none; flex-direction:column;
+    padding:50px 60px 46px; position:relative;
+  }
+  .slide.active{display:flex;}
+
+  .eyebrow{display:inline-flex; align-items:center; gap:10px; font-family:var(--mono); font-size:13px; font-weight:700; letter-spacing:.04em; color:var(--violet); text-transform:uppercase;}
+  .eyebrow .tag{color:#fff; background:var(--violet); border-radius:6px; padding:3px 8px; font-size:11px; letter-spacing:.05em;}
+  .eyebrow .tag.mint{background:var(--mint);}
+  .eyebrow .dot{width:5px;height:5px;border-radius:50%;background:var(--violet-300);}
+  .coord{position:absolute; top:30px; right:40px; font-family:var(--mono); font-size:12px; color:var(--mut); font-weight:600; letter-spacing:.05em;}
+  .coord b{color:var(--ink);}
+
+  .s-title{font-size:39px; line-height:1.12; letter-spacing:-.025em; font-weight:800; margin:14px 0 4px;}
+  .s-title.sm{font-size:32px;} .s-title.xs{font-size:28px;}
+  .s-sub{font-size:17px; color:var(--ink-soft); font-weight:500; line-height:1.5; max-width:64ch;}
+  .rule{height:4px; width:54px; border-radius:3px; background:var(--violet); margin:13px 0 6px;}
+  .body{flex:1; min-height:0; display:flex; flex-direction:column; justify-content:center;}
+  .body.top{justify-content:flex-start; padding-top:6px;}
+
+  .slide.cover{ padding:0; justify-content:center;
+    background:
+      radial-gradient(900px 520px at 100% 0%, #6B4BFF 0%, rgba(107,75,255,0) 58%),
+      radial-gradient(700px 600px at -5% 110%, #3A1FC9 0%, rgba(58,31,201,0) 55%),
+      linear-gradient(135deg,#2A1B8C 0%, #4226D6 48%, #5B3DF5 100%);
+    color:#fff; border:none; }
+  .cover .aperture{position:absolute; top:-120px; right:-120px; width:460px; height:460px; border-radius:50%; background:radial-gradient(circle at 35% 35%, rgba(255,255,255,.5), rgba(255,255,255,0) 62%); filter:blur(2px);}
+  .cover .ring{position:absolute; right:60px; top:60px; width:120px; height:120px; border-radius:50%; border:1.5px solid rgba(255,255,255,.4);}
+  .cover .ring::after{content:""; position:absolute; inset:18px; border-radius:50%; border:1.5px dashed rgba(255,255,255,.35);}
+  .cover .wrap{padding:60px 70px; position:relative; z-index:2; width:100%;}
+  .cover .kick{font-family:var(--mono); letter-spacing:.18em; font-size:13.5px; font-weight:600; color:rgba(255,255,255,.86); text-transform:uppercase; display:flex; align-items:center; gap:14px;}
+  .cover .kick .pill{border:1px solid rgba(255,255,255,.45); border-radius:999px; padding:4px 12px;}
+  .cover h1{font-size:58px; line-height:1.08; letter-spacing:-.03em; font-weight:800; margin:24px 0 16px; max-width:21ch;}
+  .cover .lead{font-size:18px; line-height:1.55; color:rgba(255,255,255,.9); max-width:56ch; font-weight:400;}
+  .cover .meta{margin-top:36px; display:flex; gap:24px; flex-wrap:wrap; font-size:14px;}
+  .cover .meta .it{display:flex; flex-direction:column; gap:3px;}
+  .cover .meta .it .k{font-family:var(--mono); font-size:11px; letter-spacing:.1em; color:rgba(255,255,255,.6); text-transform:uppercase;}
+  .cover .meta .it .v{font-size:15px; font-weight:700; color:#fff;}
+
+  .slide.section{ background:linear-gradient(140deg,#3A1FC9 0%, #5B3DF5 70%, #7A5BFF 100%); color:#fff; border:none; justify-content:center; padding:60px 70px; }
+  .slide.section.mintbg{ background:linear-gradient(140deg,#0A8A7A 0%, #0FB5A1 70%, #34D6C2 100%); }
+  .slide.section .ghost{position:absolute; right:34px; bottom:-66px; font-family:var(--mono); font-weight:700; font-size:330px; line-height:.8; color:rgba(255,255,255,.10); letter-spacing:-.04em;}
+  .slide.section .lab-flag{display:inline-flex; align-items:center; gap:9px; align-self:flex-start; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.4); padding:7px 14px; border-radius:999px; font-weight:700; font-size:13px; font-family:var(--mono); letter-spacing:.06em;}
+  .slide.section .lab-flag .sq{width:9px;height:9px;border-radius:3px;background:#fff;}
+  .slide.section .seyebrow{font-family:var(--mono); letter-spacing:.16em; font-size:14px; color:rgba(255,255,255,.85); text-transform:uppercase; margin-bottom:14px;}
+  .slide.section h2{font-size:48px; line-height:1.1; letter-spacing:-.025em; font-weight:800; margin:0 0 14px; max-width:24ch; position:relative; z-index:2;}
+  .slide.section p{font-size:18px; color:rgba(255,255,255,.92); max-width:54ch; line-height:1.55; position:relative; z-index:2;}
+  .slide.section .agenda{display:flex; gap:10px; flex-wrap:wrap; margin-top:22px; position:relative; z-index:2;}
+  .slide.section .agenda span{font-size:13px; font-weight:600; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3); padding:6px 12px; border-radius:999px;}
+
+  .cards{display:grid; gap:16px;}
+  .cards.c2{grid-template-columns:repeat(2,1fr);} .cards.c3{grid-template-columns:repeat(3,1fr);} .cards.c4{grid-template-columns:repeat(4,1fr);} .cards.c5{grid-template-columns:repeat(5,1fr);}
+  .card{background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:17px 19px; display:flex; flex-direction:column; gap:7px; position:relative;}
+  .card .ic{width:38px; height:38px; border-radius:4px; display:grid; place-items:center; background:transparent; border:1.5px solid var(--violet-300); color:var(--violet); margin-bottom:3px;}
+  .card .ic svg{width:20px;height:20px;}
+  .card h3{font-size:17px; font-weight:800; letter-spacing:-.01em; margin:0 0 1px; padding-bottom:8px; border-bottom:1px solid var(--line);}
+  .card p{font-size:14px; color:var(--ink-soft); line-height:1.5; margin:0;}
+  .card .n{font-family:var(--mono); font-size:11.5px; color:var(--violet); font-weight:700;}
+
+  .biglist{display:flex; flex-direction:column; gap:13px;}
+  .biglist .li{display:flex; gap:15px; align-items:flex-start;}
+  .biglist .li .num{flex:none; width:34px; height:34px; border-radius:10px; background:var(--violet); color:#fff; font-family:var(--mono); font-weight:700; display:grid; place-items:center; font-size:14px; margin-top:1px;}
+  .biglist .li .tx h4{margin:0 0 3px; font-size:17.5px; font-weight:800;}
+  .biglist .li .tx p{margin:0; font-size:14px; color:var(--ink-soft); line-height:1.5;}
+
+  .phase-label{font-family:var(--mono); font-size:12px; font-weight:700; letter-spacing:.08em; color:var(--violet); text-transform:uppercase; margin:0 0 10px; display:flex; align-items:center; gap:9px;}
+  .phase-label .ln{height:1px; flex:1; background:var(--line);}
+  .pipe{display:flex; align-items:stretch; gap:0; margin-bottom:20px;}
+  .pipe .step{flex:1; background:var(--paper); border:1px solid var(--line); border-top:3px solid var(--violet); border-radius:4px; padding:12px 10px; text-align:center; min-width:0;}
+  .pipe .step .si{font-family:var(--mono); font-size:11px; color:var(--violet); font-weight:700;}
+  .pipe .step .sn{font-size:14.5px; font-weight:800; margin-top:3px; letter-spacing:-.01em;}
+  .pipe .step .sd{font-size:11px; color:var(--mut); margin-top:2px; line-height:1.3;}
+  .pipe .arrow{display:flex; align-items:center; padding:0 5px; color:var(--violet-300);}
+  .pipe .arrow svg{width:17px;height:17px;}
+  .pipe.q .step{background:var(--paper); border-color:var(--line); border-top-color:var(--mint);} .pipe.q .step .si{color:var(--mint);} .pipe.q .arrow{color:#8AD7CC;}
+
+  .code{background:var(--code-bg); border-radius:14px; overflow:hidden; border:1px solid #2A2548; box-shadow:0 18px 40px -22px rgba(28,25,51,.7);}
+  .code .bar{display:flex; align-items:center; gap:7px; padding:10px 15px; border-bottom:1px solid #2A2548; background:#171430;}
+  .code .bar .dot{width:11px;height:11px;border-radius:50%;}
+  .code .bar .r{background:#FF6058;} .code .bar .y{background:#FFC130;} .code .bar .g{background:#28CA42;}
+  .code .bar .fn{margin-left:8px; font-family:var(--mono); font-size:12px; color:var(--code-dim);}
+  .code pre{margin:0; padding:16px 18px; overflow:auto;}
+  .code code{font-family:var(--mono); font-size:13px; line-height:1.6; color:var(--code-ink); white-space:pre;}
+  .code.sm code{font-size:12px; line-height:1.55;}
+  .cm{color:#7D78B8;} .kw{color:#C792FF;} .st{color:#9DE39A;} .fn2{color:#82D3FF;} .nm{color:#FFD479;}
+
+  .callout{border-radius:4px; padding:15px 18px; display:flex; gap:13px; align-items:flex-start; background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet);}
+  .callout .ci{flex:none; width:34px;height:34px;border-radius:4px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .callout .ci svg{width:18px;height:18px;}
+  .callout .ct h4{margin:0 0 3px; font-size:15.5px; font-weight:800;}
+  .callout .ct p{margin:0; font-size:13.5px; color:var(--ink-soft); line-height:1.5;}
+  .callout.mint{border-left-color:var(--mint);} .callout.mint .ci{background:var(--mint);}
+  .callout.amber{border-left-color:var(--amber);} .callout.amber .ci{background:var(--amber);}
+  .callout.rose{border-left-color:var(--rose);} .callout.rose .ci{background:var(--rose);}
+
+  .lab-badge{display:inline-flex; align-items:center; gap:9px; background:var(--mint-soft); color:#0A7F70; border:1px solid #BFE9E1; padding:7px 13px; border-radius:999px; font-weight:700; font-size:13px; font-family:var(--mono); letter-spacing:.04em;}
+  .lab-badge .sq{width:9px;height:9px;border-radius:3px;background:var(--mint);}
+
+  .twocol{display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start;}
+  .twocol.w{grid-template-columns:1.15fr .85fr;} .twocol.w2{grid-template-columns:.85fr 1.15fr;}
+
+  .chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{font-size:12.5px; font-weight:600; color:var(--ink-soft); background:#fff; border:1px solid var(--line); padding:6px 12px; border-radius:999px;}
+  .chip b{color:var(--violet);}
+
+  .deliv{background:var(--paper); border:1px dashed var(--violet-300); border-left:3px solid var(--violet); border-radius:4px; padding:15px 18px; display:flex; align-items:center; gap:13px;}
+  .deliv .di{flex:none;width:36px;height:36px;border-radius:4px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .deliv .di svg{width:19px;height:19px;}
+  .deliv .dt b{display:block;font-size:11px;font-family:var(--mono);letter-spacing:.08em;color:var(--violet);text-transform:uppercase;}
+  .deliv .dt span{font-size:15px;font-weight:700;}
+
+  .vlist{display:flex;flex-direction:column;gap:10px;}
+  .vlist .v{display:flex;gap:11px;align-items:flex-start;font-size:14.5px;color:var(--ink-soft);line-height:1.45;}
+  .vlist .v .b{flex:none;width:22px;height:22px;border-radius:7px;background:var(--wash);color:var(--violet);display:grid;place-items:center;font-family:var(--mono);font-size:12px;font-weight:700;margin-top:1px;}
+  .vlist .v b{color:var(--ink);font-weight:700;}
+
+  .keymsg{margin-top:auto; background:var(--ink); color:#fff; border-radius:4px; padding:15px 20px; display:flex; gap:13px; align-items:center; font-size:15px; line-height:1.5;}
+  .keymsg .k{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;color:var(--violet-300);text-transform:uppercase;flex:none;}
+  .keymsg b{color:#fff;}
+
+  .formula{display:flex; flex-direction:column; gap:10px; background:var(--code-bg); border-radius:13px; padding:20px; color:#fff; font-family:var(--mono);}
+  .formula .big{font-size:21px; text-align:center;}
+
+  .ctable{width:100%; border-collapse:separate; border-spacing:0; font-size:14px; border:1px solid var(--line); border-radius:13px; overflow:hidden;}
+  .ctable th,.ctable td{padding:13px 16px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top;}
+  .ctable thead th{background:var(--wash); color:var(--violet); font-family:var(--mono); font-size:12px; letter-spacing:.04em; text-transform:uppercase; font-weight:700;}
+  .ctable tbody tr:last-child td{border-bottom:none;}
+  .ctable td b{color:var(--ink);} .ctable .hl{color:var(--violet); font-weight:700;}
+  .ctable .yes{color:var(--mint); font-weight:700;} .ctable .no{color:var(--rose); font-weight:700;}
+
+  .timeline{display:flex; gap:0; align-items:stretch; margin-top:6px;}
+  .timeline .t{flex:1; position:relative; padding:0 6px;}
+  .timeline .t .yr{font-family:var(--mono); font-size:13px; font-weight:700; color:var(--violet);}
+  .timeline .t .ev{font-size:13px; font-weight:700; margin-top:30px; line-height:1.3;}
+  .timeline .t .ds{font-size:11.5px; color:var(--mut); margin-top:3px; line-height:1.35;}
+  .timeline .t::before{content:""; position:absolute; left:0; right:0; top:26px; height:2px; background:var(--line);}
+  .timeline .t::after{content:""; position:absolute; left:8px; top:21px; width:12px; height:12px; border-radius:50%; background:var(--violet); border:3px solid #fff; box-shadow:0 0 0 1px var(--violet-300);}
+
+  .quote{background:var(--wash-2); border-left:4px solid var(--violet); border-radius:0 13px 13px 0; padding:18px 22px;}
+  .quote p{margin:0; font-size:18px; line-height:1.5; font-weight:600; color:var(--ink);}
+  .quote .src{margin-top:10px; font-size:12.5px; color:var(--mut); font-family:var(--mono);}
+  .refbox{background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:14px 16px; display:flex; gap:12px; align-items:flex-start;}
+  .refbox .rk{font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; color:var(--violet); text-transform:uppercase; font-weight:700;}
+  .refbox h4{margin:2px 0 3px; font-size:14.5px; font-weight:800;}
+  .refbox p{margin:0; font-size:12.5px; color:var(--ink-soft); line-height:1.45;}
+  .refbox .ri{flex:none;width:30px;height:30px;border-radius:8px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .refbox .ri svg{width:16px;height:16px;}
+
+  .arch{display:flex; align-items:center; gap:18px; justify-content:center; margin:6px 0;}
+  .arch .box{border:1.5px solid var(--line); border-radius:14px; padding:18px 20px; text-align:center; background:var(--wash-2); min-width:160px;}
+  .arch .box .bt{font-size:15px; font-weight:800;} .arch .box .bs{font-size:12px; color:var(--mut); margin-top:3px; line-height:1.35;}
+  .arch .box.local{border-style:dashed; border-color:var(--violet-300); background:#fff;}
+  .arch .box.api{background:linear-gradient(135deg,#EFEAFF,#F8F5FF); border-color:var(--violet-300);}
+  .arch .conn{display:flex; flex-direction:column; align-items:center; gap:4px; color:var(--violet); font-family:var(--mono); font-size:11px; font-weight:700;}
+  .arch .conn svg{width:34px;height:18px;}
+
+  .stat-row{display:flex; gap:16px;}
+  .stat{flex:1; background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:16px 18px;}
+  .stat .num{font-size:30px; font-weight:800; letter-spacing:-.02em; color:var(--violet); font-family:var(--mono);}
+  .stat .lab{font-size:13px; color:var(--ink-soft); margin-top:4px; line-height:1.4;}
+
+  .twopane{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .pane{border:1px solid var(--line); border-radius:4px; padding:16px 18px; background:var(--paper);}
+  .pane.bad{border-left:3px solid var(--rose);} .pane.good{border-left:3px solid var(--mint);}
+  .pane h4{margin:0 0 9px; font-size:14px; font-weight:800; display:flex; align-items:center; gap:7px;}
+  .pane.bad h4{color:#C9405B;} .pane.good h4{color:#0E9E6E;}
+  .pane p{margin:0; font-size:13px; color:var(--ink-soft); line-height:1.5;}
+  .pane .mini{font-family:var(--mono); font-size:13.5px; background:#16142B; border:1px solid #2A2545; border-radius:6px; padding:13px 15px; color:#E8E4F5; line-height:1.7; margin-top:10px; white-space:pre-wrap;}
+  .mini b{color:#9BE8DC; font-weight:700;}          /* 강조할 토큰 */
+  .mini i{color:#8E8AAC; font-style:normal;}        /* 주석 */
+  .pane.good .mini{background:#0E2A26; border-color:#1C4A43;}
+
+  .controlbar{
+    position:fixed; left:50%; bottom:18px; transform:translateX(-50%); z-index:70;
+    display:flex; align-items:center; gap:4px;
+    background:#2B2B2E; border-radius:999px; padding:8px 10px;
+    box-shadow:0 16px 40px -12px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.04) inset;
+  }
+  .controlbar button{appearance:none; border:none; background:transparent; cursor:pointer; color:#C9C9D2; display:grid; place-items:center; border-radius:999px; transition:.12s ease; font-family:var(--serif);}
+  .controlbar .ico{width:38px; height:38px;}
+  .controlbar .ico svg{width:19px;height:19px;}
+  .controlbar .ico:hover{color:#fff; background:rgba(255,255,255,.1);}
+  .controlbar .ico:disabled{color:#5C5C66; cursor:not-allowed; background:transparent;}
+  .controlbar .sep{width:1px; height:24px; background:rgba(255,255,255,.16); margin:0 6px;}
+  .controlbar .count{ color:#EDEDF2; font-style:italic; font-family:Georgia,'Times New Roman',serif; font-size:17px; min-width:78px; text-align:center; letter-spacing:.02em; user-select:none;}
+  .controlbar .count b{font-style:italic; font-weight:600;}
+  .controlbar .zoom{width:32px;height:38px; color:#9A9AA6; font-size:18px;}
+  .controlbar .zoom:hover{color:#fff;}
+  .controlbar .zoom svg{width:17px;height:17px;}
+  .controlbar .pdf{
+    margin-left:6px; background:#7CB342; color:#fff; font-weight:800; font-size:14px; letter-spacing:.06em;
+    padding:0 22px; height:38px; border-radius:999px; display:flex; align-items:center;
+    box-shadow:0 6px 16px -6px rgba(124,179,66,.8);
+  }
+  .controlbar .pdf:hover{background:#86BD4B; color:#fff;}
+
+  .overview{position:fixed; inset:0; z-index:80; background:rgba(22,20,43,.55); backdrop-filter:blur(8px); display:none; padding:40px; overflow:auto;}
+  .overview.on{display:block;}
+  .overview .head{display:flex; align-items:center; justify-content:space-between; max-width:1100px; margin:0 auto 18px; color:#fff;}
+  .overview .head h3{margin:0; font-size:18px; font-weight:800;}
+  .overview .head button{appearance:none;border:1px solid rgba(255,255,255,.3); background:rgba(255,255,255,.1); color:#fff; border-radius:10px; padding:8px 14px; cursor:pointer; font-family:var(--serif); font-weight:700; font-size:13px;}
+  .ovgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; max-width:1100px; margin:0 auto;}
+  .ovcard{background:#fff; border:1px solid var(--line); border-radius:11px; padding:13px 15px; cursor:pointer; transition:.12s; text-align:left;}
+  .ovcard:hover{transform:translateY(-2px); box-shadow:0 12px 22px -12px rgba(0,0,0,.4); border-color:var(--violet);}
+  .ovcard .ovn{font-family:var(--mono); font-size:11px; color:var(--violet); font-weight:700;}
+  .ovcard .ovt{font-size:13.5px; font-weight:700; margin-top:4px; line-height:1.3; color:var(--ink);}
+
+  .hint{position:fixed; left:18px; bottom:24px; z-index:65; font-size:11px; color:var(--mut); font-family:var(--mono);}
+
+
+  /* ===== 이미지 / 도해 컴포넌트 (덱 하네스 추가분) ===== */
+  .figure{border:1px solid var(--line); border-radius:4px; background:var(--wash-2); overflow:hidden; display:flex; flex-direction:column; min-height:0;}
+  .figure img{display:block; width:100%; height:auto; object-fit:contain; min-height:0;}
+  .figure figcaption{font-family:var(--mono); font-size:11px; color:var(--mut); padding:7px 11px; border-top:1px solid var(--line); background:#fff;}
+  .figure.tight img{max-height:330px; object-fit:contain; background:#fff;}
+  /* 원본이 검은 여백을 달고 있는 캡처용 */
+  .figure.dark{background:#16142B; border-color:#2A2548;}
+  .figure.dark img{background:#16142B;}
+  .figure.dark figcaption{background:#1C1933; color:#9C97D6; border-top-color:#2A2548;}
+
+  /* 스크린샷: 창 프레임을 씌워 원본 캡처임을 드러낸다 */
+  .shot{border:1px solid var(--line); border-radius:9px; overflow:hidden; background:#fff; box-shadow:0 10px 26px -18px rgba(28,25,51,.6); display:flex; flex-direction:column; min-height:0;}
+  .shot .sbar{display:flex; align-items:center; gap:6px; padding:7px 11px; background:var(--wash); border-bottom:1px solid var(--line);}
+  .shot .sbar .d{width:9px;height:9px;border-radius:50%;background:var(--violet-300);}
+  .shot .sbar .t{margin-left:6px; font-family:var(--mono); font-size:11px; color:var(--mut);}
+  .shot img{display:block; width:100%; height:auto; max-height:400px; object-fit:contain; min-height:0;}
+
+  /* 도구 두 가지를 나란히 처음 보여줄 때 — 그림과 한 줄만 */
+  .duo{display:grid; grid-template-columns:1fr 1fr; gap:30px;}
+  .duo .side{border:1px solid var(--line); border-radius:18px; background:var(--wash-2);
+    padding:34px 30px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:20px; text-align:center;}
+  .duo .side img{max-height:92px; max-width:78%; width:auto; display:block;}
+  .duo .side .tagline{font-family:var(--mono); font-size:11.5px; letter-spacing:.12em;
+    color:var(--violet); text-transform:uppercase; font-weight:700;}
+  .duo .side h3{margin:0; font-size:23px; font-weight:800; letter-spacing:-.02em;}
+  .duo .side p{margin:0; font-size:15px; color:var(--ink-soft); line-height:1.55; max-width:30ch;}
+
+  /* 제품·도구 로고 — 작은 브랜드 마크 */
+  .brandmark{display:flex; align-items:center; gap:15px; margin-bottom:18px;}
+  .brandmark img{height:46px; width:auto; display:block;}
+  .brandmark .bt{font-size:13.5px; color:var(--ink-soft); line-height:1.45;}
+  .brandmark .bt b{color:var(--ink);}
+
+  /* 채워야 할 이미지 자리 — 인쇄에도 남으므로 발표 전 반드시 교체 */
+  .need-img{border:2px dashed var(--violet-300); border-radius:4px; background:repeating-linear-gradient(135deg,#FBFAFF,#FBFAFF 10px,#F4F1FF 10px,#F4F1FF 20px);
+    display:flex; flex-direction:column; justify-content:center; gap:6px; padding:20px 22px; min-height:150px;}
+  .need-img .nk{font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:.1em; color:var(--violet); text-transform:uppercase;}
+  .need-img .nd{font-size:14px; font-weight:700; color:var(--ink); line-height:1.4;}
+  .need-img .nm2{font-family:var(--mono); font-size:11.5px; color:var(--mut);}
+  .need-img.sm{min-height:92px; padding:14px 16px; align-items:center; text-align:center;}
+
+  /* 코드 실행 결과 */
+  .code .out{border-top:1px dashed #38325C; background:#141127; padding:11px 18px; font-family:var(--mono); font-size:12.5px; line-height:1.55; color:#9DE39A; white-space:pre; overflow:auto;}
+  .code .out .ol{color:#7D78B8;}
+  .code .err{color:#FF8E8E;}
+
+  /* 메모리 슬롯 도해 */
+  .slots{display:flex; gap:8px; flex-wrap:wrap; align-items:flex-start;}
+  .slot{border:1.5px solid var(--line); border-radius:8px; min-width:74px; padding:9px 11px; text-align:center; background:#fff;}
+  .slot .adr{font-family:var(--mono); font-size:10px; color:var(--mut); letter-spacing:.02em;}
+  .slot .val{font-family:var(--mono); font-size:15px; font-weight:700; color:var(--ink); margin-top:2px;}
+  .slot .nm{font-size:11px; color:var(--violet); font-weight:700; margin-top:3px;}
+  .slot.ref{border-style:dashed; border-color:var(--violet-300); background:var(--wash-2);}
+  .slot.dim{opacity:.45;}
+  .ptr{display:grid; place-items:center; color:var(--violet); font-family:var(--mono); font-size:18px; font-weight:700; padding:0 2px; align-self:center;}
+
+  /* 인라인 SVG 차트 */
+  /* 애니메이션 — 슬라이드에 도착할 때 한 번 돈다. 인쇄에서는 최종 상태만 남는다 */
+  .an{opacity:0;}
+  .slide.active .an{animation:anIn .6s ease forwards;}
+  @keyframes anIn{from{opacity:0} to{opacity:1}}
+  .slide.active .an.d1{animation-delay:.30s} .slide.active .an.d2{animation-delay:.85s}
+  .slide.active .an.d3{animation-delay:1.40s} .slide.active .an.d4{animation-delay:1.95s}
+  .slide.active .an.d5{animation-delay:2.50s} .slide.active .an.d6{animation-delay:3.05s}
+  .fl{opacity:0;}
+  .slide.active .fl{animation:anFlash .22s linear forwards;}
+  @keyframes anFlash{0%{opacity:0} 25%{opacity:1} 75%{opacity:1} 100%{opacity:0}}
+  @media print{ .an{opacity:1 !important; animation:none !important;} .fl{opacity:0 !important; animation:none !important;} }
+  .fly{transform-box:view-box;}
+  @keyframes fly0{from{transform:translate(20px,20px) scale(1)}to{transform:translate(28px,206px) scale(0.2)}}
+  .slide.active .f0{animation:fly0 1s ease-in-out forwards;animation-delay:0.30s}
+  @media print{.f0{animation:none !important;transform:translate(28px,206px) scale(0.2) !important}}
+  @keyframes fly1{from{transform:translate(20px,25px) scale(1)}to{transform:translate(56px,206px) scale(0.2)}}
+  .slide.active .f1{animation:fly1 1s ease-in-out forwards;animation-delay:0.44s}
+  @media print{.f1{animation:none !important;transform:translate(56px,206px) scale(0.2) !important}}
+  @keyframes fly2{from{transform:translate(20px,30px) scale(1)}to{transform:translate(84px,206px) scale(0.2)}}
+  .slide.active .f2{animation:fly2 1s ease-in-out forwards;animation-delay:0.58s}
+  @media print{.f2{animation:none !important;transform:translate(84px,206px) scale(0.2) !important}}
+  @keyframes fly3{from{transform:translate(20px,35px) scale(1)}to{transform:translate(112px,206px) scale(0.2)}}
+  .slide.active .f3{animation:fly3 1s ease-in-out forwards;animation-delay:0.72s}
+  @media print{.f3{animation:none !important;transform:translate(112px,206px) scale(0.2) !important}}
+  @keyframes fly4{from{transform:translate(20px,40px) scale(1)}to{transform:translate(140px,206px) scale(0.2)}}
+  .slide.active .f4{animation:fly4 1s ease-in-out forwards;animation-delay:0.86s}
+  @media print{.f4{animation:none !important;transform:translate(140px,206px) scale(0.2) !important}}
+  @keyframes fly5{from{transform:translate(20px,45px) scale(1)}to{transform:translate(168px,206px) scale(0.2)}}
+  .slide.active .f5{animation:fly5 1s ease-in-out forwards;animation-delay:1.00s}
+  @media print{.f5{animation:none !important;transform:translate(168px,206px) scale(0.2) !important}}
+  @keyframes fly6{from{transform:translate(20px,50px) scale(1)}to{transform:translate(196px,206px) scale(0.2)}}
+  .slide.active .f6{animation:fly6 1s ease-in-out forwards;animation-delay:1.14s}
+  @media print{.f6{animation:none !important;transform:translate(196px,206px) scale(0.2) !important}}
+  @keyframes fly7{from{transform:translate(20px,55px) scale(1)}to{transform:translate(224px,206px) scale(0.2)}}
+  .slide.active .f7{animation:fly7 1s ease-in-out forwards;animation-delay:1.28s}
+  @media print{.f7{animation:none !important;transform:translate(224px,206px) scale(0.2) !important}}
+  @keyframes fly8{from{transform:translate(20px,60px) scale(1)}to{transform:translate(252px,206px) scale(0.2)}}
+  .slide.active .f8{animation:fly8 1s ease-in-out forwards;animation-delay:1.42s}
+  @media print{.f8{animation:none !important;transform:translate(252px,206px) scale(0.2) !important}}
+  @keyframes fly9{from{transform:translate(20px,65px) scale(1)}to{transform:translate(280px,206px) scale(0.2)}}
+  .slide.active .f9{animation:fly9 1s ease-in-out forwards;animation-delay:1.56s}
+  @media print{.f9{animation:none !important;transform:translate(280px,206px) scale(0.2) !important}}
+  @keyframes fly10{from{transform:translate(20px,70px) scale(1)}to{transform:translate(308px,206px) scale(0.2)}}
+  .slide.active .f10{animation:fly10 1s ease-in-out forwards;animation-delay:1.70s}
+  @media print{.f10{animation:none !important;transform:translate(308px,206px) scale(0.2) !important}}
+  @keyframes fly11{from{transform:translate(20px,75px) scale(1)}to{transform:translate(336px,206px) scale(0.2)}}
+  .slide.active .f11{animation:fly11 1s ease-in-out forwards;animation-delay:1.84s}
+  @media print{.f11{animation:none !important;transform:translate(336px,206px) scale(0.2) !important}}
+  @keyframes fly12{from{transform:translate(20px,80px) scale(1)}to{transform:translate(364px,206px) scale(0.2)}}
+  .slide.active .f12{animation:fly12 1s ease-in-out forwards;animation-delay:1.98s}
+  @media print{.f12{animation:none !important;transform:translate(364px,206px) scale(0.2) !important}}
+  @keyframes fly13{from{transform:translate(20px,85px) scale(1)}to{transform:translate(392px,206px) scale(0.2)}}
+  .slide.active .f13{animation:fly13 1s ease-in-out forwards;animation-delay:2.12s}
+  @media print{.f13{animation:none !important;transform:translate(392px,206px) scale(0.2) !important}}
+  @keyframes fly14{from{transform:translate(20px,90px) scale(1)}to{transform:translate(420px,206px) scale(0.2)}}
+  .slide.active .f14{animation:fly14 1s ease-in-out forwards;animation-delay:2.26s}
+  @media print{.f14{animation:none !important;transform:translate(420px,206px) scale(0.2) !important}}
+  @keyframes fly15{from{transform:translate(20px,95px) scale(1)}to{transform:translate(448px,206px) scale(0.2)}}
+  .slide.active .f15{animation:fly15 1s ease-in-out forwards;animation-delay:2.40s}
+  @media print{.f15{animation:none !important;transform:translate(448px,206px) scale(0.2) !important}}
+  @keyframes fly16{from{transform:translate(20px,100px) scale(1)}to{transform:translate(476px,206px) scale(0.2)}}
+  .slide.active .f16{animation:fly16 1s ease-in-out forwards;animation-delay:2.54s}
+  @media print{.f16{animation:none !important;transform:translate(476px,206px) scale(0.2) !important}}
+  @keyframes fly17{from{transform:translate(20px,105px) scale(1)}to{transform:translate(504px,206px) scale(0.2)}}
+  .slide.active .f17{animation:fly17 1s ease-in-out forwards;animation-delay:2.68s}
+  @media print{.f17{animation:none !important;transform:translate(504px,206px) scale(0.2) !important}}
+  @keyframes fly18{from{transform:translate(20px,110px) scale(1)}to{transform:translate(532px,206px) scale(0.2)}}
+  .slide.active .f18{animation:fly18 1s ease-in-out forwards;animation-delay:2.82s}
+  @media print{.f18{animation:none !important;transform:translate(532px,206px) scale(0.2) !important}}
+  @keyframes fly19{from{transform:translate(20px,115px) scale(1)}to{transform:translate(560px,206px) scale(0.2)}}
+  .slide.active .f19{animation:fly19 1s ease-in-out forwards;animation-delay:2.96s}
+  @media print{.f19{animation:none !important;transform:translate(560px,206px) scale(0.2) !important}}
+  @keyframes fly20{from{transform:translate(20px,120px) scale(1)}to{transform:translate(588px,206px) scale(0.2)}}
+  .slide.active .f20{animation:fly20 1s ease-in-out forwards;animation-delay:3.10s}
+  @media print{.f20{animation:none !important;transform:translate(588px,206px) scale(0.2) !important}}
+  @keyframes fly21{from{transform:translate(20px,125px) scale(1)}to{transform:translate(616px,206px) scale(0.2)}}
+  .slide.active .f21{animation:fly21 1s ease-in-out forwards;animation-delay:3.24s}
+  @media print{.f21{animation:none !important;transform:translate(616px,206px) scale(0.2) !important}}
+  @keyframes fly22{from{transform:translate(20px,130px) scale(1)}to{transform:translate(644px,206px) scale(0.2)}}
+  .slide.active .f22{animation:fly22 1s ease-in-out forwards;animation-delay:3.38s}
+  @media print{.f22{animation:none !important;transform:translate(644px,206px) scale(0.2) !important}}
+  @keyframes fly23{from{transform:translate(20px,135px) scale(1)}to{transform:translate(672px,206px) scale(0.2)}}
+  .slide.active .f23{animation:fly23 1s ease-in-out forwards;animation-delay:3.52s}
+  @media print{.f23{animation:none !important;transform:translate(672px,206px) scale(0.2) !important}}
+  @keyframes fly24{from{transform:translate(20px,140px) scale(1)}to{transform:translate(700px,206px) scale(0.2)}}
+  .slide.active .f24{animation:fly24 1s ease-in-out forwards;animation-delay:3.66s}
+  @media print{.f24{animation:none !important;transform:translate(700px,206px) scale(0.2) !important}}
+  @keyframes fly25{from{transform:translate(20px,145px) scale(1)}to{transform:translate(728px,206px) scale(0.2)}}
+  .slide.active .f25{animation:fly25 1s ease-in-out forwards;animation-delay:3.80s}
+  @media print{.f25{animation:none !important;transform:translate(728px,206px) scale(0.2) !important}}
+  @keyframes fly26{from{transform:translate(20px,150px) scale(1)}to{transform:translate(756px,206px) scale(0.2)}}
+  .slide.active .f26{animation:fly26 1s ease-in-out forwards;animation-delay:3.94s}
+  @media print{.f26{animation:none !important;transform:translate(756px,206px) scale(0.2) !important}}
+  @keyframes fly27{from{transform:translate(20px,155px) scale(1)}to{transform:translate(784px,206px) scale(0.2)}}
+  .slide.active .f27{animation:fly27 1s ease-in-out forwards;animation-delay:4.08s}
+  @media print{.f27{animation:none !important;transform:translate(784px,206px) scale(0.2) !important}}
+  @media (prefers-reduced-motion:reduce){ .an{opacity:1 !important; animation:none !important;} .fl{opacity:0 !important; animation:none !important;} }
+  .plot{background:var(--wash-2); border:1px solid var(--line); border-radius:4px; padding:14px; display:grid; place-items:center; min-height:0;}
+  .plot svg{width:100%; height:auto; display:block; max-height:300px;}
+  .plot .cap{font-family:var(--mono); font-size:11px; color:var(--mut); margin-top:8px; text-align:center;}
+  .formula .cap{font-family:var(--mono); font-size:11.5px; color:var(--code-dim); text-align:center;}
+
+  /* 수정·보강 표시 (원본 pptx에 없던 내용) */
+  .newmark{position:absolute; top:30px; right:112px; font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.08em;
+    color:var(--mint); border:1px solid #BFE9E1; background:var(--mint-soft); border-radius:999px; padding:3px 9px;}
+
+  @media print{
+    @page{ size:1280px 720px; margin:0; }
+    body{background:#fff !important;}
+    .controlbar,.progress,.hint,.overview{display:none !important;}
+    .stage{position:static; inset:auto; overflow:visible; display:block; padding:0;}
+    .sizer{width:auto !important; height:auto !important;}
+    .scaler{transform:none !important; width:auto !important; height:auto !important;}
+    .slide{ display:flex !important; width:1280px !important; height:720px !important;
+      border-radius:0 !important; border:none !important; box-shadow:none !important;
+      page-break-after:always; break-after:page;
+      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .slide:last-child{page-break-after:auto;}
+  }
+</style>
+</head>
+<body>
+
+<div class="progress"><div class="fill" id="pfill"></div></div>
+
+<main class="stage" id="stage">
+  <div class="sizer" id="sizer">
+    <div class="scaler" id="scaler">
+<section class="slide cover active" data-title="표지 · Day 6">
+  <div class="aperture"></div><div class="ring"></div>
+  <div class="wrap">
+    <div class="kick"><span class="pill">WEEK 2 · DAY 2</span><span>YOUR OWN DATA</span></div>
+    <h1>내 사진으로 만드는 분류기</h1>
+  </div>
+</section>
+
+<section class="slide" data-title="오늘의 일정">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">AGENDA</span><span class="dot"></span>일정</div>
+  <h2 class="s-title sm">오늘의 일정</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c5">
+      <div class="card"><span class="n">CH0</span><h3>데이터를 갖추기</h3><p>폴더가 곧 라벨 · 크기 맞추기 · 첫 결과.</p></div>
+      <div class="card"><span class="n">CH1</span><h3>숫자를 믿는 법</h3><p>검증 한 장이 몇 %인가 · 외운 것과 배운 것.</p></div>
+      <div class="card"><span class="n">CH2</span><h3>한쪽이 적은 데이터</h3><p>정확도 뒤에 숨는 것 · 종류별로 보기.</p></div>
+      <div class="card"><span class="n">CH3</span><h3>판정 문턱</h3><p>놓치는 비용과 헛짚는 비용을 저울질한다.</p></div>
+      <div class="card"><span class="n">CH4</span><h3>내보내기</h3><p>저장 · 증강 · 현장에서 떨어지는 이유.</p></div>
+    </div>
+    <div class="keymsg"><span class="k">데이터</span><div>사진 <b>397장</b>으로 한다. 훈련 244 · 검증 153 이다. <b>현장에서 모을 수 있는 양</b>에 맞춘 것이다.</div></div>
+  </div>
+</section>
+
+<section class="slide section" data-title="[섹션] 데이터를 갖추기">
+  <div class="ghost">00</div>
+  <div class="seyebrow">CHAPTER 00</div>
+  <h2>데이터를 갖추기</h2>
+  <div class="agenda"><span>폴더</span><span>크기</span><span>첫 결과</span></div>
+</section>
+
+<section class="slide" data-title="폴더가 곧 라벨">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>준비</div>
+  <h2 class="s-title sm">폴더 이름이 그대로 정답표가 되는 구조</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="plot">
+          <svg viewBox="0 0 420 210">
+            <g font-size="12.5" font-family="ui-monospace,monospace">
+              <text class="an d1" x="14" y="24" fill="#16142B">data/</text>
+              <text class="an d1" x="34" y="46" fill="#16142B">train/</text>
+              <g class="an d2">
+                <text x="58" y="68" fill="#5B3DF5" font-weight="700">ants/</text>
+                <text x="180" y="68" fill="#8E8AAC" font-size="11">사진 123장</text>
+                <text x="82" y="88" fill="#8E8AAC" font-size="11">0013035.jpg</text>
+                <text x="82" y="106" fill="#8E8AAC" font-size="11">5650366.jpg &hellip;</text>
+              </g>
+              <g class="an d3">
+                <text x="58" y="128" fill="#E8537A" font-weight="700">bees/</text>
+                <text x="180" y="128" fill="#8E8AAC" font-size="11">사진 121장</text>
+              </g>
+              <text class="an d4" x="34" y="152" fill="#16142B">val/</text>
+              <g class="an d4">
+                <text x="58" y="172" fill="#5B3DF5" font-weight="700">ants/</text>
+                <text x="180" y="172" fill="#8E8AAC" font-size="11">사진 70장</text>
+                <text x="58" y="192" fill="#E8537A" font-weight="700">bees/</text>
+                <text x="180" y="192" fill="#8E8AAC" font-size="11">사진 83장</text>
+              </g>
+            </g>
+          </svg>
+          <div class="cap">파일 이름은 아무래도 좋다. 폴더 이름만 맞으면 된다</div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">읽어 들이는 한 줄</span></div>
+          <pre><code><span class="kw">from</span> torchvision <span class="kw">import</span> datasets
+
+train = datasets.ImageFolder(<span class="st">'data/train'</span>)
+<span class="fn2">print</span>(train.classes)
+<span class="fn2">print</span>(train.class_to_idx)</code></pre>
+          <div class="out">['ants', 'bees']
+{'ants': 0, 'bees': 1}</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div><code>ImageFolder</code> 가 <b>폴더 이름을 가나다순으로 정렬해 번호</b>를 매긴다. 라벨 파일을 따로 만들 필요가 없다.</div></div>
+          <div class="v"><span class="b">★</span><div>폴더 이름을 <code>정상</code> · <code>불량</code> 로 바꾸면 <b>그대로 현장 문제</b>가 된다. 코드는 한 글자도 안 바뀐다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">준비</span><div>가장 먼저 할 일은 코딩이 아니다. <b>사진을 폴더로 나눠 넣는 일</b>이다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="훈련과 검증을 나눈다">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>준비</div>
+  <h2 class="s-title sm">학습에 쓴 사진으로는 재지 않는 이유</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="plot">
+          <svg viewBox="0 0 420 180">
+            <g class="an d1">
+              <rect x="14" y="24" width="392" height="34" rx="6" fill="#F4F1FF" stroke="#DCD6F0"/>
+              <text x="210" y="46" text-anchor="middle" font-size="13" font-weight="700" fill="#16142B">모은 사진 397장</text>
+            </g>
+            <path class="an d2" d="M140 62 L120 82 M280 62 L300 82" stroke="#8E8AAC" stroke-width="1.4"/>
+            <g class="an d2">
+              <rect x="14" y="88" width="196" height="44" rx="6" fill="#EFEAFF" stroke="#B7A9FF"/>
+              <text x="112" y="108" text-anchor="middle" font-size="12.5" font-weight="700" fill="#3A1FC9">훈련 244장</text>
+              <text x="112" y="125" text-anchor="middle" font-size="10.5" fill="#8E8AAC">계수를 맞추는 데 쓴다</text>
+            </g>
+            <g class="an d3">
+              <rect x="222" y="88" width="184" height="44" rx="6" fill="#FDE8EE" stroke="#F1B9C9"/>
+              <text x="314" y="108" text-anchor="middle" font-size="12.5" font-weight="700" fill="#E8537A">검증 153장</text>
+              <text x="314" y="125" text-anchor="middle" font-size="10.5" fill="#8E8AAC">한 번도 학습에 넣지 않는다</text>
+            </g>
+            <text class="an d4" x="210" y="158" text-anchor="middle" font-size="11.5" fill="#8E8AAC">두 폴더가 섞이면 그날의 숫자가 전부 거짓이 된다</text>
+          </svg>
+          <div class="cap">나누는 일은 학습을 시작하기 전에 끝낸다</div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>훈련 사진으로 재면 <b>외운 것을 재는 것</b>이다. 이 모델은 훈련에서 1.0000 이 나온다.</div></div>
+          <div class="v"><span class="b">★</span><div>같은 제품을 여러 각도로 찍었다면 <b>그 묶음을 통째로</b> 한쪽에 넣는다. 나눠 넣으면 검증이 훈련을 엿본 셈이 된다.</div></div>
+          <div class="v"><span class="b">→</span><div>검증을 몇 장 둘지는 <b>한 장의 무게</b>로 정한다. 100장이면 한 장이 1% 다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">규칙</span><div>검증 사진은 <b>단 한 번도 학습에 들어가지 않는다</b>. 이것만 지켜도 절반은 한 것이다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="사진 크기가 제각각">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>준비</div>
+  <h2 class="s-title sm">60장 중 31가지 크기가 섞여 있는 상태</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="mini">가로  최소 343 · 중앙 500 · 최대 768
+세로  최소 236 · 중앙 375 · 최대 512
+
+60장 안에 서로 다른 크기 <b>31가지</b>
+예: (768,512) (500,333) (500,282)</div>
+        <div class="vlist">
+          <div class="v"><span class="b">✕</span><div>모델은 <b>정해진 한 크기</b>만 받는다. 이대로 넣으면 첫 줄에서 멈춘다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">크기를 맞추는 두 단계</span></div>
+          <pre><code>T = transforms.Compose([
+    transforms.Resize(<span class="nm">256</span>),        <span class="cm"># 짧은 변을 256으로</span>
+    transforms.CenterCrop(<span class="nm">224</span>),    <span class="cm"># 가운데 224만 자른다</span>
+    transforms.ToTensor(),
+    transforms.Normalize(
+        [<span class="nm">0.485</span>, <span class="nm">0.456</span>, <span class="nm">0.406</span>],
+        [<span class="nm">0.229</span>, <span class="nm">0.224</span>, <span class="nm">0.225</span>])])</code></pre>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div><code>Resize(256)</code> 는 <b>비율을 지키며</b> 짧은 변을 256으로 만든다. 찌그러지지 않는다.</div></div>
+          <div class="v"><span class="b">→</span><div><code>CenterCrop(224)</code> 로 가운데를 자른다. <b>대상이 가장자리에 있으면 잘려 나간다</b>.</div></div>
+          <div class="v"><span class="b">★</span><div><code>Normalize</code> 의 숫자 여섯 개는 <b>가져다 쓸 모델이 정한 값</b>이다. 바꾸지 않는다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">규칙</span><div>훈련에 쓴 변환을 <b>검증과 실제 판정에도 똑같이</b> 쓴다. 다르면 성능이 조용히 떨어진다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="첫 결과">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>측정</div>
+  <h2 class="s-title sm">244장으로 얻은 0.9608</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">이미 만들어 둔 방식 그대로</span></div>
+          <pre><code>net = models.resnet18(weights=<span class="st">'DEFAULT'</span>)
+net.fc = nn.Identity()      <span class="cm"># 특징만 뽑는다</span>
+
+head = nn.Linear(<span class="nm">512</span>, <span class="nm">2</span>)  <span class="cm"># 두 종류</span></code></pre>
+          <div class="out">특징 뽑기 397장 7초
+학습한 계수 1,026개
+검증 정확도 0.9608</div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>바뀐 곳은 <code>Linear(512, 10)</code> 이 <code>Linear(512, 2)</code> 가 된 것뿐이다. <b>종류 수만 맞추면 된다</b>.</div></div>
+          <div class="v"><span class="b">→</span><div>계수 <b>1,026개</b>를 배웠다. 사진 244장으로 채우기에 충분한 양이다.</div></div>
+          <div class="v"><span class="b">★</span><div>여기서 끝내면 안 된다. <b>0.9608 이 무엇을 뜻하는지</b> 아직 모른다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">출발</span><div>첫 숫자는 <b>10분이면 나온다</b>. 남은 하루는 그 숫자를 믿을지 판단하는 데 쓴다.</div></div>
+  </div>
+</section>
+
+<section class="slide section" data-title="[섹션] 숫자를 믿는 법">
+  <div class="ghost">01</div>
+  <div class="seyebrow">CHAPTER 01</div>
+  <h2>숫자를 믿는 법</h2>
+  <div class="agenda"><span>한 장의 무게</span><span>외운 것</span><span>흔들림</span></div>
+</section>
+
+<section class="slide" data-title="한 장이 0.65%">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>판단</div>
+  <h2 class="s-title sm">검증 153장에서 한 장의 무게</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="plot">
+      <svg viewBox="0 0 900 150">
+        <g class="an d1">
+          <rect x="20" y="30" width="360" height="40" rx="8" fill="#F4F1FF" stroke="#DCD6F0"/>
+          <text x="200" y="56" text-anchor="middle" font-size="15" font-weight="700" fill="#16142B">1 &divide; 153 = 0.0065</text>
+          <text x="200" y="20" text-anchor="middle" font-size="10.5" fill="#8E8AAC">사진 한 장이 정확도에 미치는 값</text>
+        </g>
+        <g class="an d2">
+          <text x="420" y="46" font-size="12.5" fill="#8E8AAC">0.9608 과 0.9542 의 차이는</text>
+          <text x="420" y="68" font-size="14" font-weight="800" fill="#E8537A">사진 한 장이다</text>
+        </g>
+        <g class="an d3">
+          <rect x="20" y="92" width="860" height="40" rx="8" fill="#FDE8EE" stroke="#F1B9C9"/>
+          <text x="450" y="118" text-anchor="middle" font-size="13" font-weight="700" fill="#16142B">두 방법을 견줄 때 차이가 2% 아래면 &mdash; 그것으로는 어느 쪽이 나은지 말할 수 없다</text>
+        </g>
+      </svg>
+      <div class="cap">검증 장수가 적을수록 한 장의 무게가 커진다</div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>소수점 넷째 자리까지 나온다고 <b>그만큼 정밀한 것이 아니다</b>. 153장으로 잰 값이다.</div></div>
+      <div class="v"><span class="b">→</span><div>차이가 작으면 <b>검증 사진을 늘리거나</b>, 나누는 방법을 바꿔 여러 번 재 본다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>정확도를 볼 때 <b>검증이 몇 장인지 먼저</b> 본다. 그것이 그 숫자의 해상도다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="외운 것과 배운 것">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>과적합</div>
+  <h2 class="s-title sm">훈련 1.0000 과 검증 0.9608 의 간격</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="plot">
+          <svg viewBox="0 0 440 200">
+            <line x1="46" y1="160" x2="420" y2="160" stroke="#8E8AAC" stroke-width="1.2"/>
+            <line x1="46" y1="24" x2="46" y2="160" stroke="#E8E4F8" stroke-width="1.2"/>
+            <text x="20" y="30" font-size="10" fill="#8E8AAC">1.00</text>
+            <text x="20" y="160" font-size="10" fill="#8E8AAC">0.85</text>
+            <polyline class="an d1" points="70,84 130,42 190,38 250,32 310,28 370,24"
+                      fill="none" stroke="#5B3DF5" stroke-width="2.6"/>
+            <polyline class="an d2" points="70,90 130,66 190,60 250,54 310,54 370,54"
+                      fill="none" stroke="#E8537A" stroke-width="2.6" stroke-dasharray="5 3"/>
+            <text class="an d1" x="378" y="24" font-size="11" font-weight="700" fill="#5B3DF5">훈련</text>
+            <text class="an d2" x="378" y="58" font-size="11" font-weight="700" fill="#E8537A">검증</text>
+            <g class="an d3">
+              <path d="M340 24 L340 54" stroke="#16142B" stroke-width="1.4"/>
+              <path d="M336 24 L344 24 M336 54 L344 54" stroke="#16142B" stroke-width="1.4"/>
+              <text x="300" y="44" text-anchor="end" font-size="11.5" font-weight="700" fill="#16142B">간격</text>
+            </g>
+            <g font-size="10" fill="#8E8AAC">
+              <text x="70" y="176" text-anchor="middle">1</text><text x="190" y="176" text-anchor="middle">10</text>
+              <text x="310" y="176" text-anchor="middle">20</text><text x="370" y="176" text-anchor="middle">30에폭</text>
+            </g>
+          </svg>
+          <div class="cap">훈련은 계속 오르고 검증은 10에폭에서 멈춘다</div>
+        </div>
+      </div>
+      <div>
+        <div class="mini"> 1에폭   0.8689 / 0.8627
+ 3에폭   0.9795 / 0.9412
+ 5에폭   0.9836 / 0.9477
+10에폭   0.9918 / <b>0.9608</b>
+20에폭   0.9959 / <b>0.9608</b>
+30에폭   1.0000 / <b>0.9608</b>
+        <i>훈련 / 검증</i></div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>훈련이 <b>1.0000</b> 이라는 것은 <b>244장을 전부 외웠다</b>는 뜻이다. 좋은 신호가 아니다.</div></div>
+          <div class="v"><span class="b">★</span><div>검증은 <b>10에폭에서 멈췄다</b>. 그 뒤 20에폭은 외우기만 한 것이다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>멈출 때를 정하는 것은 훈련 정확도가 아니다. <b>검증이 더 안 오르면 거기서 멈춘다.</b></div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="사진을 줄이면">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>측정</div>
+  <h2 class="s-title sm">244장에서 30장까지 줄여 본 결과</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable">
+      <thead><tr><th>훈련 사진</th><th>검증 정확도</th><th>244장 대비</th><th>사진 수로</th></tr></thead>
+      <tbody>
+        <tr><td>244장</td><td class="yes">0.9608</td><td>&mdash;</td><td>&mdash;</td></tr>
+        <tr><td>120장</td><td>0.9542</td><td>&minus;0.0066</td><td>1장</td></tr>
+        <tr><td>60장</td><td>0.9477</td><td>&minus;0.0131</td><td>2장</td></tr>
+        <tr><td class="hl">30장</td><td class="no">0.9150</td><td class="no">&minus;0.0458</td><td class="no">7장</td></tr>
+      </tbody>
+    </table>
+    <div class="vlist">
+      <div class="v"><span class="b">→</span><div>120장과 60장의 차이는 <b>사진 두 장</b>이다. 이 정도로는 <b>줄어서 떨어졌다고 말할 수 없다</b>.</div></div>
+      <div class="v"><span class="b">★</span><div>30장에서는 <b>7장</b>이 벌어졌다. 여기서부터가 <b>진짜 차이</b>다.</div></div>
+      <div class="v"><span class="b">→</span><div>사진을 더 모을지 정할 때 이 표를 쓴다. <b>60장이 있으면 120장을 더 모을 값어치가 크지 않다.</b></div></div>
+    </div>
+    <div class="keymsg"><span class="k">읽는 법</span><div>표를 볼 때 <b>차이를 사진 장수로 환산</b>한다. 소수점만 보면 없는 차이를 믿게 된다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="라벨이 틀리면">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>측정</div>
+  <h2 class="s-title sm">잘못 붙은 라벨 12장의 값</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable">
+      <thead><tr><th>훈련 244장 중 라벨이 틀린 것</th><th>세 번 뽑아 잰 값</th><th>평균</th><th>기준 대비</th></tr></thead>
+      <tbody>
+        <tr><td>0장</td><td>&mdash;</td><td class="yes">0.9608</td><td>&mdash;</td></tr>
+        <tr><td>12장 (5%)</td><td>0.9150 · 0.9346 · 0.9281</td><td>0.9259</td><td>5장</td></tr>
+        <tr><td>24장 (10%)</td><td>0.9020 · 0.8889 · 0.8889</td><td>0.8932</td><td>10장</td></tr>
+        <tr><td>48장 (20%)</td><td>0.8497 · 0.8039 · 0.8366</td><td class="no">0.8301</td><td class="no">20장</td></tr>
+        <tr><td class="hl">85장 (35%)</td><td>0.6863 · 0.7386 · 0.7647</td><td class="no">0.7298</td><td class="no">35장</td></tr>
+      </tbody>
+    </table>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div><b>틀린 라벨 한 장이 검증 오답을 약 0.4장 늘린다.</b> 네 줄이 거의 정확히 비례한다.</div></div>
+      <div class="v"><span class="b">→</span><div>12장만 잘못 붙어도 <b>5장</b>을 더 틀린다. 사진을 244장에서 30장으로 줄인 손해(7장)와 비슷하다.</div></div>
+      <div class="v"><span class="b">→</span><div>사진을 더 모으기 전에 <b>가진 라벨부터 다시 본다</b>. 그쪽이 값이 클 때가 많다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">우선순위</span><div>사진 수보다 <b>라벨의 정확함</b>이 먼저다. 애매한 사진은 빼는 편이 잘못 붙이는 것보다 낫다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="무엇이 결과를 흔드는가">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>측정</div>
+  <h2 class="s-title sm">난수를 바꿔도 꿈쩍 않는 값</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twopane">
+      <div class="pane good">
+        <h4>난수 씨앗만 열 번 바꾸면</h4>
+        <div class="mini">0.9608  0.9608  0.9608  0.9608  0.9608
+0.9608  0.9608  0.9608  0.9608  0.9608
+
+폭 <b>0.0000</b></div>
+        <p>열 번이 전부 같다. 앞쪽 층을 얼려 뒀고 마지막 층 하나만 배우니 <b>늘 같은 답에 닿는다</b>.</p>
+      </div>
+      <div class="pane bad">
+        <h4>어느 30장을 뽑느냐를 바꾸면</h4>
+        <div class="mini">0.9216  0.9281  0.9281
+0.9346  0.9346
+
+폭 <b>0.0130</b>  (사진 2장)</div>
+        <p>같은 코드인데 <b>고른 사진이 다르면</b> 결과가 흔들린다. 사진이 적을수록 심하다.</p>
+      </div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>흔들림의 원인은 <b>학습이 아니라 데이터</b>다. 씨앗을 고정해도 사라지지 않는다.</div></div>
+      <div class="v"><span class="b">→</span><div>그래서 결과를 보고할 때 <b>어떤 사진으로 나눴는지</b>를 함께 적는다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">해석</span><div>같은 코드가 같은 답을 낸다고 <b>믿을 만한 답인 것은 아니다</b>. 데이터를 바꿔 여러 번 재 본다.</div></div>
+  </div>
+</section>
+
+<section class="slide section" data-title="[섹션] 한쪽이 적은 데이터">
+  <div class="ghost">02</div>
+  <div class="seyebrow">CHAPTER 02</div>
+  <h2>한쪽이 적은 데이터</h2>
+  <div class="agenda"><span>불균형</span><span>숨는 실패</span><span>종류별로</span></div>
+</section>
+
+<section class="slide" data-title="한 종류를 줄이면">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>측정</div>
+  <h2 class="s-title sm">정확도 0.7778 뒤에 숨은 0.5143</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable">
+      <thead><tr><th>훈련 사진</th><th>전체 정확도</th><th>개미를 개미라 한 비율</th><th>벌을 벌이라 한 비율</th></tr></thead>
+      <tbody>
+        <tr><td>개미 123 : 벌 121</td><td class="yes">0.9608</td><td>0.9714</td><td>0.9518</td></tr>
+        <tr><td>개미 40 : 벌 121</td><td>0.9346</td><td class="no">0.8714</td><td>0.9880</td></tr>
+        <tr><td class="hl">개미 12 : 벌 121</td><td class="no">0.7778</td><td class="no">0.5143</td><td class="hl">1.0000</td></tr>
+      </tbody>
+    </table>
+    <div class="vlist">
+      <div class="v"><span class="b">✕</span><div>마지막 줄은 <b>벌을 100% 맞힌다</b>. 개미는 절반만 맞힌다. <b>웬만하면 벌이라고 답하는 모델</b>이 된 것이다.</div></div>
+      <div class="v"><span class="b">★</span><div>전체 정확도 <b>0.7778 만 보면 그런대로 쓸 만해 보인다</b>. 한 종류가 무너진 것이 가려진다.</div></div>
+      <div class="v"><span class="b">→</span><div>사진이 적은 쪽이 <b>대개 더 중요한 쪽</b>이다. 불량이 정상보다 적다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">경계</span><div>전체 정확도 한 숫자로 판단하지 않는다. <b>종류마다 따로 잰다.</b></div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="종류별로 재는 코드">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>코드</div>
+  <h2 class="s-title sm">종류마다 맞힌 수를 따로 세는 다섯 줄</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">종류별 정확도</span></div>
+          <pre><code>hit = [<span class="nm">0</span>] * <span class="nm">2</span>
+tot = [<span class="nm">0</span>] * <span class="nm">2</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn2">range</span>(<span class="fn2">len</span>(y_true)):
+    tot[y_true[i]] += <span class="nm">1</span>
+    hit[y_true[i]] += <span class="fn2">int</span>(pred[i] == y_true[i])
+
+<span class="kw">for</span> c <span class="kw">in</span> <span class="fn2">range</span>(<span class="nm">2</span>):
+    <span class="fn2">print</span>(names[c], hit[c] / tot[c])</code></pre>
+          <div class="out">ants 0.5143
+bees 1.0000</div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>실제 정답이 <code>c</code> 인 것 중 <b>맞힌 비율</b>이다. 이것을 재현율이라 부른다.</div></div>
+          <div class="v"><span class="b">→</span><div>사진 수가 다르면 <b>전체 평균이 많은 쪽으로 끌린다</b>. 종류별로 보면 그 왜곡이 사라진다.</div></div>
+          <div class="v"><span class="b">★</span><div>대응은 셋이다. <b>적은 쪽 사진을 더 모으거나</b>, 학습에서 <b>비중을 더 주거나</b>, 판정 문턱을 조정한다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">습관</span><div>정확도를 찍는 줄 옆에 <b>종류별 줄을 늘 같이</b> 둔다. 한 줄 더 쓰는 값이 크다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="불균형에 대응하기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>대응</div>
+  <h2 class="s-title sm">적은 쪽을 살리는 세 가지 손</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="vlist">
+      <div class="v"><span class="b">1</span><div><b>적은 쪽을 더 모은다.</b> 가장 확실하다. 다른 둘은 이것이 안 될 때 쓰는 방법이다.</div></div>
+      <div class="v"><span class="b">2</span><div><b>학습에서 비중을 준다.</b> <code>nn.CrossEntropyLoss(weight=...)</code> 에 적은 쪽 가중치를 크게 준다. 그쪽을 틀리면 더 크게 혼나는 셈이다.</div></div>
+      <div class="v"><span class="b">3</span><div><b>문턱을 내린다.</b> 적은 쪽 확률이 0.5 를 못 넘어도 0.3 만 넘으면 그쪽으로 판정한다.</div></div>
+    </div>
+    <div class="twopane">
+      <div class="pane bad">
+        <h4>세 방법 모두 공짜가 아니다</h4>
+        <p>적은 쪽을 더 잡으면 <b>많은 쪽에서 헛짚는 것이 늘어난다</b>. 총량은 그대로고 어디로 옮길지만 정하는 것이다.</p>
+      </div>
+      <div class="pane good">
+        <h4>정하는 방법</h4>
+        <p><b>놓쳤을 때의 비용</b>과 <b>헛짚었을 때의 비용</b>을 숫자로 적어 본다. 불량을 놓치면 회수, 헛짚으면 재검사다.</p>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>불균형은 <b>고치는 문제가 아니라 선택하는 문제</b>다. 어느 실수를 감당할지 먼저 정한다.</div></div>
+  </div>
+</section>
+
+<section class="slide section" data-title="[섹션] 판정 문턱">
+  <div class="ghost">03</div>
+  <div class="seyebrow">CHAPTER 03</div>
+  <h2>판정 문턱</h2>
+  <div class="agenda"><span>확률</span><span>문턱</span><span>비용</span></div>
+</section>
+
+<section class="slide" data-title="확률을 그대로 쓴다">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>원리</div>
+  <h2 class="s-title sm">모델이 내놓는 것은 판정이 아니라 확률</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">확률로 바꿔 꺼낸다</span></div>
+          <pre><code>p = torch.softmax(head(x), <span class="nm">1</span>)[:, <span class="nm">1</span>]
+pred = (p &gt; <span class="nm">0.5</span>).long()</code></pre>
+          <div class="out">p 는 '벌일 확률'
+0.5 는 그냥 정한 값이다</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">★</span><div><code>argmax</code> 를 쓰면 <b>0.5 를 쓴 것</b>과 같다. 그 값이 최선이라는 근거는 어디에도 없다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="plot">
+          <svg viewBox="0 0 400 170">
+            <line x1="30" y1="120" x2="370" y2="120" stroke="#8E8AAC" stroke-width="1.2"/>
+            <text x="30" y="140" font-size="10" fill="#8E8AAC">0.0</text>
+            <text x="196" y="140" text-anchor="middle" font-size="10" fill="#8E8AAC">0.5</text>
+            <text x="370" y="140" text-anchor="end" font-size="10" fill="#8E8AAC">1.0</text>
+            <text x="30" y="24" font-size="10.5" fill="#8E8AAC">벌일 확률</text>
+            <g class="an d1">
+              <circle cx="52" cy="100" r="5" fill="#5B3DF5" opacity="0.7"/><circle cx="66" cy="88" r="5" fill="#5B3DF5" opacity="0.7"/>
+              <circle cx="44" cy="76" r="5" fill="#5B3DF5" opacity="0.7"/><circle cx="80" cy="102" r="5" fill="#5B3DF5" opacity="0.7"/>
+              <circle cx="60" cy="62" r="5" fill="#5B3DF5" opacity="0.7"/><circle cx="96" cy="82" r="5" fill="#5B3DF5" opacity="0.7"/>
+              <text x="66" y="46" text-anchor="middle" font-size="10.5" font-weight="700" fill="#5B3DF5">개미</text>
+            </g>
+            <g class="an d2">
+              <circle cx="344" cy="100" r="5" fill="#E8537A" opacity="0.7"/><circle cx="330" cy="86" r="5" fill="#E8537A" opacity="0.7"/>
+              <circle cx="352" cy="74" r="5" fill="#E8537A" opacity="0.7"/><circle cx="316" cy="102" r="5" fill="#E8537A" opacity="0.7"/>
+              <circle cx="338" cy="60" r="5" fill="#E8537A" opacity="0.7"/><circle cx="302" cy="80" r="5" fill="#E8537A" opacity="0.7"/>
+              <text x="330" y="46" text-anchor="middle" font-size="10.5" font-weight="700" fill="#E8537A">벌</text>
+            </g>
+            <g class="an d3">
+              <circle cx="176" cy="94" r="5" fill="#8E8AAC" opacity="0.8"/><circle cx="210" cy="82" r="5" fill="#8E8AAC" opacity="0.8"/>
+              <circle cx="192" cy="106" r="5" fill="#8E8AAC" opacity="0.8"/>
+              <text x="192" y="62" text-anchor="middle" font-size="10.5" fill="#8E8AAC">헷갈리는 것들</text>
+            </g>
+            <line class="an d4" x1="196" y1="34" x2="196" y2="126" stroke="#16142B" stroke-width="1.6" stroke-dasharray="4 3"/>
+            <text class="an d4" x="196" y="160" text-anchor="middle" font-size="11" font-weight="700" fill="#16142B">문턱을 어디에 둘 것인가</text>
+          </svg>
+          <div class="cap">가운데에 몰린 것들의 운명이 문턱으로 갈린다</div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">착안</span><div>문턱은 <b>모델이 정하는 것이 아니라 쓰는 사람이 정하는 것</b>이다. 무엇을 더 아까워하는지에 달렸다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="문턱을 올리면">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>측정</div>
+  <h2 class="s-title sm">문턱 0.3 에서 0.9 까지의 맞바꿈</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable">
+      <thead><tr><th>문턱</th><th>벌이라 한 것</th><th>그중 맞은 것</th><th>정밀도</th><th>실제 벌 83개 중 찾은 것</th><th>재현율</th></tr></thead>
+      <tbody>
+        <tr><td>0.3</td><td>82개</td><td>80개</td><td>0.976</td><td class="yes">80개</td><td class="yes">0.964</td></tr>
+        <tr><td>0.5</td><td>81개</td><td>79개</td><td>0.975</td><td>79개</td><td>0.952</td></tr>
+        <tr><td>0.7</td><td>78개</td><td>76개</td><td>0.974</td><td>76개</td><td>0.916</td></tr>
+        <tr><td class="hl">0.9</td><td>66개</td><td>65개</td><td class="yes">0.985</td><td class="no">65개</td><td class="no">0.783</td></tr>
+      </tbody>
+    </table>
+    <div class="vlist">
+      <div class="v"><span class="b">→</span><div>문턱을 올리면 <b>확실한 것만 벌이라 한다</b>. 정밀도가 0.976 에서 0.985 로 오른다.</div></div>
+      <div class="v"><span class="b">✕</span><div>대신 <b>18개를 놓친다</b>. 재현율이 0.964 에서 0.783 으로 떨어진다.</div></div>
+      <div class="v"><span class="b">★</span><div>둘을 동시에 올릴 수는 없다. <b>어느 쪽 실수가 더 비싼지</b>로 정한다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>불량을 놓치는 것이 비싸면 <b>문턱을 낮춘다</b>. 헛짚어 재검사하는 비용이 비싸면 올린다.</div></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 늘리기와 내보내기">
+  <div class="ghost">04</div>
+  <div class="seyebrow">CHAPTER 04</div>
+  <h2>늘리기와 내보내기</h2>
+  <div class="agenda"><span>증강</span><span>분포 차이</span><span>저장</span></div>
+</section>
+
+<section class="slide" data-title="증강이란">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>기법</div>
+  <h2 class="s-title sm">같은 사진을 매번 다르게 잘라 넣는 방법</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">읽을 때마다 달라지는 변환</span></div>
+          <pre><code>AUG = transforms.Compose([
+    transforms.RandomResizedCrop(<span class="nm">224</span>, scale=(<span class="nm">0.7</span>, <span class="nm">1.0</span>)),
+    transforms.RandomHorizontalFlip(),
+    transforms.ToTensor(),
+    NORM])</code></pre>
+          <div class="out">같은 파일을 여섯 번 읽으면
+서로 다른 여섯 장이 된다</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>사진을 더 모으지 않고 <b>가진 것을 변형해 늘린다</b>. 244장이 1,464장이 된다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div><code>RandomResizedCrop</code> 은 <b>무작위 위치에서 잘라</b> 224로 키운다. 매번 다른 부분이 보인다.</div></div>
+          <div class="v"><span class="b">→</span><div><code>RandomHorizontalFlip</code> 은 <b>절반의 확률로 좌우를 뒤집는다</b>.</div></div>
+          <div class="v"><span class="b">✕</span><div>검증에는 <b>절대 쓰지 않는다</b>. 잴 때마다 값이 달라져 비교가 안 된다.</div></div>
+          <div class="v"><span class="b">★</span><div>널리 쓰이는 기법이다. <b>그런데 이 데이터에서 실제로 들었는지는 재 봐야 안다.</b></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">착안</span><div>증강은 <b>모델에게 &ldquo;이렇게 변해도 같은 것&rdquo; 이라고 알려 주는 일</b>이다. 다음 장에서 실제로 재 본다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="네 조합을 재 보면">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>측정</div>
+  <h2 class="s-title sm">사진 두 장 안에 모여 있는 네 결과</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable">
+      <thead><tr><th>학습할 곳</th><th>증강</th><th>학습한 계수</th><th>검증 정확도</th><th>맨 위와의 차이</th></tr></thead>
+      <tbody>
+        <tr><td>마지막 층만</td><td>없음</td><td>1,026</td><td>0.9346</td><td>&mdash;</td></tr>
+        <tr><td>마지막 층만</td><td>있음</td><td>1,026</td><td>0.9412</td><td>1장</td></tr>
+        <tr><td class="hl">뒤쪽 블록까지</td><td>없음</td><td class="no">8,394,754</td><td>0.9477</td><td>2장</td></tr>
+        <tr><td class="hl">뒤쪽 블록까지</td><td>있음</td><td class="no">8,394,754</td><td>0.9412</td><td>1장</td></tr>
+      </tbody>
+    </table>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>네 값이 전부 <b>사진 두 장 안</b>에 있다. CH1 의 기준으로 <b>어느 쪽이 낫다고 말할 수 없다</b>.</div></div>
+      <div class="v"><span class="b">→</span><div>계수를 <b>1,026개에서 839만 개로</b> 늘렸는데도 그렇다. 8천 배를 키운 값어치가 안 보인다.</div></div>
+      <div class="v"><span class="b">→</span><div>이럴 때는 <b>가장 단순하고 빠른 것</b>을 고른다. 맨 윗줄이다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">판단</span><div>널리 쓰이는 기법이라고 <b>내 데이터에서도 듣는 것은 아니다</b>. 재 보고 정한다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="왜 안 들었는가">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>측정</div>
+  <h2 class="s-title sm">이미 강한 것을 더 보여 준 탓</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable">
+      <thead><tr><th>검증 사진을 이렇게 바꾸면</th><th>정확도</th><th>더 틀린 사진</th></tr></thead>
+      <tbody>
+        <tr><td>그대로</td><td>0.9608</td><td>&mdash;</td></tr>
+        <tr><td class="hl">좌우 뒤집기</td><td class="yes">0.9608</td><td class="yes">0장</td></tr>
+        <tr><td>어둡게 (밝기 0.5배)</td><td>0.9412</td><td>3장</td></tr>
+        <tr><td>흑백으로</td><td class="no">0.8954</td><td class="no">10장</td></tr>
+        <tr><td class="hl">흐리게</td><td class="no">0.8627</td><td class="no">15장</td></tr>
+      </tbody>
+    </table>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>좌우를 뒤집어도 <b>한 장도 더 안 틀린다</b>. 가져온 모델이 <b>이미 그 변형에 강하다</b>.</div></div>
+      <div class="v"><span class="b">→</span><div>그러니 좌우 뒤집기로 사진을 여섯 배 늘려도 <b>새로 알려 준 것이 없다</b>. 증강이 안 들었던 이유다.</div></div>
+      <div class="v"><span class="b">✕</span><div>정작 약한 것은 <b>흐림과 흑백</b>이다. 그런데 증강 목록에는 그것이 없었다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">원인</span><div>증강은 <b>모델이 약한 쪽</b>을 채울 때만 듣는다. 이미 강한 것을 늘리는 것은 헛일이다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="무엇을 증강할 것인가">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>기준</div>
+  <h2 class="s-title sm">현장에서 실제로 생기는 변형만</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twopane">
+      <div class="pane good">
+        <h4>넣을 만한 것</h4>
+        <p><b>조명이 바뀐다</b> &mdash; 밝기 · 대비 변형<br>
+           <b>초점이 나간다</b> &mdash; 흐림 변형<br>
+           <b>놓는 각도가 다르다</b> &mdash; 회전 · 이동<br>
+           <b>카메라가 바뀐다</b> &mdash; 색조 변형</p>
+        <p>공통점 하나다. <b>현장에서 실제로 일어나는 일</b>이다.</p>
+      </div>
+      <div class="pane bad">
+        <h4>넣으면 해로운 것</h4>
+        <p><b>상하 뒤집기</b> &mdash; 제품이 뒤집혀 오지 않는다면<br>
+           <b>심한 회전</b> &mdash; 놓는 방향이 정해져 있다면<br>
+           <b>과한 자르기</b> &mdash; 판정할 부위가 잘려 나간다</p>
+        <p>일어나지 않을 변형을 배우면 <b>진짜 신호를 흐린다</b>.</p>
+      </div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>정하는 방법은 하나다. <b>현장 사진 몇 장을 실제로 변형해 보고</b> 정확도가 떨어지는 것만 고른다.</div></div>
+      <div class="v"><span class="b">→</span><div>앞 장의 표가 그 방법이다. <b>흐림에서 15장이 떨어졌으니</b> 흐림 증강은 넣을 값이 있다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">순서</span><div>증강을 고르기 전에 <b>무엇에 약한지 먼저 잰다</b>. 목록부터 베끼면 헛일을 한다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="저장과 불러오기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>배포</div>
+  <h2 class="s-title sm">0.01MB 로 끝나는 저장</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">배운 것만 저장한다</span></div>
+          <pre><code>torch.save(head.state_dict(), <span class="st">'head.pt'</span>)
+
+<span class="cm"># 불러올 때</span>
+head = nn.Linear(<span class="nm">512</span>, <span class="nm">2</span>)
+head.load_state_dict(torch.load(<span class="st">'head.pt'</span>))
+head.eval()</code></pre>
+          <div class="out">head.pt   0.01 MB
+full.pt  44.78 MB</div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>마지막 층만 저장하면 <b>0.01MB</b> 다. 앞쪽은 공개된 것을 받으면 되니 넣을 이유가 없다.</div></div>
+          <div class="v"><span class="b">→</span><div>모델 전체를 저장하면 <b>44.78MB</b> 다. 뒤쪽 블록까지 학습했다면 이쪽을 저장해야 한다.</div></div>
+          <div class="v"><span class="b">★</span><div><code>eval()</code> 을 <b>반드시</b> 부른다. 안 부르면 판정할 때마다 값이 조금씩 달라진다.</div></div>
+          <div class="v"><span class="b">★</span><div>모델 파일과 함께 <b>변환 코드와 클래스 순서</b>를 같이 남긴다. 셋이 안 맞으면 조용히 틀린다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">챙길 것</span><div>넘길 것은 세 가지다. <b>계수 파일 · 변환 코드 · 클래스 순서.</b> 하나만 빠져도 못 쓴다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="현장에 내기 전">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>점검</div>
+  <h2 class="s-title sm">내보내기 전에 확인하는 다섯 줄</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="vlist">
+      <div class="v"><span class="b">1</span><div><b>검증이 몇 장인가.</b> 한 장이 몇 %인지 계산해 둔다. 153장이면 0.65% 다.</div></div>
+      <div class="v"><span class="b">2</span><div><b>종류별로 쟀는가.</b> 전체 정확도만 보면 한쪽이 무너진 것을 놓친다.</div></div>
+      <div class="v"><span class="b">3</span><div><b>문턱을 정했는가.</b> 0.5 는 정한 값이 아니라 안 정한 값이다.</div></div>
+      <div class="v"><span class="b">4</span><div><b>무엇에 약한지 쟀는가.</b> 어둡게 · 흐리게 · 흑백으로 바꿔 넣어 본다.</div></div>
+      <div class="v"><span class="b">5</span><div><b>변환과 클래스 순서를 같이 넘겼는가.</b> 계수만 넘기면 상대가 못 쓴다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>다섯 줄 중 <b>넷째가 가장 자주 빠진다</b>. 검증 사진은 현장 사진이 아니다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="실습 · 내 폴더로">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">LAB</span><span class="dot"></span>실습</div>
+  <h2 class="s-title sm">폴더 둘을 만들어 끝까지 돌리기</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">시작점</span></div>
+          <pre><code>train = datasets.ImageFolder(<span class="st">'data/train'</span>, T)
+val   = datasets.ImageFolder(<span class="st">'data/val'</span>, T)
+<span class="fn2">print</span>(train.classes, <span class="fn2">len</span>(train), <span class="fn2">len</span>(val))</code></pre>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">1</span><div>주어진 폴더로 분류기를 만들고 <b>검증 한 장이 몇 %</b>인지 계산해 적는다.</div></div>
+          <div class="v"><span class="b">2</span><div><b>종류별 정확도</b>를 찍는다. 전체 값과 얼마나 다른지 본다.</div></div>
+          <div class="v"><span class="b">3</span><div>한 종류를 <b>12장까지 줄여</b> 무엇이 무너지는지 확인한다.</div></div>
+          <div class="v"><span class="b">4</span><div>문턱을 <b>0.3 · 0.5 · 0.9</b> 로 바꿔 정밀도와 재현율을 표로 만든다.</div></div>
+          <div class="v"><span class="b">5</span><div>검증 사진을 <b>어둡게 · 흐리게</b> 바꿔 넣어 몇 장이 더 틀리는지 잰다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">확인</span><div>모든 비교에 <b>차이를 사진 장수로</b> 적는다. 두 장 이내면 판단을 보류한다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="오늘 얻은 것">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>정리</div>
+  <h2 class="s-title sm">한 줄로 줄인 오늘</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c3">
+      <div class="card"><span class="n">만들기</span><h3>폴더 둘이면 된다</h3><p>사진을 폴더로 나누고 마지막 층만 바꾼다. 244장으로 0.9608.</p></div>
+      <div class="card"><span class="n">재기</span><h3>한 장이 0.65%</h3><p>차이를 사진 장수로 환산한다. 두 장 이내면 말할 수 없다.</p></div>
+      <div class="card"><span class="n">내기</span><h3>약한 쪽을 잰다</h3><p>흐리게 하면 15장이 더 틀린다. 현장 조건으로 미리 재 본다.</p></div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>만드는 데 10분, <b>믿을지 판단하는 데 하루</b>가 걸린다. 오늘 시간의 대부분이 뒤쪽이었다.</div></div>
+      <div class="v"><span class="b">→</span><div>아직 남은 물음이 있다. <b>모델이 사진의 어디를 보고 그렇게 판정했는가</b>.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">정리</span><div>정확도 한 숫자는 <b>시작</b>이지 결론이 아니다. 그 숫자가 무엇을 가리는지 보는 것이 일이다.</div></div>
+  </div>
+</section>
+
+
+
+
+
+    </div>
+  </div>
+</main>
+<div class="overview" id="overview">
+  <div class="head"><h3>슬라이드 목차</h3><button id="ovClose">닫기 ✕</button></div>
+  <div class="ovgrid" id="ovgrid"></div>
+</div>
+
+<div class="controlbar">
+  <button class="ico" id="btnMenu" title="목차"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+  <span class="sep"></span>
+  <button class="ico" id="btnPrev" title="이전"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <span class="count"><b id="cur">1</b> / <span id="tot2">75</span></span>
+  <button class="ico" id="btnNext" title="다음"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 18l6-6-6-6"/></svg></button>
+  <span class="sep"></span>
+  <button class="zoom" id="btnOut" title="축소"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14"/></svg></button>
+  <button class="zoom" id="btnIn" title="확대"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></button>
+  <button class="zoom" id="btnFit" title="화면 맞춤"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 4H5a1 1 0 0 0-1 1v4M15 4h4a1 1 0 0 1 1 1v4M9 20H5a1 1 0 0 1-1-1v-4M15 20h4a1 1 0 0 0 1-1v-4"/></svg></button>
+  <button class="pdf" id="btnPdf" title="PDF로 저장 (인쇄 → PDF로 저장)">PDF</button>
+</div>
+
+<div class="hint">← → 또는 Space · 목차(≡) · 줌(−/+) · 숫자 입력 후 Enter로 이동</div>
+<div id="jumpHint"></div>
+<style>
+  #jumpHint{position:fixed; left:50%; bottom:74px; transform:translateX(-50%) translateY(6px); z-index:75;
+    background:#2B2B2E; color:#fff; font-family:Georgia,'Times New Roman',serif; font-style:italic;
+    font-size:20px; letter-spacing:.04em; padding:8px 20px; border-radius:999px;
+    box-shadow:0 12px 28px -10px rgba(0,0,0,.55); opacity:0; pointer-events:none;
+    transition:opacity .12s ease, transform .12s ease;}
+  #jumpHint.on{opacity:1; transform:translateX(-50%) translateY(0);}
+  @media print{ #jumpHint{display:none !important;} }
+</style>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const scaler = document.getElementById('scaler');
+  const sizer  = document.getElementById('sizer');
+  const stage  = document.getElementById('stage');
+  const total  = slides.length;
+  let idx = 0, userZoom = 1;
+  const BW = 1280, BH = 720;
+
+  document.getElementById('tot2').textContent = total;
+  slides.forEach((s, i) => {
+    const c = s.querySelector('.coord b');     if (c) c.textContent = String(i + 1).padStart(2, '0');
+    const t = s.querySelector('.coord .tot');  if (t) t.textContent = total;
+  });
+
+  const ovgrid = document.getElementById('ovgrid');
+  slides.forEach((s, i) => {
+    const b = document.createElement('button');
+    b.className = 'ovcard';
+    b.innerHTML = '<div class="ovn">' + String(i + 1).padStart(2, '0') + '</div><div class="ovt">' + (s.dataset.title || '') + '</div>';
+    b.addEventListener('click', () => { go(i); closeOverview(); });
+    ovgrid.appendChild(b);
+  });
+  const overview = document.getElementById('overview');
+  function openOverview(){ overview.classList.add('on'); }
+  function closeOverview(){ overview.classList.remove('on'); }
+  document.getElementById('btnMenu').addEventListener('click', openOverview);
+  document.getElementById('ovClose').addEventListener('click', closeOverview);
+  overview.addEventListener('click', (e) => { if (e.target === overview) closeOverview(); });
+
+  function fitScale(){
+    const availW = stage.clientWidth  - 60;
+    const availH = stage.clientHeight - 60;
+    return Math.min(availW / BW, availH / BH);
+  }
+  function applyScale(){
+    const eff = fitScale() * userZoom;
+    scaler.style.transform = 'scale(' + eff + ')';
+    sizer.style.width  = (BW * eff) + 'px';
+    sizer.style.height = (BH * eff) + 'px';
+  }
+  window.addEventListener('resize', applyScale);
+
+  function go(n){
+    idx = Math.max(0, Math.min(total - 1, n));
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    document.getElementById('cur').textContent = idx + 1;
+    document.getElementById('btnPrev').disabled = idx === 0;
+    document.getElementById('btnNext').disabled = idx === total - 1;
+    document.getElementById('pfill').style.width = (idx / (total - 1) * 100) + '%';
+    applyScale();
+    stage.scrollTop = 0; stage.scrollLeft = 0;
+  }
+  document.getElementById('btnPrev').addEventListener('click', () => go(idx - 1));
+  document.getElementById('btnNext').addEventListener('click', () => go(idx + 1));
+  document.getElementById('btnIn').addEventListener('click',  () => { userZoom = Math.min(2.4, userZoom + 0.15); applyScale(); });
+  document.getElementById('btnOut').addEventListener('click', () => { userZoom = Math.max(0.5, userZoom - 0.15); applyScale(); });
+  document.getElementById('btnFit').addEventListener('click', () => { userZoom = 1; applyScale(); });
+  document.getElementById('btnPdf').addEventListener('click', () => window.print());
+
+  // ---- 슬라이드 번호 입력 → Enter 로 점프 ----
+  let jumpBuf = '', jumpTimer = null;
+  const jumpHint = document.getElementById('jumpHint');
+  function showJump(){
+    if (!jumpHint) return;
+    if (jumpBuf){ jumpHint.textContent = '→ ' + jumpBuf; jumpHint.classList.add('on'); }
+    else { jumpHint.classList.remove('on'); }
+  }
+  function clearJump(){ jumpBuf = ''; if (jumpTimer) clearTimeout(jumpTimer); showJump(); }
+  function commitJump(){
+    if (jumpBuf){ const n = parseInt(jumpBuf, 10); if (!isNaN(n)) go(n - 1); }
+    clearJump();
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (overview.classList.contains('on')) { if (e.key === 'Escape') closeOverview(); return; }
+    if (/^[0-9]$/.test(e.key)){
+      e.preventDefault();
+      jumpBuf = (jumpBuf + e.key).slice(0, 3);
+      showJump();
+      if (jumpTimer) clearTimeout(jumpTimer);
+      jumpTimer = setTimeout(clearJump, 1600);
+      return;
+    }
+    if (e.key === 'Enter'){ e.preventDefault(); commitJump(); return; }
+    if (e.key === 'Escape'){ clearJump(); }
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown'){ e.preventDefault(); clearJump(); go(idx + 1); }
+    if (e.key === 'ArrowLeft'  || e.key === 'PageUp'){ e.preventDefault(); clearJump(); go(idx - 1); }
+    if (e.key === 'Home'){ clearJump(); go(0); } if (e.key === 'End'){ clearJump(); go(total - 1); }
+    if (e.key === '+' || e.key === '='){ userZoom = Math.min(2.4, userZoom + 0.15); applyScale(); }
+    if (e.key === '-'){ userZoom = Math.max(0.5, userZoom - 0.15); applyScale(); }
+  });
+
+  applyScale(); go(0);
+</script>
+</body>
+</html>
