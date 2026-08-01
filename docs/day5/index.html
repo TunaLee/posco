@@ -725,44 +725,125 @@ test_loader = DataLoader(test, batch_size=<span class="nm">1000</span>)</code></
   <div class="agenda"><span>3&times;3 창</span><span>필터</span><span>풀링</span></div>
 </section>
 
-<section class="slide" data-title="무늬는 작은 조각에 있다">
+<section class="slide" data-title="아홉 숫자에서 읽는 것">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>착안</div>
-  <h2 class="s-title sm">픽셀 아홉 개에 이미 보이는 윤곽선</h2>
+  <h2 class="s-title sm">왼쪽 세 칸과 오른쪽 세 칸의 밝기 차이</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="plot">
+      <svg viewBox="0 0 900 244">
+        <text x="20" y="18" font-size="10.5" fill="#8E8AAC">사진의 한 자리 · 15행 13열</text>
+        <image x="20" y="28" width="120" height="120" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAAAAABWESUoAAADgUlEQVR42gXByW8bVRwA4LfNeN7MeBnHS+w6MVkVUKu0aqAqcKNCAsSBCz30v+LvgAsXDkhUqKJSl5RUSZRacckeO3E8dsazvnnv/fg+vNweThYHyMRpEnGukDB4wxv4mIkcIZkzmgee3bUnSSQ04E9AQyYAaMnOhQItEaWbVwq4sXDfuVYSU6CWQLbGnBl2txIKxugWwGykrZuJ1KqUqnlX5lZQKtPNH79DU6YlNQezPJ1cD2coRQYV64VThKoYP/hquRw9WnoZUbOWRoiYjJmxUojY9bOE4NYPS7WTX8Jn3f6A5GMTI2VUH6xwQ6dqFJSlKD2553UTA84XtziZVz4gnIXE0Z4FhjHUvPpwzWk13eDoRbrAmI80xSBqJ1p6pWMTVNJ4sslrZbIL7S9tTlmMiamRNpH37HPrxa8XLffh1w23ULvuydHu0giYpp5zRSy+/M2jZuXxz3/f4vlis5JbWYZuXxdONXNMFxcady1no1yxRPepng6kZgWqKM7+eV0TrDnP/Lkv9KtPqzUiFFAwStKaNuFCMNDDKGbuuihv1HsKKaJSSqhpuVMx8tKXM+VbnUqfWBCsrWIXOAT5VBPCHAcoisKTWSRiLkwW7rXXiDDiyzwXM5NgbBQEeBClsZJxyDk5f8es0EHpv3/F+dlZlEuBhwdz3vQiiQTQapPcIDaQjkHiP3vqZPvID9K8t5/xN7tSAcW5zVT55nijaCk0OFz4Hf231a4V+pMJD1iuQeezGfU6EVovyQ+HUePub9vH+4cHO88nLXel4o8ASCpoxx2brSK8v6DJZu9j4qe957561+Onq0e3BBFGeKDQOJXJylOx7WAKcQgkvHzj7w2rCGlQtBQ5tqKXr/i3+1mljxHNFQUStD+rhx8xrVdZBDS+zCZjcSbpYjFgZkYQwebpKq1jwlrzJJPTq/HgSmmcnzodsCuu1posQOysl0i+/5YRGuvARLbU3mDY6hNdnmAtu0XLm1kZQlOCTSOXk2ms7O7FTttLRsywqdLpZXfHN0ucUqIUYhkCfK/7NlxEA5wZ1M5z1268V3fuLHYoVUIprUGFP6kD4/Fxoektzc016mLuwzlOscQWAgCEMMXL3Kt8v/cHlVZitPhUT/paIURNBJiUi16n7BfIFb8/SBIHF0z/wF+cRgCImhoQJlbFK1dteXuGg9TMNOBU4XGACCL/A0Br9mvK80cJAAAAAElFTkSuQmCC" style="image-rendering:pixelated" opacity="0.55"/>
+        <rect x="20" y="28" width="120" height="120" fill="none" stroke="#DCD6F0"/>
+        <rect class="an d1" x="65" y="80" width="12" height="12" fill="none" stroke="#E8537A" stroke-width="2"/>
+        <path class="an d1" d="M82 86 L152 86" stroke="#8E8AAC" stroke-width="1.2" stroke-dasharray="3 3"/>
+        <text x="80" y="166" text-anchor="middle" font-size="10.5" fill="#8E8AAC">그 자리의 아홉 칸</text>
+
+        <g class="an d2">
+          <rect x="168" y="26" width="60" height="60" fill="rgb(220,220,220)" stroke="#8E8AAC" stroke-width="0.7"/>
+          <text x="198" y="61" text-anchor="middle" font-size="17" font-weight="700" fill="#16142B">220</text>
+          <rect x="228" y="26" width="60" height="60" fill="rgb(237,237,237)" stroke="#8E8AAC" stroke-width="0.7"/>
+          <text x="258" y="61" text-anchor="middle" font-size="17" font-weight="700" fill="#16142B">237</text>
+          <rect x="288" y="26" width="60" height="60" fill="rgb(243,243,243)" stroke="#8E8AAC" stroke-width="0.7"/>
+          <text x="318" y="61" text-anchor="middle" font-size="17" font-weight="700" fill="#16142B">243</text>
+          <rect x="168" y="86" width="60" height="60" fill="rgb(207,207,207)" stroke="#8E8AAC" stroke-width="0.7"/>
+          <text x="198" y="121" text-anchor="middle" font-size="17" font-weight="700" fill="#16142B">207</text>
+          <rect x="228" y="86" width="60" height="60" fill="rgb(226,226,226)" stroke="#8E8AAC" stroke-width="0.7"/>
+          <text x="258" y="121" text-anchor="middle" font-size="17" font-weight="700" fill="#16142B">226</text>
+          <rect x="288" y="86" width="60" height="60" fill="rgb(240,240,240)" stroke="#8E8AAC" stroke-width="0.7"/>
+          <text x="318" y="121" text-anchor="middle" font-size="17" font-weight="700" fill="#16142B">240</text>
+          <rect x="168" y="146" width="60" height="60" fill="rgb(178,178,178)" stroke="#8E8AAC" stroke-width="0.7"/>
+          <text x="198" y="181" text-anchor="middle" font-size="17" font-weight="700" fill="#16142B">178</text>
+          <rect x="228" y="146" width="60" height="60" fill="rgb(197,197,197)" stroke="#8E8AAC" stroke-width="0.7"/>
+          <text x="258" y="181" text-anchor="middle" font-size="17" font-weight="700" fill="#16142B">197</text>
+          <rect x="288" y="146" width="60" height="60" fill="rgb(228,228,228)" stroke="#8E8AAC" stroke-width="0.7"/>
+          <text x="318" y="181" text-anchor="middle" font-size="17" font-weight="700" fill="#16142B">228</text>
+        </g>
+        <text class="an d2" x="248" y="26" text-anchor="middle" font-size="10.5" fill="#8E8AAC">칸마다 든 밝기 — 0이 검정, 255가 흰색</text>
+
+        <g class="an d3">
+          <path d="M170 194 L226 194" stroke="#5B3DF5" stroke-width="1.6"/>
+          <text x="198" y="212" text-anchor="middle" font-size="11" font-weight="700" fill="#5B3DF5">왼쪽 기둥</text>
+          <text x="198" y="230" text-anchor="middle" font-size="14" font-weight="800" fill="#5B3DF5">605</text>
+          <path d="M292 194 L344 194" stroke="#E8537A" stroke-width="1.6"/>
+          <text x="318" y="212" text-anchor="middle" font-size="11" font-weight="700" fill="#E8537A">오른쪽 기둥</text>
+          <text x="318" y="230" text-anchor="middle" font-size="14" font-weight="800" fill="#E8537A">711</text>
+        </g>
+
+        <g class="an d4">
+          <text x="392" y="76" font-size="13" font-weight="700" fill="#16142B">세 칸씩 더해 견준다</text>
+          <text x="392" y="106" font-size="15" font-family="ui-monospace,monospace">711 &minus; 605 =</text>
+          <rect x="530" y="86" width="86" height="30" rx="6" fill="#16142B"/>
+          <text x="573" y="107" text-anchor="middle" font-size="17" font-weight="800" fill="#fff">+106</text>
+        </g>
+        <g class="an d5">
+          <text x="392" y="146" font-size="12" fill="#8E8AAC">오른쪽이 왼쪽보다 밝다는 뜻이다.</text>
+          <text x="392" y="168" font-size="12" fill="#8E8AAC">밝기가 좌우로 갈리는 자리 &mdash; 그것이 세로 경계다.</text>
+          <text x="392" y="200" font-size="12.5" font-weight="800" fill="#3A1FC9">숫자 하나로 &ldquo;여기 세로선이 있다&rdquo; 를 적은 셈이다</text>
+        </g>
+      </svg>
+      <div class="cap">사람은 그림을 보고 알지만 컴퓨터는 이 뺄셈 하나로 안다</div>
+    </div>
+    <div class="keymsg"><span class="k">착안</span><div>사진 전체를 볼 필요가 없다. <b>아홉 칸을 세 칸씩 더해 빼면</b> 그 자리에 경계가 있는지 나온다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="무늬가 없는 창">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>착안</div>
+  <h2 class="s-title sm">경계가 없는 자리에서 나오는 0</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twocol w">
       <div>
         <div class="plot">
-          <svg viewBox="0 0 400 200">
-            <image x="14" y="20" width="160" height="160" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAAAAABWESUoAAADgUlEQVR42gXByW8bVRwA4LfNeN7MeBnHS+w6MVkVUKu0aqAqcKNCAsSBCz30v+LvgAsXDkhUqKJSl5RUSZRacckeO3E8dsazvnnv/fg+vNweThYHyMRpEnGukDB4wxv4mIkcIZkzmgee3bUnSSQ04E9AQyYAaMnOhQItEaWbVwq4sXDfuVYSU6CWQLbGnBl2txIKxugWwGykrZuJ1KqUqnlX5lZQKtPNH79DU6YlNQezPJ1cD2coRQYV64VThKoYP/hquRw9WnoZUbOWRoiYjJmxUojY9bOE4NYPS7WTX8Jn3f6A5GMTI2VUH6xwQ6dqFJSlKD2553UTA84XtziZVz4gnIXE0Z4FhjHUvPpwzWk13eDoRbrAmI80xSBqJ1p6pWMTVNJ4sslrZbIL7S9tTlmMiamRNpH37HPrxa8XLffh1w23ULvuydHu0giYpp5zRSy+/M2jZuXxz3/f4vlis5JbWYZuXxdONXNMFxcady1no1yxRPepng6kZgWqKM7+eV0TrDnP/Lkv9KtPqzUiFFAwStKaNuFCMNDDKGbuuihv1HsKKaJSSqhpuVMx8tKXM+VbnUqfWBCsrWIXOAT5VBPCHAcoisKTWSRiLkwW7rXXiDDiyzwXM5NgbBQEeBClsZJxyDk5f8es0EHpv3/F+dlZlEuBhwdz3vQiiQTQapPcIDaQjkHiP3vqZPvID9K8t5/xN7tSAcW5zVT55nijaCk0OFz4Hf231a4V+pMJD1iuQeezGfU6EVovyQ+HUePub9vH+4cHO88nLXel4o8ASCpoxx2brSK8v6DJZu9j4qe957561+Onq0e3BBFGeKDQOJXJylOx7WAKcQgkvHzj7w2rCGlQtBQ5tqKXr/i3+1mljxHNFQUStD+rhx8xrVdZBDS+zCZjcSbpYjFgZkYQwebpKq1jwlrzJJPTq/HgSmmcnzodsCuu1posQOysl0i+/5YRGuvARLbU3mDY6hNdnmAtu0XLm1kZQlOCTSOXk2ms7O7FTttLRsywqdLpZXfHN0ucUqIUYhkCfK/7NlxEA5wZ1M5z1268V3fuLHYoVUIprUGFP6kD4/Fxoektzc016mLuwzlOscQWAgCEMMXL3Kt8v/cHlVZitPhUT/paIURNBJiUi16n7BfIFb8/SBIHF0z/wF+cRgCImhoQJlbFK1dteXuGg9TMNOBU4XGACCL/A0Br9mvK80cJAAAAAElFTkSuQmCC" style="image-rendering:pixelated"/>
-            <rect class="an d1" x="74" y="90" width="15" height="15" fill="none" stroke="#E8537A" stroke-width="2"/>
-            <path class="an d2" d="M95 96 L204 96" stroke="#8E8AAC" stroke-width="1.4" stroke-dasharray="3 3" fill="none"/>
+          <svg viewBox="0 0 440 292">
+            <image x="14" y="26" width="120" height="120" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAAAAABWESUoAAADgUlEQVR42gXByW8bVRwA4LfNeN7MeBnHS+w6MVkVUKu0aqAqcKNCAsSBCz30v+LvgAsXDkhUqKJSl5RUSZRacckeO3E8dsazvnnv/fg+vNweThYHyMRpEnGukDB4wxv4mIkcIZkzmgee3bUnSSQ04E9AQyYAaMnOhQItEaWbVwq4sXDfuVYSU6CWQLbGnBl2txIKxugWwGykrZuJ1KqUqnlX5lZQKtPNH79DU6YlNQezPJ1cD2coRQYV64VThKoYP/hquRw9WnoZUbOWRoiYjJmxUojY9bOE4NYPS7WTX8Jn3f6A5GMTI2VUH6xwQ6dqFJSlKD2553UTA84XtziZVz4gnIXE0Z4FhjHUvPpwzWk13eDoRbrAmI80xSBqJ1p6pWMTVNJ4sslrZbIL7S9tTlmMiamRNpH37HPrxa8XLffh1w23ULvuydHu0giYpp5zRSy+/M2jZuXxz3/f4vlis5JbWYZuXxdONXNMFxcady1no1yxRPepng6kZgWqKM7+eV0TrDnP/Lkv9KtPqzUiFFAwStKaNuFCMNDDKGbuuihv1HsKKaJSSqhpuVMx8tKXM+VbnUqfWBCsrWIXOAT5VBPCHAcoisKTWSRiLkwW7rXXiDDiyzwXM5NgbBQEeBClsZJxyDk5f8es0EHpv3/F+dlZlEuBhwdz3vQiiQTQapPcIDaQjkHiP3vqZPvID9K8t5/xN7tSAcW5zVT55nijaCk0OFz4Hf231a4V+pMJD1iuQeezGfU6EVovyQ+HUePub9vH+4cHO88nLXel4o8ASCpoxx2brSK8v6DJZu9j4qe957561+Onq0e3BBFGeKDQOJXJylOx7WAKcQgkvHzj7w2rCGlQtBQ5tqKXr/i3+1mljxHNFQUStD+rhx8xrVdZBDS+zCZjcSbpYjFgZkYQwebpKq1jwlrzJJPTq/HgSmmcnzodsCuu1posQOysl0i+/5YRGuvARLbU3mDY6hNdnmAtu0XLm1kZQlOCTSOXk2ms7O7FTttLRsywqdLpZXfHN0ucUqIUYhkCfK/7NlxEA5wZ1M5z1268V3fuLHYoVUIprUGFP6kD4/Fxoektzc016mLuwzlOscQWAgCEMMXL3Kt8v/cHlVZitPhUT/paIURNBJiUi16n7BfIFb8/SBIHF0z/wF+cRgCImhoQJlbFK1dteXuGg9TMNOBU4XGACCL/A0Br9mvK80cJAAAAAElFTkSuQmCC" style="image-rendering:pixelated" opacity="0.55"/>
+            <rect x="14" y="26" width="120" height="120" fill="none" stroke="#DCD6F0"/>
+            <rect class="an d1" x="25" y="48" width="12" height="12" fill="none" stroke="#5B3DF5" stroke-width="2"/>
+            <text x="74" y="164" text-anchor="middle" font-size="10.5" fill="#8E8AAC">어두운 배경 한가운데</text>
             <g class="an d2">
-              <image x="212" y="42" width="105" height="105" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAADCAAAAABzQ+pjAAAAFElEQVR42mO8I8jG8pmNienx468AFssEsX5Kl8oAAAAASUVORK5CYII=" style="image-rendering:pixelated"/>
-              <rect x="212" y="42" width="105" height="105" fill="none" stroke="#E8537A" stroke-width="2"/>
+              <rect x="172" y="26" width="60" height="60" fill="rgb(6,6,6)" stroke="#8E8AAC" stroke-width="0.7"/>
+              <text x="202" y="62" text-anchor="middle" font-size="18" font-weight="700" fill="#F4F1FF">6</text>
+              <rect x="232" y="26" width="60" height="60" fill="rgb(6,6,6)" stroke="#8E8AAC" stroke-width="0.7"/>
+              <text x="262" y="62" text-anchor="middle" font-size="18" font-weight="700" fill="#F4F1FF">6</text>
+              <rect x="292" y="26" width="60" height="60" fill="rgb(5,5,5)" stroke="#8E8AAC" stroke-width="0.7"/>
+              <text x="322" y="62" text-anchor="middle" font-size="18" font-weight="700" fill="#F4F1FF">5</text>
+              <rect x="172" y="86" width="60" height="60" fill="rgb(5,5,5)" stroke="#8E8AAC" stroke-width="0.7"/>
+              <text x="202" y="122" text-anchor="middle" font-size="18" font-weight="700" fill="#F4F1FF">5</text>
+              <rect x="232" y="86" width="60" height="60" fill="rgb(6,6,6)" stroke="#8E8AAC" stroke-width="0.7"/>
+              <text x="262" y="122" text-anchor="middle" font-size="18" font-weight="700" fill="#F4F1FF">6</text>
+              <rect x="292" y="86" width="60" height="60" fill="rgb(7,7,7)" stroke="#8E8AAC" stroke-width="0.7"/>
+              <text x="322" y="122" text-anchor="middle" font-size="18" font-weight="700" fill="#F4F1FF">7</text>
+              <rect x="172" y="146" width="60" height="60" fill="rgb(9,9,9)" stroke="#8E8AAC" stroke-width="0.7"/>
+              <text x="202" y="182" text-anchor="middle" font-size="18" font-weight="700" fill="#F4F1FF">9</text>
+              <rect x="232" y="146" width="60" height="60" fill="rgb(9,9,9)" stroke="#8E8AAC" stroke-width="0.7"/>
+              <text x="262" y="182" text-anchor="middle" font-size="18" font-weight="700" fill="#F4F1FF">9</text>
+              <rect x="292" y="146" width="60" height="60" fill="rgb(8,8,8)" stroke="#8E8AAC" stroke-width="0.7"/>
+              <text x="322" y="182" text-anchor="middle" font-size="18" font-weight="700" fill="#F4F1FF">8</text>
             </g>
             <g class="an d3">
-              <line x1="247" y1="42" x2="247" y2="147" stroke="#fff" stroke-width="1" opacity="0.6"/>
-              <line x1="282" y1="42" x2="282" y2="147" stroke="#fff" stroke-width="1" opacity="0.6"/>
-              <line x1="212" y1="77" x2="317" y2="77" stroke="#fff" stroke-width="1" opacity="0.6"/>
-              <line x1="212" y1="112" x2="317" y2="112" stroke="#fff" stroke-width="1" opacity="0.6"/>
+              <path d="M176 216 L228 216" stroke="#5B3DF5" stroke-width="1.8"/>
+              <path d="M296 216 L348 216" stroke="#E8537A" stroke-width="1.8"/>
+              <text x="202" y="236" text-anchor="middle" font-size="13" font-weight="800" fill="#5B3DF5">20</text>
+              <text x="322" y="236" text-anchor="middle" font-size="13" font-weight="800" fill="#E8537A">20</text>
+              <text x="262" y="264" text-anchor="middle" font-size="15" font-weight="800" fill="#16142B">20 &minus; 20 = 0</text>
             </g>
-            <text class="an d3" x="264" y="164" text-anchor="middle" font-size="10.5" fill="#8E8AAC">픽셀 3&times;3 = 아홉 개</text>
-            <text class="an d4" x="264" y="182" text-anchor="middle" font-size="11" font-weight="700" fill="#3A1FC9">왼쪽은 어둡고 오른쪽은 밝다</text>
           </svg>
-          <div class="cap">아홉 칸 안에서 이미 세로 윤곽선이 읽힌다</div>
+          <div class="cap">아홉 칸이 모두 어두우니 좌우가 같다</div>
         </div>
       </div>
       <div>
         <div class="vlist">
-          <div class="v"><span class="b">→</span><div>사진 전체를 한꺼번에 볼 필요가 없다. <b>작은 창 하나</b>로도 무늬가 보인다.</div></div>
-          <div class="v"><span class="b">→</span><div>창 안의 아홉 칸만 쓰면 <b>이웃 관계가 그대로 살아 있다</b>. 펴지 않았으니까.</div></div>
-          <div class="v"><span class="b">★</span><div>그 창을 <b>사진 전체에 미끄러뜨리며</b> 같은 무늬를 찾는다. 이것이 합성곱이다.</div></div>
+          <div class="v"><span class="b">→</span><div>여기서는 <b>0</b> 이 나온다. 좌우 밝기가 같으니 뺄셈이 0이다.</div></div>
+          <div class="v"><span class="b">→</span><div>앞 장은 <b>+106</b> 이었다. 같은 계산인데 자리가 달라 값이 갈린다.</div></div>
+          <div class="v"><span class="b">★</span><div>그러니 이 값 하나가 <b>세로 경계의 세기</b>다. 클수록 경계가 뚜렷하고 0에 가까우면 없다.</div></div>
+          <div class="v"><span class="b">→</span><div>값이 <b>음수</b>면 반대다. 왼쪽이 더 밝다는 뜻이다.</div></div>
         </div>
       </div>
     </div>
-    <div class="keymsg"><span class="k">착안</span><div>3,072칸을 한 번에 보는 대신 <b>아홉 칸씩 1,024번</b> 본다. 이웃을 버리지 않는 유일한 방법이다.</div></div>
+    <div class="keymsg"><span class="k">핵심</span><div>같은 뺄셈을 <b>사진의 모든 자리에서</b> 하면 어디에 세로 경계가 있는지 지도가 된다.</div></div>
   </div>
 </section>
 
@@ -827,9 +908,9 @@ test_loader = DataLoader(test, batch_size=<span class="nm">1000</span>)</code></
           <text x="726" y="178" font-size="11.5" fill="#8E8AAC">출력의 한 칸이 된다</text>
         </g>
       </svg>
-      <div class="cap">왼쪽이 어둡고 오른쪽이 밝으면 양수가 크게 나온다</div>
+      <div class="cap">앞 장의 뺄셈 711 &minus; 605 를 아홉 수로 적은 것이 이 필터다</div>
     </div>
-    <div class="keymsg"><span class="k">원리</span><div>합성곱의 계산은 <b>곱해서 더하기</b> 하나다. 어제 배운 가중합과 같고, <b>범위가 아홉 칸으로 좁아진 것</b>만 다르다.</div></div>
+    <div class="keymsg"><span class="k">원리</span><div>왼쪽에 &minus;1, 오른쪽에 +1 을 두면 <b>곱해서 더하기가 곧 오른쪽 합 빼기 왼쪽 합</b>이 된다. 가운데 0은 안 쓴다는 뜻이다.</div></div>
   </div>
 </section>
 

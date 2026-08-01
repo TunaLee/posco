@@ -10,7 +10,7 @@
 | Day 3 · 머신러닝 | [day3/index.html](day3/index.html) | 41 |
 | Day 4 · 딥러닝 | [day4/index.html](day4/index.html) | 47 |
 | 특강 · AI 도구로 웹 서비스 만들기 | [special/index.html](special/index.html) | 41 |
-| 2주차 D1 · 이미지 분류 | [day5/index.html](day5/index.html) | 44 |
+| 2주차 D1 · 이미지 분류 | [day5/index.html](day5/index.html) | 45 |
 | 2주차 D2 · 내 데이터로 분류기 | [day6/index.html](day6/index.html) | 29 |
 | 2주차 D3 · 판정 근거 | [day7/index.html](day7/index.html) | 21 |
 | 2주차 D4 · LLM 과 프롬프트 | [day8/index.html](day8/index.html) | 40 |
@@ -237,7 +237,8 @@ pptx 기반 이전 덱은 [_archive-pptx/](_archive-pptx/)에 보관돼 있다.
 2주차 D1  이미지 분류 — 말 사진 한 장(CIFAR-10 test #13)으로 합성곱을 관통한다
   CH0 펴는 방식의 한계   어제까지 한 방식 · 컬러 3,072칸 · 데이터 내려받기 ·
                        펴면 멀어지는 이웃(396↔428) · 여섯 칸 밀면 1.1% · 0.4470
-  CH1 합성곱            픽셀 아홉 개의 윤곽선 · 한 칸 계산(15행 13열 → +106) ·
+  CH1 합성곱            아홉 숫자에서 읽는 밝기 차이(711 − 605 = +106) · 경계가 없는 자리는 0 ·
+                       한 칸 계산 ·
                        창이 미끄러진다 · 필터 셋 비교 · 특징 지도 32장 ·
                        계수 98,304 대 864 · nn.Conv2d · 실습 · 풀링 · nn.MaxPool2d
   CH2 CNN 만들기        Conv·ReLU·Pool 한 묶음 · 두 묶음 쌓기 · shape 사다리 ·
