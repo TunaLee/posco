@@ -10,10 +10,10 @@
 | Day 3 · 머신러닝 | [day3/index.html](day3/index.html) | 41 |
 | Day 4 · 딥러닝 | [day4/index.html](day4/index.html) | 47 |
 | 특강 · AI 도구로 웹 서비스 만들기 | [special/index.html](special/index.html) | 41 |
-| 2주차 D1 · 사진을 읽는 신경망 | [day5/index.html](day5/index.html) | 44 |
-| 2주차 D2 · 내 사진으로 만드는 분류기 | [day6/index.html](day6/index.html) | 29 |
-| 2주차 D3 · 모델이 본 곳 | [day7/index.html](day7/index.html) | 21 |
-| 2주차 D4 · 말을 이어 쓰는 모델 | [day8/index.html](day8/index.html) | 40 |
+| 2주차 D1 · 이미지 분류 | [day5/index.html](day5/index.html) | 44 |
+| 2주차 D2 · 내 데이터로 분류기 | [day6/index.html](day6/index.html) | 29 |
+| 2주차 D3 · 판정 근거 | [day7/index.html](day7/index.html) | 21 |
+| 2주차 D4 · LLM 과 프롬프트 | [day8/index.html](day8/index.html) | 40 |
 
 조작: `← →` 또는 Space · 숫자 입력 후 Enter로 점프 · `≡` 목차 · `−/+` 줌 · PDF 버튼(인쇄).
 
@@ -219,9 +219,9 @@ pptx 기반 이전 덱은 [_archive-pptx/](_archive-pptx/)에 보관돼 있다.
 
 | 날짜 | 주제 | 덱 |
 |---|---|---|
-| 8/3 | 사진을 읽는 신경망 — CNN 과 전이학습 | [day5/index.html](day5/index.html) |
-| 8/4 | 내 사진으로 만드는 분류기 | [day6/index.html](day6/index.html) |
-| 8/5 | 모델이 본 곳 — 판정 근거 | [day7/index.html](day7/index.html) |
+| 8/3 | 이미지 분류 — CNN 과 전이학습 | [day5/index.html](day5/index.html) |
+| 8/4 | 내 데이터로 분류기 | [day6/index.html](day6/index.html) |
+| 8/5 | 판정 근거 | [day7/index.html](day7/index.html) |
 | 8/10 | LLM 의 원리와 프롬프팅 | [day8/index.html](day8/index.html) |
 | 8/11 | 내 문서에 답하게 하기 (RAG) | |
 | 8/12 | 도구를 부르는 모델 | |
@@ -234,7 +234,7 @@ pptx 기반 이전 덱은 [_archive-pptx/](_archive-pptx/)에 보관돼 있다.
 8/6 · 8/7 은 다른 특강이라 비어 있다.
 
 ```
-2주차 D1  사진을 읽는 신경망 — 말 사진 한 장(CIFAR-10 test #13)으로 합성곱을 관통한다
+2주차 D1  이미지 분류 — 말 사진 한 장(CIFAR-10 test #13)으로 합성곱을 관통한다
   CH0 펴는 방식의 한계   어제까지 한 방식 · 컬러 3,072칸 · 데이터 내려받기 ·
                        펴면 멀어지는 이웃(396↔428) · 여섯 칸 밀면 1.1% · 0.4470
   CH1 합성곱            픽셀 아홉 개의 윤곽선 · 한 칸 계산(15행 13열 → +106) ·
@@ -271,7 +271,7 @@ pptx 기반 이전 덱은 [_archive-pptx/](_archive-pptx/)에 보관돼 있다.
 `Flatten` · `Linear` · `ReLU` · `Adam` · 학습 루프는 1주차 것을 그대로 쓴다.
 
 ```
-2주차 D4  말을 이어 쓰는 모델 — 모델을 직접 열어 확률과 어텐션을 꺼내 보며 간다
+2주차 D4  LLM 과 프롬프트 — 모델을 직접 열어 확률과 어텐션을 꺼내 보며 간다
   CH0 다음 한 토큰      하는 일은 하나 · 토큰 · 한글이 더 먹는 토큰 · 온도 · 계산기가 아니다
   CH1 여기까지 온 길     단어를 숫자로 · 순서대로 읽던 방식의 두 한계 · 어텐션이라는 착안 ·
                        크기 · 대답하게 만들기
@@ -313,7 +313,7 @@ pptx 기반 이전 덱은 [_archive-pptx/](_archive-pptx/)에 보관돼 있다.
 거짓 이유까지 붙인다. 형식이 맞아서 더 위험하다는 것이 CH4 의 결론이다.
 
 ```
-2주차 D2  내 사진으로 만드는 분류기 — 만드는 데 10분, 믿을지 판단하는 데 하루
+2주차 D2  내 데이터로 분류기 — 만드는 데 10분, 믿을지 판단하는 데 하루
   CH0 데이터를 갖추기   폴더가 곧 라벨 · 훈련과 검증을 나눈다 · 크기가 제각각 · 첫 결과 0.9608
   CH1 숫자를 믿는 법    한 장이 0.65% · 외운 것과 배운 것 · 사진을 줄이면 ·
                        무엇이 결과를 흔드는가 · 라벨이 틀리면
@@ -353,7 +353,7 @@ pptx 기반 이전 덱은 [_archive-pptx/](_archive-pptx/)에 보관돼 있다.
 그래서 증강은 목록을 베끼지 말고 **약한 쪽을 먼저 재서** 고르라고 맺는다.
 
 ```
-2주차 D3  모델이 본 곳 — day6 에서 만든 그 분류기(0.9608)를 그대로 열어 본다
+2주차 D3  판정 근거 — day6 에서 만든 그 분류기(0.9608)를 그대로 열어 본다
   CH0 근거가 필요한 이유  확신 0.996 으로 틀린 사진 · 정확도가 가리는 것
   CH1 히트맵 만들기      마지막 합성곱 층의 7x7 · 기울기로 재는 무게 · 갈고리 코드 ·
                         맞힌 사진의 히트맵

@@ -1,4 +1,4 @@
-"""2주차 D1 — 사진을 읽는 신경망 실습 스펙 · 합성곱과 전이학습(CIFAR-10)"""
+"""2주차 D1 — 이미지 분류 실습 스펙 · 합성곱과 전이학습(CIFAR-10)"""
 from nbkit import md, code, h, lab, prep, Ex, Task
 
 PREP = """import torch
@@ -521,4 +521,4 @@ MODES = {
     ("task", 8): "together", ("task", 9): "solo", ("task", 10): "team",
 }
 
-SPEC = ("사진을 읽는 신경망", "합성곱으로 만들고 남이 배운 것을 가져온다", CELLS, MODES)
+SPEC = ("이미지 분류", "합성곱으로 만들고 남이 배운 것을 가져온다", CELLS, MODES)
