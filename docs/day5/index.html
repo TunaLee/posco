@@ -1009,6 +1009,109 @@ test_loader = DataLoader(test, batch_size=<span class="nm">1000</span>)</code></
   </div>
 </section>
 
+<section class="slide" data-title="세 면을 한꺼번에 먹는다">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>계산</div>
+  <h2 class="s-title sm">색 세 면에서 나온 숫자 하나</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="plot">
+      <svg viewBox="0 0 900 272">
+        <image class="an d1" x="18" y="40" width="112" height="112" href="data:image/png;base64,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" style="image-rendering:pixelated"/>
+        <rect x="18" y="40" width="112" height="112" fill="none" stroke="#DCD6F0"/>
+        <rect class="an d1" x="25" y="75" width="11" height="11" fill="none" stroke="#16142B" stroke-width="2"/>
+        <text x="74" y="168" text-anchor="middle" font-size="10.5" fill="#8E8AAC">11행 3열의 한 창</text>
+        <text x="74" y="26" text-anchor="middle" font-size="10.5" font-weight="700" fill="#3A1FC9">컬러 사진</text>
+        <path class="an d1" d="M138 96 L166 96" stroke="#8E8AAC" stroke-width="1.4" marker-end="url(#c3)"/>
+        <g class="an d2">
+          <text x="236" y="26" text-anchor="middle" font-size="11" font-weight="700" fill="#E8537A">빨강 면</text>
+          <rect x="182" y="40" width="36" height="36" fill="#FDE8EE" stroke="#E8537A" stroke-width="0.8" opacity="0.66"/>
+          <text x="200" y="63" text-anchor="middle" font-size="13" font-weight="700" fill="#16142B">34</text>
+          <rect x="218" y="40" width="36" height="36" fill="#FDE8EE" stroke="#E8537A" stroke-width="0.8" opacity="0.69"/>
+          <text x="236" y="63" text-anchor="middle" font-size="13" font-weight="700" fill="#16142B">39</text>
+          <rect x="254" y="40" width="36" height="36" fill="#FDE8EE" stroke="#E8537A" stroke-width="0.8" opacity="0.54"/>
+          <text x="272" y="63" text-anchor="middle" font-size="13" font-weight="700" fill="#16142B">14</text>
+          <rect x="182" y="76" width="36" height="36" fill="#FDE8EE" stroke="#E8537A" stroke-width="0.8" opacity="0.78"/>
+          <text x="200" y="99" text-anchor="middle" font-size="13" font-weight="700" fill="#16142B">54</text>
+          <rect x="218" y="76" width="36" height="36" fill="#FDE8EE" stroke="#E8537A" stroke-width="0.8" opacity="0.76"/>
+          <text x="236" y="99" text-anchor="middle" font-size="13" font-weight="700" fill="#16142B">50</text>
+          <rect x="254" y="76" width="36" height="36" fill="#FDE8EE" stroke="#E8537A" stroke-width="0.8" opacity="0.58"/>
+          <text x="272" y="99" text-anchor="middle" font-size="13" font-weight="700" fill="#16142B">21</text>
+          <rect x="182" y="112" width="36" height="36" fill="#FDE8EE" stroke="#E8537A" stroke-width="0.8" opacity="0.98"/>
+          <text x="200" y="135" text-anchor="middle" font-size="13" font-weight="700" fill="#16142B">87</text>
+          <rect x="218" y="112" width="36" height="36" fill="#FDE8EE" stroke="#E8537A" stroke-width="0.8" opacity="0.84"/>
+          <text x="236" y="135" text-anchor="middle" font-size="13" font-weight="700" fill="#16142B">64</text>
+          <rect x="254" y="112" width="36" height="36" fill="#FDE8EE" stroke="#E8537A" stroke-width="0.8" opacity="0.86"/>
+          <text x="272" y="135" text-anchor="middle" font-size="13" font-weight="700" fill="#16142B">67</text>
+          <text x="236" y="172" text-anchor="middle" font-size="11" font-family="ui-monospace,monospace" fill="#8E8AAC">102 &minus; 175</text>
+          <text x="236" y="194" text-anchor="middle" font-size="16" font-weight="800" fill="#E8537A">-73</text>
+        </g>
+        <text class="an d3" x="306" y="112" text-anchor="middle" font-size="18" fill="#8E8AAC">+</text>
+        <g class="an d3">
+          <text x="388" y="26" text-anchor="middle" font-size="11" font-weight="700" fill="#1E8A56">초록 면</text>
+          <rect x="334" y="40" width="36" height="36" fill="#E8F7EF" stroke="#1E8A56" stroke-width="0.8" opacity="0.62"/>
+          <text x="352" y="63" text-anchor="middle" font-size="13" font-weight="700" fill="#16142B">28</text>
+          <rect x="370" y="40" width="36" height="36" fill="#E8F7EF" stroke="#1E8A56" stroke-width="0.8" opacity="0.69"/>
+          <text x="388" y="63" text-anchor="middle" font-size="13" font-weight="700" fill="#16142B">39</text>
+          <rect x="406" y="40" width="36" height="36" fill="#E8F7EF" stroke="#1E8A56" stroke-width="0.8" opacity="0.54"/>
+          <text x="424" y="63" text-anchor="middle" font-size="13" font-weight="700" fill="#16142B">15</text>
+          <rect x="334" y="76" width="36" height="36" fill="#E8F7EF" stroke="#1E8A56" stroke-width="0.8" opacity="0.74"/>
+          <text x="352" y="99" text-anchor="middle" font-size="13" font-weight="700" fill="#16142B">48</text>
+          <rect x="370" y="76" width="36" height="36" fill="#E8F7EF" stroke="#1E8A56" stroke-width="0.8" opacity="0.75"/>
+          <text x="388" y="99" text-anchor="middle" font-size="13" font-weight="700" fill="#16142B">49</text>
+          <rect x="406" y="76" width="36" height="36" fill="#E8F7EF" stroke="#1E8A56" stroke-width="0.8" opacity="0.58"/>
+          <text x="424" y="99" text-anchor="middle" font-size="13" font-weight="700" fill="#16142B">22</text>
+          <rect x="334" y="112" width="36" height="36" fill="#E8F7EF" stroke="#1E8A56" stroke-width="0.8" opacity="0.95"/>
+          <text x="352" y="135" text-anchor="middle" font-size="13" font-weight="700" fill="#16142B">81</text>
+          <rect x="370" y="112" width="36" height="36" fill="#E8F7EF" stroke="#1E8A56" stroke-width="0.8" opacity="0.84"/>
+          <text x="388" y="135" text-anchor="middle" font-size="13" font-weight="700" fill="#16142B">63</text>
+          <rect x="406" y="112" width="36" height="36" fill="#E8F7EF" stroke="#1E8A56" stroke-width="0.8" opacity="0.87"/>
+          <text x="424" y="135" text-anchor="middle" font-size="13" font-weight="700" fill="#16142B">68</text>
+          <text x="388" y="172" text-anchor="middle" font-size="11" font-family="ui-monospace,monospace" fill="#8E8AAC">105 &minus; 157</text>
+          <text x="388" y="194" text-anchor="middle" font-size="16" font-weight="800" fill="#1E8A56">-52</text>
+        </g>
+        <text class="an d4" x="458" y="112" text-anchor="middle" font-size="18" fill="#8E8AAC">+</text>
+        <g class="an d4">
+          <text x="540" y="26" text-anchor="middle" font-size="11" font-weight="700" fill="#3A6BE8">파랑 면</text>
+          <rect x="486" y="40" width="36" height="36" fill="#EAF0FD" stroke="#3A6BE8" stroke-width="0.8" opacity="0.56"/>
+          <text x="504" y="63" text-anchor="middle" font-size="13" font-weight="700" fill="#16142B">18</text>
+          <rect x="522" y="40" width="36" height="36" fill="#EAF0FD" stroke="#3A6BE8" stroke-width="0.8" opacity="0.66"/>
+          <text x="540" y="63" text-anchor="middle" font-size="13" font-weight="700" fill="#16142B">34</text>
+          <rect x="558" y="40" width="36" height="36" fill="#EAF0FD" stroke="#3A6BE8" stroke-width="0.8" opacity="0.54"/>
+          <text x="576" y="63" text-anchor="middle" font-size="13" font-weight="700" fill="#16142B">14</text>
+          <rect x="486" y="76" width="36" height="36" fill="#EAF0FD" stroke="#3A6BE8" stroke-width="0.8" opacity="0.68"/>
+          <text x="504" y="99" text-anchor="middle" font-size="13" font-weight="700" fill="#16142B">38</text>
+          <rect x="522" y="76" width="36" height="36" fill="#EAF0FD" stroke="#3A6BE8" stroke-width="0.8" opacity="0.72"/>
+          <text x="540" y="99" text-anchor="middle" font-size="13" font-weight="700" fill="#16142B">44</text>
+          <rect x="558" y="76" width="36" height="36" fill="#EAF0FD" stroke="#3A6BE8" stroke-width="0.8" opacity="0.57"/>
+          <text x="576" y="99" text-anchor="middle" font-size="13" font-weight="700" fill="#16142B">20</text>
+          <rect x="486" y="112" width="36" height="36" fill="#EAF0FD" stroke="#3A6BE8" stroke-width="0.8" opacity="0.88"/>
+          <text x="504" y="135" text-anchor="middle" font-size="13" font-weight="700" fill="#16142B">71</text>
+          <rect x="522" y="112" width="36" height="36" fill="#EAF0FD" stroke="#3A6BE8" stroke-width="0.8" opacity="0.80"/>
+          <text x="540" y="135" text-anchor="middle" font-size="13" font-weight="700" fill="#16142B">58</text>
+          <rect x="558" y="112" width="36" height="36" fill="#EAF0FD" stroke="#3A6BE8" stroke-width="0.8" opacity="0.85"/>
+          <text x="576" y="135" text-anchor="middle" font-size="13" font-weight="700" fill="#16142B">65</text>
+          <text x="540" y="172" text-anchor="middle" font-size="11" font-family="ui-monospace,monospace" fill="#8E8AAC">99 &minus; 127</text>
+          <text x="540" y="194" text-anchor="middle" font-size="16" font-weight="800" fill="#3A6BE8">-28</text>
+        </g>
+        <path class="an d5" d="M646 112 L676 112" stroke="#8E8AAC" stroke-width="1.4" marker-end="url(#c3)"/>
+        <g class="an d5">
+          <rect x="688" y="88" width="120" height="46" rx="8" fill="#16142B"/>
+          <text x="748" y="118" text-anchor="middle" font-size="20" font-weight="800" fill="#fff">&minus;153</text>
+          <text x="748" y="70" text-anchor="middle" font-size="11" fill="#8E8AAC">세 면을 모두 더해</text>
+          <text x="748" y="154" text-anchor="middle" font-size="11" fill="#8E8AAC">출력 한 장의</text>
+          <text x="748" y="170" text-anchor="middle" font-size="11" font-weight="700" fill="#16142B">한 칸이 된다</text>
+        </g>
+        <text class="an d6" x="450" y="228" text-anchor="middle" font-size="12" fill="#8E8AAC">곱셈은 3 &times; 3 &times; 3 = <tspan font-weight="800" fill="#16142B">27번</tspan>. 필터 하나가 가진 계수도 27개다</text>
+        <text class="an d6" x="450" y="252" text-anchor="middle" font-size="12.5" font-weight="800" fill="#3A1FC9">이 창을 1,024자리에 미끄러뜨리면 출력 한 장이 완성된다</text>
+        <defs><marker id="c3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#8E8AAC"/></marker></defs>
+      </svg>
+      <div class="cap">필터도 세 면짜리라 면마다 아홉 수를 따로 갖는다 &mdash; 여기서는 셋 다 세로 필터를 넣었다</div>
+    </div>
+    <div class="keymsg"><span class="k">핵심</span><div>필터 하나는 <b>색 세 면을 한꺼번에</b> 먹고 <b>숫자 하나</b>를 뱉는다. 그래서 출력은 색이 없는 <b>한 장</b>이다.</div></div>
+  </div>
+</section>
+
 <section class="slide" data-title="특징 지도 여러 장">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>필터</div>
@@ -1439,6 +1542,7 @@ torch.Size([1, 32, 16, 16])</div>
     </div>
     <div class="vlist">
       <div class="v"><span class="b">★</span><div>두 가지가 <b>반대로 움직인다</b>. 자리는 줄고 <b>무늬의 종류는 늘어난다</b>.</div></div>
+      <div class="v"><span class="b">→</span><div>면이 <b>3에서 32가 되는 것</b>은 필터를 32장 썼기 때문이다. 필터 하나가 <b>세 면을 먹어 한 장</b>을 만든다.</div></div>
       <div class="v"><span class="b">→</span><div>마지막에 <code>Flatten</code> 이 <b>64 &times; 8 &times; 8 = 4,096칸</b>을 한 줄로 편다. 이미 이웃 관계를 다 쓴 뒤다.</div></div>
     </div>
     <div class="keymsg"><span class="k">읽는 법</span><div>CNN 그림은 늘 이 모양이다. <b>왼쪽은 넓고 얇게, 오른쪽은 좁고 두껍게.</b></div></div>
