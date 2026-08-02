@@ -850,7 +850,7 @@ test_loader = DataLoader(test, batch_size=<span class="nm">1000</span>)</code></
 <section class="slide" data-title="창 한 칸의 계산">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>계산</div>
-  <h2 class="s-title sm">아홉 칸에 아홉 수를 곱해 더하기</h2>
+  <h2 class="s-title sm">아홉 수를 곱해 더한 +106</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="plot">
@@ -910,7 +910,11 @@ test_loader = DataLoader(test, batch_size=<span class="nm">1000</span>)</code></
       </svg>
       <div class="cap">앞 장의 뺄셈 711 &minus; 605 를 아홉 수로 적은 것이 이 필터다</div>
     </div>
-    <div class="keymsg"><span class="k">원리</span><div>왼쪽에 &minus;1, 오른쪽에 +1 을 두면 <b>곱해서 더하기가 곧 오른쪽 합 빼기 왼쪽 합</b>이 된다. 가운데 0은 안 쓴다는 뜻이다.</div></div>
+    <div class="vlist">
+      <div class="v"><span class="b">→</span><div>가운데 열이 <b>0</b> 인 것은 <b>계산에 넣지 않는다</b>는 뜻이다. 좌우만 견주면 되기 때문이다.</div></div>
+      <div class="v"><span class="b">★</span><div>왼쪽이 더 밝으면 <b>음수</b>가 나온다. 값을 0으로 만드는 것이 아니라 <b>부호로 방향을 적는 것</b>이다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">원리</span><div>필터가 하는 일은 <b>좌우 차이를 재는 것</b>이다. 왼쪽에 &minus;1, 오른쪽에 +1 을 두면 <b>곱해서 더하기가 곧 오른쪽 합 빼기 왼쪽 합</b>이 된다.</div></div>
   </div>
 </section>
 
@@ -1176,7 +1180,52 @@ test_loader = DataLoader(test, batch_size=<span class="nm">1000</span>)</code></
       </svg>
       <div class="cap">밝을수록 큰 값이다. 검은 곳은 ReLU 가 0으로 만든 자리다</div>
     </div>
-    <div class="keymsg"><span class="k">흐름</span><div>한 칸의 값은 <b>지도에 놓이고 → 음수면 꺼지고 → 둘레 넷 중 최댓값만 남아</b> 다음 층으로 간다. 이 셋이 한 묶음이다.</div></div>
+    <div class="keymsg"><span class="k">흐름</span><div>한 칸의 값은 <b>지도에 놓이고 → 음수면 꺼지고 → 둘레 넷 중 최댓값만 남아</b> 다음 층으로 간다. <b>꺼졌다고 그 경계가 사라진 것은 아니다.</b></div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="음수가 뜻하는 것">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>해석</div>
+  <h2 class="s-title sm">음수가 뜻하는 반대 방향의 경계</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="plot">
+      <svg viewBox="0 0 900 240">
+        <g class="an d1">
+          <text x="150" y="20" text-anchor="middle" font-size="11" font-weight="700" fill="#5B3DF5">필터 A &nbsp;&minus;1 0 +1</text>
+          <text x="150" y="38" text-anchor="middle" font-size="10.5" fill="#8E8AAC">오른쪽이 밝은 경계를 찾는다</text>
+          <image x="96" y="48" width="108" height="108" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAAAAABWESUoAAACy0lEQVR42jWTS29bVQCEv3PuuS/H16/4kbQkCkmallagBJR0g4AtEv8AfipCQl3AIiCglWiSNk0T2+Rp177v17ksnM5uNLMYjWaMTZ22RQEAKzoHtdwNKu4hkFZIs3FPl1ygsFz1UcdApYUVOoIKEGUpzIygdLuzrOWcAwUKspleKW4AFUTr6i25KcyHXWd2DoCsQxaQAIg0az+ARHvbmz11CAYgEyANrF4Lstwoa6Cbzx655V/w40+AFICQ5qADJEbqA4O9T2fDK9j9AZAxUOX2kgaHLL+F/pP63SQB4jagNEBSZbnYEie8a6K+fXA6lhEQmEaJqgAq2+jv1k+BGf32/OTKvQFmI8DoJHbOWkM/eV6MRwBaTOZTcQn4xShEDZIpXv+o9dz75dpOgfC31XpRARxPAPm4kbEVBcOO/eEuXfT731DVAbgtQW4Idur/Qo/YxzUFQJy6C2sFsjSe7pwBEg0txwSgiADwLJCva983h8B1awWWW6YBNHrvAdDKQx6t7YYAh94+1B7WbeCzvQkACWvIeTtjHfg1OAC1sd724PHBxzW4yKZ/2N4F/n7zCC5Ep+fB6uZ9Rj9Eto//6G5bwD8lXAwrYwrXw88XhmSGsfWy2KudzEG2ftZkVXgFdrr/AsDIRWYMzlp9cXHD03dHvRtSOUuwb8df144Bw6lFcm66b08j+C55vQJ5GkMWXo52VgHRGSCjWnZxfgerNgPALKCS1vv2V0AmDJQuJzoOIW0ECrBUAXySXy4DRCZSprPA16D6vPoG/CVAD6w3XYDJGbIqqUKkLZ7x5wZMFEBsRDZQszQyW3Qibw/g7AvAwWI8mcRA0zGQcYWAqnzpw/BLuJI1QTSf/g7EWmGoDGFKac/zajrf15fklsi9ZDxSmgRKw8wRtuMuRUeFl8jtV5AXtIIUq4CyRJYAotI6/xAVx/4ikT8HZ3Hw/wGvLj1PNCvcYQAAAABJRU5ErkJggg==" style="image-rendering:pixelated"/>
+          <rect x="96" y="48" width="108" height="108" fill="none" stroke="#DCD6F0"/>
+          <text x="150" y="176" text-anchor="middle" font-size="11.5" fill="#16142B">그 자리 값 <tspan font-weight="800" fill="#E8537A">&minus;153</tspan> &rarr; ReLU <tspan font-weight="800">0</tspan></text>
+          <text x="150" y="196" text-anchor="middle" font-size="11" fill="#8E8AAC">살아남은 칸 546</text>
+        </g>
+        <g class="an d2">
+          <text x="400" y="20" text-anchor="middle" font-size="11" font-weight="700" fill="#E8537A">필터 B &nbsp;+1 0 &minus;1</text>
+          <text x="400" y="38" text-anchor="middle" font-size="10.5" fill="#8E8AAC">왼쪽이 밝은 경계를 찾는다</text>
+          <image x="346" y="48" width="108" height="108" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAAAAABWESUoAAACoklEQVR42jXSW49TdRQF8F//55zepu1QSyFMAzM4hIBA8EFCfJDET+Cj+uC38skvoYmP+uCLIRqUaAiXGEYyIpe50mmnPW3PxYfW/bSz9krW2nuviHpm0yJOahlrUaVAt6zUq4ooyauBlMU43jqfoKIaIV2EeL7o9mJJpDNjVK73F9OUedZpj8nKfFa07jZH80YwiGE+DwGc6VnVmfeSu3eiSHvNDMd5PIGN83+vCDd+2vnq1k5wWEQV5rNmG0zXasv5l7VU67MbQRSXJfQ7UYKDSQwGX5zjh82Pg+pkBuqneS8ifXkKbg9O+L12NVY9mYL79D94tDd/tlT4pHPI20ktOBiGxsrWceejjXjV31vs4MVRbKqVr8B32Xpzuaz65lv4dhajtr8ijH8eVNrlaIEL9ePq2qnvzsXUjrn+rEAYDkO733mBa/Hz+Gw8fJIHikx0bx1xKIpsdpq0WtxMnuTzoSQPLLjaa6MZkE5b3QqXK6+ylHkZIIqb22g1UaTdjRGXipN5xmQeoHLauYb6ZZhcuMbgxpu9xRyLANmkdxH9O+DCdba2Xu7lc1iuPQ4baySfgiJj99G7S+slRitC2tvkYLsLu7/yz9ePLt1qYrI63LByxNP0NppP7uObv8KV7tJDgPHOGzzYQPf1Psrvdy9fRCMo4Og3rvrjbGCxfO7RYW2A3kri38dse3huneoKGq1vY5VUT3ep+jPpU2suof2kXyMNxNg94H2eb5E1Ksucn5/mnASqUUiOc9pbfux3HKVlDVoeZ6KNQFnGCTz43M7pLaN9CdTTZ+RnA7OiyOHHPR7e7Cpl4JcxFpGgXBLy6aHhh81XmUqum06a5WtEgnKVuEOEK2/GCgbt4bxxkpnG/p83phpTD9eFvCSf2YuLUvEfMTgQdZbSjxYAAAAASUVORK5CYII=" style="image-rendering:pixelated"/>
+          <rect x="346" y="48" width="108" height="108" fill="none" stroke="#E8537A" stroke-width="1.6"/>
+          <text x="400" y="176" text-anchor="middle" font-size="11.5" fill="#16142B">그 자리 값 <tspan font-weight="800" fill="#3A1FC9">+153</tspan> &rarr; ReLU <tspan font-weight="800" fill="#3A1FC9">153</tspan></text>
+          <text x="400" y="196" text-anchor="middle" font-size="11" fill="#8E8AAC">살아남은 칸 476</text>
+        </g>
+        <g class="an d3">
+          <path d="M470 100 L506 100" stroke="#8E8AAC" stroke-width="1.4" marker-end="url(#g1)"/>
+          <rect x="522" y="46" width="356" height="116" rx="8" fill="#F4F1FF" stroke="#DCD6F0"/>
+          <text x="700" y="72" text-anchor="middle" font-size="12.5" font-weight="800" fill="#16142B">두 지도를 합치면</text>
+          <text x="700" y="100" text-anchor="middle" font-size="17" font-weight="800" fill="#3A1FC9">1,022 / 1,024칸</text>
+          <text x="700" y="122" text-anchor="middle" font-size="11.5" fill="#8E8AAC">둘 중 하나는 값을 남긴다</text>
+          <text x="700" y="146" text-anchor="middle" font-size="11.5" fill="#8E8AAC">둘 다 0인 칸은 <tspan font-weight="800" fill="#16142B">2칸</tspan> &mdash; 진짜로 세로 경계가 없는 자리</text>
+        </g>
+        <text class="an d4" x="450" y="224" text-anchor="middle" font-size="12" fill="#8E8AAC">두 그림이 서로 겹치지 않는다. 한쪽이 검은 곳을 다른 쪽이 밝게 채운다</text>
+        <defs><marker id="g1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#8E8AAC"/></marker></defs>
+      </svg>
+      <div class="cap">같은 사진 · 같은 자리 · 부호만 뒤집은 두 필터</div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>음수는 <b>반대 방향의 경계</b>다. ReLU 가 그것을 버리는 것처럼 보여도 <b>부호가 뒤집힌 필터가 잡는다</b>.</div></div>
+      <div class="v"><span class="b">→</span><div>학습된 모델도 그렇다. <code>resnet18</code> 첫 층 필터 64장 중 <b>49장</b>이 자기와 거의 정반대인 짝을 갖는다. 가장 정반대인 짝은 닮은 정도가 <b>&minus;0.918</b> 이다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">해석</span><div>필터 한 장은 <b>한 방향만</b> 본다. 그래서 32장을 두는 것이다 &mdash; 방향과 무늬를 나눠 맡는다.</div></div>
   </div>
 </section>
 
