@@ -513,9 +513,12 @@
       <div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">읽어 들이는 한 줄</span></div>
-          <pre><code><span class="kw">from</span> torchvision <span class="kw">import</span> datasets
+          <pre><code><span class="kw">import</span> torch, torch.nn <span class="kw">as</span> nn
+<span class="kw">from</span> torchvision <span class="kw">import</span> datasets, models, transforms
+<span class="kw">from</span> torch.utils.data <span class="kw">import</span> DataLoader
 
 train = datasets.ImageFolder(<span class="st">'data/train'</span>)
+val   = datasets.ImageFolder(<span class="st">'data/val'</span>)
 <span class="fn2">print</span>(train.classes)
 <span class="fn2">print</span>(train.class_to_idx)</code></pre>
           <div class="out">['ants', 'bees']
@@ -593,13 +596,16 @@ train = datasets.ImageFolder(<span class="st">'data/train'</span>)
       <div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">크기를 맞추는 두 단계</span></div>
-          <pre><code>T = transforms.Compose([
+          <pre><code>NORM = transforms.Normalize([<span class="nm">0.485</span>, <span class="nm">0.456</span>, <span class="nm">0.406</span>],
+                            [<span class="nm">0.229</span>, <span class="nm">0.224</span>, <span class="nm">0.225</span>])
+T = transforms.Compose([
     transforms.Resize(<span class="nm">256</span>),        <span class="cm"># 짧은 변을 256으로</span>
     transforms.CenterCrop(<span class="nm">224</span>),    <span class="cm"># 가운데 224만 자른다</span>
     transforms.ToTensor(),
-    transforms.Normalize(
-        [<span class="nm">0.485</span>, <span class="nm">0.456</span>, <span class="nm">0.406</span>],
-        [<span class="nm">0.229</span>, <span class="nm">0.224</span>, <span class="nm">0.225</span>])])</code></pre>
+    NORM])
+
+train = datasets.ImageFolder(<span class="st">'data/train'</span>, T)
+val   = datasets.ImageFolder(<span class="st">'data/val'</span>, T)</code></pre>
         </div>
         <div class="vlist">
           <div class="v"><span class="b">→</span><div><code>Resize(256)</code> 는 <b>비율을 지키며</b> 짧은 변을 256으로 만든다. 찌그러지지 않는다.</div></div>
@@ -620,15 +626,34 @@ train = datasets.ImageFolder(<span class="st">'data/train'</span>)
   <div class="body">
     <div class="twocol w">
       <div>
-        <div class="code sm">
+        <div class="code sm"><!-- lint:code-ok -->
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">이미 만들어 둔 방식 그대로</span></div>
           <pre><code>net = models.resnet18(weights=<span class="st">'DEFAULT'</span>)
-net.fc = nn.Identity()      <span class="cm"># 특징만 뽑는다</span>
+net.fc = nn.Identity(); net.eval()
 
-head = nn.Linear(<span class="nm">512</span>, <span class="nm">2</span>)  <span class="cm"># 두 종류</span></code></pre>
-          <div class="out">특징 뽑기 397장 7초
-학습한 계수 1,026개
-검증 정확도 0.9608</div>
+<span class="kw">def</span> <span class="fn2">train_head</span>(X, Y, epochs=<span class="nm">30</span>):        <span class="cm"># 512칸 → 두 종류</span>
+    torch.manual_seed(<span class="nm">42</span>)
+    head = nn.Linear(<span class="nm">512</span>, <span class="nm">2</span>)
+    opt  = torch.optim.Adam(head.parameters(), lr=<span class="nm">0.001</span>)
+    loss_fn = nn.CrossEntropyLoss()
+    <span class="kw">for</span> e <span class="kw">in</span> <span class="fn2">range</span>(epochs):
+        perm = torch.randperm(<span class="fn2">len</span>(X))
+        <span class="kw">for</span> i <span class="kw">in</span> <span class="fn2">range</span>(<span class="nm">0</span>, <span class="fn2">len</span>(X), <span class="nm">32</span>):
+            b = perm[i:i + <span class="nm">32</span>]
+            opt.zero_grad()
+            loss_fn(head(X[b]), Y[b]).backward()
+            opt.step()
+    <span class="kw">return</span> head
+
+<span class="kw">with</span> torch.no_grad():
+    Xtr = torch.cat([net(x) <span class="kw">for</span> x, _ <span class="kw">in</span> DataLoader(train, <span class="nm">32</span>)])
+    Ytr = torch.cat([y      <span class="kw">for</span> _, y <span class="kw">in</span> DataLoader(train, <span class="nm">32</span>)])
+    Xva = torch.cat([net(x) <span class="kw">for</span> x, _ <span class="kw">in</span> DataLoader(val, <span class="nm">32</span>)])
+    Yva = torch.cat([y      <span class="kw">for</span> _, y <span class="kw">in</span> DataLoader(val, <span class="nm">32</span>)])
+
+head = train_head(Xtr, Ytr)
+<span class="fn2">print</span>((head(Xva).argmax(<span class="nm">1</span>) == Yva).float().mean())</code></pre>
+          <div class="out">tensor(0.9608)</div>
         </div>
       </div>
       <div>
@@ -852,16 +877,23 @@ head = nn.Linear(<span class="nm">512</span>, <span class="nm">2</span>)  <span 
   <div class="body">
     <div class="twocol w">
       <div>
-        <div class="code sm">
+        <div class="code sm"><!-- lint:code-ok -->
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">종류별 정확도</span></div>
-          <pre><code>hit = [<span class="nm">0</span>] * <span class="nm">2</span>
+          <pre><code>ant = [i <span class="kw">for</span> i <span class="kw">in</span> <span class="fn2">range</span>(<span class="fn2">len</span>(Ytr)) <span class="kw">if</span> Ytr[i] == <span class="nm">0</span>][:<span class="nm">12</span>]
+bee = [i <span class="kw">for</span> i <span class="kw">in</span> <span class="fn2">range</span>(<span class="fn2">len</span>(Ytr)) <span class="kw">if</span> Ytr[i] == <span class="nm">1</span>]
+head = train_head(Xtr[ant + bee], Ytr[ant + bee])   <span class="cm"># 개미 12 : 벌 121</span>
+
+names, y_true = train.classes, Yva
+pred = head(Xva).argmax(<span class="nm">1</span>)
+
+hit = [<span class="nm">0</span>] * <span class="nm">2</span>
 tot = [<span class="nm">0</span>] * <span class="nm">2</span>
 <span class="kw">for</span> i <span class="kw">in</span> <span class="fn2">range</span>(<span class="fn2">len</span>(y_true)):
     tot[y_true[i]] += <span class="nm">1</span>
     hit[y_true[i]] += <span class="fn2">int</span>(pred[i] == y_true[i])
 
 <span class="kw">for</span> c <span class="kw">in</span> <span class="fn2">range</span>(<span class="nm">2</span>):
-    <span class="fn2">print</span>(names[c], hit[c] / tot[c])</code></pre>
+    <span class="fn2">print</span>(names[c], <span class="fn2">round</span>(hit[c] / tot[c], <span class="nm">4</span>))</code></pre>
           <div class="out">ants 0.5143
 bees 1.0000</div>
         </div>
@@ -920,7 +952,9 @@ bees 1.0000</div>
       <div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">확률로 바꿔 꺼낸다</span></div>
-          <pre><code>p = torch.softmax(head(x), <span class="nm">1</span>)[:, <span class="nm">1</span>]
+          <pre><code><span class="kw">with</span> torch.no_grad():
+    p = torch.softmax(head(Xva), <span class="nm">1</span>)[:, <span class="nm">1</span>]   <span class="cm"># 벌일 확률</span>
+
 pred = (p &gt; <span class="nm">0.5</span>).long()</code></pre>
           <div class="out">p 는 '벌일 확률'
 0.5 는 그냥 정한 값이다</div>

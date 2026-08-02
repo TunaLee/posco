@@ -28,7 +28,12 @@ def code(src, tag=None):
     return c
 
 
-HEAD = """# {title}
+BADGE = ("[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]"
+         "(https://colab.research.google.com/github/TunaLee/posco/blob/main/notebooks/exam1.ipynb)")
+
+HEAD = """{badge}
+
+# {title}
 
 **푸는 법**
 
@@ -79,7 +84,7 @@ print("제출 파일 이름:  1주차시험_%s.ipynb" % (이름 or "이름"))"""
 
 
 def build(answer: bool):
-    cells = [md(HEAD.format(title=S.TITLE, per=S.ITEMS[0][1], total=S.TOTAL))]
+    cells = [md(HEAD.format(badge=BADGE, title=S.TITLE, per=S.ITEMS[0][1], total=S.TOTAL))]
     # 검사 함수를 모아 둘 자리
     cells.append(code("_CHECKS = {}\n_PER = %d\n_TOTAL_N = %d" % (S.ITEMS[0][1], len(S.ITEMS)),
                       tag="setup"))

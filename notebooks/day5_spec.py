@@ -9,8 +9,22 @@ from torchvision import datasets, transforms
 
 torch.manual_seed(42)
 
-train = datasets.CIFAR10('data', train=True,  download=True, transform=transforms.ToTensor())
-test  = datasets.CIFAR10('data', train=False, download=True, transform=transforms.ToTensor())
+# 자료를 가져온다 — 드라이브 폴더를 먼저 보고, 없거나 막히면 원래 자리에서 받는다
+DRIVE = '1GqiActlNF0uv9D_1GPCRGMsWFcr_EQUH'   # 강사가 올려 둔 CIFAR-10
+def get_cifar():
+    import os
+    if not os.path.isdir('data/cifar-10-batches-py'):
+        os.system('pip install -q gdown')
+        os.system(f'gdown --folder {DRIVE} -O data/cifar-10-batches-py -q')
+    try:                                       # 드라이브에서 받아졌으면 이 줄이 통과한다
+        return (datasets.CIFAR10('data', train=True,  download=False, transform=transforms.ToTensor()),
+                datasets.CIFAR10('data', train=False, download=False, transform=transforms.ToTensor()))
+    except Exception as e:                     # 안 되면 원래 자리에서 받는다 (1~2분)
+        print('드라이브를 못 써서 원래 자리에서 받는다 —', type(e).__name__)
+        return (datasets.CIFAR10('data', train=True,  download=True, transform=transforms.ToTensor()),
+                datasets.CIFAR10('data', train=False, download=True, transform=transforms.ToTensor()))
+
+train, test = get_cifar()
 
 # 5,000장만 떼어 쓴다. Subset 은 데이터에서 일부만 골라 주는 것이다.
 # 전체 5만 장으로 돌리면 한 번에 몇 분씩 걸려 여러 번 비교하기 어렵다.
