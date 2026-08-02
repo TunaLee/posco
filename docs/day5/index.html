@@ -734,6 +734,7 @@ test_loader = DataLoader(test, batch_size=<span class="nm">1000</span>)</code></
     <div class="plot">
       <svg viewBox="0 0 900 244">
         <text x="20" y="18" font-size="10.5" fill="#8E8AAC">사진의 한 자리 · 15행 13열</text>
+        <text x="80" y="182" text-anchor="middle" font-size="10" fill="#E8537A">색 세 면을 평균 낸 흑백</text>
         <image x="20" y="28" width="120" height="120" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAAAAABWESUoAAADgUlEQVR42gXByW8bVRwA4LfNeN7MeBnHS+w6MVkVUKu0aqAqcKNCAsSBCz30v+LvgAsXDkhUqKJSl5RUSZRacckeO3E8dsazvnnv/fg+vNweThYHyMRpEnGukDB4wxv4mIkcIZkzmgee3bUnSSQ04E9AQyYAaMnOhQItEaWbVwq4sXDfuVYSU6CWQLbGnBl2txIKxugWwGykrZuJ1KqUqnlX5lZQKtPNH79DU6YlNQezPJ1cD2coRQYV64VThKoYP/hquRw9WnoZUbOWRoiYjJmxUojY9bOE4NYPS7WTX8Jn3f6A5GMTI2VUH6xwQ6dqFJSlKD2553UTA84XtziZVz4gnIXE0Z4FhjHUvPpwzWk13eDoRbrAmI80xSBqJ1p6pWMTVNJ4sslrZbIL7S9tTlmMiamRNpH37HPrxa8XLffh1w23ULvuydHu0giYpp5zRSy+/M2jZuXxz3/f4vlis5JbWYZuXxdONXNMFxcady1no1yxRPepng6kZgWqKM7+eV0TrDnP/Lkv9KtPqzUiFFAwStKaNuFCMNDDKGbuuihv1HsKKaJSSqhpuVMx8tKXM+VbnUqfWBCsrWIXOAT5VBPCHAcoisKTWSRiLkwW7rXXiDDiyzwXM5NgbBQEeBClsZJxyDk5f8es0EHpv3/F+dlZlEuBhwdz3vQiiQTQapPcIDaQjkHiP3vqZPvID9K8t5/xN7tSAcW5zVT55nijaCk0OFz4Hf231a4V+pMJD1iuQeezGfU6EVovyQ+HUePub9vH+4cHO88nLXel4o8ASCpoxx2brSK8v6DJZu9j4qe957561+Onq0e3BBFGeKDQOJXJylOx7WAKcQgkvHzj7w2rCGlQtBQ5tqKXr/i3+1mljxHNFQUStD+rhx8xrVdZBDS+zCZjcSbpYjFgZkYQwebpKq1jwlrzJJPTq/HgSmmcnzodsCuu1posQOysl0i+/5YRGuvARLbU3mDY6hNdnmAtu0XLm1kZQlOCTSOXk2ms7O7FTttLRsywqdLpZXfHN0ucUqIUYhkCfK/7NlxEA5wZ1M5z1268V3fuLHYoVUIprUGFP6kD4/Fxoektzc016mLuwzlOscQWAgCEMMXL3Kt8v/cHlVZitPhUT/paIURNBJiUi16n7BfIFb8/SBIHF0z/wF+cRgCImhoQJlbFK1dteXuGg9TMNOBU4XGACCL/A0Br9mvK80cJAAAAAElFTkSuQmCC" style="image-rendering:pixelated" opacity="0.55"/>
         <rect x="20" y="28" width="120" height="120" fill="none" stroke="#DCD6F0"/>
         <rect class="an d1" x="65" y="80" width="12" height="12" fill="none" stroke="#E8537A" stroke-width="2"/>
@@ -760,7 +761,7 @@ test_loader = DataLoader(test, batch_size=<span class="nm">1000</span>)</code></
           <rect x="288" y="146" width="60" height="60" fill="rgb(228,228,228)" stroke="#8E8AAC" stroke-width="0.7"/>
           <text x="318" y="181" text-anchor="middle" font-size="17" font-weight="700" fill="#16142B">228</text>
         </g>
-        <text class="an d2" x="248" y="26" text-anchor="middle" font-size="10.5" fill="#8E8AAC">칸마다 든 밝기 — 0이 검정, 255가 흰색</text>
+        <text class="an d2" x="248" y="26" text-anchor="middle" font-size="10.5" fill="#8E8AAC">칸마다 든 밝기 하나</text>
 
         <g class="an d3">
           <path d="M170 194 L226 194" stroke="#5B3DF5" stroke-width="1.6"/>
@@ -791,6 +792,10 @@ test_loader = DataLoader(test, batch_size=<span class="nm">1000</span>)</code></
         <text x="810" y="190" text-anchor="middle" font-size="10" fill="#8E8AAC">흰색</text>
       </svg>
       <div class="cap">사람은 그림을 보고 알지만 컴퓨터는 이 뺄셈 하나로 안다</div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">→</span><div>원본은 <b>빨강 · 초록 · 파랑 세 면</b>이다. 여기서는 설명을 위해 <b>세 면을 평균 내 흑백 한 장</b>으로 만들었다.</div></div>
+      <div class="v"><span class="b">★</span><div>계산 방법은 면이 하나든 셋이든 <b>똑같다</b>. 세 면을 그대로 다루는 것은 뒤에서 본다.</div></div>
     </div>
     <div class="keymsg"><span class="k">착안</span><div>사진 전체를 볼 필요가 없다. <b>아홉 칸을 세 칸씩 더해 빼면</b> 그 자리에 경계가 있는지 나온다.</div></div>
   </div>
@@ -1118,6 +1123,9 @@ test_loader = DataLoader(test, batch_size=<span class="nm">1000</span>)</code></
         <defs><marker id="c3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#8E8AAC"/></marker></defs>
       </svg>
       <div class="cap">필터도 세 면짜리라 면마다 아홉 수를 따로 갖는다 &mdash; 여기서는 셋 다 세로 필터를 넣었다</div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">→</span><div>앞에서는 흑백 한 장으로 설명했다. <b>여기서부터 원래의 세 면</b>을 그대로 쓴다.</div></div>
     </div>
     <div class="keymsg"><span class="k">핵심</span><div>필터 하나는 <b>색 세 면을 한꺼번에</b> 먹고 <b>숫자 하나</b>를 뱉는다. 그래서 출력은 색이 없는 <b>한 장</b>이다.</div></div>
   </div>
