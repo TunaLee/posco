@@ -589,16 +589,12 @@
   <h2 class="s-title sm">기울기로 재는 지도 512장의 무게</h2>
   <div class="rule"></div>
   <div class="body">
-    <div class="pipe">
-      <div class="st an d1"><b>1. 판정 점수를 하나 고른다</b><span>&ldquo;벌&rdquo; 칸의 점수 하나만 본다</span></div>
-      <div class="ar">↓</div>
-      <div class="st an d2"><b>2. 그 점수를 특징 지도로 미분한다</b><span>지도의 각 칸이 조금 커지면 점수가 얼마나 오르는가</span></div>
-      <div class="ar">↓</div>
-      <div class="st an d3"><b>3. 지도마다 기울기의 평균을 낸다</b><span>그 값이 그 지도의 무게다 · 512개의 무게가 나온다</span></div>
-      <div class="ar">↓</div>
-      <div class="st an d4"><b>4. 무게를 곱해 512장을 한 장으로 더한다</b><span>음수는 0으로 자른다 &mdash; 점수를 올린 곳만 남긴다</span></div>
-      <div class="ar">↓</div>
-      <div class="st an d5"><b>5. 7&times;7 을 224&times;224 로 늘려 사진에 겹친다</b><span>흐릿한 얼룩으로 보이는 이유가 이것이다</span></div>
+    <div class="vlist">
+      <div class="v an d1"><span class="b">1</span><div><b>판정 점수를 하나 고른다</b> &mdash; &ldquo;벌&rdquo; 칸의 점수 하나만 본다</div></div>
+      <div class="v an d2"><span class="b">2</span><div><b>그 점수를 특징 지도로 미분한다</b> &mdash; 지도의 각 칸이 조금 커지면 점수가 얼마나 오르는가</div></div>
+      <div class="v an d3"><span class="b">3</span><div><b>지도마다 기울기의 평균을 낸다</b> &mdash; 그 값이 그 지도의 무게다 · 512개의 무게가 나온다</div></div>
+      <div class="v an d4"><span class="b">4</span><div><b>무게를 곱해 512장을 한 장으로 더한다</b> &mdash; 음수는 0으로 자른다 &mdash; 점수를 올린 곳만 남긴다</div></div>
+      <div class="v an d5"><span class="b">5</span><div><b>7&times;7 을 224&times;224 로 늘려 사진에 겹친다</b> &mdash; 흐릿한 얼룩으로 보이는 이유가 이것이다</div></div>
     </div>
     <div class="vlist">
       <div class="v"><span class="b">★</span><div>2번의 기울기는 <b>학습에 쓰던 그것</b>이다. 계수 대신 <b>특징 지도로</b> 미분하는 것만 다르다.</div></div>
@@ -861,16 +857,12 @@ cam = F.relu((w * A).sum(<span class="nm">1</span>, keepdim=<span class="kw">Tru
   <h2 class="s-title sm">사람이 다시 보게 만드는 순서</h2>
   <div class="rule"></div>
   <div class="body">
-    <div class="pipe">
-      <div class="st an d1"><b>1. 확신이 낮은 것을 모은다</b><span>확률이 0.6~0.9 사이인 것 &mdash; 모델이 애매해한 것들</span></div>
-      <div class="ar">↓</div>
-      <div class="st an d2"><b>2. 그것들의 히트맵을 함께 낸다</b><span>판정과 사진과 히트맵을 한 화면에 붙여 놓는다</span></div>
-      <div class="ar">↓</div>
-      <div class="st an d3"><b>3. 사람이 보고 셋 중 하나로 표시한다</b><span>맞음 · 틀림 · 근거가 이상함</span></div>
-      <div class="ar">↓</div>
-      <div class="st an d4"><b>4. &ldquo;근거가 이상함&rdquo; 을 모아 본다</b><span>같은 자리를 반복해 본다면 데이터에 문제가 있다는 뜻이다</span></div>
-      <div class="ar">↓</div>
-      <div class="st an d5"><b>5. 데이터를 고쳐 다시 학습한다</b><span>배경이 한쪽으로 쏠렸다면 그 배경의 반대쪽 사진을 모은다</span></div>
+    <div class="vlist">
+      <div class="v an d1"><span class="b">1</span><div><b>확신이 낮은 것을 모은다</b> &mdash; 확률이 0.6~0.9 사이인 것 &mdash; 모델이 애매해한 것들</div></div>
+      <div class="v an d2"><span class="b">2</span><div><b>그것들의 히트맵을 함께 낸다</b> &mdash; 판정과 사진과 히트맵을 한 화면에 붙여 놓는다</div></div>
+      <div class="v an d3"><span class="b">3</span><div><b>사람이 보고 셋 중 하나로 표시한다</b> &mdash; 맞음 · 틀림 · 근거가 이상함</div></div>
+      <div class="v an d4"><span class="b">4</span><div><b>&ldquo;근거가 이상함&rdquo; 을 모아 본다</b> &mdash; 같은 자리를 반복해 본다면 데이터에 문제가 있다는 뜻이다</div></div>
+      <div class="v an d5"><span class="b">5</span><div><b>데이터를 고쳐 다시 학습한다</b> &mdash; 배경이 한쪽으로 쏠렸다면 그 배경의 반대쪽 사진을 모은다</div></div>
     </div>
     <div class="vlist">
       <div class="v"><span class="b">★</span><div>확신이 <b>0.996 인데 틀린 것</b>은 이 흐름으로 못 잡는다. 그래서 <b>맞힌 것도 섞어</b> 뽑아 본다.</div></div>

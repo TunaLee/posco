@@ -1285,11 +1285,11 @@ torch.Size([1, 32, 16, 16])</div>
     <div class="twocol w">
       <div>
         <div class="pipe">
-          <div class="st an d1"><b>nn.Conv2d</b><span>무늬를 찾는다 · 채널이 두꺼워진다</span></div>
-          <div class="ar">↓</div>
-          <div class="st an d2"><b>nn.ReLU</b><span>음수를 0으로 · 안 넣으면 층을 쌓은 값이 없다</span></div>
-          <div class="ar">↓</div>
-          <div class="st an d3"><b>nn.MaxPool2d</b><span>가장 강한 값만 · 가로세로가 절반</span></div>
+          <div class="step an d1"><div class="si">CONV</div><div class="sn">nn.Conv2d</div><div class="sd">무늬를 찾는다<br/>채널이 두꺼워진다</div></div>
+          <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+          <div class="step an d2"><div class="si">RELU</div><div class="sn">nn.ReLU</div><div class="sd">음수를 0으로<br/>안 넣으면 층을 쌓은 값이 없다</div></div>
+          <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+          <div class="step an d3"><div class="si">POOL</div><div class="sn">nn.MaxPool2d</div><div class="sd">가장 강한 값만<br/>가로세로가 절반</div></div>
         </div>
       </div>
       <div>
@@ -1337,6 +1337,111 @@ torch.Size([1, 32, 16, 16])</div>
       </div>
     </div>
     <div class="keymsg"><span class="k">구성</span><div>합성곱은 <b>펴는 것을 없애지 않는다</b>. 펴기 전에 <b>이웃 관계를 다 써 두는 것</b>이 전부다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="층을 지나며 바뀌는 모양">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>구조</div>
+  <h2 class="s-title sm">좁아지면서 두꺼워지는 여섯 단계</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="plot">
+      <svg viewBox="0 0 900 268">
+      <g class="an d1">
+        <rect x="30" y="70" width="86" height="86" rx="2" fill="#EAF0FD" stroke="#8EB0E8" stroke-width="1" opacity="0.35"/>
+        <rect x="25" y="72" width="86" height="86" rx="2" fill="#EAF0FD" stroke="#8EB0E8" stroke-width="1" opacity="0.68"/>
+        <rect x="20" y="75" width="86" height="86" rx="2" fill="#EAF0FD" stroke="#8EB0E8" stroke-width="1" opacity="1.00"/>
+        <text x="70" y="196" text-anchor="middle" font-size="11" font-weight="700" fill="#3A1FC9">입력</text>
+        <text x="70" y="212" text-anchor="middle" font-size="10.5" fill="#8E8AAC">색 3 · 32×32</text>
+      </g>
+      <g class="an d2">
+        <rect x="195" y="61" width="86" height="86" rx="2" fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1" opacity="0.35"/>
+        <rect x="190" y="64" width="86" height="86" rx="2" fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1" opacity="0.48"/>
+        <rect x="185" y="67" width="86" height="86" rx="2" fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1" opacity="0.61"/>
+        <rect x="180" y="70" width="86" height="86" rx="2" fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1" opacity="0.74"/>
+        <rect x="175" y="72" width="86" height="86" rx="2" fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1" opacity="0.87"/>
+        <rect x="170" y="75" width="86" height="86" rx="2" fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1" opacity="1.00"/>
+        <text x="228" y="196" text-anchor="middle" font-size="11" font-weight="700" fill="#3A1FC9">32장 · 32×32</text>
+        <text x="228" y="212" text-anchor="middle" font-size="10" fill="#8E8AAC">채널이 두꺼워진다</text>
+        <text x="228" y="44" text-anchor="middle" font-size="10.5" font-family="ui-monospace,monospace" fill="#5B3DF5">Conv2d(3,32)</text>
+      </g>
+      <g class="an d3">
+        <rect x="345" y="82" width="44" height="44" rx="2" fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1" opacity="0.35"/>
+        <rect x="340" y="85" width="44" height="44" rx="2" fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1" opacity="0.48"/>
+        <rect x="335" y="88" width="44" height="44" rx="2" fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1" opacity="0.61"/>
+        <rect x="330" y="90" width="44" height="44" rx="2" fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1" opacity="0.74"/>
+        <rect x="325" y="93" width="44" height="44" rx="2" fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1" opacity="0.87"/>
+        <rect x="320" y="96" width="44" height="44" rx="2" fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1" opacity="1.00"/>
+        <text x="357" y="196" text-anchor="middle" font-size="11" font-weight="700" fill="#3A1FC9">32장 · 16×16</text>
+        <text x="357" y="212" text-anchor="middle" font-size="10" fill="#8E8AAC">가로세로가 절반</text>
+        <text x="357" y="44" text-anchor="middle" font-size="10.5" font-family="ui-monospace,monospace" fill="#5B3DF5">MaxPool2d(2)</text>
+      </g>
+      <g class="an d4">
+        <rect x="492" y="74" width="44" height="44" rx="2" fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1" opacity="0.35"/>
+        <rect x="487" y="77" width="44" height="44" rx="2" fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1" opacity="0.43"/>
+        <rect x="482" y="80" width="44" height="44" rx="2" fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1" opacity="0.51"/>
+        <rect x="477" y="82" width="44" height="44" rx="2" fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1" opacity="0.59"/>
+        <rect x="472" y="85" width="44" height="44" rx="2" fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1" opacity="0.68"/>
+        <rect x="467" y="88" width="44" height="44" rx="2" fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1" opacity="0.76"/>
+        <rect x="462" y="90" width="44" height="44" rx="2" fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1" opacity="0.84"/>
+        <rect x="457" y="93" width="44" height="44" rx="2" fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1" opacity="0.92"/>
+        <rect x="452" y="96" width="44" height="44" rx="2" fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1" opacity="1.00"/>
+        <text x="496" y="196" text-anchor="middle" font-size="11" font-weight="700" fill="#3A1FC9">64장 · 16×16</text>
+        <text x="496" y="212" text-anchor="middle" font-size="10" fill="#8E8AAC">더 두꺼워진다</text>
+        <text x="496" y="44" text-anchor="middle" font-size="10.5" font-family="ui-monospace,monospace" fill="#5B3DF5">Conv2d(32,64)</text>
+      </g>
+      <g class="an d5">
+        <rect x="636" y="84" width="24" height="24" rx="2" fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1" opacity="0.35"/>
+        <rect x="631" y="87" width="24" height="24" rx="2" fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1" opacity="0.43"/>
+        <rect x="626" y="90" width="24" height="24" rx="2" fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1" opacity="0.51"/>
+        <rect x="621" y="92" width="24" height="24" rx="2" fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1" opacity="0.59"/>
+        <rect x="616" y="95" width="24" height="24" rx="2" fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1" opacity="0.68"/>
+        <rect x="611" y="98" width="24" height="24" rx="2" fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1" opacity="0.76"/>
+        <rect x="606" y="100" width="24" height="24" rx="2" fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1" opacity="0.84"/>
+        <rect x="601" y="103" width="24" height="24" rx="2" fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1" opacity="0.92"/>
+        <rect x="596" y="106" width="24" height="24" rx="2" fill="#EFEAFF" stroke="#B7A9FF" stroke-width="1" opacity="1.00"/>
+        <text x="630" y="196" text-anchor="middle" font-size="11" font-weight="700" fill="#3A1FC9">64장 · 8×8</text>
+        <text x="630" y="212" text-anchor="middle" font-size="10" fill="#8E8AAC">또 절반</text>
+        <text x="630" y="44" text-anchor="middle" font-size="10.5" font-family="ui-monospace,monospace" fill="#5B3DF5">MaxPool2d(2)</text>
+      </g>
+      <path class="an d2" d="M120 118 L148 118" stroke="#8E8AAC" stroke-width="1.4" marker-end="url(#cn)"/>
+      <path class="an d2" d="M270 118 L298 118" stroke="#8E8AAC" stroke-width="1.4" marker-end="url(#cn)"/>
+      <path class="an d2" d="M404 118 L432 118" stroke="#8E8AAC" stroke-width="1.4" marker-end="url(#cn)"/>
+      <path class="an d2" d="M548 118 L576 118" stroke="#8E8AAC" stroke-width="1.4" marker-end="url(#cn)"/>
+      <path class="an d6" d="M676 118 L706 118" stroke="#8E8AAC" stroke-width="1.4" marker-end="url(#cn)"/>
+      <g class="an d6">
+        <rect x="716" y="58" width="14" height="120" rx="3" fill="#EFEAFF" stroke="#B7A9FF"/>
+        <text x="723" y="196" text-anchor="middle" font-size="11" font-weight="700" fill="#3A1FC9">4,096칸</text>
+        <text x="723" y="212" text-anchor="middle" font-size="10" fill="#8E8AAC">한 줄로 편다</text>
+        <text x="723" y="44" text-anchor="middle" font-size="10.5" font-family="ui-monospace,monospace" fill="#5B3DF5">Flatten</text>
+      </g>
+      <path class="an d6" d="M740 118 L770 118" stroke="#8E8AAC" stroke-width="1.4" marker-end="url(#cn)"/>
+      <g class="an d6">
+        <circle cx="790" cy="73" r="5" fill="#FDE8EE" stroke="#E8537A" stroke-width="1.2"/>
+        <circle cx="790" cy="83" r="5" fill="#FDE8EE" stroke="#E8537A" stroke-width="1.2"/>
+        <circle cx="790" cy="93" r="5" fill="#FDE8EE" stroke="#E8537A" stroke-width="1.2"/>
+        <circle cx="790" cy="103" r="5" fill="#FDE8EE" stroke="#E8537A" stroke-width="1.2"/>
+        <circle cx="790" cy="113" r="5" fill="#FDE8EE" stroke="#E8537A" stroke-width="1.2"/>
+        <circle cx="790" cy="123" r="5" fill="#FDE8EE" stroke="#E8537A" stroke-width="1.2"/>
+        <circle cx="790" cy="133" r="5" fill="#FDE8EE" stroke="#E8537A" stroke-width="1.2"/>
+        <circle cx="790" cy="143" r="5" fill="#FDE8EE" stroke="#E8537A" stroke-width="1.2"/>
+        <circle cx="790" cy="153" r="5" fill="#FDE8EE" stroke="#E8537A" stroke-width="1.2"/>
+        <circle cx="790" cy="163" r="5" fill="#FDE8EE" stroke="#E8537A" stroke-width="1.2"/>
+        <text x="790" y="196" text-anchor="middle" font-size="11" font-weight="700" fill="#E8537A">10칸</text>
+        <text x="790" y="212" text-anchor="middle" font-size="10" fill="#8E8AAC">종류마다 점수</text>
+        <text x="790" y="44" text-anchor="middle" font-size="10.5" font-family="ui-monospace,monospace" fill="#5B3DF5">Linear</text>
+      </g>
+      <text class="an d6" x="450" y="248" text-anchor="middle" font-size="11.5" fill="#8E8AAC">가로세로는 32 → 16 → 8 로 줄고, 면 수는 3 → 32 → 64 로 늘어난다</text>
+      <defs><marker id="cn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#8E8AAC"/></marker></defs>
+      </svg>
+      <div class="cap">면 하나가 특징 지도 한 장이다. 겹쳐 그린 수가 채널 수를 뜻한다</div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>두 가지가 <b>반대로 움직인다</b>. 자리는 줄고 <b>무늬의 종류는 늘어난다</b>.</div></div>
+      <div class="v"><span class="b">→</span><div>마지막에 <code>Flatten</code> 이 <b>64 &times; 8 &times; 8 = 4,096칸</b>을 한 줄로 편다. 이미 이웃 관계를 다 쓴 뒤다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">읽는 법</span><div>CNN 그림은 늘 이 모양이다. <b>왼쪽은 넓고 얇게, 오른쪽은 좁고 두껍게.</b></div></div>
   </div>
 </section>
 
