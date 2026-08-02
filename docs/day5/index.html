@@ -552,7 +552,7 @@ model = nn.Sequential(
       <div>
         <div class="vlist">
           <div class="v"><span class="b">→</span><div>손글씨는 흑백이라 자리마다 숫자 하나였다. <b>사진은 빨강 · 초록 · 파랑 셋</b>이다.</div></div>
-          <div class="v"><span class="b">→</span><div>그래서 <code>32 &times; 32 &times; 3 = 3,072</code>. 손글씨 784칸의 <b>네 배</b>다.</div></div>
+          <div class="v"><span class="b">→</span><div>한 면이 <b>32행 &times; 32열 = 1,024칸</b>이다. 면이 셋이니 <code>1,024 &times; 3 = 3,072</code>. 손글씨 784칸의 <b>네 배</b>다.</div></div>
           <div class="v"><span class="b">★</span><div>오늘 쓸 데이터는 <b>CIFAR-10</b> 이다. 32&times;32 컬러 사진 6만 장, 열 가지 사물이다.</div></div>
         </div>
       </div>
@@ -976,6 +976,10 @@ test_loader = DataLoader(test, batch_size=<span class="nm">1000</span>)</code></
         <defs><marker id="ar7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#8E8AAC"/></marker></defs>
       </svg>
       <div class="cap">가장자리는 창이 넘치므로 바깥을 0으로 채워 32&times;32 를 유지한다</div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">→</span><div>창을 놓을 수 있는 자리는 <b>32행 &times; 32열 = 1,024자리</b>다. 칸마다 한 번씩 놓는 것이다.</div></div>
+      <div class="v"><span class="b">★</span><div>자리 하나에서 <b>숫자 하나</b>가 나온다. 그러니 출력도 <b>1,024칸</b>이 되어 크기가 그대로다.</div></div>
     </div>
     <div class="keymsg"><span class="k">핵심</span><div>아홉 개짜리 필터 하나가 <b>1,024칸을 전부 담당</b>한다. 이것이 계수를 나눠 쓴다는 말이다.</div></div>
   </div>
