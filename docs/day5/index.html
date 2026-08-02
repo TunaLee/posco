@@ -2022,6 +2022,30 @@ opt = torch.optim.Adam(model.parameters(), lr=<span class="nm">0.001</span>)
     <div class="keymsg"><span class="k">결과</span><div>이웃 관계를 쓰기만 해도 이만큼 오른다. <b>아직 절반 가까이 틀린다</b> — CH3 에서 더 올린다.</div></div>
   </div>
 </section>
+<section class="slide" data-title="은닉층과 합성곱층">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>견주기</div>
+  <h2 class="s-title sm">은닉층이 있던 자리에 들어선 합성곱층</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable">
+      <thead><tr><th>견주는 것</th><th>어제 &middot; 펴서 <code>Linear</code></th><th>오늘 &middot; CNN</th></tr></thead>
+      <tbody>
+        <tr><td>무늬를 찾는 층</td><td>은닉층</td><td class="hl">합성곱층</td></tr>
+        <tr><td>무늬 하나를 맡는 것</td><td>노드 한 개</td><td class="hl">필터 한 장</td></tr>
+        <tr><td>층이 내놓는 것</td><td>점수 128칸</td><td class="hl">특징 지도 32장</td></tr>
+        <tr><td>한 번에 보는 범위</td><td>펴 놓은 3,072칸 전부</td><td class="hl">이웃한 아홉 칸</td></tr>
+        <tr><td>계수를 쓰는 방식</td><td>자리마다 따로 가진다</td><td class="hl">모든 자리가 나눠 쓴다</td></tr>
+        <tr><td>사진이 한쪽으로 밀리면</td><td>칸 값이 통째로 바뀐다</td><td class="hl">같은 필터가 그대로 찾는다</td></tr>
+      </tbody>
+    </table>
+    <div class="vlist">
+      <div class="v"><span class="b">&rarr;</span><div>바뀐 것은 <b>층의 종류 하나</b>다. 학습 루프도 손실 함수도 어제 쓰던 것 그대로다.</div></div>
+      <div class="v"><span class="b">&#9733;</span><div>차이를 한 줄로 줄이면 이것이다 &mdash; <b>은닉층은 펴 놓은 칸을 전부 보고, 합성곱층은 이웃한 아홉 칸만 본다.</b></div></div>
+    </div>
+    <div class="keymsg"><span class="k">견주기</span><div>CNN 은 새로운 학습법이 아니다 &mdash; <b>은닉층 자리에 이웃을 쓰는 층을 넣은 것</b>이다.</div></div>
+  </div>
+</section>
 
 <section class="slide" data-title="실습 · CNN 돌리기">
   <div class="coord"><b></b> / <span class="tot"></span></div>
