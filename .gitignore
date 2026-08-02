@@ -10,3 +10,7 @@
 docs/_archive-pptx/
 
 .DS_Store
+
+# 시험 정답 — 공개 저장소에 올리지 않는다
+notebooks/exam1_spec.py
+notebooks/exam1_answer.ipynb
