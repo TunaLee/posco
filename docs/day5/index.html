@@ -1131,6 +1131,67 @@ test_loader = DataLoader(test, batch_size=<span class="nm">1000</span>)</code></
   </div>
 </section>
 
+<section class="slide" data-title="풀링">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>풀링</div>
+  <h2 class="s-title sm">2&times;2 에서 남기는 가장 큰 값 하나</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="plot">
+          <svg viewBox="0 0 400 190">
+            <text x="14" y="14" font-size="11" font-weight="700" fill="#3A1FC9">4&times;4 한 조각</text>
+            <g font-size="13" text-anchor="middle" font-weight="600" fill="#16142B">
+              <rect x="14" y="24" width="36" height="36" fill="#F7F7F9" stroke="#DCD6F0"/><text x="32" y="47">12</text>
+              <rect x="50" y="24" width="36" height="36" fill="#EFEAFF" stroke="#DCD6F0"/><text x="68" y="47" font-weight="800" fill="#5B3DF5">40</text>
+              <rect x="86" y="24" width="36" height="36" fill="#F7F7F9" stroke="#DCD6F0"/><text x="104" y="47">3</text>
+              <rect x="122" y="24" width="36" height="36" fill="#F7F7F9" stroke="#DCD6F0"/><text x="140" y="47">9</text>
+              <rect x="14" y="60" width="36" height="36" fill="#F7F7F9" stroke="#DCD6F0"/><text x="32" y="83">28</text>
+              <rect x="50" y="60" width="36" height="36" fill="#F7F7F9" stroke="#DCD6F0"/><text x="68" y="83">17</text>
+              <rect x="86" y="60" width="36" height="36" fill="#F7F7F9" stroke="#DCD6F0"/><text x="104" y="83">6</text>
+              <rect x="122" y="60" width="36" height="36" fill="#EFEAFF" stroke="#DCD6F0"/><text x="140" y="83" font-weight="800" fill="#5B3DF5">31</text>
+              <rect x="14" y="96" width="36" height="36" fill="#EFEAFF" stroke="#DCD6F0"/><text x="32" y="119" font-weight="800" fill="#5B3DF5">88</text>
+              <rect x="50" y="96" width="36" height="36" fill="#F7F7F9" stroke="#DCD6F0"/><text x="68" y="119">5</text>
+              <rect x="86" y="96" width="36" height="36" fill="#F7F7F9" stroke="#DCD6F0"/><text x="104" y="119">14</text>
+              <rect x="122" y="96" width="36" height="36" fill="#F7F7F9" stroke="#DCD6F0"/><text x="140" y="119">20</text>
+              <rect x="14" y="132" width="36" height="36" fill="#F7F7F9" stroke="#DCD6F0"/><text x="32" y="155">2</text>
+              <rect x="50" y="132" width="36" height="36" fill="#F7F7F9" stroke="#DCD6F0"/><text x="68" y="155">7</text>
+              <rect x="86" y="132" width="36" height="36" fill="#F7F7F9" stroke="#DCD6F0"/><text x="104" y="155">1</text>
+              <rect x="122" y="132" width="36" height="36" fill="#EFEAFF" stroke="#DCD6F0"/><text x="140" y="155" font-weight="800" fill="#5B3DF5">63</text>
+            </g>
+            <rect class="an d1" x="14" y="24" width="72" height="72" fill="none" stroke="#E8537A" stroke-width="2"/>
+            <rect class="an d2" x="86" y="24" width="72" height="72" fill="none" stroke="#E8537A" stroke-width="2"/>
+            <rect class="an d3" x="14" y="96" width="72" height="72" fill="none" stroke="#E8537A" stroke-width="2"/>
+            <rect class="an d4" x="86" y="96" width="72" height="72" fill="none" stroke="#E8537A" stroke-width="2"/>
+            <path class="an d1" d="M176 96 L212 96" stroke="#8E8AAC" stroke-width="1.6" marker-end="url(#ar9)"/>
+            <text class="an d1" x="194" y="88" text-anchor="middle" font-size="10" fill="#8E8AAC">최댓값</text>
+            <text class="an d1" x="284" y="14" font-size="11" font-weight="700" fill="#3A1FC9">2&times;2</text>
+            <g font-size="15" text-anchor="middle" font-weight="800" fill="#5B3DF5">
+              <g class="an d1"><rect x="228" y="42" width="52" height="52" fill="#EFEAFF" stroke="#B7A9FF"/><text x="254" y="74">40</text></g>
+              <g class="an d2"><rect x="280" y="42" width="52" height="52" fill="#EFEAFF" stroke="#B7A9FF"/><text x="306" y="74">31</text></g>
+              <g class="an d3"><rect x="228" y="94" width="52" height="52" fill="#EFEAFF" stroke="#B7A9FF"/><text x="254" y="126">88</text></g>
+              <g class="an d4"><rect x="280" y="94" width="52" height="52" fill="#EFEAFF" stroke="#B7A9FF"/><text x="306" y="126">63</text></g>
+            </g>
+            <text class="an d4" x="280" y="166" text-anchor="middle" font-size="10.5" fill="#8E8AAC">칸이 4분의 1로 줄었다</text>
+            <defs><marker id="ar9" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#8E8AAC"/></marker></defs>
+          </svg>
+          <div class="cap">겹치지 않는 2&times;2 마다 최댓값 하나</div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>지도를 <b>겹치지 않는 2&times;2 로 잘라</b>, 각 칸에서 <b>가장 큰 값 하나만</b> 남긴다. 나머지 셋은 버린다.</div></div>
+          <div class="v"><span class="b">→</span><div>큰 값이 남는 이유는 그것이 <b>무늬가 가장 강하게 나타난 값</b>이어서다. 약한 반응은 버려도 된다.</div></div>
+          <div class="v"><span class="b">→</span><div>32&times;32 가 16&times;16 이 된다. <b>이어지는 층의 계산량이 4분의 1</b>로 줄어든다.</div></div>
+          <div class="v"><span class="b">★</span><div>한 <b>2&times;2 안에서</b> 무늬가 움직이면 결과가 같다. 넷 중 어디에 있든 최댓값은 하나다. 다만 <b>칸을 넘어가면 달라진다</b>.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">이유</span><div>풀링이 버리는 것은 <b>2&times;2 안에서의 정확한 자리</b>다. 남는 것은 <b>그 안에 무늬가 있었다는 사실과 세기</b>다.</div></div>
+  </div>
+</section>
+
 <section class="slide" data-title="그 값이 지나가는 길">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>계산</div>
@@ -1146,12 +1207,13 @@ test_loader = DataLoader(test, batch_size=<span class="nm">1000</span>)</code></
         </g>
         <path class="an d2" d="M120 107 L150 107" stroke="#8E8AAC" stroke-width="1.4" marker-end="url(#f1)"/>
         <g class="an d2">
-          <text x="210" y="44" text-anchor="middle" font-size="10.5" font-weight="700" fill="#3A1FC9">출력 지도 32&times;32</text>
-          <image x="162" y="56" width="96" height="96" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAAAAABWESUoAAAC7UlEQVR42jWTS28bVQCFv3tnPJ6xnfgxcVLHSVpCoYS0oYUKQYqApisE/AAkfgP8MyQkxKqblkVVQKgJKSShcR64JNipHzPjec9cFg5nd3S+xdGRjraWB02RAMCyiqGwcMXJuZRAFl0a9Us7UwISs1L4P0dHDxPTKUmlAJFmohjipOWFYWRbL4AEzX6VJlq95AGGHK/afTRdzczdvKafACCrEI0IAEQY2dfAz6vray39MeiADIDQKbbmIIr0rAx5/e6tSvYEvvkWkAIQ0lhqAoEeOsDyvbcGnS5sfg3ICaBiczYDizA+g/bt6nkvACZzgJ6BUIEKE/G2/J29BoUvrv5xKl1gbOgpugKFMvXFzdk9YEC7OdrtVs6AwRGgzftmzGojvbOVnhwBZPQHfXkKjNIjB33Jf0WtvW0/qH7ftQLAfbhSTXOAnb4C+U4jZM0bd+ati3+D6b6nnUIVgLMU5A3JRu03aOGPKRsSYBKUpqgCmWrvbuwDGhnYJQOA1AOgVgS5Xf6q3gFe2suwYBs6UG8dAJAVashn1zc9gEe1T2DmtVkTuHOvD0DA68jhXKTeAH5wtqBw43qzCrfvTytolJCN8aPmh8CT3VvwQjRbNVhZu+w4dpFzO49bN4vA0xQOO+gX8LLz/hTwB2jrT9PNyu4ApP1dTqicLljB/R8B9ESEWnvfbovDM97b2178h1AOfMzzk88qO4BmVVw5NMrP/3ThS//ZMsSBB7HbPd5YAeR8GzmpRId/9eCqyRJgJKBkcb/5MRAJDT1Le/nEBb/h6ECxkKLEany6ACjPQMpw4IwyMBb59XMYV4F8yXx+BaB3gFQZuYtmirv89Cb0NABP8yygYmbIaLqJPN+Cgw9AlDA56fU8oGFpyEmOgDz7eQhHH0FXq4A36j8E/NxA0yOEIaU1SvL+8NPsb+KijGvB8bGe4ytSzYgRVqk8626nNV9b/wXiBNsJlZlAliJTEAiV5/GFm+yMp58fD8GaHvw/oSlDGkC+lBYAAAAASUVORK5CYII=" style="image-rendering:pixelated"/>
+          <text x="210" y="44" text-anchor="middle" font-size="10.5" font-weight="700" fill="#3A1FC9">합성곱 출력 지도 32&times;32</text>
+          <image x="162" y="56" width="96" height="96" href="data:image/png;base64,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" style="image-rendering:pixelated"/>
           <rect x="162" y="56" width="96" height="96" fill="none" stroke="#DCD6F0"/>
           <rect x="171" y="89" width="3" height="3" fill="none" stroke="#E8537A" stroke-width="1.6"/>
           <path d="M171 92 L146 176 L210 176" stroke="#E8537A" stroke-width="1" fill="none"/>
           <text x="210" y="192" text-anchor="middle" font-size="10.5" fill="#E8537A">11행 3열 칸에 놓인다</text>
+          <text x="210" y="208" text-anchor="middle" font-size="10" fill="#8E8AAC">붉은 곳이 음수 · 푸른 곳이 양수</text>
         </g>
         <path class="an d3" d="M266 107 L296 107" stroke="#8E8AAC" stroke-width="1.4" marker-end="url(#f1)"/>
         <text class="an d3" x="281" y="98" text-anchor="middle" font-size="10" fill="#8E8AAC">ReLU</text>
@@ -1193,7 +1255,7 @@ test_loader = DataLoader(test, batch_size=<span class="nm">1000</span>)</code></
         <text class="an d6" x="450" y="228" text-anchor="middle" font-size="12" fill="#8E8AAC">이 지도 32장이 다음 <tspan font-family="ui-monospace,monospace" fill="#16142B">Conv2d(32, 64)</tspan> 의 입력이 된다 &mdash; 이번엔 필터 하나가 <tspan font-weight="800" fill="#16142B">32면 &times; 3 &times; 3 = 288개</tspan></text>
         <defs><marker id="f1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#8E8AAC"/></marker></defs>
       </svg>
-      <div class="cap">밝을수록 큰 값이다. 검은 곳은 ReLU 가 0으로 만든 자리다</div>
+      <div class="cap">이 지도는 앞 장의 계산을 1,024자리에서 전부 한 결과다 &mdash; 같은 필터, 같은 세 면</div>
     </div>
     <div class="keymsg"><span class="k">흐름</span><div>한 칸의 값은 <b>지도에 놓이고 → 음수면 꺼지고 → 둘레 넷 중 최댓값만 남아</b> 다음 층으로 간다. <b>꺼졌다고 그 경계가 사라진 것은 아니다.</b></div></div>
   </div>
@@ -1366,98 +1428,6 @@ x = torch.randn(<span class="nm">1</span>, <span class="nm">3</span>, <span clas
   </div>
 </section>
 
-<section class="slide" data-title="실습 · 필터 통과">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">LAB</span><span class="dot"></span>실습</div>
-  <h2 class="s-title sm">손으로 적은 필터를 사진에 통과시키기</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol w">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">노트북 · 합성곱 직접 보기</span></div>
-          <pre><code>k = torch.tensor([[-<span class="nm">1.</span>, <span class="nm">0</span>, <span class="nm">1</span>],
-                  [-<span class="nm">1.</span>, <span class="nm">0</span>, <span class="nm">1</span>],
-                  [-<span class="nm">1.</span>, <span class="nm">0</span>, <span class="nm">1</span>]])
-conv.weight.data[<span class="nm">0</span>, <span class="nm">0</span>] = k
-out = conv(x)</code></pre>
-          <div class="out">필터를 학습에 맡기지 않고
-사람이 정해 넣은 것</div>
-        </div>
-      </div>
-      <div>
-        <div class="vlist">
-          <div class="v"><span class="b">1</span><div>세로 · 가로 · 흐리게 <b>세 필터를 적어</b> 같은 사진에 통과시킨다.</div></div>
-          <div class="v"><span class="b">2</span><div>결과를 그려 <b>무엇이 남고 무엇이 사라졌는지</b> 본다.</div></div>
-          <div class="v"><span class="b">3</span><div><code>padding</code> 을 <code>0</code> 으로 바꿔 <b>가로세로가 몇으로 줄어드는지</b> 확인한다.</div></div>
-          <div class="v"><span class="b">4</span><div>필터 장 수를 <code>8</code> 로 바꿔 <b>출력 shape 이 어떻게 바뀌는지</b> 본다.</div></div>
-        </div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">확인</span><div>필터 아홉 수를 바꿀 때 <b>출력 그림이 바뀌는 것</b>을 눈으로 본다. 그것이 이 실습의 전부다.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="풀링">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>풀링</div>
-  <h2 class="s-title sm">2&times;2 에서 남기는 가장 큰 값 하나</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol w">
-      <div>
-        <div class="plot">
-          <svg viewBox="0 0 400 190">
-            <text x="14" y="14" font-size="11" font-weight="700" fill="#3A1FC9">4&times;4 한 조각</text>
-            <g font-size="13" text-anchor="middle" font-weight="600" fill="#16142B">
-              <rect x="14" y="24" width="36" height="36" fill="#F7F7F9" stroke="#DCD6F0"/><text x="32" y="47">12</text>
-              <rect x="50" y="24" width="36" height="36" fill="#EFEAFF" stroke="#DCD6F0"/><text x="68" y="47" font-weight="800" fill="#5B3DF5">40</text>
-              <rect x="86" y="24" width="36" height="36" fill="#F7F7F9" stroke="#DCD6F0"/><text x="104" y="47">3</text>
-              <rect x="122" y="24" width="36" height="36" fill="#F7F7F9" stroke="#DCD6F0"/><text x="140" y="47">9</text>
-              <rect x="14" y="60" width="36" height="36" fill="#F7F7F9" stroke="#DCD6F0"/><text x="32" y="83">28</text>
-              <rect x="50" y="60" width="36" height="36" fill="#F7F7F9" stroke="#DCD6F0"/><text x="68" y="83">17</text>
-              <rect x="86" y="60" width="36" height="36" fill="#F7F7F9" stroke="#DCD6F0"/><text x="104" y="83">6</text>
-              <rect x="122" y="60" width="36" height="36" fill="#EFEAFF" stroke="#DCD6F0"/><text x="140" y="83" font-weight="800" fill="#5B3DF5">31</text>
-              <rect x="14" y="96" width="36" height="36" fill="#EFEAFF" stroke="#DCD6F0"/><text x="32" y="119" font-weight="800" fill="#5B3DF5">88</text>
-              <rect x="50" y="96" width="36" height="36" fill="#F7F7F9" stroke="#DCD6F0"/><text x="68" y="119">5</text>
-              <rect x="86" y="96" width="36" height="36" fill="#F7F7F9" stroke="#DCD6F0"/><text x="104" y="119">14</text>
-              <rect x="122" y="96" width="36" height="36" fill="#F7F7F9" stroke="#DCD6F0"/><text x="140" y="119">20</text>
-              <rect x="14" y="132" width="36" height="36" fill="#F7F7F9" stroke="#DCD6F0"/><text x="32" y="155">2</text>
-              <rect x="50" y="132" width="36" height="36" fill="#F7F7F9" stroke="#DCD6F0"/><text x="68" y="155">7</text>
-              <rect x="86" y="132" width="36" height="36" fill="#F7F7F9" stroke="#DCD6F0"/><text x="104" y="155">1</text>
-              <rect x="122" y="132" width="36" height="36" fill="#EFEAFF" stroke="#DCD6F0"/><text x="140" y="155" font-weight="800" fill="#5B3DF5">63</text>
-            </g>
-            <rect class="an d1" x="14" y="24" width="72" height="72" fill="none" stroke="#E8537A" stroke-width="2"/>
-            <rect class="an d2" x="86" y="24" width="72" height="72" fill="none" stroke="#E8537A" stroke-width="2"/>
-            <rect class="an d3" x="14" y="96" width="72" height="72" fill="none" stroke="#E8537A" stroke-width="2"/>
-            <rect class="an d4" x="86" y="96" width="72" height="72" fill="none" stroke="#E8537A" stroke-width="2"/>
-            <path class="an d1" d="M176 96 L212 96" stroke="#8E8AAC" stroke-width="1.6" marker-end="url(#ar9)"/>
-            <text class="an d1" x="194" y="88" text-anchor="middle" font-size="10" fill="#8E8AAC">최댓값</text>
-            <text class="an d1" x="284" y="14" font-size="11" font-weight="700" fill="#3A1FC9">2&times;2</text>
-            <g font-size="15" text-anchor="middle" font-weight="800" fill="#5B3DF5">
-              <g class="an d1"><rect x="228" y="42" width="52" height="52" fill="#EFEAFF" stroke="#B7A9FF"/><text x="254" y="74">40</text></g>
-              <g class="an d2"><rect x="280" y="42" width="52" height="52" fill="#EFEAFF" stroke="#B7A9FF"/><text x="306" y="74">31</text></g>
-              <g class="an d3"><rect x="228" y="94" width="52" height="52" fill="#EFEAFF" stroke="#B7A9FF"/><text x="254" y="126">88</text></g>
-              <g class="an d4"><rect x="280" y="94" width="52" height="52" fill="#EFEAFF" stroke="#B7A9FF"/><text x="306" y="126">63</text></g>
-            </g>
-            <text class="an d4" x="280" y="166" text-anchor="middle" font-size="10.5" fill="#8E8AAC">칸이 4분의 1로 줄었다</text>
-            <defs><marker id="ar9" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#8E8AAC"/></marker></defs>
-          </svg>
-          <div class="cap">겹치지 않는 2&times;2 마다 최댓값 하나</div>
-        </div>
-      </div>
-      <div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div>합성곱의 출력에서 큰 값은 <b>무늬가 강하게 나타난 자리</b>다. 그 값만 남긴다.</div></div>
-          <div class="v"><span class="b">→</span><div>32&times;32 가 16&times;16 이 된다. <b>이어지는 층의 계산량이 4분의 1</b>로 줄어든다.</div></div>
-          <div class="v"><span class="b">★</span><div>무늬가 <b>한두 칸 밀려도 같은 값</b>이 나온다. 2&times;2 안에서는 어디에 있든 최댓값이 같다.</div></div>
-        </div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">이유</span><div>풀링은 <b>무늬가 있었다는 사실만 남기고 정확한 자리는 버린다</b>. 그래서 조금 밀린 것에 덜 흔들린다.</div></div>
-  </div>
-</section>
-
 <section class="slide" data-title="nn.MaxPool2d">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>코드</div>
@@ -1501,6 +1471,38 @@ torch.Size([1, 32, 16, 16])</div>
       </div>
     </div>
     <div class="keymsg"><span class="k">외울 것</span><div><code>Conv2d</code> 는 <b>채널을 두껍게</b>, <code>MaxPool2d</code> 는 <b>가로세로를 절반으로</b>. 두 층의 역할이 다르다.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-title="실습 · 필터 통과">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">LAB</span><span class="dot"></span>실습</div>
+  <h2 class="s-title sm">손으로 적은 필터를 사진에 통과시키기</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">노트북 · 합성곱 직접 보기</span></div>
+          <pre><code>k = torch.tensor([[-<span class="nm">1.</span>, <span class="nm">0</span>, <span class="nm">1</span>],
+                  [-<span class="nm">1.</span>, <span class="nm">0</span>, <span class="nm">1</span>],
+                  [-<span class="nm">1.</span>, <span class="nm">0</span>, <span class="nm">1</span>]])
+conv.weight.data[<span class="nm">0</span>, <span class="nm">0</span>] = k
+out = conv(x)</code></pre>
+          <div class="out">필터를 학습에 맡기지 않고
+사람이 정해 넣은 것</div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">1</span><div>세로 · 가로 · 흐리게 <b>세 필터를 적어</b> 같은 사진에 통과시킨다.</div></div>
+          <div class="v"><span class="b">2</span><div>결과를 그려 <b>무엇이 남고 무엇이 사라졌는지</b> 본다.</div></div>
+          <div class="v"><span class="b">3</span><div><code>padding</code> 을 <code>0</code> 으로 바꿔 <b>가로세로가 몇으로 줄어드는지</b> 확인한다.</div></div>
+          <div class="v"><span class="b">4</span><div>필터 장 수를 <code>8</code> 로 바꿔 <b>출력 shape 이 어떻게 바뀌는지</b> 본다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">확인</span><div>필터 아홉 수를 바꿀 때 <b>출력 그림이 바뀌는 것</b>을 눈으로 본다. 그것이 이 실습의 전부다.</div></div>
   </div>
 </section>
 
