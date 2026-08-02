@@ -1196,6 +1196,29 @@ test_loader = DataLoader(test, batch_size=<span class="nm">1000</span>)</code></
   </div>
 </section>
 
+<section class="slide" data-title="풀링을 쓰는 이유">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>측정</div>
+  <h2 class="s-title sm">빼 보고 나서야 보이는 값어치</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable">
+      <thead><tr><th>같은 구조에서 풀링만</th><th>계수</th><th>펴는 칸</th><th>정확도</th><th>학습 시간</th></tr></thead>
+      <tbody>
+        <tr><td>넣었을 때</td><td class="yes">60,362</td><td class="yes">4,096</td><td class="no">0.4580</td><td class="yes">10초</td></tr>
+        <tr><td class="hl">뺐을 때</td><td class="no">674,762</td><td class="no">65,536</td><td class="yes">0.5250</td><td class="no">24초</td></tr>
+      </tbody>
+    </table>
+    <div class="vlist">
+      <div class="v"><span class="b">✕</span><div>빼는 쪽이 <b>정확도가 높다</b>. 사진 67장 차이라 우연이 아니다. <b>풀링은 정확도를 위해 쓰는 것이 아니다.</b></div></div>
+      <div class="v"><span class="b">★</span><div>대신 계수를 <b>11배</b>, 시간을 <b>2.4배</b> 치렀다. 32&times;32 짜리 작은 사진이라 감당된 것이다.</div></div>
+      <div class="v"><span class="b">→</span><div>224&times;224 사진이면 마지막 <code>Linear</code> 계수만 <b>2,007,050 대 32,112,650</b> 이 된다. 그때는 선택지가 아니다.</div></div>
+      <div class="v"><span class="b">→</span><div>한 칸이 보는 범위도 넓어진다. 두 묶음 뒤 <b>10&times;10 대 5&times;5</b> 다. 큰 무늬는 좁게 보면 안 잡힌다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>풀링은 <b>정확도를 올리는 장치가 아니라 크기를 감당하는 장치</b>다. 사진이 클수록, 층이 깊을수록 값어치가 커진다.</div></div>
+  </div>
+</section>
+
 <section class="slide" data-title="그 값이 지나가는 길">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>계산</div>
