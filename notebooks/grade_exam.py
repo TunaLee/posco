@@ -4,7 +4,7 @@
   python3 notebooks/grade_exam.py 제출폴더/            → 점수.csv
   python3 notebooks/grade_exam.py 제출폴더/ -o 결과.csv
 
-디스코드에서 받은 .ipynb 를 한 폴더에 모아 두고 돌린다.
+제출받은 .ipynb 를 한 폴더에 모아 두고 돌린다.
 출력에 든 값을 믿지 않고 **답 셀을 직접 실행해** 검사 셀로 판정한다.
 """
 import json, io, os, sys, csv, re, traceback, warnings, argparse, contextlib
