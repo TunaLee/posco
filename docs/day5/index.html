@@ -1584,7 +1584,12 @@ test_loader = DataLoader(test, batch_size=<span class="nm">1000</span>)</code></
       </svg>
       <div class="cap">붉은 선이 필터에서 뻗어 나간다 &mdash; 어느 자리든 같은 상자에서 온다</div>
     </div>
-    <div class="keymsg"><span class="k">원리</span><div>계수를 나눠 쓴다는 말은 이것이다. <b>필터 한 벌로 사진 전체를 훑는다.</b></div></div>
+    <div class="vlist">
+      <div class="v"><span class="b">&rarr;</span><div>자리마다 따로 배운다면 <b>27 &times; 1,024 = 27,648개</b>가 필요하다. 실제로는 <b>27개</b>다. <b>1,024배</b> 차이다.</div></div>
+      <div class="v"><span class="b">&#9733;</span><div>그래서 <b>왼쪽 위에서 배운 것이 오른쪽 아래에도 그대로 쓰인다</b>. 자리마다 배우면 왼쪽 위에서 본 무늬를 오른쪽 아래에서는 처음 보는 것이 된다.</div></div>
+      <div class="v"><span class="b">&#10003;</span><div>사진을 여섯 칸 밀어 재 봤다. 합성곱은 결과 지도도 <b>정확히 여섯 칸 밀린다</b> &mdash; 겹치는 23,040칸이 <b>전부 같은 값</b>이다. 펴서 <code>Linear</code> 는 같은 칸에 같은 값이 남는 비율이 <b>1.1%</b>다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">원리</span><div>계수를 나눠 쓴다는 말은 이것이다 &mdash; <b>한 자리에서 배운 무늬를 나머지 1,023자리가 공짜로 쓴다</b>.</div></div>
   </div>
 </section>
 
