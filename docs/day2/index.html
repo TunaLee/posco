@@ -1473,7 +1473,10 @@ X_test_s  = scaler.transform(X_test)        <span class="cm"># 테스트셋은 �
       <div>
         <div class="code sm">
           <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">공정 데이터 — 처음부터 끝까지</span></div>
-          <pre><code><span class="cm"># 1. 쓸모없는 열 제거</span>
+          <pre><code><span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> train_test_split
+<span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> StandardScaler
+
+<span class="cm"># 1. 쓸모없는 열 제거</span>
 df = df.drop(columns=[<span class="st">'배치번호'</span>,
                       <span class="st">'방전용량'</span>])
 
@@ -1487,9 +1490,13 @@ df = pd.get_dummies(df, columns=[<span class="st">'설비호기'</span>, <span c
                     drop_first=<span class="kw">True</span>)
 
 <span class="cm"># 4. 분할 — 스케일링보다 먼저</span>
-X_tr, X_te, y_tr, y_te = train_test_split(...)
+X = df.drop(columns=[<span class="st">'양품여부'</span>])
+y = df[<span class="st">'양품여부'</span>]
+X_tr, X_te, y_tr, y_te = train_test_split(
+    X, y, test_size=<span class="nm">0.2</span>, random_state=<span class="nm">42</span>, stratify=y)
 
 <span class="cm"># 5. 스케일링 — 훈련셋 기준으로</span>
+scaler = StandardScaler()
 X_tr = scaler.fit_transform(X_tr)
 X_te = scaler.transform(X_te)</code></pre>
         </div>

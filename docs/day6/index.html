@@ -886,8 +886,8 @@ bees 1.0000</div>
   <div class="body">
     <div class="vlist">
       <div class="v"><span class="b">1</span><div><b>적은 쪽을 더 모은다.</b> 가장 확실하다. 다른 둘은 이것이 안 될 때 쓰는 방법이다.</div></div>
-      <div class="v"><span class="b">2</span><div><b>학습에서 비중을 준다.</b> <code>nn.CrossEntropyLoss(weight=...)</code> 에 적은 쪽 가중치를 크게 준다. 그쪽을 틀리면 더 크게 혼나는 셈이다.</div></div>
-      <div class="v"><span class="b">3</span><div><b>문턱을 내린다.</b> 적은 쪽 확률이 0.5 를 못 넘어도 0.3 만 넘으면 그쪽으로 판정한다.</div></div>
+      <div class="v"><span class="b">2</span><div><b>학습에서 비중을 준다.</b> 개미 12장 벌 121장이니 <code>w = torch.tensor([121/12, 1.0])</code> 를 만들어 <code>nn.CrossEntropyLoss(weight=w)</code> 로 넘긴다. 개미를 틀리면 열 배로 혼나는 셈이다.</div></div>
+      <div class="v"><span class="b">3</span><div><b>문턱을 내린다.</b> <code>prob = torch.softmax(model(xb), dim=1)</code> 뒤에 <code>torch.where(prob[:, 0] &gt; 0.3, 0, 1)</code> 로 판정한다. 0.5 대신 0.3 을 문턱으로 쓰는 것이다.</div></div>
     </div>
     <div class="twopane">
       <div class="pane bad">
