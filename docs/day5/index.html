@@ -1112,6 +1112,74 @@ test_loader = DataLoader(test, batch_size=<span class="nm">1000</span>)</code></
   </div>
 </section>
 
+<section class="slide" data-title="그 값이 지나가는 길">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>계산</div>
+  <h2 class="s-title sm">&minus;153 이 0 이 되고 74 가 살아남는 경로</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="plot">
+      <svg viewBox="0 0 900 258">
+        <g class="an d1">
+          <rect x="16" y="86" width="96" height="42" rx="8" fill="#16142B"/>
+          <text x="64" y="114" text-anchor="middle" font-size="19" font-weight="800" fill="#fff">&minus;153</text>
+          <text x="64" y="72" text-anchor="middle" font-size="10.5" fill="#8E8AAC">앞 장에서 나온 값</text>
+        </g>
+        <path class="an d2" d="M120 107 L150 107" stroke="#8E8AAC" stroke-width="1.4" marker-end="url(#f1)"/>
+        <g class="an d2">
+          <text x="210" y="44" text-anchor="middle" font-size="10.5" font-weight="700" fill="#3A1FC9">출력 지도 32&times;32</text>
+          <image x="162" y="56" width="96" height="96" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAAAAABWESUoAAAC7UlEQVR42jWTS28bVQCFv3tnPJ6xnfgxcVLHSVpCoYS0oYUKQYqApisE/AAkfgP8MyQkxKqblkVVQKgJKSShcR64JNipHzPjec9cFg5nd3S+xdGRjraWB02RAMCyiqGwcMXJuZRAFl0a9Us7UwISs1L4P0dHDxPTKUmlAJFmohjipOWFYWRbL4AEzX6VJlq95AGGHK/afTRdzczdvKafACCrEI0IAEQY2dfAz6vray39MeiADIDQKbbmIIr0rAx5/e6tSvYEvvkWkAIQ0lhqAoEeOsDyvbcGnS5sfg3ICaBiczYDizA+g/bt6nkvACZzgJ6BUIEKE/G2/J29BoUvrv5xKl1gbOgpugKFMvXFzdk9YEC7OdrtVs6AwRGgzftmzGojvbOVnhwBZPQHfXkKjNIjB33Jf0WtvW0/qH7ftQLAfbhSTXOAnb4C+U4jZM0bd+ati3+D6b6nnUIVgLMU5A3JRu03aOGPKRsSYBKUpqgCmWrvbuwDGhnYJQOA1AOgVgS5Xf6q3gFe2suwYBs6UG8dAJAVashn1zc9gEe1T2DmtVkTuHOvD0DA68jhXKTeAH5wtqBw43qzCrfvTytolJCN8aPmh8CT3VvwQjRbNVhZu+w4dpFzO49bN4vA0xQOO+gX8LLz/hTwB2jrT9PNyu4ApP1dTqicLljB/R8B9ESEWnvfbovDM97b2178h1AOfMzzk88qO4BmVVw5NMrP/3ThS//ZMsSBB7HbPd5YAeR8GzmpRId/9eCqyRJgJKBkcb/5MRAJDT1Le/nEBb/h6ECxkKLEany6ACjPQMpw4IwyMBb59XMYV4F8yXx+BaB3gFQZuYtmirv89Cb0NABP8yygYmbIaLqJPN+Cgw9AlDA56fU8oGFpyEmOgDz7eQhHH0FXq4A36j8E/NxA0yOEIaU1SvL+8NPsb+KijGvB8bGe4ytSzYgRVqk8626nNV9b/wXiBNsJlZlAliJTEAiV5/GFm+yMp58fD8GaHvw/oSlDGkC+lBYAAAAASUVORK5CYII=" style="image-rendering:pixelated"/>
+          <rect x="162" y="56" width="96" height="96" fill="none" stroke="#DCD6F0"/>
+          <rect x="171" y="89" width="3" height="3" fill="none" stroke="#E8537A" stroke-width="1.6"/>
+          <path d="M171 92 L146 176 L210 176" stroke="#E8537A" stroke-width="1" fill="none"/>
+          <text x="210" y="192" text-anchor="middle" font-size="10.5" fill="#E8537A">11행 3열 칸에 놓인다</text>
+        </g>
+        <path class="an d3" d="M266 107 L296 107" stroke="#8E8AAC" stroke-width="1.4" marker-end="url(#f1)"/>
+        <text class="an d3" x="281" y="98" text-anchor="middle" font-size="10" fill="#8E8AAC">ReLU</text>
+        <g class="an d3">
+          <rect x="308" y="86" width="86" height="42" rx="8" fill="#FDE8EE" stroke="#E8537A" stroke-width="1.6"/>
+          <text x="351" y="114" text-anchor="middle" font-size="19" font-weight="800" fill="#E8537A">0</text>
+          <text x="351" y="72" text-anchor="middle" font-size="10.5" fill="#8E8AAC">음수라 꺼진다</text>
+          <text x="351" y="150" text-anchor="middle" font-size="10.5" fill="#8E8AAC">지도 1,024칸 중</text>
+          <text x="351" y="166" text-anchor="middle" font-size="11" font-weight="700" fill="#16142B">478칸이 0이 됐다</text>
+        </g>
+        <path class="an d4" d="M402 107 L432 107" stroke="#8E8AAC" stroke-width="1.4" marker-end="url(#f1)"/>
+        <g class="an d4">
+          <text x="482" y="44" text-anchor="middle" font-size="10.5" font-weight="700" fill="#3A1FC9">그 자리 둘레 2&times;2</text>
+          <rect x="444" y="70" width="38" height="38" fill="#EFEAFF" stroke="#8E8AAC" stroke-width="0.8"/>
+          <text x="463" y="94" text-anchor="middle" font-size="14" font-weight="700" fill="#16142B">74</text>
+          <rect x="482" y="70" width="38" height="38" fill="#FDE8EE" stroke="#8E8AAC" stroke-width="0.8"/>
+          <text x="501" y="94" text-anchor="middle" font-size="14" font-weight="700" fill="#E8537A">0</text>
+          <rect x="444" y="108" width="38" height="38" fill="#EFEAFF" stroke="#8E8AAC" stroke-width="0.8"/>
+          <text x="463" y="132" text-anchor="middle" font-size="14" font-weight="700" fill="#16142B">49</text>
+          <rect x="482" y="108" width="38" height="38" fill="#FDE8EE" stroke="#8E8AAC" stroke-width="0.8"/>
+          <text x="501" y="132" text-anchor="middle" font-size="14" font-weight="700" fill="#E8537A">0</text>
+          <rect x="444" y="70" width="38" height="38" fill="none" stroke="#5B3DF5" stroke-width="2.2"/>
+          <text x="482" y="164" text-anchor="middle" font-size="10.5" fill="#8E8AAC">넷 중 가장 큰 값만</text>
+        </g>
+        <path class="an d5" d="M528 107 L558 107" stroke="#8E8AAC" stroke-width="1.4" marker-end="url(#f1)"/>
+        <text class="an d5" x="543" y="98" text-anchor="middle" font-size="10" fill="#8E8AAC">풀링</text>
+        <g class="an d5">
+          <rect x="570" y="86" width="80" height="42" rx="8" fill="#EFEAFF" stroke="#5B3DF5" stroke-width="1.6"/>
+          <text x="610" y="114" text-anchor="middle" font-size="19" font-weight="800" fill="#3A1FC9">74</text>
+        </g>
+        <path class="an d6" d="M658 107 L688 107" stroke="#8E8AAC" stroke-width="1.4" marker-end="url(#f1)"/>
+        <g class="an d6">
+          <text x="748" y="44" text-anchor="middle" font-size="10.5" font-weight="700" fill="#3A1FC9">풀링 뒤 16&times;16</text>
+          <image x="700" y="60" width="96" height="96" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAAAAAA6mKC9AAABG0lEQVR42gEQAe/+ADAnHAAAACoABTAJAAAAAAUDEPIJCPQGDhfpBRQ0LtgA/gIO5/sAFAHqKwAKWB0EbnMAAvgA9CoVAvjyAE0o7qs6cAAC8gHx/DJg+MsgH9HsAOYGAAMx6zf7cvDI8/3+2PTo5+zFAJcuSQDcQQsGAAAhRwAAFAAC/F3ZAAMQKh0EAAz0AAALEALiOgMACYESSB0AfMUAAAAtAvHJZQDGLdwBHQApNgAA8fMDHCQMs+YRlwLy8gNPrwAE/AMK6u7QgcbKAuT60UoM0h0aAvTHvQD8BEsHD/4+4i8A9PEC/+7jChWPJtsECPTeCQAH2gTuAQUF7yoLO9IF3P7kAPYGAwP8Dw+z/PgrxfwS5en39vxxtWbHhZW2EAAAAABJRU5ErkJggg==" style="image-rendering:pixelated"/>
+          <rect x="700" y="60" width="96" height="96" fill="none" stroke="#DCD6F0"/>
+          <rect x="706" y="90" width="6" height="6" fill="none" stroke="#5B3DF5" stroke-width="1.6"/>
+          <text x="748" y="176" text-anchor="middle" font-size="10.5" fill="#5B3DF5">5행 1열 칸이 된다</text>
+        </g>
+        <text class="an d6" x="450" y="228" text-anchor="middle" font-size="12" fill="#8E8AAC">이 지도 32장이 다음 <tspan font-family="ui-monospace,monospace" fill="#16142B">Conv2d(32, 64)</tspan> 의 입력이 된다 &mdash; 이번엔 필터 하나가 <tspan font-weight="800" fill="#16142B">32면 &times; 3 &times; 3 = 288개</tspan></text>
+        <defs><marker id="f1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#8E8AAC"/></marker></defs>
+      </svg>
+      <div class="cap">밝을수록 큰 값이다. 검은 곳은 ReLU 가 0으로 만든 자리다</div>
+    </div>
+    <div class="keymsg"><span class="k">흐름</span><div>한 칸의 값은 <b>지도에 놓이고 → 음수면 꺼지고 → 둘레 넷 중 최댓값만 남아</b> 다음 층으로 간다. 이 셋이 한 묶음이다.</div></div>
+  </div>
+</section>
+
 <section class="slide" data-title="특징 지도 여러 장">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>필터</div>
