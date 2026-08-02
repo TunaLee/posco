@@ -1181,7 +1181,7 @@ test_loader = DataLoader(test, batch_size=<span class="nm">1000</span>)</code></
       </div>
       <div>
         <div class="vlist">
-          <div class="v"><span class="b">→</span><div>지도를 <b>겹치지 않는 2&times;2 로 잘라</b>, 각 칸에서 <b>가장 큰 값 하나만</b> 남긴다. 나머지 셋은 버린다.</div></div>
+          <div class="v"><span class="b">→</span><div>합성곱이 내놓은 지도를 <b>겹치지 않는 2&times;2 로 잘라</b>, 각 칸에서 <b>가장 큰 값 하나만</b> 남긴다. 나머지 셋은 버린다.</div></div>
           <div class="v"><span class="b">→</span><div>큰 값이 남는 이유는 그것이 <b>무늬가 가장 강하게 나타난 값</b>이어서다. 약한 반응은 버려도 된다.</div></div>
           <div class="v"><span class="b">→</span><div>32&times;32 가 16&times;16 이 된다. <b>이어지는 층의 계산량이 4분의 1</b>로 줄어든다.</div></div>
           <div class="v"><span class="b">★</span><div>한 <b>2&times;2 안에서</b> 무늬가 움직이면 결과가 같다. 넷 중 어디에 있든 최댓값은 하나다. 다만 <b>칸을 넘어가면 달라진다</b>.</div></div>
@@ -1203,7 +1203,7 @@ test_loader = DataLoader(test, batch_size=<span class="nm">1000</span>)</code></
         <g class="an d1">
           <rect x="16" y="86" width="96" height="42" rx="8" fill="#16142B"/>
           <text x="64" y="114" text-anchor="middle" font-size="19" font-weight="800" fill="#fff">&minus;153</text>
-          <text x="64" y="72" text-anchor="middle" font-size="10.5" fill="#8E8AAC">앞 장에서 나온 값</text>
+          <text x="64" y="72" text-anchor="middle" font-size="10.5" fill="#8E8AAC">앞에서 구한 값</text>
         </g>
         <path class="an d2" d="M120 107 L150 107" stroke="#8E8AAC" stroke-width="1.4" marker-end="url(#f1)"/>
         <g class="an d2">
@@ -1255,7 +1255,7 @@ test_loader = DataLoader(test, batch_size=<span class="nm">1000</span>)</code></
         <text class="an d6" x="450" y="228" text-anchor="middle" font-size="12" fill="#8E8AAC">이 지도 32장이 다음 <tspan font-family="ui-monospace,monospace" fill="#16142B">Conv2d(32, 64)</tspan> 의 입력이 된다 &mdash; 이번엔 필터 하나가 <tspan font-weight="800" fill="#16142B">32면 &times; 3 &times; 3 = 288개</tspan></text>
         <defs><marker id="f1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#8E8AAC"/></marker></defs>
       </svg>
-      <div class="cap">이 지도는 앞 장의 계산을 1,024자리에서 전부 한 결과다 &mdash; 같은 필터, 같은 세 면</div>
+      <div class="cap">이 지도는 세 면을 곱해 더하는 계산을 1,024자리에서 전부 한 결과다 &mdash; 같은 필터, 같은 세 면</div>
     </div>
     <div class="keymsg"><span class="k">흐름</span><div>한 칸의 값은 <b>지도에 놓이고 → 음수면 꺼지고 → 둘레 넷 중 최댓값만 남아</b> 다음 층으로 간다. <b>꺼졌다고 그 경계가 사라진 것은 아니다.</b></div></div>
   </div>
