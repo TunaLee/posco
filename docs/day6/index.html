@@ -1329,20 +1329,33 @@ r = model(img, conf=<span class="nm">0.25</span>, iou=<span class="nm">0.99</spa
     <div class="keymsg"><span class="k">원리</span><div><code>NMS</code>가 <b>같은 것을 가리키는 박스를 하나로</b> 줄인다.</div></div>
   </div>
 </section>
-<section class="slide" data-title="IoU">
+<section class="slide" data-title="IoU 란">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>지표</div>
-  <h2 class="s-title sm">IoU</h2>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>정의</div>
+  <h2 class="s-title sm">IoU &mdash; 겹친 넓이 &divide; 합친 넓이</h2>
   <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div><b>겹친 넓이 &divide; 합친 넓이</b> 다. 0 이면 안 겹치고 1 이면 똑같다.</div></div><div class="v"><span class="b">&rarr;</span><div>NMS 는 이 값이 <code>0.7</code> 을 넘으면 <b>같은 것을 가리킨다</b>고 보고 지운다.</div></div><div class="v"><span class="b">&#9733;</span><div>채점할 때도 쓴다. 예측 박스와 정답 박스의 IoU 가 <b>0.5 를 넘으면 맞힌 것</b>으로 센다.</div></div><div class="v"><span class="b">&rarr;</span><div>그래서 지표 이름이 <code>mAP50</code> 이다. 뒤의 50 이 <b>IoU 0.5 기준</b>이라는 뜻이다.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">직접 계산해 본다</span></div><pre><code>a = [<span class="nm">10</span>, <span class="nm">10</span>, <span class="nm">50</span>, <span class="nm">50</span>]      <span class="cm"># 정답 박스</span>
-b = [<span class="nm">20</span>, <span class="nm">20</span>, <span class="nm">60</span>, <span class="nm">60</span>]      <span class="cm"># 예측 박스</span>
-
-ix = <span class="fn2">max</span>(<span class="nm">0</span>, <span class="fn2">min</span>(a[<span class="nm">2</span>], b[<span class="nm">2</span>]) - <span class="fn2">max</span>(a[<span class="nm">0</span>], b[<span class="nm">0</span>]))
-iy = <span class="fn2">max</span>(<span class="nm">0</span>, <span class="fn2">min</span>(a[<span class="nm">3</span>], b[<span class="nm">3</span>]) - <span class="fn2">max</span>(a[<span class="nm">1</span>], b[<span class="nm">1</span>]))
-inter = ix * iy
-union = <span class="nm">40</span>*<span class="nm">40</span> + <span class="nm">40</span>*<span class="nm">40</span> - inter
-<span class="fn2">print</span>(<span class="fn2">round</span>(inter / union, <span class="nm">3</span>))   <span class="cm"># 0.391</span></code></pre><div class="out">0.391</div></div></div></div>
-    <div class="keymsg"><span class="k">지표</span><div>IoU 는 <b>겹친 넓이를 합친 넓이로 나눈 값</b>이다. NMS 에도 채점에도 이것을 쓴다.</div></div>
+  <div class="body">
+    <div class="plot"><svg viewBox="0 0 700 250"><rect x="30" y="46" width="76" height="76" fill="none" stroke="#E8537A" stroke-width="2.4"/><rect x="64" y="76" width="76" height="76" fill="none" stroke="#5B3DF5" stroke-width="2.4" stroke-dasharray="5 3"/><rect x="64" y="76" width="42" height="46" fill="#16142B" opacity="0.55"/><text x="30" y="34" font-size="11" font-weight="800" fill="#E8537A">정답 박스</text><text x="150" y="34" font-size="11" font-weight="800" fill="#5B3DF5">예측 박스</text><text x="76" y="200" font-size="11" font-weight="800" fill="#16142B">겹친 넓이</text><line x1="88" y1="106" x2="96" y2="190" stroke="#16142B" stroke-width="1"/><text x="248" y="120" font-size="26" fill="#8E8AAC">&divide;</text><rect x="292" y="46" width="76" height="76" fill="#8E8AAC" opacity="0.18"/><rect x="326" y="76" width="76" height="76" fill="#8E8AAC" opacity="0.18"/><rect x="292" y="46" width="76" height="76" fill="none" stroke="#E8537A" stroke-width="2.4"/><rect x="326" y="76" width="76" height="76" fill="none" stroke="#5B3DF5" stroke-width="2.4" stroke-dasharray="5 3"/><text x="330" y="200" font-size="11" font-weight="800" fill="#16142B">합친 넓이</text><text x="470" y="120" font-size="26" fill="#8E8AAC">=</text><text x="560" y="112" text-anchor="middle" font-size="30" font-weight="800" fill="#3A1FC9">IoU</text><text x="560" y="140" text-anchor="middle" font-size="11.5" fill="#8E8AAC">0 이면 안 겹침 &middot; 1 이면 똑같음</text></svg><div class="cap">두 박스가 <b>얼마나 같은 자리를 가리키는지</b>를 숫자 하나로 만든 것이다</div></div>
+    <div class="vlist">
+      <div class="v"><span class="b">&rarr;</span><div>두 박스가 <b>같은 것을 가리키는지</b> 재는 숫자다. 사람이 눈으로 판단하던 것을 하나의 값으로 바꾼 것이다.</div></div>
+      <div class="v"><span class="b">&#9733;</span><div>탐지에서 두 곳에 쓴다 &mdash; <b>NMS</b> 로 겹친 박스를 지울 때, 그리고 <b>채점</b>할 때.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">정의</span><div>IoU 는 <b>두 박스가 얼마나 겹치는지</b>를 0 과 1 사이 숫자로 만든 것이다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="IoU 값 감각">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>감각</div>
+  <h2 class="s-title sm">IoU 0.13 · 0.50 · 0.81 의 생김새</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="plot"><svg viewBox="0 0 700 200"><rect x="108" y="70" width="8" height="36" fill="#E8537A" opacity="0.55"/><rect x="40" y="30" width="76" height="76" fill="none" stroke="#E8537A" stroke-width="2.4"/><rect x="108" y="70" width="76" height="76" fill="none" stroke="#5B3DF5" stroke-width="2.4" stroke-dasharray="5 3"/><text x="112" y="176" text-anchor="middle" font-size="12.5" font-weight="800" fill="#E8537A">IoU 0.13</text><text x="112" y="194" text-anchor="middle" font-size="10.5" fill="#8E8AAC">거의 안 겹친다</text><rect x="284" y="52" width="42" height="54" fill="#5B3DF5" opacity="0.55"/><rect x="250" y="30" width="76" height="76" fill="none" stroke="#E8537A" stroke-width="2.4"/><rect x="284" y="52" width="76" height="76" fill="none" stroke="#5B3DF5" stroke-width="2.4" stroke-dasharray="5 3"/><text x="305" y="158" text-anchor="middle" font-size="12.5" font-weight="800" fill="#5B3DF5">IoU 0.50</text><text x="305" y="176" text-anchor="middle" font-size="10.5" fill="#8E8AAC">꽤 겹친다</text><rect x="470" y="38" width="66" height="68" fill="#3A1FC9" opacity="0.55"/><rect x="460" y="30" width="76" height="76" fill="none" stroke="#E8537A" stroke-width="2.4"/><rect x="470" y="38" width="76" height="76" fill="none" stroke="#5B3DF5" stroke-width="2.4" stroke-dasharray="5 3"/><text x="503" y="144" text-anchor="middle" font-size="12.5" font-weight="800" fill="#3A1FC9">IoU 0.81</text><text x="503" y="162" text-anchor="middle" font-size="10.5" fill="#8E8AAC">거의 같다</text></svg><div class="cap">같은 크기 박스 둘을 조금씩 어긋나게 놓은 것이다</div></div>
+    <div class="vlist">
+      <div class="v"><span class="b">&rarr;</span><div>채점에서는 <b>IoU 0.5 를 넘으면 맞힌 것</b>으로 센다. 그래서 지표 이름이 <code>mAP50</code> 이다.</div></div>
+      <div class="v"><span class="b">&rarr;</span><div>NMS 는 반대로 쓴다 &mdash; <b>0.7 을 넘으면 같은 것</b>이라 보고 신뢰도 낮은 쪽을 지운다.</div></div>
+      <div class="v"><span class="b">&#9733;</span><div>같은 IoU 라도 <b>기준을 올리면 훨씬 깐깐해진다</b>. <code>mAP50-95</code> 가 그렇게 잰 값이다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">감각</span><div>0.5 는 <b>대충 같은 자리</b>, 0.8 은 <b>거의 정확히 같은 자리</b>다. 쓰는 곳마다 기준이 다르다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="탐지 계열">
