@@ -21,3 +21,10 @@ notebooks/exam1_answer.ipynb
 
 # day5 원본 도식 — 처리 미정
 docs/day5/image*.png
+
+# 실습 데이터·학습 산출물 — 저장소에 넣지 않는다
+datasets/
+runs/
+ft/
+*.pt
+yolo*.pt
