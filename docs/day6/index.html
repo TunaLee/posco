@@ -535,7 +535,7 @@
 <section class="slide" data-title="모델이란">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>정의</div>
-  <h2 class="s-title sm">모델은 계산 순서와 숫자 뭉치</h2>
+  <h2 class="s-title sm">모델 = 구조 + 가중치</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twocol w">
@@ -547,23 +547,23 @@
 
   <rect x="140" y="30" width="150" height="102" rx="10" fill="#5B3DF5"/>
   <text x="215" y="56" text-anchor="middle" font-size="12.5" font-weight="800" fill="#fff">모델</text>
-  <text x="215" y="78" text-anchor="middle" font-size="10.5" fill="#DCD6F0">정해진 계산 순서</text>
+  <text x="215" y="78" text-anchor="middle" font-size="10.5" fill="#DCD6F0">구조 architecture</text>
   <text x="215" y="96" text-anchor="middle" font-size="10.5" fill="#DCD6F0">+</text>
-  <text x="215" y="114" text-anchor="middle" font-size="10.5" fill="#fff">계수 1,118만 개</text>
+  <text x="215" y="114" text-anchor="middle" font-size="10.5" fill="#fff">가중치 1,118만 개</text>
 
   <path d="M294 81 L328 81" stroke="#8E8AAC" stroke-width="1.6" marker-end="url(#am)"/>
   <rect x="334" y="52" width="126" height="58" rx="8" fill="#fff" stroke="#E8537A" stroke-width="2"/>
   <text x="397" y="76" text-anchor="middle" font-size="12" font-weight="800" fill="#E8537A">답</text>
   <text x="397" y="94" text-anchor="middle" font-size="10.5" fill="#8E8AAC">이름과 확률</text>
 
-  <text x="140" y="164" font-size="11" fill="#8E8AAC">계산 순서는 사람이 정한다.</text>
-  <text x="140" y="180" font-size="11" fill="#8E8AAC">계수는 학습이 정한다. 학습이란 이 숫자들을 고치는 일이다.</text>
+  <text x="140" y="164" font-size="11" fill="#8E8AAC">구조는 사람이 정하고,</text>
+  <text x="140" y="180" font-size="11" fill="#8E8AAC">가중치는 학습이 정한다.</text>
   <defs><marker id="am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
     <path d="M0 0 L10 5 L0 10 z" fill="#8E8AAC"/></marker></defs>
 </svg></div></div>
-      <div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>모델은 <b>두 가지로 되어 있다</b> &mdash; 어떤 순서로 계산할지, 그리고 그 계산에 쓸 <b>숫자들</b>이다.</div></div><div class="v"><span class="b">&rarr;</span><div>순서는 사람이 정한다. <code>Conv</code> 를 몇 겹 쌓고 <code>Linear</code> 를 붙이는 식이다. 여기서는 <b>남이 정해 둔 것을 가져다 쓴다</b>.</div></div><div class="v"><span class="b">&#9733;</span><div>숫자는 <b>학습이 정한다</b>. 처음에는 아무 값이나 들어 있고, 사진을 보여 줄 때마다 조금씩 고쳐 나간다.</div></div><div class="v"><span class="b">&rarr;</span><div>그래서 <b>모델 파일 하나</b>면 어디서든 같은 답이 나온다. 그 파일 안에 든 것이 이 숫자들이다.</div></div></div></div>
+      <div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>모델은 <b>구조</b>(architecture)와 <b>가중치</b>(weights) 두 가지로 되어 있다.</div></div><div class="v"><span class="b">&rarr;</span><div><b>구조</b>는 사람이 정한다. <code>Conv</code> 를 몇 겹 쌓고 <code>Linear</code> 를 붙이는 식이다. 여기서는 <b>남이 정해 둔 것을 가져다 쓴다</b>.</div></div><div class="v"><span class="b">&#9733;</span><div><b>가중치는 학습이 정한다</b>. 처음에는 아무 값이나 들어 있고, 사진을 보여 줄 때마다 조금씩 고쳐 나간다.</div></div><div class="v"><span class="b">&rarr;</span><div><code>yolo11n.pt</code> 같은 <b>모델 파일에 든 것이 가중치</b>다. 그 파일만 옮기면 어디서든 같은 답이 나온다.</div></div></div></div>
     </div>
-    <div class="keymsg"><span class="k">정의</span><div>모델은 <b>계산 순서 + 숫자 뭉치</b>다. 학습은 그 숫자를 고치는 일이고, 저장은 그 숫자를 적어 두는 일이다.</div></div>
+    <div class="keymsg"><span class="k">정의</span><div><b>학습</b>은 가중치를 고치는 일이고, <b>저장</b>은 가중치를 파일로 적는 일이다. 구조는 그대로 있다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="분류란 무엇인가">
