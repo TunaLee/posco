@@ -117,7 +117,9 @@ plt.yticks([]); plt.title('사진 한 장이 만든 512칸'); plt.show()"""),
     md("## 2. Threshold 를 움직여 본다"),
     md("모델이 내놓는 것은 판정이 아니라 **확률**이다. "
        "어디서 자를지는 사람이 정한다."),
-    code("""with torch.no_grad():
+    prep("""head = train_head(Xtr, Ytr)               # seed 가 고정이라 늘 같은 결과다
+
+with torch.no_grad():
     prob = torch.softmax(head(Xva), 1)[:, 1]      # 벌일 확률
 
 for t in (0.2, 0.35, 0.5, 0.65, 0.8):
@@ -169,16 +171,66 @@ print('ant 가 COCO 에 있나 →', 'ant' in det.names.values())""",
          check="print('없는 이름은 답할 수 없다')"),
 
     md("## 4. 없는 이름을 가르친다 — 파인튜닝"),
+    md("가르치려면 **상자를 친 사진**이 있어야 한다. 상자는 Roboflow · Label Studio · CVAT · labelImg "
+       "같은 도구에서 그리고, `YOLO` 형식으로 Export 하면 아래 폴더가 그대로 나온다.\n\n"
+       "여기서는 이미 상자를 쳐 둔 **서명 데이터**를 받아 그 폴더를 열어 본다."),
+    prep("""from ultralytics.data.utils import check_det_dataset
+
+info = check_det_dataset('signature.yaml')      # 없으면 받아 온다
+root = str(info['path'])
+print('폴더', root)
+print('종류', info['names'])
+
+for d in ('images/train', 'labels/train', 'images/val', 'labels/val'):
+    print('%-14s %3d개' % (d, len(glob.glob(os.path.join(root, d, '*')))))"""),
+
+    md("사진 한 장과 **같은 이름의 글자 파일**이 짝을 이룬다. 그 한 줄이 상자 하나다."),
+    code("""p = sorted(glob.glob(root + '/images/train/*'))[0]
+t = p.replace('/images/', '/labels/').rsplit('.', 1)[0] + '.txt'
+print('사진', os.path.basename(p))
+print('라벨', open(t).read().strip())"""),
+
+    md("글자 다섯 개를 **다시 상자로 되돌려** 본다. 사람이 도구에서 그린 그 상자다."),
+    code("""import matplotlib.image as mpimg
+
+im = mpimg.imread(p)
+H, W = im.shape[:2]
+c, cx, cy, w, h = map(float, open(t).read().split()[:5])
+
+plt.figure(figsize=(6, 4))
+plt.imshow(im)
+plt.gca().add_patch(plt.Rectangle(((cx - w / 2) * W, (cy - h / 2) * H),
+                                  w * W, h * H, fill=False, color='#E8537A', lw=2))
+plt.axis('off'); plt.title('%s · 0~1 값을 픽셀로 되돌린 상자' % info['names'][int(c)])
+plt.show()"""),
+
+    Ex(7, "상자가 **사진 넓이의 몇 %** 를 차지하는지 `frac` 에 담는다.\n"
+          "> 너비와 높이는 이미 0 과 1 사이 값이다.",
+       blank="frac = ___ * ___ * 100",
+       answer="frac = w * h * 100",
+       check="print('%.1f%%' % frac)\nassert 0 < frac < 100"),
+
+    Task(7, "`images` 와 `labels` 의 **짝이 맞는지** 확인한다.\n"
+            "> 짝이 없는 사진은 배경으로 학습된다. 학습은 도는데 성능이 안 오르면 여기를 본다.",
+         answer="""def stems(d):
+    return {os.path.splitext(os.path.basename(x))[0] for x in glob.glob(root + '/' + d + '/*')}
+
+for split in ('train', 'val'):
+    a, b = stems('images/' + split), stems('labels/' + split)
+    print(split, '· 라벨 없는 사진', len(a - b), '· 사진 없는 라벨', len(b - a))""",
+         check="print('이름이 같아야 짝이 된다')"),
+
     md("서명 데이터로 파인튜닝한다. 받아 온 그대로는 서명을 **하나도 못 찾는다**."),
-    code("""ft = YOLO('yolo11n.pt')
+    prep("""ft = YOLO('yolo11n.pt')
 ft.train(data='signature.yaml', epochs=15, imgsz=320, device=device, plots=False)
 m = ft.val(data='signature.yaml')
 print('mAP50 %.4f · 정밀도 %.4f · 재현율 %.4f'
       % (m.box.map50, m.box.mp, m.box.mr))
-print('아는 종류', ft.names)"""),
+print('아는 종류', ft.names)
+
+p = sorted(glob.glob(root + '/images/val/*'))[0]   # 검증 사진 한 장"""),
 
     Ex(5, "파인튜닝한 모델로 서명 사진 한 장을 보고 **찾은 박스 수**를 `nb` 에 담는다.",
-       setup="p = sorted(glob.glob('datasets/signature/images/val/*'))[0]",
        blank="nb = len(ft(p, conf=___)[0].boxes)",
        answer="nb = len(ft(p, conf=0.4)[0].boxes)",
        check="print(nb)\nassert isinstance(nb, int)"),
@@ -193,7 +245,7 @@ plt.show()""",
 
     md("## 5. 영상에서 같은 것을 이어 본다 — 추적"),
     md("탐지만 하면 프레임마다 박스를 새로 센다. **몇 명이 지나갔는지**는 답하지 못한다."),
-    code("""if not os.path.isfile('people.mp4'):
+    prep("""if not os.path.isfile('people.mp4'):
     os.system('wget -q https://media.roboflow.com/supervision/video-examples/'
               'people-walking.mp4 -O people.mp4')
 
@@ -208,7 +260,7 @@ cap.release()
 print('탐지만 120프레임 → 박스 %d개. 그런데 몇 명인지는 모른다' % boxes)"""),
 
     md("`track` 으로 바꾸면 같은 사람에게 **같은 번호**가 붙는다."),
-    code("""cap = cv2.VideoCapture('people.mp4')
+    prep("""cap = cv2.VideoCapture('people.mp4')
 ids = {}
 for _ in range(120):
     ok, fr = cap.read()
@@ -247,6 +299,7 @@ MODES = {
     ("task", 2): "solo",
     ("ex", 3): "together", ("ex", 4): "together", ("task", 3): "solo",
     ("ex", 5): "together", ("task", 4): "solo",
+    ("ex", 7): "together", ("task", 7): "solo",
     ("ex", 6): "together", ("task", 5): "solo", ("task", 6): "team",
 }
 
