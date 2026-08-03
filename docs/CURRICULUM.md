@@ -11,7 +11,7 @@
 | Day 4 · 딥러닝 | [day4/index.html](day4/index.html) | 47 |
 | 특강 · AI 도구로 웹 서비스 만들기 | [special/index.html](special/index.html) | 41 |
 | 2주차 D1 · 이미지 분류 | [day5/index.html](day5/index.html) | 48 |
-| 2주차 D2 · 내 데이터로 분류기 | [day6/index.html](day6/index.html) | 29 |
+| 2주차 D2 · 이미지 처리 | [day6/index.html](day6/index.html) | 29 |
 | 2주차 D3 · 판정 근거 | [day7/index.html](day7/index.html) | 21 |
 | 2주차 D4 · LLM 과 프롬프트 | [day8/index.html](day8/index.html) | 40 |
 
@@ -220,7 +220,7 @@ pptx 기반 이전 덱은 [_archive-pptx/](_archive-pptx/)에 보관돼 있다.
 | 날짜 | 주제 | 덱 |
 |---|---|---|
 | 8/3 | 이미지 분류 — CNN 과 전이학습 | [day5/index.html](day5/index.html) |
-| 8/4 | 내 데이터로 분류기 | [day6/index.html](day6/index.html) |
+| 8/4 | 이미지 처리 | [day6/index.html](day6/index.html) |
 | 8/5 | 판정 근거 | [day7/index.html](day7/index.html) |
 | 8/10 | LLM 의 원리와 프롬프팅 | [day8/index.html](day8/index.html) |
 | 8/11 | 내 문서에 답하게 하기 — RAG | 기존 강의 D01 을 줄여 옮긴다 |
@@ -390,7 +390,7 @@ D3 의 「가려서 재 본다」, D4 의 「형식은 잡히고 판단은 안 �
 거짓 이유까지 붙인다. 형식이 맞아서 더 위험하다는 것이 CH4 의 결론이다.
 
 ```
-2주차 D2  내 데이터로 분류기 — 만드는 데 10분, 믿을지 판단하는 데 하루
+2주차 D2  이미지 처리 — 만드는 데 10분, 믿을지 판단하는 데 하루
   CH0 데이터를 갖추기   폴더가 곧 라벨 · 훈련과 검증을 나눈다 · 크기가 제각각 · 첫 결과 0.9608
   CH1 숫자를 믿는 법    한 장이 0.65% · 외운 것과 배운 것 · 사진을 줄이면 ·
                        무엇이 결과를 흔드는가 · 라벨이 틀리면
