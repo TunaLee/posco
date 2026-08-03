@@ -1254,22 +1254,6 @@ val   = datasets.ImageFolder(<span class="st">'data/val'</span>, T)
     <div class="keymsg"><span class="k">형식</span><div>박스는 네 숫자다. <b>어느 형식인지 먼저 확인</b>하고, 학습 파일이면 <b>0~1 로 나눈 값</b>인지도 본다.</div></div>
   </div>
 </section>
-<section class="slide" data-title="가중치는 어디서 오나">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>흐름</div>
-  <h2 class="s-title sm">yolo11n.pt 를 받아 오는 경로</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="plot"><svg viewBox="0 0 700 210"><rect x="14" y="40" width="150" height="54" rx="8" fill="#EFEAFF" stroke="#C9BEFF" stroke-width="1.6"/><text x="89" y="62" text-anchor="middle" font-size="11.5" font-weight="800" fill="#3A1FC9">YOLO('yolo11n.pt')</text><text x="89" y="80" text-anchor="middle" font-size="10" fill="#8E8AAC">코드 한 줄</text><path d="M168 67 L214 67" stroke="#8E8AAC" stroke-width="1.6" marker-end="url(#aw)"/><text x="191" y="59" text-anchor="middle" font-size="10" fill="#8E8AAC">파일이 있나?</text><rect x="220" y="14" width="150" height="50" rx="8" fill="#fff" stroke="#DCD6F0" stroke-width="1.6"/><text x="295" y="36" text-anchor="middle" font-size="11.5" font-weight="800" fill="#16142B">이미 있으면</text><text x="295" y="54" text-anchor="middle" font-size="10" fill="#8E8AAC">그대로 불러온다</text><rect x="220" y="80" width="150" height="50" rx="8" fill="#5B3DF5" stroke="#5B3DF5" stroke-width="1.6"/><text x="295" y="102" text-anchor="middle" font-size="11.5" font-weight="800" fill="#fff">없으면 내려받는다</text><text x="295" y="120" text-anchor="middle" font-size="10" fill="#DCD6F0">GitHub 릴리스에서</text><path d="M374 105 L420 105" stroke="#8E8AAC" stroke-width="1.6" marker-end="url(#aw)"/><rect x="426" y="80" width="180" height="50" rx="8" fill="#fff" stroke="#5B3DF5" stroke-width="1.6"/><text x="516" y="102" text-anchor="middle" font-size="11.5" font-weight="800" fill="#3A1FC9">ultralytics/assets</text><text x="516" y="120" text-anchor="middle" font-size="10" fill="#8E8AAC">공개 저장소 &middot; 5.6MB</text><path d="M516 134 L516 158" stroke="#8E8AAC" stroke-width="1.6" marker-end="url(#aw)"/><rect x="426" y="158" width="180" height="44" rx="8" fill="#F7F7F9" stroke="#DCD6F0" stroke-width="1.6"/><text x="516" y="180" text-anchor="middle" font-size="11.5" font-weight="800" fill="#16142B">yolo11n.pt</text><text x="516" y="198" text-anchor="middle" font-size="10" fill="#8E8AAC">지금 폴더에 저장된다</text><text x="14" y="126" font-size="10.5" fill="#8E8AAC">두 번째부터는</text><text x="14" y="142" font-size="10.5" fill="#8E8AAC">받지 않는다</text><path d="M600 180 L640 180 L640 67 L376 67" stroke="#8E8AAC" stroke-width="1.4" fill="none" stroke-dasharray="4 3" marker-end="url(#aw)"/><defs><marker id="aw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#8E8AAC"/></marker></defs></svg><div class="cap">Colab 은 세션이 끝나면 폴더가 비워진다 &mdash; 다음에 열면 다시 받는다</div></div>
-    <div class="vlist">
-      <div class="v"><span class="b">&rarr;</span><div><code>YOLO(&#39;yolo11n.pt&#39;)</code> 는 <b>먼저 지금 폴더를 본다</b>. 파일이 있으면 그것을 쓰고, 없으면 인터넷에서 받는다.</div></div>
-      <div class="v"><span class="b">&rarr;</span><div>받는 곳은 <b>Ultralytics 의 공개 저장소</b>다. 계정도 열쇠도 필요 없다. 받은 파일은 <b>지금 폴더에 남는다</b>.</div></div>
-      <div class="v"><span class="b">&#9733;</span><div>그래서 두 번째부터는 인터넷 없이 돈다. 다만 <b>Colab 은 세션이 끝나면 폴더가 비워진다</b> &mdash; 다시 열면 또 받는다.</div></div>
-      <div class="v"><span class="b">&rarr;</span><div><code>resnet18(weights=&#39;DEFAULT&#39;)</code> 도 같은 방식이다. 받는 곳만 <code>download.pytorch.org</code> 로 다르다.</div></div>
-    </div>
-    <div class="keymsg"><span class="k">흐름</span><div>모델 이름을 적으면 <b>가중치 파일을 찾아 오는 것</b>이 먼저 일어난다. 그 파일이 곧 모델이다.</div></div>
-  </div>
-</section>
 <section class="slide" data-title="YOLO 불러 쓰기">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>코드</div>
@@ -1287,7 +1271,7 @@ r = model(<span class="st">'bus.jpg'</span>)[<span class="nm">0</span>]
 person   0.888  [671, 395, 810, 879]
 person   0.879  [47, 400, 239, 904]
 person   0.856  [223, 409, 344, 860]
-person   0.623  [0, 556, 69, 872]</div></div></div><div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div><code>yolo11n.pt</code> 는 <b>공개된 가중치</b>다. 계수 2,624,080개, 파일 5.6MB 다.</div></div><div class="v"><span class="b">&rarr;</span><div><code>r.boxes</code> 하나가 <b>박스 하나</b>다. <code>cls</code> 종류, <code>conf</code> 신뢰도, <code>xyxy</code> 자리다.</div></div><div class="v"><span class="b">&#9733;</span><div>학습을 한 줄도 안 했다. <b>남이 학습해 둔 것을 그대로 쓴 것</b>이다.</div></div></div></div></div>
+person   0.623  [0, 556, 69, 872]</div></div></div><div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div><code>yolo11n.pt</code> 는 <b>공개된 가중치</b>다. 계수 2,624,080개, 파일 5.6MB 다.</div></div><div class="v"><span class="b">&rarr;</span><div><code>r.boxes</code> 하나가 <b>박스 하나</b>다. <code>cls</code> 종류, <code>conf</code> 신뢰도, <code>xyxy</code> 자리다.</div></div><div class="v"><span class="b">&rarr;</span><div>파일 이름만 적으면 된다. <b>없으면 알아서 내려받고</b> 지금 폴더에 저장한다. 두 번째부터는 그것을 쓴다.</div></div><div class="v"><span class="b">&#9733;</span><div>학습을 한 줄도 안 했다. <b>남이 학습해 둔 것을 그대로 쓴 것</b>이다.</div></div></div></div></div>
     <div class="keymsg"><span class="k">코드</span><div>탐지도 <b>가져다 쓰는 것부터</b> 한다. 사진 한 장에 25.7 ms 걸린다.</div></div>
   </div>
 </section>
