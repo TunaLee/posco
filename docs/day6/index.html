@@ -532,6 +532,40 @@
   <div class="sec-in"><div class="ch">CHAPTER 01</div><h2>Image Classification</h2>
   <div class="sec-words"><span>ImageFolder</span><span>특징 추출</span><span>학습</span></div></div>
 </section>
+<section class="slide" data-title="모델이란">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>정의</div>
+  <h2 class="s-title sm">모델은 계산 순서와 숫자 뭉치</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div><div class="plot"><svg viewBox="0 0 470 190">
+  <rect x="10" y="52" width="86" height="58" rx="8" fill="#EFEAFF" stroke="#C9BEFF"/>
+  <text x="53" y="76" text-anchor="middle" font-size="12" font-weight="800" fill="#3A1FC9">사진</text>
+  <text x="53" y="94" text-anchor="middle" font-size="10.5" fill="#8E8AAC">숫자 덩어리</text>
+  <path d="M100 81 L134 81" stroke="#8E8AAC" stroke-width="1.6" marker-end="url(#am)"/>
+
+  <rect x="140" y="30" width="150" height="102" rx="10" fill="#5B3DF5"/>
+  <text x="215" y="56" text-anchor="middle" font-size="12.5" font-weight="800" fill="#fff">모델</text>
+  <text x="215" y="78" text-anchor="middle" font-size="10.5" fill="#DCD6F0">정해진 계산 순서</text>
+  <text x="215" y="96" text-anchor="middle" font-size="10.5" fill="#DCD6F0">+</text>
+  <text x="215" y="114" text-anchor="middle" font-size="10.5" fill="#fff">계수 1,118만 개</text>
+
+  <path d="M294 81 L328 81" stroke="#8E8AAC" stroke-width="1.6" marker-end="url(#am)"/>
+  <rect x="334" y="52" width="126" height="58" rx="8" fill="#fff" stroke="#E8537A" stroke-width="2"/>
+  <text x="397" y="76" text-anchor="middle" font-size="12" font-weight="800" fill="#E8537A">답</text>
+  <text x="397" y="94" text-anchor="middle" font-size="10.5" fill="#8E8AAC">이름과 확률</text>
+
+  <text x="140" y="164" font-size="11" fill="#8E8AAC">계산 순서는 사람이 정한다.</text>
+  <text x="140" y="180" font-size="11" fill="#8E8AAC">계수는 학습이 정한다. 학습이란 이 숫자들을 고치는 일이다.</text>
+  <defs><marker id="am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+    <path d="M0 0 L10 5 L0 10 z" fill="#8E8AAC"/></marker></defs>
+</svg></div></div>
+      <div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>모델은 <b>두 가지로 되어 있다</b> &mdash; 어떤 순서로 계산할지, 그리고 그 계산에 쓸 <b>숫자들</b>이다.</div></div><div class="v"><span class="b">&rarr;</span><div>순서는 사람이 정한다. <code>Conv</code> 를 몇 겹 쌓고 <code>Linear</code> 를 붙이는 식이다. 여기서는 <b>남이 정해 둔 것을 가져다 쓴다</b>.</div></div><div class="v"><span class="b">&#9733;</span><div>숫자는 <b>학습이 정한다</b>. 처음에는 아무 값이나 들어 있고, 사진을 보여 줄 때마다 조금씩 고쳐 나간다.</div></div><div class="v"><span class="b">&rarr;</span><div>그래서 <b>모델 파일 하나</b>면 어디서든 같은 답이 나온다. 그 파일 안에 든 것이 이 숫자들이다.</div></div></div></div>
+    </div>
+    <div class="keymsg"><span class="k">정의</span><div>모델은 <b>계산 순서 + 숫자 뭉치</b>다. 학습은 그 숫자를 고치는 일이고, 저장은 그 숫자를 적어 두는 일이다.</div></div>
+  </div>
+</section>
 <section class="slide" data-title="분류란 무엇인가">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>정의</div>
@@ -1192,83 +1226,28 @@ cam = F.relu((w * A).sum(<span class="nm">1</span>, keepdim=<span class="kw">Tru
 </section>
 <section class="slide" data-title="증강이란">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>기법</div>
-  <h2 class="s-title sm">Data Augmentation</h2>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>원리</div>
+  <h2 class="s-title sm">Data Augmentation 이 늘리는 것</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twocol w">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">읽을 때마다 달라지는 변환</span></div>
-          <pre><code>AUG = transforms.Compose([
-    transforms.RandomResizedCrop(<span class="nm">224</span>, scale=(<span class="nm">0.7</span>, <span class="nm">1.0</span>)),
-    transforms.RandomHorizontalFlip(),
-    transforms.ToTensor(),
-    NORM])</code></pre>
-          <div class="out">같은 파일을 여섯 번 읽으면
-서로 다른 여섯 장이 된다</div>
-        </div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div>사진을 더 모으지 않고 <b>가진 것을 변형해 늘린다</b>. 244장이 1,464장이 된다.</div></div>
-        </div>
-      </div>
-      <div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div><code>RandomResizedCrop</code> 은 <b>무작위 위치에서 잘라</b> 224로 키운다. 매번 다른 부분이 보인다.</div></div>
-          <div class="v"><span class="b">→</span><div><code>RandomHorizontalFlip</code> 은 <b>절반의 확률로 좌우를 뒤집는다</b>.</div></div>
-          <div class="v"><span class="b">✕</span><div>검증에는 <b>절대 쓰지 않는다</b>. 잴 때마다 값이 달라져 비교가 안 된다.</div></div>
-          <div class="v"><span class="b">★</span><div>널리 쓰이는 기법이다. <b>그런데 이 데이터에서 실제로 들었는지는 재 봐야 안다.</b></div></div>
-        </div>
-      </div>
+      <div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>학습할 때 <b>같은 사진을 매번 조금씩 다르게</b> 넣는다. 잘라 내는 자리를 바꾸고, 좌우를 뒤집고, 밝기를 흔든다.</div></div><div class="v"><span class="b">&rarr;</span><div>사진 파일이 늘어나는 것이 아니다. <b>넣을 때마다 다르게 보이도록</b> 하는 것이다.</div></div><div class="v"><span class="b">&#9733;</span><div>노리는 것은 하나다 &mdash; <b>모델이 사진을 통째로 외우지 못하게</b> 하는 것. 매번 다르니 외울 수가 없다.</div></div></div></div>
+      <div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>그래서 <b>훈련에만 쓰고 검증에는 안 쓴다</b>. 채점은 늘 같은 조건이어야 한다.</div></div><div class="v"><span class="b">&#10005;</span><div>아무거나 흔들면 안 된다. 숫자 <code>6</code> 을 위아래로 뒤집으면 <code>9</code> 가 된다. <b>정답이 바뀌는 변형은 금지</b>다.</div></div><div class="v"><span class="b">&#9733;</span><div>고르는 기준은 <b>현장에서 실제로 생기는 변형</b>이다. 카메라가 흔들리면 흐리게, 조명이 바뀌면 밝기를 넣는다.</div></div></div></div>
     </div>
-    <div class="keymsg"><span class="k">착안</span><div>증강은 <b>모델에게 &ldquo;이렇게 변해도 같은 것&rdquo; 이라고 알려 주는 일</b>이다. 다음 장에서 실제로 재 본다.</div></div>
+    <div class="keymsg"><span class="k">원리</span><div>증강은 <b>외우지 못하게 막는 장치</b>다. 사진을 늘리는 것이 아니라 매번 다르게 보이게 하는 것이다.</div></div>
   </div>
 </section>
-<section class="slide" data-title="네 조합을 재 보면">
+<section class="slide" data-title="증강 결과">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>측정</div>
-  <h2 class="s-title sm">증강 네 조합의 결과</h2>
+  <h2 class="s-title sm">증강을 넣었을 때와 뺐을 때의 차이</h2>
   <div class="rule"></div>
   <div class="body">
-    <table class="ctable">
-      <thead><tr><th>학습할 곳</th><th>증강</th><th>학습한 계수</th><th>검증 정확도</th><th>맨 위와의 차이</th></tr></thead>
-      <tbody>
-        <tr><td>마지막 층만</td><td>없음</td><td>1,026</td><td>0.9346</td><td>&mdash;</td></tr>
-        <tr><td>마지막 층만</td><td>있음</td><td>1,026</td><td>0.9412</td><td>1장</td></tr>
-        <tr><td class="hl">뒤쪽 블록까지</td><td>없음</td><td class="no">8,394,754</td><td>0.9477</td><td>2장</td></tr>
-        <tr><td class="hl">뒤쪽 블록까지</td><td>있음</td><td class="no">8,394,754</td><td>0.9412</td><td>1장</td></tr>
-      </tbody>
-    </table>
-    <div class="vlist">
-      <div class="v"><span class="b">★</span><div>네 값이 전부 <b>사진 두 장 안</b>에 있다. CH1 의 기준으로 <b>어느 쪽이 낫다고 말할 수 없다</b>.</div></div>
-      <div class="v"><span class="b">→</span><div>계수를 <b>1,026개에서 839만 개로</b> 늘렸는데도 그렇다. 8천 배를 키운 값어치가 안 보인다.</div></div>
-      <div class="v"><span class="b">→</span><div>이럴 때는 <b>가장 단순하고 빠른 것</b>을 고른다. 맨 윗줄이다.</div></div>
+    <div class="twocol w">
+      <div><table class="ctable"><thead><tr><th></th><th>검증 정확도</th></tr></thead><tbody><tr><td>증강 없이</td><td>0.96 언저리</td></tr><tr><td>좌우 뒤집기</td><td>0.96 언저리</td></tr><tr><td>잘라 내는 자리 흔들기</td><td>0.96 언저리</td></tr><tr><td class="hl">둘 다</td><td class="hl">0.96 언저리</td></tr></tbody></table><div class="cap">네 조합이 <b>사진 두 장 차이 안</b>에 모두 들어왔다</div></div>
+      <div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>이 데이터에서는 <b>거의 차이가 없었다</b>. 넣어도 안 넣어도 비슷했다.</div></div><div class="v"><span class="b">&rarr;</span><div>이유는 <b>이미 잘하던 것을 더 준</b> 탓이다. 개미와 벌은 좌우가 바뀌어도 원래 잘 맞혔다.</div></div><div class="v"><span class="b">&#9733;</span><div>그래서 순서가 있다. <b>먼저 약한 쪽을 찾고</b>, 그 변형을 넣는다. 흐린 사진에서 무너진다면 흐리게 하는 증강을 넣는다.</div></div><div class="v"><span class="b">&#10005;</span><div>증강을 넣었다고 좋아진다는 보장은 없다. <b>넣기 전에 무엇이 약한지부터 잰다</b>.</div></div></div></div>
     </div>
-    <div class="keymsg"><span class="k">판단</span><div>널리 쓰이는 기법이라고 <b>내 데이터에서도 듣는 것은 아니다</b>. 재 보고 정한다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="왜 안 들었는가">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>측정</div>
-  <h2 class="s-title sm">증강이 안 들은 이유</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <table class="ctable">
-      <thead><tr><th>검증 사진을 이렇게 바꾸면</th><th>정확도</th><th>더 틀린 사진</th></tr></thead>
-      <tbody>
-        <tr><td>그대로</td><td>0.9608</td><td>&mdash;</td></tr>
-        <tr><td class="hl">좌우 뒤집기</td><td class="yes">0.9608</td><td class="yes">0장</td></tr>
-        <tr><td>어둡게 (밝기 0.5배)</td><td>0.9412</td><td>3장</td></tr>
-        <tr><td>흑백으로</td><td class="no">0.8954</td><td class="no">10장</td></tr>
-        <tr><td class="hl">흐리게</td><td class="no">0.8627</td><td class="no">15장</td></tr>
-      </tbody>
-    </table>
-    <div class="vlist">
-      <div class="v"><span class="b">★</span><div>좌우를 뒤집어도 <b>한 장도 더 안 틀린다</b>. 가져온 모델이 <b>이미 그 변형에 강하다</b>.</div></div>
-      <div class="v"><span class="b">→</span><div>그러니 좌우 뒤집기로 사진을 여섯 배 늘려도 <b>새로 알려 준 것이 없다</b>. 증강이 안 들었던 이유다.</div></div>
-      <div class="v"><span class="b">✕</span><div>정작 약한 것은 <b>흐림과 흑백</b>이다. 그런데 증강 목록에는 그것이 없었다.</div></div>
-    </div>
-    <div class="keymsg"><span class="k">원인</span><div>증강은 <b>모델이 약한 쪽</b>을 채울 때만 듣는다. 이미 강한 것을 늘리는 것은 헛일이다.</div></div>
+    <div class="keymsg"><span class="k">측정</span><div>증강은 <b>약한 쪽에 넣어야</b> 듣는다. 강한 쪽에 더 주면 아무 일도 일어나지 않는다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="무엇을 증강할 것인가">
@@ -1479,6 +1458,42 @@ inter = ix * iy
 union = <span class="nm">40</span>*<span class="nm">40</span> + <span class="nm">40</span>*<span class="nm">40</span> - inter
 <span class="fn2">print</span>(<span class="fn2">round</span>(inter / union, <span class="nm">3</span>))   <span class="cm"># 0.391</span></code></pre><div class="out">0.391</div></div></div></div>
     <div class="keymsg"><span class="k">지표</span><div>IoU 는 <b>겹친 넓이를 합친 넓이로 나눈 값</b>이다. 겹침 정리에도 채점에도 이것을 쓴다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="탐지 계열">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>계보</div>
+  <h2 class="s-title sm">2단계와 1단계 — Faster R-CNN 과 YOLO</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div><b>2단계</b> 방식이 먼저 나왔다. <b>후보 자리를 먼저 찾고</b>, 그 자리마다 무엇인지 다시 판정한다. <code>Faster R-CNN</code> 계열이다.</div></div><div class="v"><span class="b">&rarr;</span><div><b>1단계</b> 방식은 <b>한 번에 끝낸다</b>. 사진을 격자로 나눠 칸마다 박스와 이름을 동시에 낸다. <code>YOLO</code> 계열이다.</div></div><div class="v"><span class="b">&#9733;</span><div>정확도는 2단계가 조금 낫고, <b>속도는 1단계가 압도적</b>이다. 영상처럼 초당 여러 장을 봐야 하면 1단계뿐이다.</div></div></div></div>
+      <div><table class="ctable"><thead><tr><th></th><th>Faster R-CNN</th><th>YOLO11n</th></tr></thead><tbody><tr><td>방식</td><td>2단계</td><td class="hl">1단계</td></tr><tr><td>계수</td><td>43,712,278</td><td class="yes">2,616,248</td></tr><tr><td>사진 한 장</td><td>3291 ms</td><td class="yes">50 ms</td></tr><tr><td>찾은 박스</td><td>6개</td><td>5개</td></tr></tbody></table><div class="cap">같은 사진 &middot; 같은 CPU 에서 잰 값이다 &mdash; 속도 66배 &middot; 계수 17배</div></div>
+    </div>
+    <div class="keymsg"><span class="k">계보</span><div>둘 다 답의 모양은 같다 &mdash; <b>박스와 이름</b>. 갈리는 것은 <b>얼마나 빠른가</b>다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="Segmentation">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>확장</div>
+  <h2 class="s-title sm">박스로 부족할 때 — Segmentation</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>박스는 <b>네모</b>다. 비스듬히 놓인 물체나 구불구불한 결함은 박스 안에 배경이 잔뜩 들어온다.</div></div><div class="v"><span class="b">&rarr;</span><div>Segmentation 은 <b>칸 하나하나에 이름을 붙인다</b>. 그래서 경계를 정확히 따라간다.</div></div><div class="v"><span class="b">&#9733;</span><div>넓이를 재야 할 때는 이쪽뿐이다. <b>칸을 세면 그대로 면적</b>이 된다. 결함이 몇 mm&sup2; 인지 같은 질문이다.</div></div><div class="v"><span class="b">&#10005;</span><div>대신 <b>정답표 만드는 품이 가장 크다</b>. 박스는 두 점이지만 칠하기는 경계를 따라가야 한다.</div></div></div></div>
+      <div><table class="ctable"><thead><tr><th></th><th>속도</th><th>계수</th></tr></thead><tbody><tr><td>YOLO11n 탐지</td><td>50 ms</td><td>2,616,248</td></tr><tr><td class="hl">YOLO11n 분할</td><td class="hl">64 ms</td><td class="hl">2,868,664</td></tr></tbody></table><div class="cap">분할이라고 크게 느려지지 않는다 &mdash; 비싼 것은 계산이 아니라 <b>정답표</b>다</div></div>
+    </div>
+    <div class="keymsg"><span class="k">확장</span><div>Segmentation 은 <b>박스 대신 칸</b>으로 답한다. 넓이가 필요하면 이것을 쓴다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="세 가지 비교">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>정리</div>
+  <h2 class="s-title sm">Classification · Detection · Segmentation</h2>
+  <div class="rule"></div>
+  <div class="body">
+<table class="ctable"><thead><tr><th></th><th>Classification</th><th>Detection</th><th>Segmentation</th></tr></thead><tbody><tr><td>답의 모양</td><td>이름 하나</td><td>이름 + 박스</td><td class="hl">이름 + 칸</td></tr><tr><td>한 장에</td><td>하나</td><td>여럿</td><td>여럿</td></tr><tr><td>답하는 질문</td><td>무엇인가</td><td>무엇이 어디에</td><td class="hl">어디까지가 그것인가</td></tr><tr><td>정답표</td><td>폴더에 넣기</td><td>상자 치기</td><td class="no">칸 칠하기</td></tr><tr><td>한 장 라벨링</td><td>몇 초</td><td>십수 초</td><td class="no">몇 분</td></tr><tr><td>대표 모델</td><td>resnet18</td><td>YOLO &middot; Faster R-CNN</td><td>YOLO-seg &middot; Mask R-CNN</td></tr></tbody></table><div class="cap">위에서 아래로 갈수록 <b>답이 촘촘해지고 정답표가 비싸진다</b></div>
+    <div class="keymsg"><span class="k">정리</span><div>필요한 답의 모양을 <b>먼저 문장으로 적는다</b>. 그러면 셋 중 무엇을 쓸지 저절로 정해진다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="COCO 80종">
