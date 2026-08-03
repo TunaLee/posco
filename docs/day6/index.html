@@ -450,34 +450,75 @@
     <h1>내 데이터로 분류기</h1>
   </div>
 </section>
-
 <section class="slide" data-title="오늘의 일정">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">AGENDA</span><span class="dot"></span>일정</div>
   <h2 class="s-title sm">오늘의 일정</h2>
   <div class="rule"></div>
   <div class="body">
-    <div class="cards c5">
-      <div class="card"><span class="n">CH0</span><h3>데이터를 갖추기</h3><p>폴더가 곧 라벨 · 크기 맞추기 · 첫 결과.</p></div>
-      <div class="card"><span class="n">CH1</span><h3>숫자를 믿는 법</h3><p>검증 한 장이 몇 %인가 · 외운 것과 배운 것.</p></div>
-      <div class="card"><span class="n">CH2</span><h3>한쪽이 적은 데이터</h3><p>정확도 뒤에 숨는 것 · 종류별로 보기.</p></div>
-      <div class="card"><span class="n">CH3</span><h3>판정 문턱</h3><p>놓치는 비용과 헛짚는 비용을 저울질한다.</p></div>
-      <div class="card"><span class="n">CH4</span><h3>내보내기</h3><p>저장 · 증강 · 현장에서 떨어지는 이유.</p></div>
+    <div class="cards c3">
+      <div class="card"><span class="n">오전</span><h3>내 사진으로 분류기</h3><p>폴더 둘로 만들고, 나온 숫자를 믿을지 판단한다.</p></div>
+      <div class="card"><span class="n">오후</span><h3>분류로 안 되는 일</h3><p>무엇이 어디에 있는지 답하는 탐지로 넘어간다.</p></div>
+      <div class="card"><span class="n">끝</span><h3>없는 이름을 가르치기</h3><p>받아 온 모델이 모르는 것을 정답표로 가르친다.</p></div>
     </div>
-    <div class="keymsg"><span class="k">데이터</span><div>사진 <b>397장</b>으로 한다. 훈련 244 · 검증 153 이다. <b>현장에서 모을 수 있는 양</b>에 맞춘 것이다.</div></div>
+    <div class="vlist">
+      <div class="v"><span class="b">&rarr;</span><div>세 토막이 <b>같은 방법</b>을 쓴다 &mdash; 남이 학습해 둔 가중치를 받아 내 자료 쪽으로 옮긴다.</div></div>
+      <div class="v"><span class="b">&rarr;</span><div>사진은 <b>397장</b>이다. 훈련 244 &middot; 검증 153 &mdash; 현장에서 모을 수 있는 양에 맞췄다.</div></div>
+      <div class="v"><span class="b">&#9733;</span><div><b>런타임을 T4 로 먼저 바꾼다.</b> 뒤에 학습이 있어서 나중에 바꾸면 처음부터 다시 돌려야 한다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">줄기</span><div>오늘 배우는 것은 하나다 &mdash; <b>남의 것을 받아 내 것으로 바꾸는 방법</b>. 분류도 탐지도 같다.</div></div>
   </div>
 </section>
-
-<section class="slide section" data-title="[섹션] 데이터를 갖추기">
+<section class="slide section" data-title="[섹션] 준비">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="ghost">00</div>
-  <div class="seyebrow">CHAPTER 00</div>
-  <h2>데이터를 갖추기</h2>
-  <div class="agenda"><span>폴더</span><span>크기</span><span>첫 결과</span></div>
+  <div class="sec-in"><div class="ch">CHAPTER 00</div><h2>준비</h2>
+  <div class="sec-words"><span>GPU</span><span>런타임</span><span>장치</span></div></div>
 </section>
-
-<section class="slide" data-title="폴더가 곧 라벨">
+<section class="slide" data-title="왜 GPU 인가">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>동기</div>
+  <h2 class="s-title sm">같은 계산을 수천 개씩 한꺼번에 하는 장치</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>합성곱은 <b>같은 곱셈 덧셈을 자리마다 되풀이</b>한다. 1,024자리를 순서대로 할 이유가 없다.</div></div><div class="v"><span class="b">&rarr;</span><div>CPU 는 <b>복잡한 일을 빠르게 하나씩</b> 한다. GPU 는 <b>단순한 일을 한꺼번에 수천 개</b> 한다.</div></div><div class="v"><span class="b">&#9733;</span><div>그래서 딥러닝은 GPU 에서 <b>몇 배에서 몇십 배</b> 빨라진다. 어떤 계산이냐에 따라 다르다.</div></div></div></div><div><div class="vlist"><div class="v"><span class="b">&#10005;</span><div>GPU 가 늘 이기는 것은 아니다. <b>사진 한 장</b>만 넣으면 옮기는 시간이 더 들어 오히려 느릴 수 있다.</div></div><div class="v"><span class="b">&rarr;</span><div>묶음이 클수록 GPU 가 유리하다. <code>batch_size</code> 를 키워야 값어치가 나온다.</div></div></div></div></div>
+    <div class="keymsg"><span class="k">동기</span><div>GPU 는 <b>단순한 계산을 한꺼번에 하는 장치</b>다. 딥러닝 계산이 정확히 그런 모양이다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="런타임 바꾸기">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>준비</div>
+  <h2 class="s-title sm">메뉴 세 번으로 켜는 T4</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">1</span><div><code>런타임</code> &rarr; <code>런타임 유형 변경</code> 을 누른다.</div></div><div class="v"><span class="b">2</span><div>하드웨어 가속기에서 <b>T4 GPU</b> 를 고른다.</div></div><div class="v"><span class="b">3</span><div><code>저장</code> 을 누르면 <b>런타임이 다시 시작된다</b>. 앞에서 만든 변수가 전부 사라진다.</div></div><div class="v"><span class="b">&#9733;</span><div>그래서 <b>맨 처음에 바꾼다</b>. 학습을 다 돌린 뒤에 바꾸면 처음부터 다시다.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">켜졌는지 확인하는 두 줄</span></div><pre><code><span class="fn2">print</span>(torch.cuda.is_available())
+<span class="fn2">print</span>(torch.cuda.get_device_name(<span class="nm">0</span>))</code></pre><div class="out">True
+Tesla T4</div></div></div></div>
+    <div class="keymsg"><span class="k">준비</span><div>런타임을 바꾸면 <b>변수가 다 지워진다</b>. 켜는 것은 맨 처음에 한다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="장치 옮기기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>코드</div>
+  <h2 class="s-title sm">모델과 자료를 같은 곳에 두는 한 줄</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">옮기는 것은 둘뿐이다</span></div><pre><code>device = <span class="st">'cuda'</span> <span class="kw">if</span> torch.cuda.is_available() <span class="kw">else</span> <span class="st">'cpu'</span>
+
+net = net.to(device)          <span class="cm"># 모델을 옮긴다</span>
+xb  = xb.to(device)           <span class="cm"># 자료도 옮긴다</span>
+
+out = net(xb)                 <span class="cm"># 둘이 같은 곳에 있어야 돈다</span>
+out = out.cpu()               <span class="cm"># 그림 그리려면 다시 가져온다</span></code></pre></div></div><div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div><b>모델과 자료가 같은 장치</b>에 있어야 한다. 하나만 옮기면 에러가 난다.</div></div><div class="v"><span class="b">&#10005;</span><div><code>Expected all tensors to be on the same device</code> 가 그 에러다. 둘 중 하나를 안 옮긴 것이다.</div></div><div class="v"><span class="b">&rarr;</span><div><code>matplotlib</code> 이나 <code>numpy</code> 로 넘길 때는 <code>.cpu()</code> 로 되가져온다.</div></div><div class="v"><span class="b">&#9733;</span><div><code>device</code> 를 한 번 정해 두고 쓰면 <b>GPU 가 없는 곳에서도 같은 코드가 돈다</b>.</div></div></div></div></div>
+    <div class="keymsg"><span class="k">코드</span><div>옮길 것은 <b>모델과 자료 둘</b>이다. 같은 곳에 없으면 돌지 않는다.</div></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 내 사진으로 분류기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="ghost">01</div>
+  <div class="sec-in"><div class="ch">CHAPTER 01</div><h2>내 사진으로 분류기</h2>
+  <div class="sec-words"><span>폴더</span><span>특징</span><span>첫 결과</span></div></div>
+</section>
+<section class="slide" data-title="폴더가 곧 라벨">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>준비</div>
   <h2 class="s-title sm">폴더 이름이 그대로 정답표가 되는 구조</h2>
   <div class="rule"></div>
   <div class="body">
@@ -533,52 +574,9 @@ val   = datasets.ImageFolder(<span class="st">'data/val'</span>)
     <div class="keymsg"><span class="k">준비</span><div>가장 먼저 할 일은 코딩이 아니다. <b>사진을 폴더로 나눠 넣는 일</b>이다.</div></div>
   </div>
 </section>
-
-<section class="slide" data-title="훈련과 검증을 나눈다">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>준비</div>
-  <h2 class="s-title sm">학습에 쓴 사진으로는 재지 않는 이유</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol w">
-      <div>
-        <div class="plot">
-          <svg viewBox="0 0 420 180">
-            <g class="an d1">
-              <rect x="14" y="24" width="392" height="34" rx="6" fill="#F4F1FF" stroke="#DCD6F0"/>
-              <text x="210" y="46" text-anchor="middle" font-size="13" font-weight="700" fill="#16142B">모은 사진 397장</text>
-            </g>
-            <path class="an d2" d="M140 62 L120 82 M280 62 L300 82" stroke="#8E8AAC" stroke-width="1.4"/>
-            <g class="an d2">
-              <rect x="14" y="88" width="196" height="44" rx="6" fill="#EFEAFF" stroke="#B7A9FF"/>
-              <text x="112" y="108" text-anchor="middle" font-size="12.5" font-weight="700" fill="#3A1FC9">훈련 244장</text>
-              <text x="112" y="125" text-anchor="middle" font-size="10.5" fill="#8E8AAC">계수를 맞추는 데 쓴다</text>
-            </g>
-            <g class="an d3">
-              <rect x="222" y="88" width="184" height="44" rx="6" fill="#FDE8EE" stroke="#F1B9C9"/>
-              <text x="314" y="108" text-anchor="middle" font-size="12.5" font-weight="700" fill="#E8537A">검증 153장</text>
-              <text x="314" y="125" text-anchor="middle" font-size="10.5" fill="#8E8AAC">한 번도 학습에 넣지 않는다</text>
-            </g>
-            <text class="an d4" x="210" y="158" text-anchor="middle" font-size="11.5" fill="#8E8AAC">두 폴더가 섞이면 그날의 숫자가 전부 거짓이 된다</text>
-          </svg>
-          <div class="cap">나누는 일은 학습을 시작하기 전에 끝낸다</div>
-        </div>
-      </div>
-      <div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div>훈련 사진으로 재면 <b>외운 것을 재는 것</b>이다. 이 모델은 훈련에서 1.0000 이 나온다.</div></div>
-          <div class="v"><span class="b">★</span><div>같은 제품을 여러 각도로 찍었다면 <b>그 묶음을 통째로</b> 한쪽에 넣는다. 나눠 넣으면 검증이 훈련을 엿본 셈이 된다.</div></div>
-          <div class="v"><span class="b">→</span><div>검증을 몇 장 둘지는 <b>한 장의 무게</b>로 정한다. 100장이면 한 장이 1% 다.</div></div>
-        </div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">규칙</span><div>검증 사진은 <b>단 한 번도 학습에 들어가지 않는다</b>. 이것만 지켜도 절반은 한 것이다.</div></div>
-  </div>
-</section>
-
 <section class="slide" data-title="사진 크기가 제각각">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>준비</div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>준비</div>
   <h2 class="s-title sm">60장 중 31가지 크기가 섞여 있는 상태</h2>
   <div class="rule"></div>
   <div class="body">
@@ -617,21 +615,49 @@ val   = datasets.ImageFolder(<span class="st">'data/val'</span>, T)</code></pre>
     <div class="keymsg"><span class="k">규칙</span><div>훈련에 쓴 변환을 <b>검증과 실제 판정에도 똑같이</b> 쓴다. 다르면 성능이 조용히 떨어진다.</div></div>
   </div>
 </section>
+<section class="slide" data-title="특징 뽑기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>측정</div>
+  <h2 class="s-title sm">사진 한 장이 512칸이 되는 자리</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">이미 만들어 둔 방식 그대로</span></div>
+          <pre><code>net = models.resnet18(weights=<span class="st">'DEFAULT'</span>)
+net.fc = nn.Identity(); net.eval()
 
+<span class="kw">with</span> torch.no_grad():
+    Xtr = torch.cat([net(x) <span class="kw">for</span> x, _ <span class="kw">in</span> DataLoader(train, <span class="nm">32</span>)])
+    Ytr = torch.cat([y      <span class="kw">for</span> _, y <span class="kw">in</span> DataLoader(train, <span class="nm">32</span>)])
+    Xva = torch.cat([net(x) <span class="kw">for</span> x, _ <span class="kw">in</span> DataLoader(val, <span class="nm">32</span>)])
+    Yva = torch.cat([y      <span class="kw">for</span> _, y <span class="kw">in</span> DataLoader(val, <span class="nm">32</span>)])
+
+<span class="fn2">print</span>(Xtr.shape, Xva.shape)</code></pre>
+          <div class="out">torch.Size([244, 512]) torch.Size([153, 512])</div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">&rarr;</span><div><code>nn.Identity()</code> 로 마지막 층을 빼면 <b>512칸이 그대로 나온다</b>. day5 에서 한 것과 같다.</div></div>
+          <div class="v"><span class="b">&rarr;</span><div>얼린 층은 <b>같은 사진에 늘 같은 값</b>을 낸다. 그래서 <b>한 번만 뽑아 두고</b> 학습에서 다시 쓴다.</div></div>
+          <div class="v"><span class="b">&#9733;</span><div>397장이 <b>[397, 512] 숫자판 하나</b>가 되었다. 이제 사진이 아니라 이 판으로 학습한다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">준비</span><div>사진을 <b>숫자판으로 바꿔 두는 것</b>이 먼저다. 학습은 그 판 위에서 돈다.</div></div>
+  </div>
+</section>
 <section class="slide" data-title="첫 결과">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>측정</div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>측정</div>
   <h2 class="s-title sm">244장으로 얻은 0.9608</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twocol w">
       <div>
-        <div class="code sm"><!-- lint:code-ok -->
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">이미 만들어 둔 방식 그대로</span></div>
-          <pre><code>net = models.resnet18(weights=<span class="st">'DEFAULT'</span>)
-net.fc = nn.Identity(); net.eval()
-
-<span class="kw">def</span> <span class="fn2">train_head</span>(X, Y, epochs=<span class="nm">30</span>):        <span class="cm"># 512칸 → 두 종류</span>
+        <div class="code sm"><!-- lint:code-ok --><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">512칸 → 두 종류</span></div><pre><code><span class="kw">def</span> <span class="fn2">train_head</span>(X, Y, epochs=<span class="nm">30</span>):     <span class="cm"># 512칸 → 두 종류</span>
     torch.manual_seed(<span class="nm">42</span>)
     head = nn.Linear(<span class="nm">512</span>, <span class="nm">2</span>)
     opt  = torch.optim.Adam(head.parameters(), lr=<span class="nm">0.001</span>)
@@ -645,39 +671,30 @@ net.fc = nn.Identity(); net.eval()
             opt.step()
     <span class="kw">return</span> head
 
-<span class="kw">with</span> torch.no_grad():
-    Xtr = torch.cat([net(x) <span class="kw">for</span> x, _ <span class="kw">in</span> DataLoader(train, <span class="nm">32</span>)])
-    Ytr = torch.cat([y      <span class="kw">for</span> _, y <span class="kw">in</span> DataLoader(train, <span class="nm">32</span>)])
-    Xva = torch.cat([net(x) <span class="kw">for</span> x, _ <span class="kw">in</span> DataLoader(val, <span class="nm">32</span>)])
-    Yva = torch.cat([y      <span class="kw">for</span> _, y <span class="kw">in</span> DataLoader(val, <span class="nm">32</span>)])
-
-head = train_head(Xtr, Ytr)
-<span class="fn2">print</span>((head(Xva).argmax(<span class="nm">1</span>) == Yva).float().mean())</code></pre>
-          <div class="out">tensor(0.9608)</div>
-        </div>
+head = train_head(Xtr, Ytr)</code></pre><div class="out"><span class="fn2">print</span>((head(Xva).argmax(1) == Yva).float().mean())
+tensor(0.9608)</div></div>
       </div>
       <div>
         <div class="vlist">
-          <div class="v"><span class="b">→</span><div>바뀐 곳은 <code>Linear(512, 10)</code> 이 <code>Linear(512, 2)</code> 가 된 것뿐이다. <b>종류 수만 맞추면 된다</b>.</div></div>
-          <div class="v"><span class="b">→</span><div>계수 <b>1,026개</b>를 배웠다. 사진 244장으로 채우기에 충분한 양이다.</div></div>
-          <div class="v"><span class="b">★</span><div>여기서 끝내면 안 된다. <b>0.9608 이 무엇을 뜻하는지</b> 아직 모른다.</div></div>
+          <div class="v"><span class="b">&rarr;</span><div>바뀐 곳은 <code>Linear(512, 10)</code> 이 <code>Linear(512, 2)</code> 가 된 것뿐이다. <b>종류 수만 맞추면 된다</b>.</div></div>
+          <div class="v"><span class="b">&rarr;</span><div>계수 <b>1,026개</b>를 배웠다. 사진 244장으로 채우기에 충분한 양이다.</div></div>
+          <div class="v"><span class="b">&rarr;</span><div><code>randperm</code> 으로 <b>매 에폭 순서를 섞는다</b>. 같은 순서로만 보면 그 순서를 외운다.</div></div>
+          <div class="v"><span class="b">&#9733;</span><div>여기서 끝내면 안 된다. <b>0.9608 이 무엇을 뜻하는지</b> 아직 모른다.</div></div>
         </div>
       </div>
     </div>
     <div class="keymsg"><span class="k">출발</span><div>첫 숫자는 <b>10분이면 나온다</b>. 남은 하루는 그 숫자를 믿을지 판단하는 데 쓴다.</div></div>
   </div>
 </section>
-
-<section class="slide section" data-title="[섹션] 숫자를 믿는 법">
-  <div class="ghost">01</div>
-  <div class="seyebrow">CHAPTER 01</div>
-  <h2>숫자를 믿는 법</h2>
-  <div class="agenda"><span>한 장의 무게</span><span>외운 것</span><span>흔들림</span></div>
+<section class="slide section" data-title="[섹션] 그 숫자를 믿는 법">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="ghost">02</div>
+  <div class="sec-in"><div class="ch">CHAPTER 02</div><h2>그 숫자를 믿는 법</h2>
+  <div class="sec-words"><span>한 장의 무게</span><span>간격</span><span>흔들림</span></div></div>
 </section>
-
 <section class="slide" data-title="한 장이 0.65%">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>판단</div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>판단</div>
   <h2 class="s-title sm">검증 153장에서 한 장의 무게</h2>
   <div class="rule"></div>
   <div class="body">
@@ -706,10 +723,9 @@ head = train_head(Xtr, Ytr)
     <div class="keymsg"><span class="k">기준</span><div>정확도를 볼 때 <b>검증이 몇 장인지 먼저</b> 본다. 그것이 그 숫자의 해상도다.</div></div>
   </div>
 </section>
-
 <section class="slide" data-title="외운 것과 배운 것">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>과적합</div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>과적합</div>
   <h2 class="s-title sm">훈련 1.0000 과 검증 0.9608 의 간격</h2>
   <div class="rule"></div>
   <div class="body">
@@ -757,10 +773,9 @@ head = train_head(Xtr, Ytr)
     <div class="keymsg"><span class="k">기준</span><div>멈출 때를 정하는 것은 훈련 정확도가 아니다. <b>검증이 더 안 오르면 거기서 멈춘다.</b></div></div>
   </div>
 </section>
-
 <section class="slide" data-title="사진을 줄이면">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>측정</div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>측정</div>
   <h2 class="s-title sm">244장에서 30장까지 줄여 본 결과</h2>
   <div class="rule"></div>
   <div class="body">
@@ -781,10 +796,9 @@ head = train_head(Xtr, Ytr)
     <div class="keymsg"><span class="k">읽는 법</span><div>표를 볼 때 <b>차이를 사진 장수로 환산</b>한다. 소수점만 보면 없는 차이를 믿게 된다.</div></div>
   </div>
 </section>
-
 <section class="slide" data-title="라벨이 틀리면">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>측정</div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>측정</div>
   <h2 class="s-title sm">잘못 붙은 라벨 12장이 만드는 오답 5장</h2>
   <div class="rule"></div>
   <div class="body">
@@ -806,10 +820,9 @@ head = train_head(Xtr, Ytr)
     <div class="keymsg"><span class="k">우선순위</span><div>사진 수보다 <b>라벨의 정확함</b>이 먼저다. 애매한 사진은 빼는 편이 잘못 붙이는 것보다 낫다.</div></div>
   </div>
 </section>
-
 <section class="slide" data-title="무엇이 결과를 흔드는가">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>측정</div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>측정</div>
   <h2 class="s-title sm">난수를 바꿔도 달라지지 않는 값</h2>
   <div class="rule"></div>
   <div class="body">
@@ -838,17 +851,15 @@ head = train_head(Xtr, Ytr)
     <div class="keymsg"><span class="k">해석</span><div>같은 코드가 같은 답을 낸다고 <b>믿을 만한 답인 것은 아니다</b>. 데이터를 바꿔 여러 번 재 본다.</div></div>
   </div>
 </section>
-
 <section class="slide section" data-title="[섹션] 한쪽이 적은 데이터">
-  <div class="ghost">02</div>
-  <div class="seyebrow">CHAPTER 02</div>
-  <h2>한쪽이 적은 데이터</h2>
-  <div class="agenda"><span>불균형</span><span>숨는 실패</span><span>종류별로</span></div>
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="ghost">03</div>
+  <div class="sec-in"><div class="ch">CHAPTER 03</div><h2>한쪽이 적은 데이터</h2>
+  <div class="sec-words"><span>숨는 것</span><span>종류별</span><span>대응</span></div></div>
 </section>
-
 <section class="slide" data-title="한 종류를 줄이면">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>측정</div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>측정</div>
   <h2 class="s-title sm">정확도 0.7778 뒤에 숨은 0.5143</h2>
   <div class="rule"></div>
   <div class="body">
@@ -868,10 +879,9 @@ head = train_head(Xtr, Ytr)
     <div class="keymsg"><span class="k">경계</span><div>전체 정확도 한 숫자로 판단하지 않는다. <b>종류마다 따로 잰다.</b></div></div>
   </div>
 </section>
-
 <section class="slide" data-title="종류별로 재는 코드">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>코드</div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>코드</div>
   <h2 class="s-title sm">종류마다 맞힌 수를 따로 세는 다섯 줄</h2>
   <div class="rule"></div>
   <div class="body">
@@ -909,10 +919,9 @@ bees 1.0000</div>
     <div class="keymsg"><span class="k">습관</span><div>정확도를 찍는 줄 옆에 <b>종류별 줄을 늘 같이</b> 둔다. 한 줄 더 쓰는 값이 크다.</div></div>
   </div>
 </section>
-
 <section class="slide" data-title="불균형에 대응하기">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>대응</div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>대응</div>
   <h2 class="s-title sm">적은 쪽을 살리는 세 가지 방법</h2>
   <div class="rule"></div>
   <div class="body">
@@ -934,17 +943,15 @@ bees 1.0000</div>
     <div class="keymsg"><span class="k">기준</span><div>불균형은 <b>고치는 문제가 아니라 선택하는 문제</b>다. 어느 실수를 감당할지 먼저 정한다.</div></div>
   </div>
 </section>
-
-<section class="slide section" data-title="[섹션] 판정 문턱">
-  <div class="ghost">03</div>
-  <div class="seyebrow">CHAPTER 03</div>
-  <h2>판정 문턱</h2>
-  <div class="agenda"><span>확률</span><span>문턱</span><span>비용</span></div>
+<section class="slide section" data-title="[섹션] 문턱과 근거">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="ghost">04</div>
+  <div class="sec-in"><div class="ch">CHAPTER 04</div><h2>문턱과 근거</h2>
+  <div class="sec-words"><span>확률</span><span>맞바꿈</span><span>히트맵</span></div></div>
 </section>
-
 <section class="slide" data-title="확률을 그대로 쓴다">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>원리</div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>원리</div>
   <h2 class="s-title sm">모델이 내놓는 것은 판정이 아니라 확률</h2>
   <div class="rule"></div>
   <div class="body">
@@ -998,10 +1005,9 @@ pred = (p &gt; <span class="nm">0.5</span>).long()</code></pre>
     <div class="keymsg"><span class="k">착안</span><div>문턱은 <b>모델이 정하는 것이 아니라 쓰는 사람이 정하는 것</b>이다. 무엇을 더 아까워하는지에 달렸다.</div></div>
   </div>
 </section>
-
 <section class="slide" data-title="문턱을 올리면">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>측정</div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>측정</div>
   <h2 class="s-title sm">문턱 0.3 에서 0.9 까지의 맞바꿈</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1022,249 +1028,9 @@ pred = (p &gt; <span class="nm">0.5</span>).long()</code></pre>
     <div class="keymsg"><span class="k">기준</span><div>불량을 놓치는 것이 비싸면 <b>문턱을 낮춘다</b>. 헛짚어 재검사하는 비용이 비싸면 올린다.</div></div>
   </div>
 </section>
-<section class="slide section" data-title="[섹션] 늘리기와 내보내기">
-  <div class="ghost">04</div>
-  <div class="seyebrow">CHAPTER 04</div>
-  <h2>늘리기와 내보내기</h2>
-  <div class="agenda"><span>증강</span><span>분포 차이</span><span>저장</span></div>
-</section>
-
-<section class="slide" data-title="증강이란">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>기법</div>
-  <h2 class="s-title sm">같은 사진을 매번 다르게 잘라 넣는 방법</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol w">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">읽을 때마다 달라지는 변환</span></div>
-          <pre><code>AUG = transforms.Compose([
-    transforms.RandomResizedCrop(<span class="nm">224</span>, scale=(<span class="nm">0.7</span>, <span class="nm">1.0</span>)),
-    transforms.RandomHorizontalFlip(),
-    transforms.ToTensor(),
-    NORM])</code></pre>
-          <div class="out">같은 파일을 여섯 번 읽으면
-서로 다른 여섯 장이 된다</div>
-        </div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div>사진을 더 모으지 않고 <b>가진 것을 변형해 늘린다</b>. 244장이 1,464장이 된다.</div></div>
-        </div>
-      </div>
-      <div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div><code>RandomResizedCrop</code> 은 <b>무작위 위치에서 잘라</b> 224로 키운다. 매번 다른 부분이 보인다.</div></div>
-          <div class="v"><span class="b">→</span><div><code>RandomHorizontalFlip</code> 은 <b>절반의 확률로 좌우를 뒤집는다</b>.</div></div>
-          <div class="v"><span class="b">✕</span><div>검증에는 <b>절대 쓰지 않는다</b>. 잴 때마다 값이 달라져 비교가 안 된다.</div></div>
-          <div class="v"><span class="b">★</span><div>널리 쓰이는 기법이다. <b>그런데 이 데이터에서 실제로 들었는지는 재 봐야 안다.</b></div></div>
-        </div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">착안</span><div>증강은 <b>모델에게 &ldquo;이렇게 변해도 같은 것&rdquo; 이라고 알려 주는 일</b>이다. 다음 장에서 실제로 재 본다.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="네 조합을 재 보면">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>측정</div>
-  <h2 class="s-title sm">사진 두 장 안에 모여 있는 네 결과</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <table class="ctable">
-      <thead><tr><th>학습할 곳</th><th>증강</th><th>학습한 계수</th><th>검증 정확도</th><th>맨 위와의 차이</th></tr></thead>
-      <tbody>
-        <tr><td>마지막 층만</td><td>없음</td><td>1,026</td><td>0.9346</td><td>&mdash;</td></tr>
-        <tr><td>마지막 층만</td><td>있음</td><td>1,026</td><td>0.9412</td><td>1장</td></tr>
-        <tr><td class="hl">뒤쪽 블록까지</td><td>없음</td><td class="no">8,394,754</td><td>0.9477</td><td>2장</td></tr>
-        <tr><td class="hl">뒤쪽 블록까지</td><td>있음</td><td class="no">8,394,754</td><td>0.9412</td><td>1장</td></tr>
-      </tbody>
-    </table>
-    <div class="vlist">
-      <div class="v"><span class="b">★</span><div>네 값이 전부 <b>사진 두 장 안</b>에 있다. CH1 의 기준으로 <b>어느 쪽이 낫다고 말할 수 없다</b>.</div></div>
-      <div class="v"><span class="b">→</span><div>계수를 <b>1,026개에서 839만 개로</b> 늘렸는데도 그렇다. 8천 배를 키운 값어치가 안 보인다.</div></div>
-      <div class="v"><span class="b">→</span><div>이럴 때는 <b>가장 단순하고 빠른 것</b>을 고른다. 맨 윗줄이다.</div></div>
-    </div>
-    <div class="keymsg"><span class="k">판단</span><div>널리 쓰이는 기법이라고 <b>내 데이터에서도 듣는 것은 아니다</b>. 재 보고 정한다.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="왜 안 들었는가">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>측정</div>
-  <h2 class="s-title sm">이미 강한 것을 더 보여 준 탓</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <table class="ctable">
-      <thead><tr><th>검증 사진을 이렇게 바꾸면</th><th>정확도</th><th>더 틀린 사진</th></tr></thead>
-      <tbody>
-        <tr><td>그대로</td><td>0.9608</td><td>&mdash;</td></tr>
-        <tr><td class="hl">좌우 뒤집기</td><td class="yes">0.9608</td><td class="yes">0장</td></tr>
-        <tr><td>어둡게 (밝기 0.5배)</td><td>0.9412</td><td>3장</td></tr>
-        <tr><td>흑백으로</td><td class="no">0.8954</td><td class="no">10장</td></tr>
-        <tr><td class="hl">흐리게</td><td class="no">0.8627</td><td class="no">15장</td></tr>
-      </tbody>
-    </table>
-    <div class="vlist">
-      <div class="v"><span class="b">★</span><div>좌우를 뒤집어도 <b>한 장도 더 안 틀린다</b>. 가져온 모델이 <b>이미 그 변형에 강하다</b>.</div></div>
-      <div class="v"><span class="b">→</span><div>그러니 좌우 뒤집기로 사진을 여섯 배 늘려도 <b>새로 알려 준 것이 없다</b>. 증강이 안 들었던 이유다.</div></div>
-      <div class="v"><span class="b">✕</span><div>정작 약한 것은 <b>흐림과 흑백</b>이다. 그런데 증강 목록에는 그것이 없었다.</div></div>
-    </div>
-    <div class="keymsg"><span class="k">원인</span><div>증강은 <b>모델이 약한 쪽</b>을 채울 때만 듣는다. 이미 강한 것을 늘리는 것은 헛일이다.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="무엇을 증강할 것인가">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>기준</div>
-  <h2 class="s-title sm">현장에서 실제로 생기는 변형</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twopane">
-      <div class="pane good">
-        <h4>넣을 만한 것</h4>
-        <p><b>조명이 바뀐다</b> &mdash; 밝기 · 대비 변형<br>
-           <b>초점이 나간다</b> &mdash; 흐림 변형<br>
-           <b>놓는 각도가 다르다</b> &mdash; 회전 · 이동<br>
-           <b>카메라가 바뀐다</b> &mdash; 색조 변형</p>
-        <p>공통점 하나다. <b>현장에서 실제로 일어나는 일</b>이다.</p>
-      </div>
-      <div class="pane bad">
-        <h4>넣으면 해로운 것</h4>
-        <p><b>상하 뒤집기</b> &mdash; 제품이 뒤집혀 오지 않는다면<br>
-           <b>심한 회전</b> &mdash; 놓는 방향이 정해져 있다면<br>
-           <b>과한 자르기</b> &mdash; 판정할 부위가 잘려 나간다</p>
-        <p>일어나지 않을 변형을 배우면 <b>진짜 신호를 흐린다</b>.</p>
-      </div>
-    </div>
-    <div class="vlist">
-      <div class="v"><span class="b">★</span><div>정하는 방법은 하나다. <b>현장 사진 몇 장을 실제로 변형해 보고</b> 정확도가 떨어지는 것만 고른다.</div></div>
-      <div class="v"><span class="b">→</span><div>앞 장의 표가 그 방법이다. <b>흐림에서 15장이 떨어졌으니</b> 흐림 증강은 넣을 값이 있다.</div></div>
-    </div>
-    <div class="keymsg"><span class="k">순서</span><div>증강을 고르기 전에 <b>무엇에 약한지 먼저 잰다</b>. 목록부터 베끼면 헛일을 한다.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="저장과 불러오기">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>배포</div>
-  <h2 class="s-title sm">0.01MB 로 끝나는 저장</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol w">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">배운 것만 저장한다</span></div>
-          <pre><code>torch.save(head.state_dict(), <span class="st">'head.pt'</span>)
-
-<span class="cm"># 불러올 때</span>
-head = nn.Linear(<span class="nm">512</span>, <span class="nm">2</span>)
-head.load_state_dict(torch.load(<span class="st">'head.pt'</span>))
-head.eval()</code></pre>
-          <div class="out">head.pt   0.01 MB
-full.pt  44.78 MB</div>
-        </div>
-      </div>
-      <div>
-        <div class="vlist">
-          <div class="v"><span class="b">→</span><div>마지막 층만 저장하면 <b>0.01MB</b> 다. 앞쪽은 공개된 것을 받으면 되니 넣을 이유가 없다.</div></div>
-          <div class="v"><span class="b">→</span><div>모델 전체를 저장하면 <b>44.78MB</b> 다. 뒤쪽 블록까지 학습했다면 이쪽을 저장해야 한다.</div></div>
-          <div class="v"><span class="b">★</span><div><code>eval()</code> 을 <b>반드시</b> 부른다. 안 부르면 판정할 때마다 값이 조금씩 달라진다.</div></div>
-          <div class="v"><span class="b">★</span><div>모델 파일과 함께 <b>변환 코드와 클래스 순서</b>를 같이 남긴다. 셋이 안 맞으면 조용히 틀린다.</div></div>
-        </div>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">챙길 것</span><div>넘길 것은 세 가지다. <b>계수 파일 · 변환 코드 · 클래스 순서.</b> 하나만 빠져도 못 쓴다.</div></div>
-  </div>
-</section>
-
-<section class="slide" data-title="현장에 내기 전">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>점검</div>
-  <h2 class="s-title sm">내보내기 전에 확인하는 다섯 줄</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="vlist">
-      <div class="v"><span class="b">1</span><div><b>검증이 몇 장인가.</b> 한 장이 몇 %인지 계산해 둔다. 153장이면 0.65% 다.</div></div>
-      <div class="v"><span class="b">2</span><div><b>종류별로 쟀는가.</b> 전체 정확도만 보면 한쪽이 무너진 것을 놓친다.</div></div>
-      <div class="v"><span class="b">3</span><div><b>문턱을 정했는가.</b> 0.5 는 정한 값이 아니라 안 정한 값이다.</div></div>
-      <div class="v"><span class="b">4</span><div><b>무엇에 약한지 쟀는가.</b> 어둡게 · 흐리게 · 흑백으로 바꿔 넣어 본다.</div></div>
-      <div class="v"><span class="b">5</span><div><b>변환과 클래스 순서를 같이 넘겼는가.</b> 계수만 넘기면 상대가 못 쓴다.</div></div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>다섯 줄 중 <b>넷째가 가장 자주 빠진다</b>. 검증 사진은 현장 사진이 아니다.</div></div>
-  </div>
-</section>
-<section class="slide section" data-title="[섹션] GPU 에서 돌리기">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="ghost">05</div>
-  <div class="sec-in"><div class="ch">CHAPTER 05</div><h2>GPU 에서 돌리기</h2>
-  <div class="sec-words"><span>런타임</span><span>cuda</span><span>재 보기</span></div></div>
-</section>
-<section class="slide" data-title="왜 GPU 인가">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>동기</div>
-  <h2 class="s-title sm">같은 계산을 수천 개씩 한꺼번에 하는 장치</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>합성곱은 <b>같은 곱셈 덧셈을 자리마다 되풀이</b>한다. 1,024자리를 순서대로 할 이유가 없다.</div></div><div class="v"><span class="b">&rarr;</span><div>CPU 는 <b>복잡한 일을 빠르게 하나씩</b> 한다. GPU 는 <b>단순한 일을 한꺼번에 수천 개</b> 한다.</div></div><div class="v"><span class="b">&#9733;</span><div>그래서 딥러닝은 GPU 에서 <b>몇 배에서 몇십 배</b> 빨라진다. 어떤 계산이냐에 따라 다르다.</div></div></div></div><div><div class="vlist"><div class="v"><span class="b">&#10005;</span><div>GPU 가 늘 이기는 것은 아니다. <b>사진 한 장</b>만 넣으면 옮기는 시간이 더 들어 오히려 느릴 수 있다.</div></div><div class="v"><span class="b">&rarr;</span><div>묶음이 클수록 GPU 가 유리하다. <code>batch_size</code> 를 키워야 값어치가 나온다.</div></div></div></div></div>
-    <div class="keymsg"><span class="k">동기</span><div>GPU 는 <b>단순한 계산을 한꺼번에 하는 장치</b>다. 딥러닝 계산이 정확히 그런 모양이다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="런타임 바꾸기">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>준비</div>
-  <h2 class="s-title sm">메뉴 세 번으로 켜는 T4</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">1</span><div><code>런타임</code> &rarr; <code>런타임 유형 변경</code> 을 누른다.</div></div><div class="v"><span class="b">2</span><div>하드웨어 가속기에서 <b>T4 GPU</b> 를 고른다.</div></div><div class="v"><span class="b">3</span><div><code>저장</code> 을 누르면 <b>런타임이 다시 시작된다</b>. 앞에서 만든 변수가 전부 사라진다.</div></div><div class="v"><span class="b">&#9733;</span><div>그래서 <b>맨 처음에 바꾼다</b>. 학습을 다 돌린 뒤에 바꾸면 처음부터 다시다.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">켜졌는지 확인하는 두 줄</span></div><pre><code><span class="fn2">print</span>(torch.cuda.is_available())
-<span class="fn2">print</span>(torch.cuda.get_device_name(<span class="nm">0</span>))</code></pre><div class="out">True
-Tesla T4</div></div></div></div>
-    <div class="keymsg"><span class="k">준비</span><div>런타임을 바꾸면 <b>변수가 다 지워진다</b>. 켜는 것은 맨 처음에 한다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="장치 옮기기">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>코드</div>
-  <h2 class="s-title sm">모델과 자료를 같은 곳에 두는 한 줄</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">옮기는 것은 둘뿐이다</span></div><pre><code>device = <span class="st">'cuda'</span> <span class="kw">if</span> torch.cuda.is_available() <span class="kw">else</span> <span class="st">'cpu'</span>
-
-net = net.to(device)          <span class="cm"># 모델을 옮긴다</span>
-xb  = xb.to(device)           <span class="cm"># 자료도 옮긴다</span>
-
-out = net(xb)                 <span class="cm"># 둘이 같은 곳에 있어야 돈다</span>
-out = out.cpu()               <span class="cm"># 그림 그리려면 다시 가져온다</span></code></pre></div></div><div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div><b>모델과 자료가 같은 장치</b>에 있어야 한다. 하나만 옮기면 에러가 난다.</div></div><div class="v"><span class="b">&#10005;</span><div><code>Expected all tensors to be on the same device</code> 가 그 에러다. 둘 중 하나를 안 옮긴 것이다.</div></div><div class="v"><span class="b">&rarr;</span><div><code>matplotlib</code> 이나 <code>numpy</code> 로 넘길 때는 <code>.cpu()</code> 로 되가져온다.</div></div><div class="v"><span class="b">&#9733;</span><div><code>device</code> 를 한 번 정해 두고 쓰면 <b>GPU 가 없는 곳에서도 같은 코드가 돈다</b>.</div></div></div></div></div>
-    <div class="keymsg"><span class="k">코드</span><div>옮길 것은 <b>모델과 자료 둘</b>이다. 같은 곳에 없으면 돌지 않는다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="직접 재 보기">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>실습</div>
-  <h2 class="s-title sm">CPU 와 T4 를 같은 코드로 재는 표</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">시간 재는 세 줄</span></div><pre><code><span class="kw">import</span> time
-
-t0 = time.time()
-Xtr, Ytr = feats(train)
-<span class="fn2">print</span>(<span class="st">'%.1f초'</span> % (time.time() - t0))</code></pre><div class="out">9.4초   ← CPU 에서 잰 값</div></div></div><div><table class="ctable"><thead><tr><th>재는 것</th><th>CPU 실측</th><th>T4 · 직접 적는다</th></tr></thead><tbody><tr><td>특징 뽑기 397장</td><td>9.4초</td><td class="hl"></td></tr><tr><td>resnet18 한 장</td><td>8.3 ms</td><td class="hl"></td></tr><tr><td>YOLO 한 장</td><td>25.7 ms</td><td class="hl"></td></tr></tbody></table><div class="cap">왼쪽은 이 자료를 만들 때 잰 값이다 &mdash; 오른쪽은 수업에서 직접 채운다</div></div></div>
-    <div class="keymsg"><span class="k">실습</span><div><b>재 보지 않으면 모른다</b>. 같은 코드를 두 런타임에서 돌려 표를 채운다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="GPU 가 늘 답은 아니다">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>판단</div>
-  <h2 class="s-title sm">한 장씩 넣을 때 오히려 느려지는 이유</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>GPU 로 계산하려면 <b>자료를 GPU 메모리로 옮겨야</b> 한다. 이 옮기는 시간이 공짜가 아니다.</div></div><div class="v"><span class="b">&rarr;</span><div>사진 한 장이면 <b>옮기는 시간이 계산 시간보다 크다</b>. 128장을 한 번에 옮기면 그 값이 나눠진다.</div></div><div class="v"><span class="b">&#9733;</span><div>그래서 <code>batch_size</code> 를 키운다. 다만 <b>GPU 메모리를 넘기면 <code>CUDA out of memory</code></b> 가 난다. 그때는 줄인다.</div></div><div class="v"><span class="b">&#10005;</span><div>표 자료에 <code>DecisionTree</code> 를 쓰는 일 같은 것은 GPU 와 상관이 없다. <b>딥러닝이 아니면 얻을 것이 없다</b>.</div></div></div>
-    <div class="keymsg"><span class="k">판단</span><div>GPU 는 <b>많이 한꺼번에</b> 할 때 이긴다. 조금씩 하면 옮기는 값이 더 든다.</div></div>
-  </div>
-</section>
-<section class="slide section" data-title="[섹션] 판정 근거">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="ghost">06</div>
-  <div class="sec-in"><div class="ch">CHAPTER 06</div><h2>판정 근거</h2>
-  <div class="sec-words"><span>히트맵</span><span>틀린 것</span><span>믿는 법</span></div></div>
-</section>
 <section class="slide" data-title="확신 0.996 으로 틀린 사진">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>동기</div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>동기</div>
   <h2 class="s-title sm">가장 자신 있게 틀린 한 장</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1294,7 +1060,7 @@ Xtr, Ytr = feats(train)
 </section>
 <section class="slide" data-title="정확도가 가리는 것">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>동기</div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>동기</div>
   <h2 class="s-title sm">같은 0.9608 이 뜻할 수 있는 두 가지</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1319,8 +1085,8 @@ Xtr, Ytr = feats(train)
 </section>
 <section class="slide" data-title="어느 지도가 중요했나">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>원리</div>
-  <h2 class="s-title sm">기울기로 재는 지도 512장의 무게</h2>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>원리</div>
+  <h2 class="s-title sm">답을 가른 특징 지도 몇 장</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="vlist">
@@ -1338,8 +1104,8 @@ Xtr, Ytr = feats(train)
 </section>
 <section class="slide" data-title="코드">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>코드</div>
-  <h2 class="s-title sm">특징 지도를 가로채는 갈고리</h2>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>코드</div>
+  <h2 class="s-title sm">중간 결과를 꺼내 오는 한 줄</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twocol w2">
@@ -1371,12 +1137,12 @@ cam = F.relu((w * A).sum(<span class="nm">1</span>, keepdim=<span class="kw">Tru
         </div>
       </div>
     </div>
-    <div class="keymsg"><span class="k">규모</span><div>새로 배우는 것은 <b>갈고리와 <code>autograd.grad</code> 둘</b>뿐이다. 나머지는 이미 쓰던 것이다.</div></div>
+    <div class="keymsg"><span class="k">규모</span><div>새로 배우는 것은 <b><code>hook</code> 과 <code>autograd.grad</code> 둘</b>뿐이다. 나머지는 이미 쓰던 것이다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="맞힌 사진의 히트맵">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>실측</div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>실측</div>
   <h2 class="s-title sm">벌이라 답한 두 장이 본 곳</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1406,7 +1172,7 @@ cam = F.relu((w * A).sum(<span class="nm">1</span>, keepdim=<span class="kw">Tru
       <div class="cap">붉을수록 판정 점수를 많이 올린 자리다</div>
     </div>
     <div class="vlist">
-      <div class="v"><span class="b">★</span><div>두 장 모두 <b>벌의 몸통</b>에 붉은 자리가 얹혔다. 꽃이 아니라 벌을 보고 답했다.</div></div>
+      <div class="v"><span class="b">★</span><div>붉은 자리가 두 장 모두 <b>벌의 몸통</b>에 겹쳤다. 꽃이 아니라 벌을 보고 답했다.</div></div>
       <div class="v"><span class="b">→</span><div>이런 그림이 나오면 <b>믿고 쓸 만하다</b>는 신호다. 배경이 달라져도 통할 가능성이 크다.</div></div>
     </div>
     <div class="keymsg"><span class="k">읽는 법</span><div>히트맵은 <b>정답을 표시한 것이 아니다</b>. 모델이 그 답을 낼 때 <b>점수를 올린 자리</b>다.</div></div>
@@ -1414,7 +1180,7 @@ cam = F.relu((w * A).sum(<span class="nm">1</span>, keepdim=<span class="kw">Tru
 </section>
 <section class="slide" data-title="마른 잎을 본 벌">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>실측</div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>실측</div>
   <h2 class="s-title sm">벌은 안 보고 잎을 본 0.996</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1439,7 +1205,7 @@ cam = F.relu((w * A).sum(<span class="nm">1</span>, keepdim=<span class="kw">Tru
 모델의 답  <span class="err">개미</span>
 확신      <b>0.996</b></div>
         <div class="vlist">
-          <div class="v"><span class="b">★</span><div>히트맵이 <b>마른 잎과 흙</b>을 덮고 있다. 벌의 몸에는 거의 안 얹혔다.</div></div>
+          <div class="v"><span class="b">★</span><div>히트맵이 <b>마른 잎과 흙</b>을 덮고 있다. 벌의 몸에는 거의 걸치지 않았다.</div></div>
           <div class="v"><span class="b">→</span><div>훈련 사진에서 <b>개미는 땅과 잎 위</b>에 있었다. 그 배경을 개미의 표시로 배운 것이다.</div></div>
           <div class="v"><span class="b">→</span><div>정확도만 봤다면 <b>그냥 어려운 사진</b>으로 넘겼을 것이다. 히트맵이 원인을 짚어 준다.</div></div>
         </div>
@@ -1450,7 +1216,7 @@ cam = F.relu((w * A).sum(<span class="nm">1</span>, keepdim=<span class="kw">Tru
 </section>
 <section class="slide" data-title="히트맵을 검증하기">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>측정</div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>측정</div>
   <h2 class="s-title sm">히트맵이 짚은 곳을 가려 본 결과</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1473,7 +1239,7 @@ cam = F.relu((w * A).sum(<span class="nm">1</span>, keepdim=<span class="kw">Tru
 </section>
 <section class="slide" data-title="히트맵의 한계">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>한계</div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>한계</div>
   <h2 class="s-title sm">히트맵이 말해 주지 않는 것</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1492,95 +1258,177 @@ cam = F.relu((w * A).sum(<span class="nm">1</span>, keepdim=<span class="kw">Tru
       </div>
     </div>
     <div class="vlist">
-      <div class="v"><span class="b">✕</span><div>히트맵이 <b>대상 위에 잘 얹혔다고 정답인 것도 아니다</b>. 대상을 보고도 틀릴 수 있다.</div></div>
+      <div class="v"><span class="b">✕</span><div>히트맵이 <b>대상 위에 잘 겹쳤다고 정답인 것도 아니다</b>. 대상을 보고도 틀릴 수 있다.</div></div>
       <div class="v"><span class="b">★</span><div>쓰임은 하나로 좁혀진다 &mdash; <b>의심할 곳을 찾는 도구</b>다. 판정을 대신하지 않는다.</div></div>
     </div>
     <div class="keymsg"><span class="k">기준</span><div>히트맵은 <b>답이 아니라 물음</b>을 준다. &ldquo;왜 저기를 봤지?&rdquo; 에서 조사가 시작된다.</div></div>
   </div>
 </section>
-<section class="slide section" data-title="[섹션] 객체탐지">
+<section class="slide section" data-title="[섹션] 현장에 내보내기">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="ghost">07</div>
-  <div class="sec-in"><div class="ch">CHAPTER 07</div><h2>객체탐지</h2>
-  <div class="sec-words"><span>박스</span><span>신뢰도</span><span>겹침 정리</span></div></div>
+  <div class="ghost">05</div>
+  <div class="sec-in"><div class="ch">CHAPTER 05</div><h2>현장에 내보내기</h2>
+  <div class="sec-words"><span>증강</span><span>저장</span><span>점검</span></div></div>
 </section>
-<section class="slide" data-title="분류와 탐지">
+<section class="slide" data-title="증강이란">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>구분</div>
-  <h2 class="s-title sm">한 장에 답 하나가 아니라 답 여럿</h2>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>기법</div>
+  <h2 class="s-title sm">같은 사진을 매번 다르게 잘라 넣는 방법</h2>
   <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>지금까지는 <b>사진 한 장에 답 하나</b>였다. 개미냐 벌이냐.</div></div><div class="v"><span class="b">&rarr;</span><div>탐지는 <b>무엇이</b> <b>어디에</b> 있는지를 답한다. 한 장에 여럿이 나온다.</div></div><div class="v"><span class="b">&#9733;</span><div>그래서 답이 <b>이름 + 네 숫자 + 신뢰도</b>다. 네 숫자가 박스의 자리다.</div></div></div></div><div><table class="ctable"><thead><tr><th></th><th>분류</th><th>탐지</th></tr></thead><tbody><tr><td>한 장의 답</td><td>하나</td><td class="hl">여럿</td></tr><tr><td>답의 모양</td><td>종류 이름</td><td class="hl">이름 + 박스 + 신뢰도</td></tr><tr><td>필요한 정답표</td><td>폴더 이름</td><td class="hl">사진마다 박스 좌표</td></tr><tr><td>오늘 쓴 것</td><td>resnet18</td><td class="hl">YOLO11n</td></tr></tbody></table></div></div>
-    <div class="keymsg"><span class="k">구분</span><div>탐지는 <b>무엇이 어디에</b>를 답한다. 그래서 정답표에 <b>박스 좌표</b>가 있어야 한다.</div></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">읽을 때마다 달라지는 변환</span></div>
+          <pre><code>AUG = transforms.Compose([
+    transforms.RandomResizedCrop(<span class="nm">224</span>, scale=(<span class="nm">0.7</span>, <span class="nm">1.0</span>)),
+    transforms.RandomHorizontalFlip(),
+    transforms.ToTensor(),
+    NORM])</code></pre>
+          <div class="out">같은 파일을 여섯 번 읽으면
+서로 다른 여섯 장이 된다</div>
+        </div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>사진을 더 모으지 않고 <b>가진 것을 변형해 늘린다</b>. 244장이 1,464장이 된다.</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div><code>RandomResizedCrop</code> 은 <b>무작위 위치에서 잘라</b> 224로 키운다. 매번 다른 부분이 보인다.</div></div>
+          <div class="v"><span class="b">→</span><div><code>RandomHorizontalFlip</code> 은 <b>절반의 확률로 좌우를 뒤집는다</b>.</div></div>
+          <div class="v"><span class="b">✕</span><div>검증에는 <b>절대 쓰지 않는다</b>. 잴 때마다 값이 달라져 비교가 안 된다.</div></div>
+          <div class="v"><span class="b">★</span><div>널리 쓰이는 기법이다. <b>그런데 이 데이터에서 실제로 들었는지는 재 봐야 안다.</b></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">착안</span><div>증강은 <b>모델에게 &ldquo;이렇게 변해도 같은 것&rdquo; 이라고 알려 주는 일</b>이다. 다음 장에서 실제로 재 본다.</div></div>
   </div>
 </section>
-<section class="slide" data-title="박스 네 숫자">
+<section class="slide" data-title="네 조합을 재 보면">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>형식</div>
-  <h2 class="s-title sm">왼쪽 위와 오른쪽 아래를 적는 네 숫자</h2>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>측정</div>
+  <h2 class="s-title sm">네 조합이 사진 두 장 차이에 몰린 결과</h2>
   <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">박스 하나를 읽는 법</span></div><pre><code>box = [<span class="nm">4</span>, <span class="nm">229</span>, <span class="nm">796</span>, <span class="nm">728</span>]
-x1, y1, x2, y2 = box
+  <div class="body">
+    <table class="ctable">
+      <thead><tr><th>학습할 곳</th><th>증강</th><th>학습한 계수</th><th>검증 정확도</th><th>맨 위와의 차이</th></tr></thead>
+      <tbody>
+        <tr><td>마지막 층만</td><td>없음</td><td>1,026</td><td>0.9346</td><td>&mdash;</td></tr>
+        <tr><td>마지막 층만</td><td>있음</td><td>1,026</td><td>0.9412</td><td>1장</td></tr>
+        <tr><td class="hl">뒤쪽 블록까지</td><td>없음</td><td class="no">8,394,754</td><td>0.9477</td><td>2장</td></tr>
+        <tr><td class="hl">뒤쪽 블록까지</td><td>있음</td><td class="no">8,394,754</td><td>0.9412</td><td>1장</td></tr>
+      </tbody>
+    </table>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>네 값이 전부 <b>사진 두 장 안</b>에 있다. CH1 의 기준으로 <b>어느 쪽이 낫다고 말할 수 없다</b>.</div></div>
+      <div class="v"><span class="b">→</span><div>계수를 <b>1,026개에서 839만 개로</b> 늘렸는데도 그렇다. 8천 배를 키운 값어치가 안 보인다.</div></div>
+      <div class="v"><span class="b">→</span><div>이럴 때는 <b>가장 단순하고 빠른 것</b>을 고른다. 맨 윗줄이다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">판단</span><div>널리 쓰이는 기법이라고 <b>내 데이터에서도 듣는 것은 아니다</b>. 재 보고 정한다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="왜 안 들었는가">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>측정</div>
+  <h2 class="s-title sm">이미 잘 맞히던 조건을 더 늘린 결과</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable">
+      <thead><tr><th>검증 사진을 이렇게 바꾸면</th><th>정확도</th><th>더 틀린 사진</th></tr></thead>
+      <tbody>
+        <tr><td>그대로</td><td>0.9608</td><td>&mdash;</td></tr>
+        <tr><td class="hl">좌우 뒤집기</td><td class="yes">0.9608</td><td class="yes">0장</td></tr>
+        <tr><td>어둡게 (밝기 0.5배)</td><td>0.9412</td><td>3장</td></tr>
+        <tr><td>흑백으로</td><td class="no">0.8954</td><td class="no">10장</td></tr>
+        <tr><td class="hl">흐리게</td><td class="no">0.8627</td><td class="no">15장</td></tr>
+      </tbody>
+    </table>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>좌우를 뒤집어도 <b>한 장도 더 안 틀린다</b>. 가져온 모델이 <b>이미 그 변형에 강하다</b>.</div></div>
+      <div class="v"><span class="b">→</span><div>그러니 좌우 뒤집기로 사진을 여섯 배 늘려도 <b>새로 알려 준 것이 없다</b>. 증강이 안 들었던 이유다.</div></div>
+      <div class="v"><span class="b">✕</span><div>정작 약한 것은 <b>흐림과 흑백</b>이다. 그런데 증강 목록에는 그것이 없었다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">원인</span><div>증강은 <b>모델이 약한 쪽</b>을 채울 때만 듣는다. 이미 강한 것을 늘리는 것은 헛일이다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="무엇을 증강할 것인가">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>기준</div>
+  <h2 class="s-title sm">현장에서 실제로 생기는 변형</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twopane">
+      <div class="pane good">
+        <h4>넣을 만한 것</h4>
+        <p><b>조명이 바뀐다</b> &mdash; 밝기 · 대비 변형<br>
+           <b>초점이 나간다</b> &mdash; 흐림 변형<br>
+           <b>놓는 각도가 다르다</b> &mdash; 회전 · 이동<br>
+           <b>카메라가 바뀐다</b> &mdash; 색조 변형</p>
+        <p>공통점 하나다. <b>현장에서 실제로 일어나는 일</b>이다.</p>
+      </div>
+      <div class="pane bad">
+        <h4>넣으면 해로운 것</h4>
+        <p><b>상하 뒤집기</b> &mdash; 제품이 뒤집혀 오지 않는다면<br>
+           <b>심한 회전</b> &mdash; 놓는 방향이 정해져 있다면<br>
+           <b>과한 자르기</b> &mdash; 판정할 부위가 잘려 나간다</p>
+        <p>일어나지 않을 변형을 배우면 <b>진짜 신호를 흐린다</b>.</p>
+      </div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>정하는 방법은 하나다. <b>현장 사진 몇 장을 실제로 변형해 보고</b> 정확도가 떨어지는 것만 고른다.</div></div>
+      <div class="v"><span class="b">→</span><div>앞 장의 표가 그 방법이다. <b>흐림에서 15장이 떨어졌으니</b> 흐림 증강은 넣을 값이 있다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">순서</span><div>증강을 고르기 전에 <b>무엇에 약한지 먼저 잰다</b>. 목록부터 베끼면 헛일을 한다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="저장과 불러오기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>배포</div>
+  <h2 class="s-title sm">0.01MB 로 끝나는 저장</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <div class="code sm">
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">배운 것만 저장한다</span></div>
+          <pre><code>torch.save(head.state_dict(), <span class="st">'head.pt'</span>)
 
-<span class="fn2">print</span>(<span class="st">'너비'</span>, x2 - x1)   <span class="cm"># 792</span>
-<span class="fn2">print</span>(<span class="st">'높이'</span>, y2 - y1)   <span class="cm"># 499</span></code></pre><div class="out">너비 792
-높이 499</div></div></div><div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div><code>xyxy</code> 는 <b>왼쪽 위 (x1, y1)</b> 과 <b>오른쪽 아래 (x2, y2)</b> 다. 단위는 픽셀이다.</div></div><div class="v"><span class="b">&rarr;</span><div><code>xywh</code> 로 적는 곳도 있다. <b>가운데 점과 너비 높이</b>다. 학습 파일은 대개 이쪽이다.</div></div><div class="v"><span class="b">&#9733;</span><div><b>어느 쪽인지 먼저 확인한다</b>. 섞어 쓰면 박스가 엉뚱한 곳에 그려진다.</div></div></div></div></div>
-    <div class="keymsg"><span class="k">형식</span><div>박스는 <b>네 숫자</b>다. <code>xyxy</code> 인지 <code>xywh</code> 인지부터 확인한다.</div></div>
+<span class="cm"># 불러올 때</span>
+head = nn.Linear(<span class="nm">512</span>, <span class="nm">2</span>)
+head.load_state_dict(torch.load(<span class="st">'head.pt'</span>))
+head.eval()</code></pre>
+          <div class="out">head.pt   0.01 MB
+full.pt  44.78 MB</div>
+        </div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">→</span><div>마지막 층만 저장하면 <b>0.01MB</b> 다. 앞쪽은 공개된 것을 받으면 되니 넣을 이유가 없다.</div></div>
+          <div class="v"><span class="b">→</span><div>모델 전체를 저장하면 <b>44.78MB</b> 다. 뒤쪽 블록까지 학습했다면 이쪽을 저장해야 한다.</div></div>
+          <div class="v"><span class="b">★</span><div><code>eval()</code> 을 <b>반드시</b> 부른다. 안 부르면 판정할 때마다 값이 조금씩 달라진다.</div></div>
+          <div class="v"><span class="b">★</span><div>모델 파일과 함께 <b>변환 코드와 클래스 순서</b>를 같이 남긴다. 셋이 안 맞으면 조용히 틀린다.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">챙길 것</span><div>넘길 것은 세 가지다. <b>계수 파일 · 변환 코드 · 클래스 순서.</b> 하나만 빠져도 못 쓴다.</div></div>
   </div>
 </section>
-<section class="slide" data-title="YOLO 불러 쓰기">
+<section class="slide" data-title="현장에 내기 전">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>코드</div>
-  <h2 class="s-title sm">세 줄로 끝나는 첫 탐지</h2>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>점검</div>
+  <h2 class="s-title sm">내보내기 전에 확인하는 다섯 줄</h2>
   <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">노트북 · 첫 탐지</span></div><pre><code><span class="kw">from</span> ultralytics <span class="kw">import</span> YOLO
-
-model = YOLO(<span class="st">'yolo11n.pt'</span>)      <span class="cm"># 없으면 받아 온다 · 5.6MB</span>
-r = model(<span class="st">'bus.jpg'</span>)[<span class="nm">0</span>]
-
-<span class="kw">for</span> b <span class="kw">in</span> r.boxes:
-    <span class="fn2">print</span>(model.names[<span class="fn2">int</span>(b.cls)],
-          <span class="fn2">round</span>(<span class="fn2">float</span>(b.conf), <span class="nm">3</span>),
-          [<span class="fn2">round</span>(v) <span class="kw">for</span> v <span class="kw">in</span> b.xyxy[<span class="nm">0</span>].tolist()])</code></pre><div class="out">bus      0.940  [4, 229, 796, 728]
-person   0.888  [671, 395, 810, 879]
-person   0.879  [47, 400, 239, 904]
-person   0.856  [223, 409, 344, 860]
-person   0.623  [0, 556, 69, 872]</div></div></div><div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div><code>yolo11n.pt</code> 는 <b>공개된 가중치</b>다. 계수 2,624,080개, 파일 5.6MB 다.</div></div><div class="v"><span class="b">&rarr;</span><div><code>r.boxes</code> 하나가 <b>박스 하나</b>다. <code>cls</code> 종류, <code>conf</code> 신뢰도, <code>xyxy</code> 자리다.</div></div><div class="v"><span class="b">&#9733;</span><div>학습을 한 줄도 안 했다. <b>남이 학습해 둔 것을 그대로 쓴 것</b>이다.</div></div></div></div></div>
-    <div class="keymsg"><span class="k">코드</span><div>탐지도 <b>가져다 쓰는 것부터</b> 한다. 사진 한 장에 25.7 ms 걸린다.</div></div>
+  <div class="body">
+    <div class="vlist">
+      <div class="v"><span class="b">1</span><div><b>검증이 몇 장인가.</b> 한 장이 몇 %인지 계산해 둔다. 153장이면 0.65% 다.</div></div>
+      <div class="v"><span class="b">2</span><div><b>종류별로 쟀는가.</b> 전체 정확도만 보면 한쪽이 무너진 것을 놓친다.</div></div>
+      <div class="v"><span class="b">3</span><div><b>문턱을 정했는가.</b> 0.5 는 정한 값이 아니라 안 정한 값이다.</div></div>
+      <div class="v"><span class="b">4</span><div><b>무엇에 약한지 쟀는가.</b> 어둡게 · 흐리게 · 흑백으로 바꿔 넣어 본다.</div></div>
+      <div class="v"><span class="b">5</span><div><b>변환과 클래스 순서를 같이 넘겼는가.</b> 계수만 넘기면 상대가 못 쓴다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>다섯 줄 중 <b>넷째가 가장 자주 빠진다</b>. 검증 사진은 현장 사진이 아니다.</div></div>
   </div>
 </section>
-<section class="slide" data-title="신뢰도 문턱">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>측정</div>
-  <h2 class="s-title sm">문턱을 내릴 때 237개까지 늘어나는 박스</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><table class="ctable"><thead><tr><th>신뢰도 문턱</th><th>남는 박스</th></tr></thead><tbody><tr><td>0.001</td><td class="">237개</td></tr><tr><td>0.05</td><td class="">11개</td></tr><tr><td>0.25</td><td class="hl">5개</td></tr><tr><td>0.5</td><td class="">5개</td></tr></tbody></table><div class="cap">같은 사진 &middot; 같은 모델이다 &mdash; 바뀐 것은 문턱뿐이다</div></div><div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>모델은 늘 <b>수백 개의 후보</b>를 낸다. 눈에 보이는 다섯 개는 <b>문턱을 넘은 것</b>뿐이다.</div></div><div class="v"><span class="b">&rarr;</span><div>문턱을 <code>0.001</code> 로 내리면 <b>237개</b>가 나온다. 대부분은 확신 없는 헛짚음이다.</div></div><div class="v"><span class="b">&#9733;</span><div>day6 앞에서 본 <b>판정 문턱과 같은 이야기</b>다. 놓치는 쪽과 헛짚는 쪽 중 무엇을 감당할지 정하는 것이다.</div></div><div class="v"><span class="b">&rarr;</span><div>기본값은 <code>conf=0.25</code> 다. 놓치면 안 되는 일이면 내리고, 헛짚으면 곤란하면 올린다.</div></div></div></div></div>
-    <div class="keymsg"><span class="k">측정</span><div>탐지에도 문턱이 있다. <b>기본값 0.25 는 누가 정해 준 것이 아니다</b>.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="겹침 정리">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>원리</div>
-  <h2 class="s-title sm">같은 것을 가리키는 박스 35개를 5개로</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>한 물체 위에 <b>비슷한 박스가 여러 개</b> 생긴다. 조금씩 어긋난 자리에서 다 반응하기 때문이다.</div></div><div class="v"><span class="b">&rarr;</span><div>그래서 <b>가장 신뢰도 높은 박스를 남기고 그것과 많이 겹치는 것을 지운다</b>. 이것을 겹침 정리라 한다.</div></div><div class="v"><span class="b">&#9733;</span><div>실제로 껐다 켜 보면 <b>35개 &rarr; 5개</b> 다. 대부분이 같은 것을 가리키던 박스다.</div></div><div class="v"><span class="b">&rarr;</span><div>얼마나 겹쳐야 지울지는 <code>iou</code> 로 정한다. 기본은 <code>0.7</code> 이다.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">겹침 정리를 껐다 켜 본다</span></div><pre><code>r = model(img, conf=<span class="nm">0.25</span>, iou=<span class="nm">0.7</span>)[<span class="nm">0</span>]
-<span class="fn2">print</span>(<span class="fn2">len</span>(r.boxes))       <span class="cm"># 5</span>
-
-r = model(img, conf=<span class="nm">0.25</span>, iou=<span class="nm">0.99</span>)[<span class="nm">0</span>]
-<span class="fn2">print</span>(<span class="fn2">len</span>(r.boxes))       <span class="cm"># 거의 안 지운다</span></code></pre><div class="out">5
-35</div></div></div></div>
-    <div class="keymsg"><span class="k">원리</span><div>겹침 정리(<code>NMS</code>)가 <b>같은 것을 가리키는 박스를 하나로</b> 줄인다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="COCO 80종">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>한계</div>
-  <h2 class="s-title sm">개미 사진을 새라고 부른 86번</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><table class="ctable"><thead><tr><th>YOLO 가 답한 것</th><th>횟수</th></tr></thead><tbody><tr><td>bird</td><td class="hl">86번</td></tr><tr><td>person</td><td class="">10번</td></tr><tr><td>banana</td><td class="">10번</td></tr><tr><td>carrot</td><td class="">9번</td></tr><tr><td>apple</td><td class="">6번</td></tr><tr><td>dog</td><td class="">5번</td></tr></tbody></table><div class="cap">개미 &middot; 벌 사진 40장을 그대로 넣은 결과다</div></div><div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div><code>yolo11n.pt</code> 가 아는 것은 <b>COCO 80종</b>이다. 사람 자동차 개 고양이 같은 것이다.</div></div><div class="v"><span class="b">&#10005;</span><div>그 80종에 <b><code>ant</code> 도 <code>bee</code> 도 없다</b>. 없는 이름은 답할 방법이 없다.</div></div><div class="v"><span class="b">&#9733;</span><div>그래서 개미를 <b>새라고 86번</b> 불렀다. 모델이 고장 난 것이 아니라 <b>배운 적이 없는 것</b>이다.</div></div><div class="v"><span class="b">&rarr;</span><div>여기서 두 갈래다. <b>남의 이름표로 만족하거나</b>, <b>내 이름표를 가르치거나</b>.</div></div></div></div></div>
-    <div class="keymsg"><span class="k">한계</span><div>받아 온 모델은 <b>배운 것만 답한다</b>. 내 것을 찾게 하려면 가르쳐야 한다.</div></div>
-  </div>
-</section>
-
 <section class="slide" data-title="실습 · 내 폴더로">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">LAB</span><span class="dot"></span>실습</div>
@@ -1609,23 +1457,304 @@ val   = datasets.ImageFolder(<span class="st">'data/val'</span>, T)
     <div class="keymsg"><span class="k">확인</span><div>모든 비교에 <b>차이를 사진 장수로</b> 적는다. 두 장 이내면 판단을 보류한다.</div></div>
   </div>
 </section>
+<section class="slide section" data-title="[섹션] 분류로 안 되는 일">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="ghost">06</div>
+  <div class="sec-in"><div class="ch">CHAPTER 06</div><h2>분류로 안 되는 일</h2>
+  <div class="sec-words"><span>박스</span><span>신뢰도</span><span>겹침</span></div></div>
+</section>
+<section class="slide" data-title="분류와 탐지">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>구분</div>
+  <h2 class="s-title sm">한 장에 답 하나가 아니라 답 여럿</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>지금까지는 <b>사진 한 장에 답 하나</b>였다. 개미냐 벌이냐.</div></div><div class="v"><span class="b">&rarr;</span><div>탐지는 <b>무엇이</b> <b>어디에</b> 있는지를 답한다. 한 장에 여럿이 나온다.</div></div><div class="v"><span class="b">&#9733;</span><div>그래서 답이 <b>이름 + 네 숫자 + 신뢰도</b>다. 네 숫자가 박스의 자리다.</div></div></div></div><div><table class="ctable"><thead><tr><th></th><th>분류</th><th>탐지</th></tr></thead><tbody><tr><td>한 장의 답</td><td>하나</td><td class="hl">여럿</td></tr><tr><td>답의 모양</td><td>종류 이름</td><td class="hl">이름 + 박스 + 신뢰도</td></tr><tr><td>필요한 정답표</td><td>폴더 이름</td><td class="hl">사진마다 박스 좌표</td></tr><tr><td>오늘 쓴 것</td><td>resnet18</td><td class="hl">YOLO11n</td></tr></tbody></table></div></div>
+    <div class="keymsg"><span class="k">구분</span><div>탐지는 <b>무엇이 어디에</b>를 답한다. 그래서 정답표에 <b>박스 좌표</b>가 있어야 한다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="박스 네 숫자">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>형식</div>
+  <h2 class="s-title sm">왼쪽 위와 오른쪽 아래를 적는 네 숫자</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">박스 하나를 읽는 법</span></div><pre><code>box = [<span class="nm">4</span>, <span class="nm">229</span>, <span class="nm">796</span>, <span class="nm">728</span>]
+x1, y1, x2, y2 = box
 
+<span class="fn2">print</span>(<span class="st">'너비'</span>, x2 - x1)   <span class="cm"># 792</span>
+<span class="fn2">print</span>(<span class="st">'높이'</span>, y2 - y1)   <span class="cm"># 499</span></code></pre><div class="out">너비 792
+높이 499</div></div></div><div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div><code>xyxy</code> 는 <b>왼쪽 위 (x1, y1)</b> 과 <b>오른쪽 아래 (x2, y2)</b> 다. 단위는 픽셀이다.</div></div><div class="v"><span class="b">&rarr;</span><div><code>xywh</code> 로 적는 곳도 있다. <b>가운데 점과 너비 높이</b>다. 학습 파일은 대개 이쪽이다.</div></div><div class="v"><span class="b">&#9733;</span><div><b>어느 쪽인지 먼저 확인한다</b>. 섞어 쓰면 박스가 엉뚱한 곳에 그려진다.</div></div></div></div></div>
+    <div class="keymsg"><span class="k">형식</span><div>박스는 <b>네 숫자</b>다. <code>xyxy</code> 인지 <code>xywh</code> 인지부터 확인한다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="YOLO 불러 쓰기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>코드</div>
+  <h2 class="s-title sm">세 줄로 끝나는 첫 탐지</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">노트북 · 첫 탐지</span></div><pre><code><span class="kw">from</span> ultralytics <span class="kw">import</span> YOLO
+
+model = YOLO(<span class="st">'yolo11n.pt'</span>)      <span class="cm"># 없으면 받아 온다 · 5.6MB</span>
+r = model(<span class="st">'bus.jpg'</span>)[<span class="nm">0</span>]
+
+<span class="kw">for</span> b <span class="kw">in</span> r.boxes:
+    <span class="fn2">print</span>(model.names[<span class="fn2">int</span>(b.cls)],
+          <span class="fn2">round</span>(<span class="fn2">float</span>(b.conf), <span class="nm">3</span>),
+          [<span class="fn2">round</span>(v) <span class="kw">for</span> v <span class="kw">in</span> b.xyxy[<span class="nm">0</span>].tolist()])</code></pre><div class="out">bus      0.940  [4, 229, 796, 728]
+person   0.888  [671, 395, 810, 879]
+person   0.879  [47, 400, 239, 904]
+person   0.856  [223, 409, 344, 860]
+person   0.623  [0, 556, 69, 872]</div></div></div><div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div><code>yolo11n.pt</code> 는 <b>공개된 가중치</b>다. 계수 2,624,080개, 파일 5.6MB 다.</div></div><div class="v"><span class="b">&rarr;</span><div><code>r.boxes</code> 하나가 <b>박스 하나</b>다. <code>cls</code> 종류, <code>conf</code> 신뢰도, <code>xyxy</code> 자리다.</div></div><div class="v"><span class="b">&#9733;</span><div>학습을 한 줄도 안 했다. <b>남이 학습해 둔 것을 그대로 쓴 것</b>이다.</div></div></div></div></div>
+    <div class="keymsg"><span class="k">코드</span><div>탐지도 <b>가져다 쓰는 것부터</b> 한다. 사진 한 장에 25.7 ms 걸린다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="박스 그리기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>코드</div>
+  <h2 class="s-title sm">박스를 사진에 그리는 두 줄</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">결과를 눈으로 본다</span></div><pre><code>r = model(<span class="st">'bus.jpg'</span>)[<span class="nm">0</span>]
+
+im = r.plot()              <span class="cm"># 박스와 이름을 그려 준다</span>
+
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+plt.imshow(im[:, :, ::-<span class="nm">1</span>])   <span class="cm"># BGR 을 RGB 로 뒤집는다</span>
+plt.axis(<span class="st">'off'</span>); plt.show()</code></pre></div></div><div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div><code>r.plot()</code> 이 박스 &middot; 이름 &middot; 신뢰도를 그려 넣은 사진을 돌려준다.</div></div><div class="v"><span class="b">&#10005;</span><div><code>[:, :, ::-1]</code> 을 빼면 <b>색이 뒤집혀</b> 보인다. OpenCV 계열은 파랑부터 담기 때문이다.</div></div><div class="v"><span class="b">&#9733;</span><div>숫자만 보지 말고 <b>반드시 그려서 확인한다</b>. 박스가 엉뚱한 곳에 있으면 좌표 형식을 잘못 읽은 것이다.</div></div></div></div></div>
+    <div class="keymsg"><span class="k">코드</span><div>탐지는 <b>그려 봐야 안다</b>. <code>xyxy</code> 를 <code>xywh</code> 로 잘못 읽으면 숫자로는 안 보인다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="신뢰도 문턱">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>측정</div>
+  <h2 class="s-title sm">문턱을 내릴 때 237개까지 늘어나는 박스</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><table class="ctable"><thead><tr><th>신뢰도 문턱</th><th>남는 박스</th></tr></thead><tbody><tr><td>0.001</td><td class="">237개</td></tr><tr><td>0.05</td><td class="">11개</td></tr><tr><td>0.25</td><td class="hl">5개</td></tr><tr><td>0.5</td><td class="">5개</td></tr></tbody></table><div class="cap">같은 사진 &middot; 같은 모델이다 &mdash; 바뀐 것은 문턱뿐이다</div></div><div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>모델은 늘 <b>수백 개의 후보</b>를 낸다. 눈에 보이는 다섯 개는 <b>문턱을 넘은 것</b>뿐이다.</div></div><div class="v"><span class="b">&rarr;</span><div>문턱을 <code>0.001</code> 로 내리면 <b>237개</b>가 나온다. 대부분은 확신 없는 헛짚음이다.</div></div><div class="v"><span class="b">&#9733;</span><div>day6 앞에서 본 <b>판정 문턱과 같은 이야기</b>다. 놓치는 쪽과 헛짚는 쪽 중 무엇을 감당할지 정하는 것이다.</div></div><div class="v"><span class="b">&rarr;</span><div>기본값은 <code>conf=0.25</code> 다. 놓치면 안 되는 일이면 내리고, 헛짚으면 곤란하면 올린다.</div></div></div></div></div>
+    <div class="keymsg"><span class="k">측정</span><div>탐지에도 문턱이 있다. <b>기본값 0.25 는 누가 정해 준 것이 아니다</b>.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="겹침 정리">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>원리</div>
+  <h2 class="s-title sm">같은 것을 가리키는 박스 35개를 5개로</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>한 물체 위에 <b>비슷한 박스가 여러 개</b> 생긴다. 조금씩 어긋난 자리에서 다 반응하기 때문이다.</div></div><div class="v"><span class="b">&rarr;</span><div>그래서 <b>가장 신뢰도 높은 박스를 남기고 그것과 많이 겹치는 것을 지운다</b>. 이것을 겹침 정리라 한다.</div></div><div class="v"><span class="b">&#9733;</span><div>실제로 껐다 켜 보면 <b>35개 &rarr; 5개</b> 다. 대부분이 같은 것을 가리키던 박스다.</div></div><div class="v"><span class="b">&rarr;</span><div>얼마나 겹쳐야 지울지는 <code>iou</code> 로 정한다. 기본은 <code>0.7</code> 이다.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">겹침 정리를 껐다 켜 본다</span></div><pre><code>r = model(img, conf=<span class="nm">0.25</span>, iou=<span class="nm">0.7</span>)[<span class="nm">0</span>]
+<span class="fn2">print</span>(<span class="fn2">len</span>(r.boxes))       <span class="cm"># 5</span>
+
+r = model(img, conf=<span class="nm">0.25</span>, iou=<span class="nm">0.99</span>)[<span class="nm">0</span>]
+<span class="fn2">print</span>(<span class="fn2">len</span>(r.boxes))       <span class="cm"># 거의 안 지운다</span></code></pre><div class="out">5
+35</div></div></div></div>
+    <div class="keymsg"><span class="k">원리</span><div>겹침 정리(<code>NMS</code>)가 <b>같은 것을 가리키는 박스를 하나로</b> 줄인다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="IoU">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>지표</div>
+  <h2 class="s-title sm">두 박스가 겹친 정도를 재는 한 숫자</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div><b>겹친 넓이 &divide; 합친 넓이</b> 다. 0 이면 안 겹치고 1 이면 똑같다.</div></div><div class="v"><span class="b">&rarr;</span><div>겹침 정리는 이 값이 <code>0.7</code> 을 넘으면 <b>같은 것을 가리킨다</b>고 보고 지운다.</div></div><div class="v"><span class="b">&#9733;</span><div>채점할 때도 쓴다. 예측 박스와 정답 박스의 IoU 가 <b>0.5 를 넘으면 맞힌 것</b>으로 센다.</div></div><div class="v"><span class="b">&rarr;</span><div>그래서 지표 이름이 <code>mAP50</code> 이다. 뒤의 50 이 <b>IoU 0.5 기준</b>이라는 뜻이다.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">직접 계산해 본다</span></div><pre><code>a = [<span class="nm">10</span>, <span class="nm">10</span>, <span class="nm">50</span>, <span class="nm">50</span>]      <span class="cm"># 정답 박스</span>
+b = [<span class="nm">20</span>, <span class="nm">20</span>, <span class="nm">60</span>, <span class="nm">60</span>]      <span class="cm"># 예측 박스</span>
+
+ix = <span class="fn2">max</span>(<span class="nm">0</span>, <span class="fn2">min</span>(a[<span class="nm">2</span>], b[<span class="nm">2</span>]) - <span class="fn2">max</span>(a[<span class="nm">0</span>], b[<span class="nm">0</span>]))
+iy = <span class="fn2">max</span>(<span class="nm">0</span>, <span class="fn2">min</span>(a[<span class="nm">3</span>], b[<span class="nm">3</span>]) - <span class="fn2">max</span>(a[<span class="nm">1</span>], b[<span class="nm">1</span>]))
+inter = ix * iy
+union = <span class="nm">40</span>*<span class="nm">40</span> + <span class="nm">40</span>*<span class="nm">40</span> - inter
+<span class="fn2">print</span>(<span class="fn2">round</span>(inter / union, <span class="nm">3</span>))   <span class="cm"># 0.391</span></code></pre><div class="out">0.391</div></div></div></div>
+    <div class="keymsg"><span class="k">지표</span><div>IoU 는 <b>겹친 넓이를 합친 넓이로 나눈 값</b>이다. 겹침 정리에도 채점에도 이것을 쓴다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="COCO 80종">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>한계</div>
+  <h2 class="s-title sm">개미 사진을 새라고 부른 86번</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><table class="ctable"><thead><tr><th>YOLO 가 답한 것</th><th>횟수</th></tr></thead><tbody><tr><td>bird</td><td class="hl">86번</td></tr><tr><td>person</td><td class="">10번</td></tr><tr><td>banana</td><td class="">10번</td></tr><tr><td>carrot</td><td class="">9번</td></tr><tr><td>apple</td><td class="">6번</td></tr><tr><td>dog</td><td class="">5번</td></tr></tbody></table><div class="cap">개미 &middot; 벌 사진 40장을 그대로 넣은 결과다</div></div><div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div><code>yolo11n.pt</code> 가 아는 것은 <b>COCO 80종</b>이다. 사람 자동차 개 고양이 같은 것이다.</div></div><div class="v"><span class="b">&#10005;</span><div>그 80종에 <b><code>ant</code> 도 <code>bee</code> 도 없다</b>. 없는 이름은 답할 방법이 없다.</div></div><div class="v"><span class="b">&#9733;</span><div>그래서 개미를 <b>새라고 86번</b> 불렀다. 모델이 고장 난 것이 아니라 <b>배운 적이 없는 것</b>이다.</div></div><div class="v"><span class="b">&rarr;</span><div>여기서 두 갈래다. <b>남의 이름표로 만족하거나</b>, <b>내 이름표를 가르치거나</b>.</div></div></div></div></div>
+    <div class="keymsg"><span class="k">한계</span><div>받아 온 모델은 <b>배운 것만 답한다</b>. 내 것을 찾게 하려면 가르쳐야 한다.</div></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 없는 이름을 가르치기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="ghost">07</div>
+  <div class="sec-in"><div class="ch">CHAPTER 07</div><h2>없는 이름을 가르치기</h2>
+  <div class="sec-words"><span>정답표</span><span>파인튜닝</span><span>mAP</span></div></div>
+</section>
+<section class="slide" data-title="오픈 가중치">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>재료</div>
+  <h2 class="s-title sm">내 손에 내려받는 계수 파일</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div><code>yolo11n.pt</code> 는 남이 학습해 둔 <b>계수 2,624,080개가 든 파일</b>이다. 5.6MB 짜리다.</div></div><div class="v"><span class="b">&rarr;</span><div>부르면 답만 주는 것이 아니라 <b>파일을 내려받아 내 손에 둔다</b>. 그래서 고칠 수 있다.</div></div><div class="v"><span class="b">&#9733;</span><div>day5 의 <code>resnet18</code> 도 같은 것이었다. 다른 점은 <b>거기서는 마지막 층만 갈았고</b> 여기서는 <b>전체를 조금씩 옮긴다</b>.</div></div><div class="v"><span class="b">&rarr;</span><div>인터넷 너머에서 답만 받는 방식과 다르다. <b>내 자료를 밖으로 내보내지 않아도 된다</b>.</div></div></div></div><div><table class="ctable"><thead><tr><th></th><th>부르는 모델</th><th>오픈 가중치</th></tr></thead><tbody><tr><td>파일</td><td>없다</td><td class="hl">내 컴퓨터에 있다</td></tr><tr><td>고치기</td><td>안 된다</td><td class="hl">된다</td></tr><tr><td>자료</td><td>밖으로 나간다</td><td class="hl">안 나간다</td></tr><tr><td>비용</td><td>부를 때마다</td><td class="hl">한 번 받으면 끝</td></tr></tbody></table></div></div>
+    <div class="keymsg"><span class="k">재료</span><div>오픈 가중치는 <b>받아서 고칠 수 있는 계수 파일</b>이다. 그래서 파인튜닝이 가능하다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="정답표 형식">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>자료</div>
+  <h2 class="s-title sm">사진마다 따라다니는 txt 한 개</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">labels/train/doc_001.txt</span></div><pre><code><span class="cm"># images/train/doc_001.jpg 에 딸린</span>
+<span class="cm"># labels/train/doc_001.txt</span>
+
+0 0.412 0.783 0.164 0.052
+0 0.688 0.791 0.140 0.048
+
+<span class="cm"># 종류번호  가운데x  가운데y  너비  높이</span></code></pre></div></div><div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div><b>한 줄이 박스 하나</b>다. 사진에 서명이 둘이면 두 줄이다.</div></div><div class="v"><span class="b">&rarr;</span><div>네 숫자는 <b>0 과 1 사이로 나눈 값</b>이다. 사진 크기가 달라도 그대로 쓸 수 있다.</div></div><div class="v"><span class="b">&#10005;</span><div>픽셀 좌표를 그대로 적으면 안 된다. <b>너비로 나누고 높이로 나눈</b> 값이어야 한다.</div></div><div class="v"><span class="b">&#9733;</span><div>이 표를 만드는 것이 <b>파인튜닝에서 제일 오래 걸리는 일</b>이다. 학습은 몇 분이고 표 만들기는 며칠이다.</div></div></div></div></div>
+    <div class="keymsg"><span class="k">자료</span><div>탐지 정답표는 <b>사진마다 글자 파일 하나</b>다. 한 줄이 박스 하나다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="폴더와 yaml">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>자료</div>
+  <h2 class="s-title sm">학습기가 찾아가는 두 폴더와 한 파일</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="code sm"><!-- lint:code-ok --><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">폴더 구조와 설정 파일</span></div><pre><code>datasets/signature/
+  images/train/   <span class="cm"># 사진</span>
+  images/val/
+  labels/train/   <span class="cm"># 같은 이름의 .txt</span>
+  labels/val/
+
+<span class="cm"># signature.yaml</span>
+path: datasets/signature
+train: images/train
+val: images/val
+names:
+  0: signature</code></pre></div></div><div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div><code>images</code> 와 <code>labels</code> 가 <b>짝을 이룬다</b>. 파일 이름이 같아야 짝이 된다.</div></div><div class="v"><span class="b">&rarr;</span><div><code>yaml</code> 이 <b>어디에 무엇이 있는지</b>와 <b>종류 이름</b>을 적어 둔 것이다.</div></div><div class="v"><span class="b">&#9733;</span><div><code>names</code> 에 적은 순서가 <b>정답표의 종류번호</b>다. 0번이 <code>signature</code> 다.</div></div><div class="v"><span class="b">&#10005;</span><div>짝이 안 맞으면 그 사진은 <b>배경으로 취급</b>된다. 학습은 도는데 성능이 안 오르면 이것을 본다.</div></div></div></div></div>
+    <div class="keymsg"><span class="k">자료</span><div>학습기는 <b>yaml 하나만 보고</b> 폴더를 찾아간다. 이름이 짝을 맞춰야 한다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="mAP">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>지표</div>
+  <h2 class="s-title sm">정확도 대신 쓰는 탐지의 점수</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>분류는 맞았나 틀렸나로 셌다. 탐지는 <b>자리까지 맞아야</b> 하니 그렇게 못 센다.</div></div><div class="v"><span class="b">&rarr;</span><div>예측 박스와 정답 박스의 <b>IoU 가 0.5 를 넘으면 맞힌 것</b>으로 센다. 그렇게 잰 것이 <code>mAP50</code> 이다.</div></div><div class="v"><span class="b">&rarr;</span><div><code>mAP50-95</code> 는 기준을 0.5 부터 0.95 까지 올려 가며 잰 평균이다. <b>더 깐깐한 값</b>이다.</div></div><div class="v"><span class="b">&#9733;</span><div>정밀도는 <b>찾았다고 한 것 중 맞은 비율</b>, 재현율은 <b>있는 것 중 찾아낸 비율</b>이다. day6 앞에서 본 그 둘이다.</div></div></div></div><div><table class="ctable"><thead><tr><th>지표</th><th>뜻</th><th>높으면</th></tr></thead><tbody><tr><td><code>mAP50</code></td><td>IoU 0.5 기준 평균 정확도</td><td>자리를 대충 맞힌다</td></tr><tr><td><code>mAP50-95</code></td><td>기준을 올려 가며 잰 평균</td><td class="hl">자리를 정확히 맞힌다</td></tr><tr><td>정밀도</td><td>찾았다고 한 것 중 맞은 비율</td><td>헛짚음이 적다</td></tr><tr><td>재현율</td><td>있는 것 중 찾아낸 비율</td><td>놓침이 적다</td></tr></tbody></table></div></div>
+    <div class="keymsg"><span class="k">지표</span><div>탐지의 점수는 <b>자리까지 본다</b>. 그래서 정확도가 아니라 <code>mAP</code> 다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="파인튜닝 세 줄">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>코드</div>
+  <h2 class="s-title sm">받아 온 가중치에서 이어서 배우는 세 줄</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">노트북 · 파인튜닝</span></div><pre><code><span class="kw">from</span> ultralytics <span class="kw">import</span> YOLO
+
+model = YOLO(<span class="st">'yolo11n.pt'</span>)      <span class="cm"># 받아 온 것에서 출발</span>
+model.train(data=<span class="st">'signature.yaml'</span>,
+            epochs=<span class="nm">15</span>, imgsz=<span class="nm">320</span>)</code></pre><div class="out">mAP50  0.9950
+소요  191초 (CPU)</div></div></div><div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div><b>처음부터 배우지 않는다</b>. 받아 온 계수에서 출발해 내 자료 쪽으로 조금씩 옮긴다.</div></div><div class="v"><span class="b">&rarr;</span><div>그래서 사진이 <b>수백 장이면 충분</b>하다. 처음부터라면 수만 장이 든다.</div></div><div class="v"><span class="b">&#9733;</span><div>day5 의 전이학습과 같은 생각이다. 다른 점은 <b>마지막 층만이 아니라 전체를 조금씩</b> 옮긴다는 것이다.</div></div><div class="v"><span class="b">&rarr;</span><div><code>imgsz</code> 를 줄이면 빨라진다. 작은 것을 찾아야 하면 키운다.</div></div></div></div></div>
+    <div class="keymsg"><span class="k">코드</span><div>파인튜닝은 <b>남의 계수에서 출발</b>하는 것이다. 세 줄이면 시작된다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="전과 후">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>측정</div>
+  <h2 class="s-title sm">0 에서 0.995 이 된 mAP50</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><table class="ctable"><thead><tr><th></th><th>받아 온 그대로</th><th>파인튜닝 뒤</th></tr></thead><tbody><tr><td><code>mAP50</code></td><td class="no">0</td><td class="yes">0.9950</td></tr><tr><td><code>mAP50-95</code></td><td class="no">0</td><td class="yes">0.9207</td></tr><tr><td>정밀도</td><td class="no">0</td><td class="yes">1.0000</td></tr><tr><td>재현율</td><td class="no">0</td><td class="yes">0.9931</td></tr><tr><td>아는 종류</td><td>80개 (COCO)</td><td class="hl">1개 (내 것)</td></tr></tbody></table><div class="cap">같은 검증 사진 35장 &middot; 학습 191초 (CPU &middot; 15에폭 &middot; imgsz 320)</div></div><div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>받아 온 그대로는 <b>전부 0</b> 이다. 못 하는 것이 아니라 <b>서명이라는 이름을 모른다</b>.</div></div><div class="v"><span class="b">&rarr;</span><div>사진 몇백 장으로 <b>0.9950</b> 까지 올랐다. 이것이 파인튜닝이 하는 일이다.</div></div><div class="v"><span class="b">&#10005;</span><div>아는 종류가 80개에서 <b>1개로 줄었다</b>. 사람도 자동차도 이제 못 찾는다.</div></div><div class="v"><span class="b">&#9733;</span><div><b>바꾼 것이 아니라 갈아엎은 것</b>이다. 둘 다 필요하면 모델을 둘 두거나 정답표에 둘 다 넣는다.</div></div></div></div></div>
+    <div class="keymsg"><span class="k">측정</span><div>파인튜닝은 <b>얻는 만큼 잃는다</b>. 새 이름을 얻고 옛 이름 79개를 잃었다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="학습 곡선">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>판단</div>
+  <h2 class="s-title sm">손실과 mAP 를 나란히 두고 읽는 법</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>학습이 돌면 <code>results.csv</code> 와 그림이 남는다. <b>에폭마다의 손실과 mAP</b> 가 적혀 있다.</div></div><div class="v"><span class="b">&rarr;</span><div>손실이 <b>계속 줄고 mAP 도 오르면</b> 더 돌려도 된다. 둘 다 멈췄으면 그만한다.</div></div><div class="v"><span class="b">&#10005;</span><div>손실은 주는데 <b>mAP 가 안 오르면</b> 훈련 사진만 외우는 중이다. day6 앞에서 본 그 간격이다.</div></div><div class="v"><span class="b">&#9733;</span><div><code>best.pt</code> 와 <code>last.pt</code> 가 나온다. <b>쓸 것은 <code>best.pt</code></b> 다 &mdash; 검증이 가장 좋았던 때다.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">학습이 남긴 것</span></div><pre><code>runs/detect/train/
+  weights/best.pt    <span class="cm"># 검증이 가장 좋았던 때</span>
+  weights/last.pt    <span class="cm"># 마지막 에폭</span>
+  results.csv        <span class="cm"># 에폭마다의 숫자</span>
+  results.png        <span class="cm"># 그 그래프</span>
+
+best = YOLO(<span class="st">'runs/detect/train/weights/best.pt'</span>)</code></pre></div></div></div>
+    <div class="keymsg"><span class="k">판단</span><div>쓸 것은 <b><code>best.pt</code></b> 다. 마지막 에폭이 가장 좋은 것은 아니다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="직접 재 보기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>실습</div>
+  <h2 class="s-title sm">CPU 와 T4 를 같은 코드로 재는 표</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">시간 재는 세 줄</span></div><pre><code><span class="kw">import</span> time
+
+t0 = time.time()
+Xtr, Ytr = feats(train)
+<span class="fn2">print</span>(<span class="st">'%.1f초'</span> % (time.time() - t0))</code></pre><div class="out">9.4초   ← CPU 에서 잰 값</div></div></div><div><table class="ctable"><thead><tr><th>재는 것</th><th>CPU 실측</th><th>T4 · 직접 적는다</th></tr></thead><tbody><tr><td>특징 뽑기 397장</td><td>9.4초</td><td class="hl"></td></tr><tr><td>resnet18 한 장</td><td>8.3 ms</td><td class="hl"></td></tr><tr><td>YOLO 한 장</td><td>25.7 ms</td><td class="hl"></td></tr></tbody></table><div class="cap">왼쪽은 이 자료를 만들 때 잰 값이다 &mdash; 오른쪽은 수업에서 직접 채운다</div></div></div>
+    <div class="keymsg"><span class="k">실습</span><div><b>재 보지 않으면 모른다</b>. 같은 코드를 두 런타임에서 돌려 표를 채운다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="GPU 가 늘 답은 아니다">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>판단</div>
+  <h2 class="s-title sm">한 장씩 넣을 때 오히려 느려지는 이유</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>GPU 로 계산하려면 <b>자료를 GPU 메모리로 옮겨야</b> 한다. 이 옮기는 시간이 공짜가 아니다.</div></div><div class="v"><span class="b">&rarr;</span><div>사진 한 장이면 <b>옮기는 시간이 계산 시간보다 크다</b>. 128장을 한 번에 옮기면 그 값이 나눠진다.</div></div><div class="v"><span class="b">&#9733;</span><div>그래서 <code>batch_size</code> 를 키운다. 다만 <b>GPU 메모리를 넘기면 <code>CUDA out of memory</code></b> 가 난다. 그때는 줄인다.</div></div><div class="v"><span class="b">&#10005;</span><div>표 자료에 <code>DecisionTree</code> 를 쓰는 일 같은 것은 GPU 와 상관이 없다. <b>딥러닝이 아니면 얻을 것이 없다</b>.</div></div></div>
+    <div class="keymsg"><span class="k">판단</span><div>GPU 는 <b>많이 한꺼번에</b> 할 때 이긴다. 조금씩 하면 옮기는 값이 더 든다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="몇 장이 필요한가">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>판단</div>
+  <h2 class="s-title sm">박스를 손으로 치는 데 드는 시간</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>탐지 정답표는 <b>사진마다 박스를 손으로 친다</b>. 한 장에 십수 초, 천 장이면 하루가 넘는다.</div></div><div class="v"><span class="b">&rarr;</span><div>그래서 <b>적게 시작해 재 본다</b>. 100장으로 재고, 모자라면 200장으로 늘려 얼마나 오르는지 본다.</div></div><div class="v"><span class="b">&#9733;</span><div>day6 앞에서 244장을 30장까지 줄여 봤던 것과 같은 방법이다. <b>늘려서 안 오르면 거기서 멈춘다</b>.</div></div><div class="v"><span class="b">&#10005;</span><div>종류를 늘리는 것이 장수를 늘리는 것보다 비싸다. <b>종류마다 따로 모아야</b> 하기 때문이다.</div></div></div>
+    <div class="keymsg"><span class="k">판단</span><div>장수는 <b>재서 정한다</b>. 다 모으고 시작하면 필요 없는 것까지 모으게 된다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="내보내기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>쓰기</div>
+  <h2 class="s-title sm">파일 하나만 옮기면 되는 배포</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">만든 것을 쓰는 법</span></div><pre><code>best = YOLO(<span class="st">'runs/detect/train/weights/best.pt'</span>)
+
+r = best(<span class="st">'새사진.jpg'</span>)[<span class="nm">0</span>]
+<span class="fn2">print</span>(<span class="fn2">len</span>(r.boxes), best.names)
+
+best.export(format=<span class="st">'onnx'</span>)   <span class="cm"># 다른 곳에서도 쓴다</span></code></pre><div class="out">1 {0: 'signature'}</div></div></div><div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div><code>best.pt</code> 하나만 있으면 된다. <b>학습 자료도 코드도 필요 없다</b>.</div></div><div class="v"><span class="b">&rarr;</span><div><code>onnx</code> 로 내보내면 파이썬이 없는 곳에서도 돈다. 현장 장비에 넣을 때 쓴다.</div></div><div class="v"><span class="b">&#9733;</span><div>day6 앞에서 <code>head.pt</code> 를 저장한 것과 같다. <b>모델은 결국 파일 하나</b>다.</div></div></div></div></div>
+    <div class="keymsg"><span class="k">쓰기</span><div>만든 모델은 <b>파일 하나</b>다. 그 파일만 옮기면 어디서든 돈다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="실습 · 탐지와 파인튜닝">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">LAB</span><span class="dot"></span>실습</div>
+  <h2 class="s-title sm">받아 쓴 값과 가르친 값</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">시작점</span></div><pre><code>model = YOLO(<span class="st">'yolo11n.pt'</span>)
+r = model(<span class="st">'내사진.jpg'</span>)[<span class="nm">0</span>]
+plt.imshow(r.plot()[:, :, ::-<span class="nm">1</span>])</code></pre></div></div><div><div class="vlist"><div class="v"><span class="b">1</span><div>내 사진 몇 장을 넣어 <b>YOLO 가 뭐라 부르는지</b> 적는다. 없는 이름은 어떻게 나오는지 본다.</div></div><div class="v"><span class="b">2</span><div><code>conf</code> 를 <b>0.05 · 0.25 · 0.6</b> 으로 바꿔 박스 수를 적는다.</div></div><div class="v"><span class="b">3</span><div><code>signature</code> 를 <b>파인튜닝해 mAP50</b> 을 적는다. 전과 후를 나란히 둔다.</div></div><div class="v"><span class="b">4</span><div>런타임을 <b>T4 로 바꿔 같은 학습</b>을 돌리고 시간을 적는다. CPU 와 몇 배인지 계산한다.</div></div></div></div></div>
+    <div class="keymsg"><span class="k">실습</span><div>받아 쓴 값과 가르친 값을 <b>같은 표에 적는다</b>. 그 차이가 파인튜닝의 값어치다.</div></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 고르는 기준">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="ghost">08</div>
+  <div class="sec-in"><div class="ch">CHAPTER 08</div><h2>고르는 기준</h2>
+  <div class="sec-words"><span>받아 쓰기</span><span>가르치기</span><span>정리</span></div></div>
+</section>
+<section class="slide" data-title="언제 파인튜닝하나">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>기준</div>
+  <h2 class="s-title sm">받아 쓰는 쪽과 가르치는 쪽을 고르는 기준</h2>
+  <div class="rule"></div>
+  <div class="body"><table class="ctable"><thead><tr><th>이럴 때</th><th>고르는 것</th><th>왜</th></tr></thead><tbody><tr><td>찾을 것이 COCO 80종에 있다</td><td class="hl">받아 쓴다</td><td>학습할 이유가 없다</td></tr><tr><td>찾을 것에 이름이 없다</td><td class="hl">파인튜닝</td><td>없는 이름은 답할 수 없다</td></tr><tr><td>박스 좌표를 못 만든다</td><td class="hl">받아 쓴다</td><td>정답표 없이는 학습이 안 된다</td></tr><tr><td>사진을 밖에 못 보낸다</td><td class="hl">파인튜닝</td><td>가중치를 받아 안에서 돌린다</td></tr><tr><td>몇 장 안 되고 급하다</td><td class="hl">먼저 받아 써 본다</td><td>안 되는 것을 확인하고 시작한다</td></tr></tbody></table><div class="cap">day5 의 전이학습과 같은 판단이다 &mdash; 남의 것으로 되는지 먼저 재 본다</div>
+    <div class="keymsg"><span class="k">기준</span><div><b>받아 써서 되는지 먼저 재 본다</b>. 안 될 때만 정답표를 만든다.</div></div>
+  </div>
+</section>
 <section class="slide" data-title="오늘 얻은 것">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>정리</div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>정리</div>
   <h2 class="s-title sm">한 줄로 줄인 오늘</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="cards c3">
       <div class="card"><span class="n">만들기</span><h3>폴더 둘이면 된다</h3><p>사진을 폴더로 나누고 마지막 층만 바꾼다. 244장으로 0.9608.</p></div>
       <div class="card"><span class="n">재기</span><h3>한 장이 0.65%</h3><p>차이를 사진 장수로 환산한다. 두 장 이내면 말할 수 없다.</p></div>
-      <div class="card"><span class="n">내기</span><h3>약한 쪽을 잰다</h3><p>흐리게 하면 15장이 더 틀린다. 현장 조건으로 미리 재 본다.</p></div>
+      <div class="card"><span class="n">가르치기</span><h3>0 에서 0.995</h3><p>없는 이름은 답할 수 없다. 정답표를 만들어 가르치면 답한다.</p></div>
     </div>
     <div class="vlist">
-      <div class="v"><span class="b">★</span><div>만드는 데 10분, <b>믿을지 판단하는 데 하루</b>가 걸린다. 오늘 시간의 대부분이 뒤쪽이었다.</div></div>
-      <div class="v"><span class="b">→</span><div>아직 남은 물음이 있다. <b>모델이 사진의 어디를 보고 그렇게 판정했는가</b>.</div></div>
+      <div class="v"><span class="b">★</span><div>만드는 데 10분, <b>믿을지 판단하는 데 하루</b>가 걸린다. 오늘 시간의 대부분이 그 판단이었다.</div></div>
+      <div class="v"><span class="b">→</span><div>분류는 <b>답 하나</b>, 탐지는 <b>무엇이 어디에</b>다. 둘 다 남의 가중치에서 출발했다.</div></div>
+      <div class="v"><span class="b">→</span><div>남은 것은 쓰는 일이다. <b>만든 모델을 남이 쓸 수 있는 것으로</b> 어떻게 바꾸는가.</div></div>
     </div>
-    <div class="keymsg"><span class="k">정리</span><div>정확도 한 숫자는 <b>시작</b>이지 결론이 아니다. 그 숫자가 무엇을 가리는지 보는 것이 일이다.</div></div>
+    <div class="keymsg"><span class="k">정리</span><div>오늘 한 일은 하나다 &mdash; <b>남이 학습해 둔 것을 받아 내 자료 쪽으로 옮겼다</b>. 분류도 탐지도 같은 방법이었다.</div></div>
   </div>
 </section>
 
