@@ -1777,10 +1777,10 @@ out = conv(x)</code></pre>
   </div>
 </section>
 
-<section class="slide" data-title="두 묶음을 쌓은 모델">
+<section class="slide" data-title="오늘의 CNN 전체">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>코드</div>
-  <h2 class="s-title sm">펴기 전에 이웃을 다 쓰는 구성</h2>
+  <h2 class="s-title sm">층 여덟 개로 끝나는 오늘의 CNN</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twocol w2">
@@ -1804,12 +1804,12 @@ out = conv(x)</code></pre>
         <div class="vlist">
           <div class="v"><span class="b">→</span><div>둘째 <code>Conv2d</code> 의 첫 자리가 <code>32</code> 다. <b>앞 층이 내놓은 채널 수</b>를 그대로 받는다.</div></div>
           <div class="v"><span class="b">→</span><div>채널은 <code>3 → 32 → 64</code> 로 두꺼워지고 가로세로는 <code>32 → 16 → 8</code> 로 줄어든다.</div></div>
-          <div class="v"><span class="b">★</span><div>마지막에는 <b>결국 편다</b>. 다만 3,072칸이 아니라 <b>무늬 4,096칸</b>을 편다. 이미 이웃 관계를 다 쓴 뒤다.</div></div>
+          <div class="v"><span class="b">★</span><div>마지막에는 <b>결국 편다</b>. 다만 픽셀 3,072칸이 아니라 <b>무늬 4,096칸</b>을 편다. 이웃한 칸끼리의 계산은 그 전에 끝난다.</div></div>
           <div class="v"><span class="b">→</span><div><code>64*8*8</code> 을 손으로 세지 않아도 된다. <b>다음 장에서 따라간다.</b></div></div>
         </div>
       </div>
     </div>
-    <div class="keymsg"><span class="k">구성</span><div>합성곱은 <b>펴는 것을 없애지 않는다</b>. 펴기 전에 <b>이웃 관계를 다 써 두는 것</b>이 전부다.</div></div>
+    <div class="keymsg"><span class="k">구성</span><div>합성곱은 <b>펴는 것을 없애지 않는다</b> &mdash; 펴기 전에 <b>이웃한 칸끼리 먼저 계산할 뿐</b>이다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="완전연결층">
@@ -1930,7 +1930,7 @@ out = conv(x)</code></pre>
     <div class="vlist">
       <div class="v"><span class="b">★</span><div>두 가지가 <b>반대로 움직인다</b>. 자리는 줄고 <b>무늬의 종류는 늘어난다</b>.</div></div>
       <div class="v"><span class="b">→</span><div>면이 <b>3에서 32가 되는 것</b>은 필터를 32장 썼기 때문이다. 필터 하나가 <b>세 면을 먹어 한 장</b>을 만든다.</div></div>
-      <div class="v"><span class="b">→</span><div>마지막에 <code>Flatten</code> 이 <b>64 &times; 8 &times; 8 = 4,096칸</b>을 한 줄로 편다. 이미 이웃 관계를 다 쓴 뒤다.</div></div>
+      <div class="v"><span class="b">→</span><div>마지막에 <code>Flatten</code> 이 <b>64 &times; 8 &times; 8 = 4,096칸</b>을 한 줄로 편다. 이웃한 칸끼리의 계산이 끝난 뒤다.</div></div>
     </div>
     <div class="keymsg"><span class="k">읽는 법</span><div>CNN 그림은 늘 이 모양이다. <b>왼쪽은 넓고 얇게, 오른쪽은 좁고 두껍게.</b></div></div>
   </div>
