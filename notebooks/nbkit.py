@@ -186,7 +186,7 @@ def build(day, title, subtitle, spec, variant, modes=None, renumber=False,
             cells.append(item)
         else:
             # 준비 셀은 세 벌 모두에, 데모·설명 셀은 lecture 에만 담는다
-            if item.get("metadata", {}).get("always") or variant == "lecture":
+            if item.get("metadata", {}).get("always") or variant == "live":
                 cells.append(item)
     flush()
 
