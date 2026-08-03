@@ -1625,6 +1625,36 @@ model.train(data=<span class="st">'signature.yaml'</span>,
     <div class="keymsg"><span class="k">측정</span><div>파인튜닝은 <b>얻는 만큼 잃는다</b>. 새 이름을 얻고 옛 이름 79개를 잃었다.</div></div>
   </div>
 </section>
+<section class="slide" data-title="GPU 가 필요한 이유">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>계산량</div>
+  <h2 class="s-title sm">방금 학습이 시킨 곱셈 5.2조 번</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div>
+        <table class="ctable">
+          <thead><tr><th>무엇을 할 때</th><th>곱셈 덧셈</th><th>CPU</th></tr></thead>
+          <tbody>
+            <tr><td>사진 한 장 판정</td><td>1,813,561,344</td><td>8.3 ms</td></tr>
+            <tr><td>397장 특징 뽑기</td><td>719,983,853,568</td><td>9.4초</td></tr>
+            <tr><td class="hl">파인튜닝 15에폭</td><td class="hl">5,213,204,568,000</td><td class="hl">191초</td></tr>
+          </tbody>
+        </table>
+        <div class="cap">층마다 출력 칸 수 &times; 필터 칸 수를 더해 실제로 세어 본 값이다</div>
+      </div>
+      <div>
+        <div class="vlist">
+          <div class="v"><span class="b">&rarr;</span><div>계산 하나하나는 <b>곱하고 더하는 것뿐</b>이다. 어렵지 않다. 다만 <b>수가 많다</b>.</div></div>
+          <div class="v"><span class="b">&rarr;</span><div>그리고 이 곱셈들은 <b>서로를 기다리지 않는다</b>. 특징 지도 한 칸을 구하는 데 옆 칸 결과가 필요 없다.</div></div>
+          <div class="v"><span class="b">&#9733;</span><div>CPU 는 <b>복잡한 일을 하나씩 빠르게</b>, GPU 는 <b>단순한 일을 수천 개 한꺼번에</b> 한다. 지금 필요한 것은 뒤쪽이다.</div></div>
+          <div class="v"><span class="b">&#10005;</span><div>표 자료에 <code>DecisionTree</code> 를 쓰는 일은 이런 모양이 아니다. <b>딥러닝이 아니면 GPU 로 얻을 것이 없다</b>.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">계산량</span><div>GPU 가 필요한 이유는 하나다 &mdash; <b>서로 안 기다리는 곱셈이 조 단위로 있다</b>.</div></div>
+  </div>
+</section>
 <section class="slide" data-title="학습 곡선">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>판단</div>
@@ -1679,15 +1709,6 @@ plt.imshow(r.plot()[:, :, ::-<span class="nm">1</span>])</code></pre></div></div
   <div class="ghost">08</div>
   <div class="sec-in"><div class="ch">CHAPTER 08</div><h2>GPU 실습</h2>
   <div class="sec-words"><span>런타임</span><span>device</span><span>속도 비교</span></div></div>
-</section>
-<section class="slide" data-title="왜 GPU 인가">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>동기</div>
-  <h2 class="s-title sm">GPU 가 빠른 이유</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>합성곱은 <b>같은 곱셈 덧셈을 자리마다 되풀이</b>한다. 1,024자리를 순서대로 할 이유가 없다.</div></div><div class="v"><span class="b">&rarr;</span><div>CPU 는 <b>복잡한 일을 빠르게 하나씩</b> 한다. GPU 는 <b>단순한 일을 한꺼번에 수천 개</b> 한다.</div></div><div class="v"><span class="b">&#9733;</span><div>그래서 딥러닝은 GPU 에서 <b>몇 배에서 몇십 배</b> 빨라진다. 어떤 계산이냐에 따라 다르다.</div></div></div></div><div><div class="vlist"><div class="v"><span class="b">&#10005;</span><div>GPU 가 늘 이기는 것은 아니다. <b>사진 한 장</b>만 넣으면 옮기는 시간이 더 들어 오히려 느릴 수 있다.</div></div><div class="v"><span class="b">&rarr;</span><div>묶음이 클수록 GPU 가 유리하다. <code>batch_size</code> 를 키워야 값어치가 나온다.</div></div></div></div></div>
-    <div class="keymsg"><span class="k">동기</span><div>GPU 는 <b>단순한 계산을 한꺼번에 하는 장치</b>다. 딥러닝 계산이 정확히 그런 모양이다.</div></div>
-  </div>
 </section>
 <section class="slide" data-title="런타임 바꾸기">
   <div class="coord"><b></b> / <span class="tot"></span></div>
