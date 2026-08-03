@@ -93,39 +93,37 @@ class Ex:
 
 
 VARIANTS = {
-    # 파일 이름         (설명,                       담을 문제 모드,      정답 여부)
-    "lecture":  ("강의",         ("together",),        False),
-    "practice": ("수강생끼리",    ("solo", "team"),     False),
-    "solution": ("정답",          ("together", "solo", "team"), True),
+    # 파일 이름       (설명,   담을 문제 모드,               코드를 채워 둘지)
+    "live":     ("강의", ("together",),                True),
+    "lab":      ("실습", ("solo", "team"),             False),
+    "solution": ("정답", ("together", "solo", "team"), True),
 }
 
 INTRO = {
-    "lecture": """수업을 따라가며 진행한다.
+    "live": """수업을 따라가며 진행한다.
 
-**실습** 셀은 그대로 실행해 결과를 눈으로 확인한다.
-**문제** 셀은 수업 중에 같이 푼다.""",
-    "practice": """강의가 끝난 뒤 **수강생끼리** 푼다.
+모든 셀에 **코드가 채워져 있다.** 위에서부터 실행해 결과를 눈으로 확인한다.
+강사가 설명하는 동안 값을 바꿔 가며 돌려 본다.""",
+    "lab": """강의가 끝난 뒤에 푼다. **강의 노트북에 없던 문제**들이다.
 
 `스스로 풀기` 는 각자, `조별 과제` 는 2~3명이 한 조로 상의하며 푼다.
-막히면 강의 노트북(`lecture`)의 실습 셀로 돌아가 확인한다.""",
-    "solution": """`lecture` 와 `practice` 의 모든 문제에 대한 정답본이다.
+막히면 강의 노트북(`live`)에서 같은 함수를 쓴 셀을 찾아 대조한다.""",
+    "solution": """`live` 와 `lab` 의 모든 문제에 대한 정답본이다.
 수강생은 먼저 스스로 풀어 본 뒤에 연다.
 
 두 벌을 합쳐 담으므로 **문제 번호가 `lab` 과 다르다.** 번호 대신
 **지문으로 찾는다.**""",
 }
 
-INTRO_LAB = dict(INTRO, practice="""실습 시간에 푼다.
+INTRO_LAB = dict(INTRO, lab="""실습 시간에 푼다. **강의 노트북에 없던 문제**들이다.
 
 `스스로 풀기` 는 각자, `조별로 풀기` 는 2~3명이 한 조로 상의하며 푼다.
-막히면 강의 노트북(`lecture`)의 실습 셀로 돌아가 확인한다.""")
+막히면 강의 노트북(`live`)에서 같은 함수를 쓴 셀을 찾아 대조한다.""")
 
 
 def build(day, title, subtitle, spec, variant, modes=None, renumber=False,
           no_blank=False, lab=False):
     desc, keep, solution = VARIANTS[variant]
-    if lab and variant == "practice":
-        desc = "실습"
     groups = GROUPS_LAB if lab else GROUPS
     intro  = (INTRO_LAB if lab else INTRO)[variant]
     url = (f"https://colab.research.google.com/github/{REPO}"

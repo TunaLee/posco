@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ko"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 활용 전문가 과정</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<style>
+  :root{ --ink:#16142B; --mute:#8E8AAC; --line:#DCD6F0; --pur:#5B3DF5; --deep:#3A1FC9;
+         --lite:#EFEAFF; --bg:#F7F6FB; --card:#fff; }
+  *{box-sizing:border-box; margin:0; padding:0}
+  body{font-family:Pretendard,-apple-system,sans-serif; background:var(--bg); color:var(--ink);
+       -webkit-font-smoothing:antialiased; padding:56px 24px 80px}
+  .wrap{max-width:1080px; margin:0 auto}
+  h1{font-size:30px; font-weight:800; letter-spacing:-.5px}
+  .lead{color:var(--mute); font-size:14.5px; margin-top:8px; line-height:1.7}
+  .wk{font-size:14px; font-weight:800; color:var(--deep); margin:44px 0 14px;
+      display:flex; align-items:center; gap:10px}
+  .wk:after{content:""; flex:1; height:1px; background:var(--line)}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(248px,1fr)); gap:16px}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px 18px 16px}
+  .hd{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px}
+  .day{font-size:11px; font-weight:800; color:#fff; background:var(--pur);
+       padding:3px 9px; border-radius:999px; letter-spacing:.4px}
+  .date{font-size:12px; color:var(--mute)}
+  .ttl{display:block; text-decoration:none; color:inherit}
+  .ttl b{display:block; font-size:17px; font-weight:800; letter-spacing:-.3px}
+  .ttl span{display:block; font-size:12.5px; color:var(--mute); margin-top:5px; line-height:1.55}
+  .ttl:hover b{color:var(--deep)}
+  .meta{font-size:11.5px; color:var(--mute); margin:12px 0 12px}
+  .nbs{display:flex; gap:8px}
+  .nb{flex:1; text-decoration:none; border-radius:9px; padding:9px 10px; text-align:center;
+      border:1px solid var(--line)}
+  .nb b{display:block; font-size:12.5px; font-weight:800}
+  .nb span{display:block; font-size:10.5px; margin-top:2px; opacity:.75}
+  .nb.live{background:var(--lite); border-color:#C9BEFF; color:var(--deep)}
+  .nb.lab{background:#fff; color:var(--ink)}
+  .nb.live:hover{background:#E2DAFF}
+  .nb.lab:hover{background:#F4F1FF}
+  .nb.off{background:#F1F0F5; color:#B9B6C9}
+  .foot{margin-top:52px; padding-top:20px; border-top:1px solid var(--line);
+        font-size:12.5px; color:var(--mute); line-height:1.9}
+  .foot a{color:var(--deep); text-decoration:none}
+  .foot a:hover{text-decoration:underline}
+  @media (max-width:560px){ body{padding:36px 16px 60px} h1{font-size:24px} }
+</style></head>
+<body><div class="wrap">
+  <h1>AI 활용 전문가 과정</h1>
+  <p class="lead">
+    강의 자료와 실습 노트북이다. 카드 제목을 누르면 슬라이드가 열린다.<br>
+    <b>강의</b> 노트북은 코드가 모두 채워져 있고, <b>실습</b> 노트북은 <b>강의에 없던 다른 문제</b>가 빈칸으로 들어 있다.
+  </p>
+  <h2 class="wk">1주차</h2>
+  <div class="grid">
+  <div class="card"><div class="hd"><span class="day">Day 1</span><span class="date">7/28</span></div><a class="ttl" href="day1/index.html"><b>파이썬 문법</b><span>값과 변수 · 자료 구조 · 흐름 제어 · 함수</span></a><div class="meta">슬라이드 60장</div><div class="nbs"><a class="nb live" href="https://colab.research.google.com/github/TunaLee/posco/blob/main/notebooks/day1_live.ipynb" target="_blank"><b>강의</b><span>코드가 모두 채워져 있다</span></a><a class="nb lab" href="https://colab.research.google.com/github/TunaLee/posco/blob/main/notebooks/day1_lab.ipynb" target="_blank"><b>실습</b><span>빈칸을 채운다</span></a></div></div>
+  <div class="card"><div class="hd"><span class="day">Day 2</span><span class="date">7/29</span></div><a class="ttl" href="day2/index.html"><b>데이터 다루기</b><span>NumPy · Pandas · 전처리 · 시각화</span></a><div class="meta">슬라이드 48장</div><div class="nbs"><a class="nb live" href="https://colab.research.google.com/github/TunaLee/posco/blob/main/notebooks/day2_live.ipynb" target="_blank"><b>강의</b><span>코드가 모두 채워져 있다</span></a><a class="nb lab" href="https://colab.research.google.com/github/TunaLee/posco/blob/main/notebooks/day2_lab.ipynb" target="_blank"><b>실습</b><span>빈칸을 채운다</span></a></div></div>
+  <div class="card"><div class="hd"><span class="day">Day 3</span><span class="date">7/30</span></div><a class="ttl" href="day3/index.html"><b>머신러닝</b><span>학습의 원리 · 지도학습 · 평가와 과적합</span></a><div class="meta">슬라이드 47장</div><div class="nbs"><a class="nb live" href="https://colab.research.google.com/github/TunaLee/posco/blob/main/notebooks/day3_live.ipynb" target="_blank"><b>강의</b><span>코드가 모두 채워져 있다</span></a><a class="nb lab" href="https://colab.research.google.com/github/TunaLee/posco/blob/main/notebooks/day3_lab.ipynb" target="_blank"><b>실습</b><span>빈칸을 채운다</span></a></div></div>
+  <div class="card"><div class="hd"><span class="day">Day 4</span><span class="date">7/31</span></div><a class="ttl" href="day4/index.html"><b>딥러닝</b><span>신경망 · 활성화 함수 · 학습 루프</span></a><div class="meta">슬라이드 47장</div><div class="nbs"><a class="nb live" href="https://colab.research.google.com/github/TunaLee/posco/blob/main/notebooks/day4_live.ipynb" target="_blank"><b>강의</b><span>코드가 모두 채워져 있다</span></a><a class="nb lab" href="https://colab.research.google.com/github/TunaLee/posco/blob/main/notebooks/day4_lab.ipynb" target="_blank"><b>실습</b><span>빈칸을 채운다</span></a></div></div>
+  </div>
+  <h2 class="wk">2주차</h2>
+  <div class="grid">
+  <div class="card"><div class="hd"><span class="day">Day 5</span><span class="date">8/3</span></div><a class="ttl" href="day5/index.html"><b>이미지 분류</b><span>합성곱 · 풀링 · CNN · 전이학습</span></a><div class="meta">슬라이드 61장</div><div class="nbs"><a class="nb live" href="https://colab.research.google.com/github/TunaLee/posco/blob/main/notebooks/day5_live.ipynb" target="_blank"><b>강의</b><span>코드가 모두 채워져 있다</span></a><a class="nb lab" href="https://colab.research.google.com/github/TunaLee/posco/blob/main/notebooks/day5_lab.ipynb" target="_blank"><b>실습</b><span>빈칸을 채운다</span></a></div></div>
+  <div class="card"><div class="hd"><span class="day">Day 6</span><span class="date">8/4</span></div><a class="ttl" href="day6/index.html"><b>내 데이터로 분류기</b><span>내 사진으로 학습 · 숫자를 믿는 법</span></a><div class="meta">슬라이드 29장</div><div class="nbs"><span class="nb off"><b>강의</b><span>준비 중</span></span><span class="nb off"><b>실습</b><span>준비 중</span></span></div></div>
+  <div class="card"><div class="hd"><span class="day">Day 7</span><span class="date">8/5</span></div><a class="ttl" href="day7/index.html"><b>판정 근거</b><span>Grad-CAM · 틀린 것을 열어 보기</span></a><div class="meta">슬라이드 21장</div><div class="nbs"><span class="nb off"><b>강의</b><span>준비 중</span></span><span class="nb off"><b>실습</b><span>준비 중</span></span></div></div>
+  <div class="card"><div class="hd"><span class="day">Day 8</span><span class="date">8/10</span></div><a class="ttl" href="day8/index.html"><b>LLM 과 프롬프트</b><span>다음 한 토큰 · 어텐션 · 프롬프팅</span></a><div class="meta">슬라이드 40장</div><div class="nbs"><span class="nb off"><b>강의</b><span>준비 중</span></span><span class="nb off"><b>실습</b><span>준비 중</span></span></div></div>
+  </div>
+  <div class="foot">
+    슬라이드 조작 &mdash; <b>&larr; &rarr;</b> 또는 <b>Space</b> 로 이동 &middot;
+    <b>&#8801;</b> 목차 &middot; 숫자 입력 후 <b>Enter</b> 로 점프 &middot; <b>PDF</b> 로 인쇄<br>
+    노트북은 Colab 에서 열린다. <b>파일 &rarr; 드라이브에 사본 저장</b> 을 먼저 눌러야 고친 내용이 남는다.<br>
+    <a href="CURRICULUM.md">전체 커리큘럼</a>
+  </div>
+</div></body></html>

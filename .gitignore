@@ -14,3 +14,7 @@ docs/_archive-pptx/
 # 시험 정답 — 공개 저장소에 올리지 않는다
 notebooks/exam1_spec.py
 notebooks/exam1_answer.ipynb
+
+# 학습평가 등록 양식 — 정답이 들어 있다
+*학습 평가 등록 양식*.xlsx
+*학습평가*.xlsx
