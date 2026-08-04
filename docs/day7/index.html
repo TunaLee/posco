@@ -791,19 +791,6 @@ http 에서는 getUserMedia 가 안 된다</code></pre></div></div>
     <div class="keymsg"><span class="k">고장</span><div>에러를 <b>읽지 말고 붙여 넣는다</b>. 그게 이 도구를 쓰는 법이다.</div></div>
   </div>
 </section>
-<section class="slide" data-title="휴대폰에서 열리게 하는 길">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>대비</div>
-  <h2 class="s-title sm">휴대폰에서 열리게 하는 길</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol w">
-      <div><div class="plot"><svg viewBox="0 0 420 210"><text x="12" y="16" font-size="11" fill="#8E8AAC" font-weight="800">휴대폰으로 여는 방법 세 가지</text><rect x="12" y="24" width="26" height="26" rx="7" fill="#5B3DF5" stroke="none" stroke-width="1"/><text x="25" y="42" font-size="12" fill="#fff" font-weight="800" text-anchor="middle">1</text><text x="50" y="38" font-size="11.5" fill="#16142B" font-weight="800">share=True</text><text x="50" y="54" font-size="10" fill="#8E8AAC">터널 주소가 만들어진다</text><text x="50" y="69" font-size="9.5" fill="#E8537A">사내망이 막으면 실패</text><rect x="12" y="86" width="26" height="26" rx="7" fill="#5B3DF5" stroke="none" stroke-width="1"/><text x="25" y="104" font-size="12" fill="#fff" font-weight="800" text-anchor="middle">2</text><text x="50" y="100" font-size="11.5" fill="#16142B" font-weight="800">server_name="0.0.0.0"</text><text x="50" y="116" font-size="10" fill="#8E8AAC">노트북 IP:7860 으로 연다</text><text x="50" y="131" font-size="9.5" fill="#E8537A">같은 와이파이여야 한다</text><rect x="12" y="148" width="26" height="26" rx="7" fill="#1E9E6A" stroke="none" stroke-width="1"/><text x="25" y="166" font-size="12" fill="#fff" font-weight="800" text-anchor="middle">3</text><text x="50" y="162" font-size="11.5" fill="#16142B" font-weight="800">sources=["webcam"]</text><text x="50" y="178" font-size="10" fill="#8E8AAC">노트북 카메라로 찍는다</text><text x="50" y="193" font-size="9.5" fill="#1E9E6A">무조건 된다</text></svg></div></div>
-      <div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>1번이 안 되는 것은 <b>흔한 일</b>이다. 사내망이 터널을 막는다.</div></div><div class="v"><span class="b">&#9733;</span><div>3번은 <b>무조건 된다</b>. 사진이 휴대폰에서 안 와도 만드는 과정은 그대로다.</div></div><div class="v"><span class="b">&rarr;</span><div>1번이 막히면 Codex 에게 <b>2번으로 바꿔 달라</b>고 한 줄 시키면 된다.</div></div></div></div>
-    </div>
-    <div class="keymsg"><span class="k">대비</span><div>막히는 곳을 <b>미리 정해 두면</b> 수업이 안 멈춘다.</div></div>
-  </div>
-</section>
 <section class="slide" data-title="같은 와이파이에서 여는 법">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>접속</div>
@@ -828,17 +815,6 @@ http 에서는 getUserMedia 가 안 된다</code></pre></div></div>
       <div><div class="vlist"><div class="v"><span class="b">1</span><div><b>사진 반출</b> &mdash; 규정이 막으면 기술 이야기는 의미가 없다. 사내 GPU 의 파인튜닝으로 간다.</div></div><div class="v"><span class="b">2</span><div><b>물량</b> &mdash; 장당 요금이다. 하루 몇 장인지 먼저 센다.</div></div><div class="v"><span class="b">3</span><div><b>책임</b> &mdash; 판정을 자동 처리로 두지 않는다. 사람이 다시 보는 단계를 남긴다.</div></div></div></div>
     </div>
     <div class="keymsg"><span class="k">현장</span><div>기술이 아니라 <b>이 셋</b>이 도입을 막는다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="나흘의 결산">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>정리</div>
-  <h2 class="s-title sm">나흘의 결산</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="cards c4"><div class="card"><span class="n">첫날</span><h3>합성곱</h3><p>사진에서 특징을 뽑는 원리. 남이 배운 것을 가져오면 훨씬 잘 된다.</p></div><div class="card"><span class="n">둘째날</span><h3>분류에서 탐지까지</h3><p>내 사진으로 학습하고, 라벨을 치고, 파인튜닝하고, GPU 로 돌렸다.</p></div><div class="card"><span class="n">오늘 오전</span><h3>LLM 이 바꾼 CV</h3><p>사진이 토큰이 되면서 물어볼 수 있는 것이 달라졌다.</p></div><div class="card"><span class="n">오늘 오후</span><h3>직접 만든 물건</h3><p>빈 폴더에서 시작해 주소 하나로 열리는 검사 모듈까지.</p></div></div>
-    <div class="vlist"><div class="v"><span class="b">&#9733;</span><div>코드를 한 줄도 직접 안 썼다. 사람이 한 것은 <b>무엇을 물을지 정하고, 사실을 주고, 확인한 것</b>뿐이다.</div></div></div>
-    <div class="keymsg"><span class="k">정리</span><div>다음은 <b>말을 다루는 모델</b>이다.</div></div>
   </div>
 </section>
     </div>
