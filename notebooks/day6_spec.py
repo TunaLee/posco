@@ -330,6 +330,122 @@ plt.xlabel('유지된 프레임 수'); plt.ylabel('번호 개수'); plt.show()
 for k in (5, 15, 25, 50):
     print('%2d프레임 이상만 세면 → %d명' % (k, sum(1 for v in ids.values() if v >= k)))""",
          check="print('사람이 겹쳐 지나갈 때 번호가 바뀐다')"),
+
+    md("## 6. GPU 없이 — API 로 이미지 처리"),
+    md("여기부터는 T4 가 필요 없다. 사진을 **NVIDIA 서버로 보내고 결과만 받는다**.\n\n"
+       "[build.nvidia.com](https://build.nvidia.com) 에서 무료로 키를 받는다. "
+       "키는 아래 칸에 **붙여 넣는다** — 코드에 적으면 노트북에 그대로 남는다."),
+
+    code("""# 1) 키를 받아 둔다 — 화면에 찍히지 않는다
+import getpass, requests, base64, io
+from PIL import Image
+
+API_KEY = os.environ.get('NVIDIA_API_KEY') or getpass.getpass('NVIDIA API 키: ')
+HDR = {'Authorization': 'Bearer ' + API_KEY, 'Accept': 'application/json'}
+print('키를 받았다 · 길이', len(API_KEY))"""),
+
+    code("""# 2) 사진을 연다 — 파일 경로와 http 주소를 둘 다 받는다
+def load_image(src):
+    if src.startswith('http'):
+        r = requests.get(src, timeout=30)
+        r.raise_for_status()
+        return Image.open(io.BytesIO(r.content)).convert('RGB')
+    return Image.open(src).convert('RGB')"""),
+
+    code("""# 3) 주소로 한 장 · 파일로 한 장 열어 본다
+IMG = 'https://ultralytics.com/images/bus.jpg'      # 내 사진 주소로 바꿔도 된다
+im = load_image(IMG)
+print('주소에서', im.size, '·', '파일에서', load_image('bus.jpg').size)"""),
+
+    code("""# 4) 사진을 글자로 바꾼다 — 200KB 를 넘으면 서버가 안 받는다
+def to_uri(im, side=640, quality=85):
+    im = im.copy()
+    im.thumbnail((side, side))                      # 긴 변을 side 에 맞춘다
+    buf = io.BytesIO(); im.save(buf, 'JPEG', quality=quality)
+    return 'data:image/jpeg;base64,' + base64.b64encode(buf.getvalue()).decode()
+
+print('%.0fKB' % (len(to_uri(im)) * 3 / 4 / 1024))"""),
+
+    md("### 말로 지정하는 객체 탐지 — Grounding DINO\n\n"
+       "YOLO 는 COCO 80종만 알았다. 이 모델은 **찾을 것을 글자로 적어 보낸다**."),
+
+    code("""# 5) 찾을 것을 글자로 적어 보내는 함수
+GDINO = 'https://ai.api.nvidia.com/v1/cv/nvidia/nv-grounding-dino'
+
+def find(src, phrases, threshold=0.3):
+    im = load_image(src)
+    body = {'model': 'Grounding-Dino', 'threshold': threshold,
+            'messages': [{'role': 'user', 'content': [
+                {'type': 'text', 'text': phrases},
+                {'type': 'media_url', 'media_url': {'url': to_uri(im)}}]}]}
+    r = requests.post(GDINO, headers=HDR, json=body, timeout=60)
+    if r.status_code != 200:
+        print(r.status_code, r.text[:300])          # 무엇이 틀렸는지 그대로 본다
+    r.raise_for_status()
+    return im, r.json()['choices'][0]['message']['content']"""),
+
+    code("""# 6) COCO 에 없는 이름도 넣어 본다
+im, out = find(IMG, 'person, bus, backpack, license plate')
+for g in out['boundingBoxes']:
+    print('%-14s %d개  %s' % (g['phrase'], len(g['bboxes']),
+                              [round(c, 2) for c in g['confidence']]))"""),
+
+    code("""# 7) 돌아온 네 숫자를 그린다 — day6 에서 쓰던 그 박스다
+plt.figure(figsize=(5, 7)); plt.imshow(im); ax = plt.gca()
+sx, sy = im.width / out['frameWidth'], im.height / out['frameHeight']
+for g in out['boundingBoxes']:
+    for (x1, y1, x2, y2), c in zip(g['bboxes'], g['confidence']):
+        ax.add_patch(plt.Rectangle((x1 * sx, y1 * sy), (x2 - x1) * sx, (y2 - y1) * sy,
+                                   fill=False, color='#5B3DF5', lw=2))
+        ax.text(x1 * sx, y1 * sy - 5, '%s %.2f' % (g['phrase'], c), fontsize=8, color='#5B3DF5')
+plt.axis('off'); plt.show()"""),
+
+    Ex(8, "COCO 에 없던 `ant` 를 찾게 해서 박스 수를 `n_ant` 에 담는다.\n"
+          "> day6 앞에서 YOLO 는 개미를 한 마리도 못 찾았다.",
+       setup="p_ant = sorted(glob.glob('hymenoptera_data/val/ants/*'))[0]",
+       blank="_, o = find(p_ant, ___)\nn_ant = sum(len(g['bboxes']) for g in o['boundingBoxes'])",
+       answer="_, o = find(p_ant, 'ant')\nn_ant = sum(len(g['bboxes']) for g in o['boundingBoxes'])",
+       check="print(n_ant)\nassert isinstance(n_ant, int)"),
+
+    md("### 학습 없이 분류 — NV-CLIP\n\n"
+       "사진과 글을 **같은 자리에 놓는** 모델이다. 가까운 쪽이 답이 된다."),
+
+    code("""# 8) 사진이든 글이든 벡터로 바꿔 주는 함수 — 한 번에 64개까지
+CLIP = 'https://integrate.api.nvidia.com/v1/embeddings'
+
+def embed(items):
+    r = requests.post(CLIP, headers=HDR, timeout=60,
+                      json={'model': 'nvidia/nvclip', 'input': items})
+    if r.status_code != 200:
+        print(r.status_code, r.text[:300])
+    r.raise_for_status()
+    return torch.tensor([d['embedding'] for d in r.json()['data']])"""),
+
+    code("""# 9) 개미 4장 · 벌 4장과 설명 두 줄을 한꺼번에 보낸다
+paths = (sorted(glob.glob('hymenoptera_data/val/ants/*'))[:4]
+         + sorted(glob.glob('hymenoptera_data/val/bees/*'))[:4])
+LAB = ['a photo of an ant', 'a photo of a bee']
+V = embed([to_uri(load_image(p), 336) for p in paths] + LAB)
+print('사진 8장 + 글 2줄 →', tuple(V.shape))"""),
+
+    code("""# 10) 가까운 쪽을 고른다 — 학습은 한 줄도 하지 않았다
+E = torch.nn.functional.normalize(V, dim=1)
+sim = E[:8] @ E[8:].T
+truth = torch.tensor([0] * 4 + [1] * 4)
+print('맞은 개수 %d / 8' % int((sim.argmax(1) == truth).sum()))"""),
+
+    Ex(9, "설명을 `['ant', 'bee']` 로 줄여 다시 재고 맞은 개수를 `n_plain` 에 담는다.\n"
+          "> 사진은 그대로다. 바뀐 것은 글뿐이다.",
+       blank="V2 = embed([to_uri(load_image(p), 336) for p in paths] + ___)\n"
+             "E2 = torch.nn.functional.normalize(V2, dim=1)\n"
+             "n_plain = int(((E2[:8] @ E2[8:].T).argmax(1) == truth).sum())",
+       answer="V2 = embed([to_uri(load_image(p), 336) for p in paths] + ['ant', 'bee'])\n"
+              "E2 = torch.nn.functional.normalize(V2, dim=1)\n"
+              "n_plain = int(((E2[:8] @ E2[8:].T).argmax(1) == truth).sum())",
+       check="print(n_plain, '/ 8')\nassert 0 <= n_plain <= 8"),
+
+    md("파인튜닝은 상자를 며칠 그려야 시작된다. API 는 **찾을 것을 한 줄 적으면 끝**이다.\n"
+       "대신 현장에서만 쓰는 이름은 못 알아듣고, 사진이 밖으로 나간다. 둘은 바꿔 쓰는 관계다."),
 ]
 
 MODES = {
@@ -339,6 +455,7 @@ MODES = {
     ("ex", 5): "together", ("task", 4): "solo",
     ("ex", 7): "together", ("task", 7): "solo",
     ("ex", 6): "together", ("task", 5): "solo", ("task", 6): "team",
+    ("ex", 8): "together", ("ex", 9): "together",
 }
 
 SPEC = ("이미지 처리", "분류에서 탐지까지 · 남의 가중치를 받아 내 것으로", CELLS, MODES)
