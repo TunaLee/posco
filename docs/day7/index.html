@@ -637,23 +637,61 @@ nvidia/nvclip              404  못 쓴다</div></div></div>
     <div class="keymsg"><span class="k">부품</span><div>사진 저장소를 따로 붙이지 않는다. <b>DB 하나로 끝난다</b>.</div></div>
   </div>
 </section>
-<section class="slide" data-title="Codex 에게 시키는 법">
+<section class="slide" data-title="Codex 가 아는 것과 모르는 것">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>방법</div>
-  <h2 class="s-title sm">Codex 에게 시키는 법</h2>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>요령</div>
+  <h2 class="s-title sm">Codex 가 아는 것과 모르는 것</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twocol w">
-      <div><div class="vlist"><div class="v"><span class="b">&#10005;</span><div><b>한 번에 다 시키지 않는다.</b> 「사진 올려서 판정하고 DB 에 넣는 앱 만들어줘」 는 열에 아홉 안 돈다.</div></div><div class="v"><span class="b">&#9733;</span><div>한 단계는 <b>돌려서 눈으로 확인할 수 있는 것</b>이어야 한다. 화면이 뜨거나, 값이 찍히거나.</div></div><div class="v"><span class="b">&rarr;</span><div>안 되면 <b>에러 문구를 그대로 붙여 넣는다</b>. 고쳐 달라고 말로 설명하지 않는다.</div></div></div></div>
-      <div><div class="code sm"><!-- lint:code-ok --><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">시키는 문장의 모양</span></div><pre><code><span class="cm"># 나쁜 예</span>
-사진 올리면 AI가 판정하고 DB에 저장하는 웹앱 만들어줘
-
-<span class="cm"># 좋은 예 — 한 단계씩</span>
-Gradio 로 사진 한 장 올리면
-그 사진을 화면에 그대로 보여 주는 앱을 만든다.
-파일은 app.py 하나로 한다.</code></pre></div></div>
+      <div><div class="plot"><svg viewBox="0 0 420 220"><text x="12" y="20" font-size="11" fill="#8E8AAC" font-weight="800">무엇을 사람이 줘야 하나</text><rect x="12" y="30" width="20" height="20" rx="5" fill="#1E9E6A" stroke="none" stroke-width="1"/><text x="22" y="45" font-size="11" fill="#fff" font-weight="800" text-anchor="middle">O</text><text x="42" y="45" font-size="11" fill="#16142B">Gradio 로 화면 만들기</text><rect x="12" y="56" width="20" height="20" rx="5" fill="#1E9E6A" stroke="none" stroke-width="1"/><text x="22" y="71" font-size="11" fill="#fff" font-weight="800" text-anchor="middle">O</text><text x="42" y="71" font-size="11" fill="#16142B">Postgres 연결과 SQL</text><rect x="12" y="82" width="20" height="20" rx="5" fill="#1E9E6A" stroke="none" stroke-width="1"/><text x="22" y="97" font-size="11" fill="#fff" font-weight="800" text-anchor="middle">O</text><text x="42" y="97" font-size="11" fill="#16142B">base64 · 이미지 다루기</text><rect x="12" y="108" width="20" height="20" rx="5" fill="#1E9E6A" stroke="none" stroke-width="1"/><text x="22" y="123" font-size="11" fill="#fff" font-weight="800" text-anchor="middle">O</text><text x="42" y="123" font-size="11" fill="#16142B">에러 처리 · 배포 파일</text><rect x="12" y="134" width="20" height="20" rx="5" fill="#E8537A" stroke="none" stroke-width="1"/><text x="22" y="149" font-size="11" fill="#fff" font-weight="800" text-anchor="middle">X</text><text x="42" y="149" font-size="11" fill="#E8537A" font-weight="700">오늘 이 계정에서 열리는 모델 이름</text><rect x="12" y="160" width="20" height="20" rx="5" fill="#E8537A" stroke="none" stroke-width="1"/><text x="22" y="175" font-size="11" fill="#fff" font-weight="800" text-anchor="middle">X</text><text x="42" y="175" font-size="11" fill="#E8537A" font-weight="700">사진을 넣는 정확한 본문 모양</text><rect x="12" y="186" width="20" height="20" rx="5" fill="#E8537A" stroke="none" stroke-width="1"/><text x="22" y="201" font-size="11" fill="#fff" font-weight="800" text-anchor="middle">X</text><text x="42" y="201" font-size="11" fill="#E8537A" font-weight="700">OCR 응답의 좌표 단위</text><line x1="12" y1="140" x2="408" y2="140" stroke="#DCD6F0" stroke-dasharray="3 3"/></svg></div></div>
+      <div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>Gradio 도 Postgres 도 <b>Codex 가 더 잘 안다</b>. 그쪽은 통째로 맡긴다.</div></div><div class="v"><span class="b">&#10005;</span><div>모르는 것은 <b>오늘 이 API 가 어떤 모양인지</b>다. 학습한 시점 이후에 바뀌었기 때문이다.</div></div><div class="v"><span class="b">&#9733;</span><div>그래서 <b>API 사실 몇 줄만 사람이 준다</b>. 나머지를 사람이 쓰면 Codex 를 쓰는 뜻이 없다.</div></div><div class="v"><span class="b">&rarr;</span><div>이 자료를 만들 때도 없는 모델 이름을 넣었다가 <code>404</code> 를 맞았다. <b>찔러 보기 전에는 아무도 모른다</b>.</div></div></div></div>
     </div>
-    <div class="keymsg"><span class="k">방법</span><div>단계를 <b>돌려 볼 수 있는 크기</b>로 자른다. 그것이 Codex 를 쓰는 요령의 전부다.</div></div>
+    <div class="keymsg"><span class="k">요령</span><div>Codex 에게 <b>모르는 것만</b> 준다. 아는 것을 받아 적게 하지 않는다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="사람이 줘야 하는 사실 네 줄">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>재료</div>
+  <h2 class="s-title sm">사람이 줘야 하는 사실 네 줄</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div><div class="code sm"><!-- lint:code-ok --><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">이 네 줄이 오늘의 재료다</span></div><pre><code><span class="cm"># 판정 · 박스</span>
+https://integrate.api.nvidia.com/v1/chat/completions
+model = <span class="st">'nvidia/nemotron-nano-12b-v2-vl'</span>
+content 는 배열 &mdash; text 와 image_url 두 개
+
+<span class="cm"># 글자</span>
+https://ai.api.nvidia.com/v1/cv/nvidia/nemotron-ocr-v2
+본문 {<span class="st">"input"</span>: [{<span class="st">"type"</span>: <span class="st">"image_url"</span>, <span class="st">"url"</span>: ...}]}
+좌표는 0~1 &mdash; 사진 크기를 곱한다</code></pre></div></div>
+      <div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div>이 네 줄을 <b>프롬프트에 그대로 붙인다</b>. 이것만 맞으면 나머지는 Codex 가 채운다.</div></div><div class="v"><span class="b">&#10005;</span><div>이걸 안 주면 Codex 는 <b>예전 형식</b>으로 쓴다. 200 이 오는데 모델이 <b>사진을 못 본다</b>.</div></div><div class="v"><span class="b">&rarr;</span><div>수업 시작할 때 <b>한 번 찔러 확인</b>한다. 이름은 예고 없이 내려간다.</div></div></div></div>
+    </div>
+    <div class="keymsg"><span class="k">재료</span><div>코드를 주는 것이 아니라 <b>사실을 준다</b>. 그 차이가 오늘의 방법이다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="한 번에 한 단계">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>방법</div>
+  <h2 class="s-title sm">한 번에 한 단계</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div><div class="vlist"><div class="v"><span class="b">&#10005;</span><div><b>한 번에 다 시키지 않는다.</b> 「사진 올려서 판정하고 DB 에 넣는 웹앱」 은 열에 아홉 안 돈다.</div></div><div class="v"><span class="b">&#9733;</span><div>한 단계는 <b>돌려서 눈으로 확인되는 것</b>이어야 한다. 화면이 뜨거나, 값이 찍히거나.</div></div><div class="v"><span class="b">&rarr;</span><div>안 되면 <b>에러 문구를 그대로 붙여 넣는다</b>. 말로 설명하지 않는다.</div></div><div class="v"><span class="b">&rarr;</span><div>잘 됐으면 <b>거기서 멈춘다</b>. 시키지 않은 것까지 고쳐 놓는 일이 잦다.</div></div></div></div>
+      <div><div class="code sm"><!-- lint:code-ok --><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">0단계 &mdash; 빈 폴더에서 이것부터</span></div><pre><code>이 폴더에 파이썬 웹앱을 만들 준비를 한다.
+
+1) AGENTS.md 를 만들고 규칙을 적는다
+   - 파일은 app.py 하나로 유지한다
+   - 키는 .env 에서만 읽는다
+   - 사진은 긴 변 640으로 줄인다
+   - 응답이 200이 아니면 본문 300자를 print 한다
+   - 한 번에 한 단계만 고친다
+
+2) requirements.txt 와 .env.example 을 만든다
+3) 지금 환경에 설치하고 버전을 찍어 확인해 준다</code></pre></div></div>
+    </div>
+    <div class="keymsg"><span class="k">방법</span><div><b>규칙 파일부터</b> 만든다. 다섯 줄이 하루의 품질을 정한다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="1단계 - 사진을 받아 보여 주는 화면">
@@ -663,16 +701,11 @@ Gradio 로 사진 한 장 올리면
   <div class="rule"></div>
   <div class="body">
     <div class="twocol w">
-      <div><div class="code sm"><!-- lint:code-ok --><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">app.py</span></div><pre><code><span class="kw">import</span> gradio <span class="kw">as</span> gr
-
-<span class="kw">def</span> <span class="fn2">show</span>(im):
-    <span class="kw">return</span> im
-
-gr.Interface(show,
-    gr.Image(type=<span class="st">'pil'</span>,
-             sources=[<span class="st">'upload'</span>, <span class="st">'webcam'</span>]),
-    <span class="st">'image'</span>).launch(share=<span class="kw">True</span>)</code></pre><div class="out">Running on public URL: https://xxxx.gradio.live</div></div></div>
-      <div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div><code>share=True</code> 한 줄이 <b>공개 주소</b>를 만든다. 그 주소를 휴대폰으로 열면 카메라가 뜬다.</div></div><div class="v"><span class="b">&rarr;</span><div>여기서 <b>먼저 돌려 본다</b>. 사진이 안 보이면 다음으로 안 넘어간다.</div></div><div class="v"><span class="b">&#10005;</span><div>주소는 <b>72시간이면 사라진다</b>. 수업용이다. 오래 쓸 것은 뒤에서 Spaces 로 올린다.</div></div></div></div>
+      <div><div class="code sm"><!-- lint:code-ok --><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">1단계 &mdash; 그대로 친다</span></div><pre><code>Gradio 로 app.py 를 만든다.
+사진 한 장을 올리거나 카메라로 찍으면
+그 사진을 그대로 화면에 보여 준다.
+launch 는 share=True 로 한다.</code></pre></div></div>
+      <div><div class="vlist"><div class="v"><span class="b">&#10003;</span><div><b>확인</b> &mdash; <code>python app.py</code> 로 주소가 뜨고 사진이 보이는가.</div></div><div class="v"><span class="b">&#9733;</span><div>여기서 <b>안 되면 다음으로 안 간다</b>. 화면이 먼저다.</div></div><div class="v"><span class="b">&#10005;</span><div>주소가 안 만들어지면 사내망이 막은 것이다. 뒤의 <b>3단 대비</b>로 넘어간다.</div></div></div></div>
     </div>
     <div class="keymsg"><span class="k">1단계</span><div>먼저 <b>화면부터</b> 띄운다. 모델은 그다음이다.</div></div>
   </div>
@@ -684,20 +717,15 @@ gr.Interface(show,
   <div class="rule"></div>
   <div class="body">
     <div class="twocol w">
-      <div><div class="code sm"><!-- lint:code-ok --><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">judge — day6 에서 쓰던 그 호출</span></div><pre><code><span class="kw">def</span> <span class="fn2">judge</span>(im, question):
-    uri = to_uri(im)
-    r = requests.post(CHAT, headers=HDR, json={
-        <span class="st">'model'</span>: MODEL, <span class="st">'max_tokens'</span>: <span class="nm">200</span>,
-        <span class="st">'messages'</span>: [{<span class="st">'role'</span>: <span class="st">'user'</span>,
-            <span class="st">'content'</span>: [
-                {<span class="st">'type'</span>: <span class="st">'text'</span>, <span class="st">'text'</span>: question},
-                {<span class="st">'type'</span>: <span class="st">'image_url'</span>,
-                 <span class="st">'image_url'</span>: {<span class="st">'url'</span>: uri}}]}]})
-    d = r.json()
-    <span class="kw">return</span> d[<span class="st">'choices'</span>][<span class="nm">0</span>][<span class="st">'message'</span>][<span class="st">'content'</span>]</code></pre><div class="out">있음</div></div></div>
-      <div><div class="vlist"><div class="v"><span class="b">&#10005;</span><div><code>content</code> 를 <b>배열로</b> 줘야 사진이 전달된다. 문자열에 <code>&lt;img&gt;</code> 를 끼워 넣으면 모델이 사진을 못 본다.</div></div><div class="v"><span class="b">&rarr;</span><div>이 함수만 따로 <b>먼저 돌려 본다</b>. 화면에 붙이는 것은 그다음이다.</div></div><div class="v"><span class="b">&#9733;</span><div>키는 <code>getpass</code> 로 받는다. 코드에 적으면 <b>공유하는 순간 새어 나간다</b>.</div></div></div></div>
+      <div><div class="code sm"><!-- lint:code-ok --><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">2단계 &mdash; 그대로 친다</span></div><pre><code>judge(im, question) 함수를 추가한다.
+아래 주소로 POST 한다.
+  (사실 카드 첫 세 줄을 여기 붙인다)
+사진은 긴 변 640으로 줄여 base64 로 넣는다.
+키는 .env 의 NVIDIA_API_KEY 를 쓴다.
+답 문장과 usage.prompt_tokens 를 함께 돌려준다.</code></pre></div></div>
+      <div><div class="vlist"><div class="v"><span class="b">&#10003;</span><div><b>확인</b> &mdash; 사람이 찍힌 사진에 <code>있음</code> 이 나오는가.</div></div><div class="v"><span class="b">&#10005;</span><div><b><code>The image is not displayed</code></b> 라고 답하면 <code>content</code> 가 배열이 아닌 것이다. 여기서 제일 많이 막힌다.</div></div><div class="v"><span class="b">&rarr;</span><div>토큰 수가 <b>3천을 넘으면</b> 사진이 제대로 간 것이다. 16이면 안 간 것이다.</div></div></div></div>
     </div>
-    <div class="keymsg"><span class="k">2단계</span><div>함수 하나를 <b>따로 돌려 본 뒤에</b> 화면에 붙인다.</div></div>
+    <div class="keymsg"><span class="k">2단계</span><div><b>토큰 수를 같이 받는다</b>. 사진이 갔는지 아닌지가 그 숫자로 보인다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="3단계 - 화면에서 고치는 판정 기준">
@@ -707,15 +735,12 @@ gr.Interface(show,
   <div class="rule"></div>
   <div class="body">
     <div class="twocol w">
-      <div><div class="code sm"><!-- lint:code-ok --><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">같은 코드 · 문장만 바꾼다</span></div><pre><code>q = gr.Textbox(label=<span class="st">'판정 기준'</span>)
-
-<span class="cm"># 화면에 이렇게 적으면</span>
-<span class="st">"이 사진에 사람이 보이면 '있음', 아니면 '없음' 한 단어로만 답하라."</span>
-<span class="cm">#   → 있음</span>
-
-<span class="st">"이 사진에 벌레가 몇 마리 보이는지 숫자만 답하라."</span>
-<span class="cm">#   → 3</span></code></pre></div></div>
-      <div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div><b>여기가 오늘의 핵심</b>이다. 검사 항목이 바뀌어도 코드를 안 고친다. 문장만 바꾼다.</div></div><div class="v"><span class="b">&rarr;</span><div>day6 의 파인튜닝은 <b>항목이 바뀌면 다시 학습</b>해야 했다. 이쪽은 한 줄이다.</div></div><div class="v"><span class="b">&#10005;</span><div>대신 <b>기준을 애매하게 적으면 답도 애매</b>해진다. 「한 단어로만」 같은 못을 박아야 한다.</div></div></div></div>
+      <div><div class="code sm"><!-- lint:code-ok --><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">3단계 &mdash; 그대로 친다</span></div><pre><code>판정 기준을 입력하는 칸을 화면에 추가한다.
+기본값은 이 문장으로 한다.
+  "사람이 보이면 '있음', 아니면 '없음'
+   한 단어로만 답하라."
+검사 버튼을 누르면 그 문장을 judge 에 넘긴다.</code></pre></div></div>
+      <div><div class="vlist"><div class="v"><span class="b">&#10003;</span><div><b>확인</b> &mdash; 문장을 <code>벌레가 몇 마리인지 숫자만</code> 으로 바꾸면 숫자가 나오는가.</div></div><div class="v"><span class="b">&#9733;</span><div><b>여기가 오늘의 핵심</b>이다. 검사 항목이 바뀌어도 코드를 안 고친다.</div></div><div class="v"><span class="b">&#10005;</span><div>기준을 애매하게 적으면 답도 애매해진다. <b>「한 단어로만」 같은 못</b>을 박는다.</div></div></div></div>
     </div>
     <div class="keymsg"><span class="k">3단계</span><div>판정 기준이 <b>코드가 아니라 글</b>이 됐다. 현장에서 직접 바꾼다.</div></div>
   </div>
@@ -727,17 +752,14 @@ gr.Interface(show,
   <div class="rule"></div>
   <div class="body">
     <div class="twocol w">
-      <div><div class="code sm"><!-- lint:code-ok --><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">표 하나 만들고 한 줄 넣는다</span></div><pre><code><span class="cm">-- 표는 한 번만 만든다</span>
-create table day7_checks (
-  id bigserial primary key,
-  created_at timestamptz default now(),
-  who text, image text,
-  question text, verdict text, tokens int);
-
-<span class="cm"># 검사할 때마다 한 줄</span>
-c.execute(<span class="st">"insert into day7_checks ..."</span>,
-          (who, uri, question, verdict, tokens))</code></pre></div></div>
-      <div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div>사진을 <b><code>image</code> 칸에 글자로</b> 넣는다. <code>data:image/jpeg;base64,...</code> 그대로다.</div></div><div class="v"><span class="b">&rarr;</span><div>저장소를 따로 안 붙여도 된다. 한 장이 <b>100KB 안팎</b>이라 0.5GB 면 <b>수천 장</b>이 들어간다.</div></div><div class="v"><span class="b">&#10005;</span><div>무료 Neon 은 <b>이레 동안 안 쓰면 잠긴다</b>. 수업 전날 한 번 눌러 깨워 둔다.</div></div></div></div>
+      <div><div class="code sm"><!-- lint:code-ok --><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">4단계 &mdash; 그대로 친다</span></div><pre><code>Neon Postgres 에 결과를 남긴다.
+접속 주소는 .env 의 DATABASE_URL 이다.
+표 이름은 day7_checks 이고 칸은
+  id, created_at, who, image,
+  question, verdict, tokens 다.
+image 칸에는 data URI 문자열을 그대로 넣는다.
+표가 없으면 만들고, 검사할 때마다 한 줄 넣는다.</code></pre></div></div>
+      <div><div class="vlist"><div class="v"><span class="b">&#10003;</span><div><b>확인</b> &mdash; Neon 콘솔에서 줄이 늘어나는가.</div></div><div class="v"><span class="b">&#9733;</span><div>사진 저장소를 따로 안 붙인다. 한 장 100KB 라 <b>0.5GB 면 수천 장</b>이다.</div></div><div class="v"><span class="b">&#10005;</span><div>접속이 안 되면 무료 프로젝트가 <b>잠든 것</b>이다. 콘솔에서 깨운다.</div></div></div></div>
     </div>
     <div class="keymsg"><span class="k">4단계</span><div>사진과 판정을 <b>같은 줄에</b> 남긴다. 따로 두면 나중에 못 맞춘다.</div></div>
   </div>
@@ -749,42 +771,50 @@ c.execute(<span class="st">"insert into day7_checks ..."</span>,
   <div class="rule"></div>
   <div class="body">
     <div class="twocol w">
-      <div><div class="code sm"><!-- lint:code-ok --><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">최근 여섯 장을 카드로</span></div><pre><code><span class="kw">def</span> <span class="fn2">recent</span>(n=<span class="nm">6</span>):
-    <span class="kw">with</span> psycopg.connect(DB_URL) <span class="kw">as</span> c:
-        <span class="kw">return</span> c.execute(
-            <span class="st">"select created_at, who, image, verdict"</span>
-            <span class="st">" from day7_checks order by id desc limit %s"</span>,
-            (n,)).fetchall()
-
-<span class="cm"># 카드 하나 = 사진 + 판정 + 누가 · 언제</span>
-<span class="st">'&lt;img src="' + uri + '"&gt;'</span></code></pre></div></div>
-      <div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>저장한 글자를 그대로 <code>&lt;img src&gt;</code> 에 넣으면 <b>사진이 다시 보인다</b>. 변환할 것이 없다.</div></div><div class="v"><span class="b">&#9733;</span><div>이 목록이 있어야 <b>쓸모가 생긴다</b>. 한 장 판정하고 끝나면 그냥 장난감이다.</div></div><div class="v"><span class="b">&rarr;</span><div>조 이름을 같이 남기면 <b>누가 무엇을 올렸는지</b> 수업 중에 바로 보인다.</div></div></div></div>
+      <div><div class="code sm"><!-- lint:code-ok --><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">5단계 &mdash; 그대로 친다</span></div><pre><code>화면 아래에 "지난 검사" 영역을 만든다.
+day7_checks 에서 최근 6줄을 가져와
+카드로 보여 준다.
+카드 하나는 사진, 판정, 조 이름, 시각이다.
+image 칸의 글자를 <img src> 에 그대로 넣는다.
+검사가 끝나면 이 영역도 같이 갱신한다.</code></pre></div></div>
+      <div><div class="vlist"><div class="v"><span class="b">&#10003;</span><div><b>확인</b> &mdash; 저장한 사진이 카드로 다시 보이는가.</div></div><div class="v"><span class="b">&#9733;</span><div>이 목록이 있어야 <b>쓸모가 생긴다</b>. 한 장 보고 끝나면 장난감이다.</div></div><div class="v"><span class="b">&rarr;</span><div>조 이름을 남기면 <b>누가 무엇을 올렸는지</b> 수업 중에 바로 보인다.</div></div></div></div>
     </div>
-    <div class="keymsg"><span class="k">5단계</span><div><b>다시 볼 수 있어야</b> 기록이다. 쌓이는 것을 보여 주는 화면까지가 한 벌이다.</div></div>
+    <div class="keymsg"><span class="k">5단계</span><div><b>다시 볼 수 있어야</b> 기록이다. 쌓이는 화면까지가 한 벌이다.</div></div>
   </div>
 </section>
-<section class="slide" data-title="6단계 - 박스 탭과 글자 탭">
+<section class="slide" data-title="6단계 - 조마다 다른 모듈">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>6단계</div>
-  <h2 class="s-title sm">6단계 &mdash; 박스 탭과 글자 탭</h2>
+  <h2 class="s-title sm">6단계 &mdash; 조마다 다른 모듈</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable"><thead><tr><th>조</th><th>모듈</th><th>물음</th></tr></thead><tbody><tr><td>1조</td><td class="hl">보호구 점검</td><td>안전모를 안 쓴 사람이 있으면 '위반'</td></tr><tr><td>2조</td><td class="hl">명판 읽기</td><td>OCR &rarr; 설비 번호 형식만 골라낸다</td></tr><tr><td>3조</td><td class="hl">수량 세기</td><td>상자가 몇 개인지 숫자만 + 박스 그리기</td></tr><tr><td>4조</td><td class="hl">표면 이상</td><td>이상이면 '이상' · 이유를 한 문장</td></tr><tr><td>5조</td><td class="hl">작업일지</td><td>OCR &rarr; 날짜 · 작업자 · 내용을 표로</td></tr></tbody></table>
+    <div class="vlist"><div class="v"><span class="b">&#9733;</span><div><b>코드는 다섯 조가 같다.</b> 다른 것은 물음 한 줄과 탭 하나뿐이다.</div></div><div class="v"><span class="b">&rarr;</span><div>5조가 어렵고 재밌다. <b>OCR 결과를 다시 LLM 에 넣어</b> 표로 만든다. 모듈을 잇는 것이다.</div></div></div>
+    <div class="keymsg"><span class="k">6단계</span><div>여기서부터는 <b>물음이 곧 제품</b>이다. 코드는 이미 다 같다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="안 될 때 하는 일 하나">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>고장</div>
+  <h2 class="s-title sm">안 될 때 하는 일 하나</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable"><thead><tr><th>증상</th><th>보이는 것</th><th>원인</th></tr></thead><tbody><tr><td>키가 없다</td><td class="hl"><code>401</code></td><td>.env 를 안 읽었다 · Bearer 빠짐</td></tr><tr><td>모델을 못 찾는다</td><td class="hl"><code>404</code></td><td>이름이 내려갔다 · 사실 카드를 다시 확인</td></tr><tr><td>사진이 안 간다</td><td class="hl">토큰 16</td><td><code>content</code> 가 배열이 아니다</td></tr><tr><td>DB 가 안 붙는다</td><td class="hl">타임아웃</td><td>무료 프로젝트가 잠들었다</td></tr></tbody></table>
+    <div class="vlist"><div class="v"><span class="b">&#9733;</span><div>네 가지 다 <b>에러 문구에 답이 있다</b>. 그 줄을 그대로 Codex 에 붙여 넣는 것이 제일 빠르다.</div></div><div class="v"><span class="b">&#10005;</span><div>직접 고치려 들지 않는다. <b>고치는 사람이 Codex</b> 라는 것이 오늘의 방식이다.</div></div></div>
+    <div class="keymsg"><span class="k">고장</span><div>에러를 <b>읽지 말고 붙여 넣는다</b>. 그게 이 도구를 쓰는 법이다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="휴대폰으로 여는 방법 세 가지">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>대비</div>
+  <h2 class="s-title sm">휴대폰으로 여는 방법 세 가지</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twocol w">
-      <div><div class="vlist"><div class="v"><span class="b">1</span><div><b>박스 탭</b> &mdash; 찾을 것을 적으면 <code>0~1000</code> 좌표 JSON 을 받아 사진에 그린다. CH0 에서 돌려 본 그것이다.</div></div><div class="v"><span class="b">2</span><div><b>글자 탭</b> &mdash; <code>nemotron-ocr-v2</code> 로 명판과 계기판을 읽는다.</div></div><div class="v"><span class="b">3</span><div><b>표 내보내기</b> &mdash; 지난 검사를 CSV 로 내려받게 한다. 현장에서 제일 먼저 요구하는 것이다.</div></div></div></div>
-      <div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div>탭을 나누면 <b>같은 사진에 세 가지를 물어볼 수 있다</b>. 판정 · 자리 · 글자.</div></div><div class="v"><span class="b">&rarr;</span><div>여기서부터는 조마다 다르게 만든다. <b>현장에서 무엇을 물어야 하는가</b> 가 진짜 문제다.</div></div><div class="v"><span class="b">&#10005;</span><div>탭을 늘릴수록 <b>느려진다</b>. 한 번 누를 때 호출이 몇 번 나가는지 세어 본다.</div></div></div></div>
+      <div><div class="plot"><svg viewBox="0 0 420 210"><text x="12" y="16" font-size="11" fill="#8E8AAC" font-weight="800">휴대폰으로 여는 방법 세 가지</text><rect x="12" y="24" width="26" height="26" rx="7" fill="#5B3DF5" stroke="none" stroke-width="1"/><text x="25" y="42" font-size="12" fill="#fff" font-weight="800" text-anchor="middle">1</text><text x="50" y="38" font-size="11.5" fill="#16142B" font-weight="800">share=True</text><text x="50" y="54" font-size="10" fill="#8E8AAC">터널 주소가 만들어진다</text><text x="50" y="69" font-size="9.5" fill="#E8537A">사내망이 막으면 실패</text><rect x="12" y="86" width="26" height="26" rx="7" fill="#5B3DF5" stroke="none" stroke-width="1"/><text x="25" y="104" font-size="12" fill="#fff" font-weight="800" text-anchor="middle">2</text><text x="50" y="100" font-size="11.5" fill="#16142B" font-weight="800">server_name="0.0.0.0"</text><text x="50" y="116" font-size="10" fill="#8E8AAC">노트북 IP:7860 으로 연다</text><text x="50" y="131" font-size="9.5" fill="#E8537A">같은 와이파이여야 한다</text><rect x="12" y="148" width="26" height="26" rx="7" fill="#1E9E6A" stroke="none" stroke-width="1"/><text x="25" y="166" font-size="12" fill="#fff" font-weight="800" text-anchor="middle">3</text><text x="50" y="162" font-size="11.5" fill="#16142B" font-weight="800">sources=["webcam"]</text><text x="50" y="178" font-size="10" fill="#8E8AAC">노트북 카메라로 찍는다</text><text x="50" y="193" font-size="9.5" fill="#1E9E6A">무조건 된다</text></svg></div></div>
+      <div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>1번이 안 되는 것은 <b>흔한 일</b>이다. 사내망이 터널을 막는다.</div></div><div class="v"><span class="b">&#9733;</span><div>3번은 <b>무조건 된다</b>. 사진이 휴대폰에서 안 와도 만드는 과정은 그대로다.</div></div><div class="v"><span class="b">&rarr;</span><div>1번이 막히면 Codex 에게 <b>2번으로 바꿔 달라</b>고 한 줄 시키면 된다.</div></div></div></div>
     </div>
-    <div class="keymsg"><span class="k">6단계</span><div>여기부터는 <b>조마다 다른 것</b>을 만든다. 물음이 곧 제품이다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="막히는 자리 네 곳">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>고장</div>
-  <h2 class="s-title sm">막히는 자리 네 곳</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <table class="ctable"><thead><tr><th>증상</th><th>보이는 것</th><th>원인</th></tr></thead><tbody><tr><td>키가 없다고 나온다</td><td class="hl"><code>401</code></td><td>키 앞뒤 공백 · Bearer 빠짐</td></tr><tr><td>모델을 못 찾는다</td><td class="hl"><code>404</code></td><td>이름은 있는데 계정에서 안 열린다</td></tr><tr><td>사진이 안 간다</td><td class="hl">답이 엉뚱하다</td><td><code>content</code> 를 배열로 안 줬다</td></tr><tr><td>DB 가 안 붙는다</td><td class="hl">타임아웃</td><td>무료 프로젝트가 잠들었다 · 콘솔에서 깨운다</td></tr></tbody></table>
-    <div class="vlist"><div class="v"><span class="b">&#9733;</span><div>네 가지 다 <b>에러 문구에 답이 들어 있다</b>. 그 줄을 그대로 Codex 에 붙여 넣는 것이 제일 빠르다.</div></div><div class="v"><span class="b">&rarr;</span><div>그래서 코드에 <code>print(r.status_code, r.text[:300])</code> 를 <b>처음부터 넣어 둔다</b>.</div></div></div>
-    <div class="keymsg"><span class="k">고장</span><div>에러 문구를 <b>지우지 말고 읽는다</b>. 넷 중 하나다.</div></div>
+    <div class="keymsg"><span class="k">대비</span><div>막히는 곳을 <b>미리 정해 두면</b> 수업이 안 멈춘다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="수업이 끝난 뒤에도 남는 주소">
@@ -794,8 +824,12 @@ c.execute(<span class="st">"insert into day7_checks ..."</span>,
   <div class="rule"></div>
   <div class="body">
     <div class="twocol w">
-      <div><div class="vlist"><div class="v"><span class="b">1</span><div><b>Hugging Face Spaces</b> 에 <code>app.py</code> 와 <code>requirements.txt</code> 를 올린다. 무료다.</div></div><div class="v"><span class="b">2</span><div>키는 <b>Settings &rarr; Secrets</b> 에 넣는다. 코드에는 <code>os.environ</code> 만 남긴다.</div></div><div class="v"><span class="b">3</span><div>주소가 고정된다. <code>gradio.live</code> 처럼 <b>사흘 만에 사라지지 않는다</b>.</div></div></div></div>
-      <div><div class="vlist"><div class="v"><span class="b">&#10005;</span><div>Space 를 <b>공개로 두면 누구나 쓴다</b>. 내 키로 남이 호출한다. 비공개로 두거나 암호를 건다.</div></div><div class="v"><span class="b">&#9733;</span><div><code>demo.launch(auth=(&#39;아이디&#39;, &#39;암호&#39;))</code> 한 줄이면 잠긴다.</div></div><div class="v"><span class="b">&rarr;</span><div>여기까지 가면 <b>동료에게 주소만 보내면 되는 물건</b>이 된다.</div></div></div></div>
+      <div><div class="code sm"><!-- lint:code-ok --><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">7단계 &mdash; 그대로 친다</span></div><pre><code>Hugging Face Space 에 올릴 수 있게 정리한다.
+app.py, requirements.txt, README.md 를 갖춘다.
+키는 Space Secrets 에서 읽게 하고
+.env 를 읽는 부분은 둘 다 되게 남긴다.
+launch 에 auth 를 넣어 아이디와 암호로 잠근다.</code></pre></div></div>
+      <div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div><code>gradio.live</code> 주소는 <b>사흘이면 사라진다</b>. 동료에게 주려면 고정 주소가 있어야 한다.</div></div><div class="v"><span class="b">&#10005;</span><div>Space 를 공개로 두면 <b>내 키로 남이 호출한다</b>. 반드시 잠근다.</div></div><div class="v"><span class="b">&#9733;</span><div>여기까지 오면 <b>주소만 보내면 되는 물건</b>이 된다. 그게 오늘의 끝이다.</div></div></div></div>
     </div>
     <div class="keymsg"><span class="k">배포</span><div>주소가 <b>안 바뀌어야</b> 남에게 줄 수 있다.</div></div>
   </div>
@@ -806,7 +840,7 @@ c.execute(<span class="st">"insert into day7_checks ..."</span>,
   <h2 class="s-title sm">현장에 낼 때 먼저 정할 세 가지</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="vlist"><div class="v"><span class="b">1</span><div><b>사진을 밖으로 낼 수 있는가.</b> 못 내면 여기서 끝이다. 그때는 day6 의 파인튜닝을 사내 GPU 에서 돌린다.</div></div><div class="v"><span class="b">2</span><div><b>하루 몇 장인가.</b> 장당 호출 요금이 붙는다. 수만 장이면 사내 모델이 싸다.</div></div><div class="v"><span class="b">3</span><div><b>틀리면 누가 책임지는가.</b> 판정은 <b>사람이 다시 보게 만드는 장치</b>여야 한다. 자동으로 처리하게 두지 않는다.</div></div><div class="v"><span class="b">&#9733;</span><div>셋 다 <b>코드보다 먼저</b> 정한다. 만들고 나서 정하면 만든 것을 버리게 된다.</div></div></div>
+<div class="vlist"><div class="v"><span class="b">1</span><div><b>사진을 밖으로 낼 수 있는가.</b> 못 내면 여기서 끝이다. 그때는 day6 의 파인튜닝을 사내 GPU 에서 돌린다.</div></div><div class="v"><span class="b">2</span><div><b>하루 몇 장인가.</b> 장당 요금이 붙는다. 수만 장이면 사내 모델이 싸다.</div></div><div class="v"><span class="b">3</span><div><b>틀리면 누가 책임지는가.</b> 판정은 <b>사람이 다시 보게 만드는 장치</b>여야 한다. 자동 처리로 두지 않는다.</div></div><div class="v"><span class="b">&#9733;</span><div>셋 다 <b>코드보다 먼저</b> 정한다. 만들고 나서 정하면 만든 것을 버리게 된다.</div></div></div>
     <div class="keymsg"><span class="k">현장</span><div>기술이 아니라 <b>이 셋</b>이 도입을 막는다.</div></div>
   </div>
 </section>
@@ -816,8 +850,8 @@ c.execute(<span class="st">"insert into day7_checks ..."</span>,
   <h2 class="s-title sm">나흘 동안 만든 것</h2>
   <div class="rule"></div>
   <div class="body">
-    <div class="cards c4"><div class="card"><span class="n">day5</span><h3>합성곱</h3><p>사진에서 특징을 뽑는 원리. 남이 배운 것을 가져오면 훨씬 잘 된다.</p></div><div class="card"><span class="n">day6</span><h3>분류에서 탐지까지</h3><p>내 사진으로 학습하고, 라벨을 치고, 파인튜닝하고, GPU 로 돌렸다.</p></div><div class="card"><span class="n">day7 오전</span><h3>LLM 이 바꾼 CV</h3><p>사진이 토큰이 되면서 물어볼 수 있는 것이 달라졌다.</p></div><div class="card"><span class="n">day7 오후</span><h3>쓸 수 있는 물건</h3><p>주소 하나로 열리고, 기록이 쌓이고, 동료에게 넘길 수 있다.</p></div></div>
-    <div class="vlist"><div class="v"><span class="b">&#9733;</span><div>모델을 고르는 일보다 <b>무엇을 물을지 정하는 일</b>이 오래 걸린다는 것이 나흘의 결론이다.</div></div></div>
+    <div class="cards c4"><div class="card"><span class="n">day5</span><h3>합성곱</h3><p>사진에서 특징을 뽑는 원리. 남이 배운 것을 가져오면 훨씬 잘 된다.</p></div><div class="card"><span class="n">day6</span><h3>분류에서 탐지까지</h3><p>내 사진으로 학습하고, 라벨을 치고, 파인튜닝하고, GPU 로 돌렸다.</p></div><div class="card"><span class="n">day7 오전</span><h3>LLM 이 바꾼 CV</h3><p>사진이 토큰이 되면서 물어볼 수 있는 것이 달라졌다.</p></div><div class="card"><span class="n">day7 오후</span><h3>직접 만든 물건</h3><p>빈 폴더에서 시작해 주소 하나로 열리는 검사 모듈까지.</p></div></div>
+    <div class="vlist"><div class="v"><span class="b">&#9733;</span><div>코드를 한 줄도 직접 안 썼다. 사람이 한 것은 <b>무엇을 물을지 정하고, 사실을 주고, 확인한 것</b>뿐이다.</div></div></div>
     <div class="keymsg"><span class="k">정리</span><div>다음은 <b>말을 다루는 모델</b>이다.</div></div>
   </div>
 </section>
