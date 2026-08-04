@@ -390,21 +390,29 @@ for g in out['boundingBoxes']:
     print('%-14s %d개  %s' % (g['phrase'], len(g['bboxes']),
                               [round(c, 2) for c in g['confidence']]))"""),
 
-    code("""# 7) 돌아온 네 숫자를 그린다 — day6 에서 쓰던 그 박스다
-plt.figure(figsize=(5, 7)); plt.imshow(im); ax = plt.gca()
-sx, sy = im.width / out['frameWidth'], im.height / out['frameHeight']
-for g in out['boundingBoxes']:
-    for (x1, y1, x2, y2), c in zip(g['bboxes'], g['confidence']):
-        ax.add_patch(plt.Rectangle((x1 * sx, y1 * sy), (x2 - x1) * sx, (y2 - y1) * sy,
-                                   fill=False, color='#5B3DF5', lw=2))
-        ax.text(x1 * sx, y1 * sy - 5, '%s %.2f' % (g['phrase'], c), fontsize=8, color='#5B3DF5')
-plt.axis('off'); plt.show()"""),
+    code("""# 7) 돌아온 네 숫자를 그리는 함수 — day6 에서 쓰던 그 박스다
+def draw(im, out, title=''):
+    plt.figure(figsize=(5, 6)); plt.imshow(im); ax = plt.gca()
+    sx, sy = im.width / out['frameWidth'], im.height / out['frameHeight']
+    for g in out['boundingBoxes']:
+        for (x1, y1, x2, y2), c in zip(g['bboxes'], g['confidence']):
+            ax.add_patch(plt.Rectangle((x1 * sx, y1 * sy), (x2 - x1) * sx, (y2 - y1) * sy,
+                                       fill=False, color='#5B3DF5', lw=2))
+            ax.text(x1 * sx, y1 * sy - 5, '%s %.2f' % (g['phrase'], c), fontsize=8, color='#5B3DF5')
+    plt.axis('off'); plt.title(title); plt.show()"""),
+
+    code("""# 8) 그려 본다 — 문장에 적은 것만 박스가 된다
+draw(im, out, 'person, bus, backpack, license plate')"""),
 
     Ex(8, "COCO 에 없던 `ant` 를 찾게 해서 박스 수를 `n_ant` 에 담는다.\n"
           "> day6 앞에서 YOLO 는 개미를 한 마리도 못 찾았다.",
        setup="p_ant = sorted(glob.glob('hymenoptera_data/val/ants/*'))[0]",
-       blank="_, o = find(p_ant, ___)\nn_ant = sum(len(g['bboxes']) for g in o['boundingBoxes'])",
-       answer="_, o = find(p_ant, 'ant')\nn_ant = sum(len(g['bboxes']) for g in o['boundingBoxes'])",
+       blank="im2, o = find(p_ant, ___)\n"
+             "n_ant = sum(len(g['bboxes']) for g in o['boundingBoxes'])\n"
+             "draw(im2, o, 'ant %d개' % n_ant)",
+       answer="im2, o = find(p_ant, 'ant')\n"
+              "n_ant = sum(len(g['bboxes']) for g in o['boundingBoxes'])\n"
+              "draw(im2, o, 'ant %d개' % n_ant)",
        check="print(n_ant)\nassert isinstance(n_ant, int)"),
 
     md("### 학습 없이 분류 — NV-CLIP\n\n"
@@ -434,6 +442,15 @@ sim = E[:8] @ E[8:].T
 truth = torch.tensor([0] * 4 + [1] * 4)
 print('맞은 개수 %d / 8' % int((sim.argmax(1) == truth).sum()))"""),
 
+    code("""# 11) 사진마다 무엇이라 답했는지 그림으로 본다 — 파랑이 맞은 것이다
+fig, ax = plt.subplots(2, 4, figsize=(11, 5.5))
+for a, p, k, row in zip(ax.ravel(), paths, sim.argmax(1), sim):
+    a.imshow(load_image(p)); a.axis('off')
+    ok = int(k) == (0 if '/ants/' in p else 1)
+    a.set_title('%s  %.3f' % (LAB[int(k)].split()[-1], row[int(k)]),
+                color='#5B3DF5' if ok else '#E8537A', fontsize=11)
+plt.tight_layout(); plt.show()"""),
+
     Ex(9, "설명을 `['ant', 'bee']` 로 줄여 다시 재고 맞은 개수를 `n_plain` 에 담는다.\n"
           "> 사진은 그대로다. 바뀐 것은 글뿐이다.",
        blank="V2 = embed([to_uri(load_image(p), 336) for p in paths] + ___)\n"
@@ -443,6 +460,33 @@ print('맞은 개수 %d / 8' % int((sim.argmax(1) == truth).sum()))"""),
               "E2 = torch.nn.functional.normalize(V2, dim=1)\n"
               "n_plain = int(((E2[:8] @ E2[8:].T).argmax(1) == truth).sum())",
        check="print(n_plain, '/ 8')\nassert 0 <= n_plain <= 8"),
+
+    md("### 사진을 보고 말로 답한다 — VLM\n\n"
+       "박스가 아니라 **문장**으로 답한다. 판정 기준을 프롬프트에 적는다."),
+
+    code("""# 12) 사진과 물음을 같이 보내는 함수
+VLM = 'https://integrate.api.nvidia.com/v1/chat/completions'
+VLM_MODEL = 'meta/llama-3.2-11b-vision-instruct'   # 목록이 바뀌면 여기만 고친다
+
+def ask(src, question, max_tokens=256):
+    im = load_image(src)
+    msg = question + ' <img src="' + to_uri(im) + '"/>'
+    r = requests.post(VLM, headers=HDR, timeout=90,
+                      json={'model': VLM_MODEL, 'max_tokens': max_tokens,
+                            'messages': [{'role': 'user', 'content': msg}]})
+    if r.status_code != 200:
+        print(r.status_code, r.text[:300])
+    r.raise_for_status()
+    return im, r.json()['choices'][0]['message']['content']"""),
+
+    code("""# 13) 사진과 답을 같이 본다
+im3, txt = ask(IMG, '이 사진에 무엇이 보이는지 한국어 두 문장으로 답하라.')
+plt.figure(figsize=(4, 5.5)); plt.imshow(im3); plt.axis('off'); plt.show()
+print(txt)"""),
+
+    code("""# 14) 판정 기준을 글로 바꿔 넣는다 — 코드는 그대로다
+_, ans = ask(IMG, '이 사진에 사람이 있으면 {"사람": true}, 없으면 {"사람": false} 로만 답하라.')
+print(ans)"""),
 
     md("파인튜닝은 상자를 며칠 그려야 시작된다. API 는 **찾을 것을 한 줄 적으면 끝**이다.\n"
        "대신 현장에서만 쓰는 이름은 못 알아듣고, 사진이 밖으로 나간다. 둘은 바꿔 쓰는 관계다."),
