@@ -12,7 +12,7 @@
 | 특강 · AI 도구로 웹 서비스 만들기 | [special/index.html](special/index.html) | 41 |
 | 2주차 D1 · 이미지 분류 | [day5/index.html](day5/index.html) | 48 |
 | 2주차 D2 · 이미지 처리 | [day6/index.html](day6/index.html) | 29 |
-| 2주차 D3 · 판정 근거 | [day7/index.html](day7/index.html) | 21 |
+| 2주차 D3 · 이미지 처리 모듈 개발 | [day7/index.html](day7/index.html) | 21 |
 | 2주차 D4 · LLM 과 프롬프트 | [day8/index.html](day8/index.html) | 40 |
 
 조작: `← →` 또는 Space · 숫자 입력 후 Enter로 점프 · `≡` 목차 · `−/+` 줌 · PDF 버튼(인쇄).
@@ -221,7 +221,7 @@ pptx 기반 이전 덱은 [_archive-pptx/](_archive-pptx/)에 보관돼 있다.
 |---|---|---|
 | 8/3 | 이미지 분류 — CNN 과 전이학습 | [day5/index.html](day5/index.html) |
 | 8/4 | 이미지 처리 | [day6/index.html](day6/index.html) |
-| 8/5 | 판정 근거 | [day7/index.html](day7/index.html) |
+| 8/5 | 이미지 처리 모듈 개발 | [day7/index.html](day7/index.html) |
 | 8/10 | LLM 의 원리와 프롬프팅 | [day8/index.html](day8/index.html) |
 | 8/11 | 내 문서에 답하게 하기 — RAG | 기존 강의 D01 을 줄여 옮긴다 |
 | 8/12 | 검색 품질과 Agentic RAG | 기존 강의 D02 를 줄여 옮긴다 |
@@ -430,7 +430,7 @@ D3 의 「가려서 재 본다」, D4 의 「형식은 잡히고 판단은 안 �
 그래서 증강은 목록을 베끼지 말고 **약한 쪽을 먼저 재서** 고르라고 맺는다.
 
 ```
-2주차 D3  판정 근거 — day6 에서 만든 그 분류기(0.9608)를 그대로 열어 본다
+2주차 D3  이미지 처리 모듈 개발 — day6 에서 만든 그 분류기(0.9608)를 그대로 열어 본다
   CH0 근거가 필요한 이유  확신 0.996 으로 틀린 사진 · 정확도가 가리는 것
   CH1 히트맵 만들기      마지막 합성곱 층의 7x7 · 기울기로 재는 무게 · 갈고리 코드 ·
                         맞힌 사진의 히트맵
