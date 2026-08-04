@@ -333,14 +333,13 @@ for k in (5, 15, 25, 50):
 
     md("## 6. GPU 없이 — API 로 이미지 처리"),
     md("여기부터는 T4 가 필요 없다. 사진을 **NVIDIA 서버로 보내고 결과만 받는다**.\n\n"
-       "**이 절은 위를 건너뛰고 여기서부터 실행해도 된다.** "
-       "필요한 것을 아래 첫 두 셀에서 다시 갖춘다.\n\n"
+       "**이 절은 위를 건너뛰고 여기서부터 실행해도 된다.** 필요한 것을 아래 세 셀에서 다시 갖춘다.\n\n"
        "[build.nvidia.com](https://build.nvidia.com) 에서 무료로 키를 받는다. "
        "키는 입력 칸에 **붙여 넣는다** — 코드에 적으면 노트북에 그대로 남는다."),
 
     code("""# 1) 이 절만 따로 돌려도 되게 — 쓰는 것을 여기서 다시 불러온다
-import os, sys, io, glob, base64, getpass
-import requests, torch
+import os, sys, io, json, glob, base64, getpass
+import requests
 import matplotlib.pyplot as plt
 from PIL import Image
 
@@ -359,18 +358,27 @@ API_KEY = os.environ.get('NVIDIA_API_KEY') or getpass.getpass('NVIDIA API 키: '
 HDR = {'Authorization': 'Bearer ' + API_KEY, 'Accept': 'application/json'}
 print('키를 받았다 · 길이', len(API_KEY))"""),
 
-    code("""# 4) 지금 살아 있는 모델을 먼저 확인한다 — 목록은 자주 바뀐다
-r = requests.get('https://integrate.api.nvidia.com/v1/models', headers=HDR, timeout=30)
-ids = [m['id'] for m in r.json()['data']] if r.status_code == 200 else []
-print('쓸 수 있는 모델', len(ids), '개')
-print([i for i in ids if any(k in i for k in ('vl', 'vision', 'multimodal', 'clip'))][:12])"""),
+    md("### 무엇이 열려 있는지부터 본다\n\n"
+       "카탈로그에 이름이 있어도 **내 계정에서 안 열리는** 것이 있다. 쓰기 전에 확인한다."),
 
-    code("""# 5) CV 엔드포인트가 살아 있는지 본다 — 키 없이도 확인된다
+    code("""# 4) 지금 부를 수 있는 모델 목록 — 키 없이도 열린다
+r = requests.get('https://integrate.api.nvidia.com/v1/models', headers=HDR, timeout=30)
+ids = [m['id'] for m in r.json()['data']]
+print('모델', len(ids), '개')
+print([i for i in ids if any(k in i for k in ('vl', 'vision', 'clip'))])"""),
+
+    code("""# 5) 실제로 한 번 찔러 본다 — 404 면 이름은 있어도 내 계정에서 못 쓴다
+def alive(url, body):
+    c = requests.post(url, headers=HDR, json=body, timeout=60).status_code
+    return '%s  %s' % (c, {200: '된다', 422: '된다 (형식만 다름)',
+                           404: '내 계정에서 못 쓴다', 401: '키 문제'}.get(c, '?'))
+
 CV = 'https://ai.api.nvidia.com/v1/cv/'
-MEAN = {401: '살아 있다', 410: '내려갔다', 404: '없는 주소다'}
-for name in ('nvidia/nv-grounding-dino', 'nvidia/nemotron-ocr-v2', 'nvidia/ocdrnet'):
-    c = requests.post(CV + name, json={}, timeout=20).status_code
-    print('%-26s %s  %s' % (name, c, MEAN.get(c, '?')))"""),
+for n in ('nvidia/nemotron-ocr-v2', 'nvidia/nv-grounding-dino', 'nvidia/nvclip'):
+    u = CV + n if n != 'nvidia/nvclip' else 'https://integrate.api.nvidia.com/v1/embeddings'
+    print('%-26s %s' % (n, alive(u, {'model': n, 'input': ['x']})))"""),
+
+    md("### 사진 넣기 — 파일이든 주소든"),
 
     code("""# 6) 사진을 연다 — 파일 경로와 http 주소를 둘 다 받는다
 def load_image(src):
@@ -383,158 +391,150 @@ def load_image(src):
     code("""# 7) 주소로 한 장 · 파일로 한 장 열어 본다
 IMG = 'https://ultralytics.com/images/bus.jpg'      # 내 사진 주소로 바꿔도 된다
 im = load_image(IMG)
-print('주소에서', im.size, '·', '파일에서', load_image('bus.jpg').size)"""),
+print('주소에서', im.size, '· 파일에서', load_image('bus.jpg').size)"""),
 
-    code("""# 8) 사진을 글자로 바꾼다 — 200KB 를 넘으면 서버가 안 받는다
+    code("""# 8) 사진을 글자로 바꾼다 — 크면 서버가 안 받는다
 def to_uri(im, side=640, quality=85):
     im = im.copy()
     im.thumbnail((side, side))                      # 긴 변을 side 에 맞춘다
-    buf = io.BytesIO(); im.save(buf, 'JPEG', quality=quality)
-    return 'data:image/jpeg;base64,' + base64.b64encode(buf.getvalue()).decode()
+    b = io.BytesIO(); im.save(b, 'JPEG', quality=quality)
+    return 'data:image/jpeg;base64,' + base64.b64encode(b.getvalue()).decode()
 
 print('%.0fKB' % (len(to_uri(im)) * 3 / 4 / 1024))"""),
 
-    md("### 말로 지정하는 객체 탐지 — Grounding DINO\n\n"
-       "YOLO 는 COCO 80종만 알았다. 이 모델은 **찾을 것을 글자로 적어 보낸다**."),
+    md("### 사진을 보고 말로 답한다 — VLM\n\n"
+       "day5·day6 의 모델은 **후보를 내가 줬다**. 폴더 두 개, COCO 80종처럼.\n\n"
+       "VLM 은 후보를 안 준다. 사진을 **토큰 몇백 개로 바꿔 질문 앞에 붙이고**, "
+       "그다음부터 **다음 낱말을 이어 쓴다**. 고를 것이 낱말 전체라서 목록이 필요 없다."),
 
-    code("""# 9) 찾을 것을 글자로 적어 보내는 함수
-GDINO = 'https://ai.api.nvidia.com/v1/cv/nvidia/nv-grounding-dino'
+    code("""# 9) 사진과 물음을 같이 보내는 함수 — content 를 배열로 줘야 사진이 전달된다
+CHAT = 'https://integrate.api.nvidia.com/v1/chat/completions'
+VLM_BOX = 'nvidia/nemotron-nano-12b-v2-vl'          # 형식 맞추는 데 강하다
+VLM_KO  = 'meta/llama-3.2-11b-vision-instruct'      # 한국어를 쓴다
 
-def find(src, phrases, threshold=0.3):
+def ask(src, question, model=VLM_BOX, max_tokens=300):
     im = load_image(src)
-    body = {'model': 'Grounding-Dino', 'threshold': threshold,
-            'messages': [{'role': 'user', 'content': [
-                {'type': 'text', 'text': phrases},
-                {'type': 'media_url', 'media_url': {'url': to_uri(im)}}]}]}
-    r = requests.post(GDINO, headers=HDR, json=body, timeout=60)
+    r = requests.post(CHAT, headers=HDR, timeout=120, json={
+        'model': model, 'max_tokens': max_tokens,
+        'messages': [{'role': 'user', 'content': [
+            {'type': 'text', 'text': question},
+            {'type': 'image_url', 'image_url': {'url': to_uri(im)}}]}]})
     if r.status_code != 200:
-        print(r.status_code, r.text[:300])          # 무엇이 틀렸는지 그대로 본다
+        print(r.status_code, r.text[:300])
     r.raise_for_status()
     return im, r.json()['choices'][0]['message']['content']"""),
 
-    code("""# 10) COCO 에 없는 이름도 넣어 본다
-im, out = find(IMG, 'person, bus, backpack, license plate')
-for g in out['boundingBoxes']:
-    print('%-14s %d개  %s' % (g['phrase'], len(g['bboxes']),
-                              [round(c, 2) for c in g['confidence']]))"""),
+    code("""# 10) 그냥 물어본다 — 후보를 하나도 주지 않았다
+im, txt = ask(IMG, 'Describe this photo in one sentence.', VLM_BOX, 90)
+plt.figure(figsize=(4, 5.5)); plt.imshow(im); plt.axis('off'); plt.show()
+print(txt.strip())"""),
 
-    code("""# 11) 돌아온 네 숫자를 그리는 함수 — day6 에서 쓰던 그 박스다
-def draw(im, out, title=''):
+    code("""# 11) 같은 물음을 한국어로 — 답이 흔들린다
+_, ko = ask(IMG, '이 사진을 한국어 한 문장으로 설명하라.', VLM_BOX, 90)
+print(ko.strip())"""),
+
+    code("""# 12) 판정 기준을 글로 적는다 — 코드는 그대로다
+_, ans = ask(IMG, '사람이 있으면 {\"person\": true}, 없으면 {\"person\": false} 로만 답하라.',
+             VLM_BOX, 40)
+print(ans.strip())"""),
+
+    md("### 사진은 서버에서 토큰이 된다\n\n"
+       "VLM 이 사진을 어떻게 받아들이는지는 **응답에 딸려 오는 토큰 수**로 확인된다."),
+
+    code("""# 13) 프롬프트가 토큰 몇 개였는지 돌려받는 함수
+def ptoks(content):
+    r = requests.post(CHAT, headers=HDR, timeout=120,
+                      json={'model': VLM_BOX, 'max_tokens': 1,
+                            'messages': [{'role': 'user', 'content': content}]})
+    return r.json()['usage']['prompt_tokens']"""),
+
+    code("""# 14) 글자만 보낼 때와 사진을 붙일 때를 견준다
+print('글자 hi 만      → %5d 토큰' % ptoks('hi'))
+for side in (224, 448, 896):
+    u = to_uri(im, side)
+    n = ptoks([{'type': 'text', 'text': 'hi'}, {'type': 'image_url', 'image_url': {'url': u}}])
+    print('사진 %3dpx 붙이면 → %5d 토큰  (보낸 글자 %6d자)' % (side, n, len(u)))"""),
+
+    md("### 말로 찾기 — 박스까지 시킨다\n\n"
+       "`0~1000` 으로 좌표를 달라고 하면 사진 크기와 상관없이 같은 자로 답한다."),
+
+    code("""# 15) 답에서 JSON 만 꺼내는 함수 — 모델이 ``` 로 감싸는 일이 잦다
+def as_json(txt):
+    t = txt.strip()
+    if '```' in t:
+        t = t.split('```')[1]
+        t = t[4:] if t.startswith('json') else t
+    return json.loads(t[t.index('['):t.rindex(']') + 1])"""),
+
+    code("""# 16) 찾을 것을 글로 적어 보낸다 — COCO 80종에 매이지 않는다
+def find(src, what, max_tokens=400):
+    q = ('Find every %s. Answer ONLY as a JSON list '
+         '[{\"label\":\"...\",\"box\":[x1,y1,x2,y2]}] '
+         'with coordinates scaled 0-1000. If none, answer [].' % what)
+    im, txt = ask(src, q, VLM_BOX, max_tokens)
+    return im, as_json(txt)"""),
+
+    code("""# 17) 0~1000 좌표를 픽셀로 되돌려 그린다
+def draw(im, items, title=''):
     plt.figure(figsize=(5, 6)); plt.imshow(im); ax = plt.gca()
-    sx, sy = im.width / out['frameWidth'], im.height / out['frameHeight']
-    for g in out['boundingBoxes']:
-        for (x1, y1, x2, y2), c in zip(g['bboxes'], g['confidence']):
-            ax.add_patch(plt.Rectangle((x1 * sx, y1 * sy), (x2 - x1) * sx, (y2 - y1) * sy,
-                                       fill=False, color='#5B3DF5', lw=2))
-            ax.text(x1 * sx, y1 * sy - 5, '%s %.2f' % (g['phrase'], c), fontsize=8, color='#5B3DF5')
+    for it in items:
+        x1, y1, x2, y2 = it['box']
+        x1, x2 = x1 / 1000 * im.width, x2 / 1000 * im.width
+        y1, y2 = y1 / 1000 * im.height, y2 / 1000 * im.height
+        ax.add_patch(plt.Rectangle((x1, y1), x2 - x1, y2 - y1, fill=False, color='#5B3DF5', lw=2))
+        ax.text(x1, y1 - 5, it['label'], color='#5B3DF5', fontsize=9)
     plt.axis('off'); plt.title(title); plt.show()"""),
 
-    code("""# 12) 그려 본다 — 문장에 적은 것만 박스가 된다
-draw(im, out, 'person, bus, backpack, license plate')"""),
+    code("""# 18) 찾아서 그린다
+im, items = find(IMG, 'person and bus')
+print([(i['label'], i['box']) for i in items])
+draw(im, items, 'person and bus')"""),
 
-    Ex(8, "COCO 에 없던 `ant` 를 찾게 해서 박스 수를 `n_ant` 에 담는다.\n"
+    Ex(8, "COCO 에 없던 `ant` 를 찾게 해서 박스 수를 `n_ant` 에 담고 그려 본다.\n"
           "> day6 앞에서 YOLO 는 개미를 한 마리도 못 찾았다.",
-       setup="p_ant = sorted(glob.glob('hymenoptera_data/val/ants/*'))[0]",
-       blank="im2, o = find(p_ant, ___)\n"
-             "n_ant = sum(len(g['bboxes']) for g in o['boundingBoxes'])\n"
-             "draw(im2, o, 'ant %d개' % n_ant)",
-       answer="im2, o = find(p_ant, 'ant')\n"
-              "n_ant = sum(len(g['bboxes']) for g in o['boundingBoxes'])\n"
-              "draw(im2, o, 'ant %d개' % n_ant)",
+       setup="p_ant = sorted(glob.glob('hymenoptera_data/val/ants/*'))[11]",
+       blank="im2, ants = find(p_ant, ___)\n"
+             "n_ant = len(ants)\n"
+             "draw(im2, ants, 'ant %d개' % n_ant)",
+       answer="im2, ants = find(p_ant, 'ant')\n"
+              "n_ant = len(ants)\n"
+              "draw(im2, ants, 'ant %d개' % n_ant)",
        check="print(n_ant)\nassert isinstance(n_ant, int)"),
 
-    md("### 학습 없이 분류 — NV-CLIP\n\n"
-       "사진과 글을 **같은 자리에 놓는** 모델이다. 가까운 쪽이 답이 된다."),
+    md("### 적혀 있는 글자를 읽는다 — OCR\n\n"
+       "명판 · 라벨 · 계기판처럼 **사람이 눈으로 옮겨 적던 일**에 바로 붙는다."),
 
-    code("""# 13) 사진이든 글이든 벡터로 바꿔 주는 함수 — 한 번에 64개까지
-CLIP = 'https://integrate.api.nvidia.com/v1/embeddings'
+    code("""# 19) OCR — 글자 자리와 읽은 글자를 같이 준다
+OCR = 'https://ai.api.nvidia.com/v1/cv/nvidia/nemotron-ocr-v2'
 
-def embed(items):
-    r = requests.post(CLIP, headers=HDR, timeout=60,
-                      json={'model': 'nvidia/nvclip', 'input': items})
-    if r.status_code != 200:
-        print(r.status_code, r.text[:300])
-    r.raise_for_status()
-    return torch.tensor([d['embedding'] for d in r.json()['data']])"""),
-
-    code("""# 14) 개미 4장 · 벌 4장과 설명 두 줄을 한꺼번에 보낸다
-paths = (sorted(glob.glob('hymenoptera_data/val/ants/*'))[:4]
-         + sorted(glob.glob('hymenoptera_data/val/bees/*'))[:4])
-LAB = ['a photo of an ant', 'a photo of a bee']
-V = embed([to_uri(load_image(p), 336) for p in paths] + LAB)
-print('사진 8장 + 글 2줄 →', tuple(V.shape))"""),
-
-    code("""# 15) 가까운 쪽을 고른다 — 학습은 한 줄도 하지 않았다
-E = torch.nn.functional.normalize(V, dim=1)
-sim = E[:8] @ E[8:].T
-truth = torch.tensor([0] * 4 + [1] * 4)
-print('맞은 개수 %d / 8' % int((sim.argmax(1) == truth).sum()))"""),
-
-    code("""# 16) 사진마다 무엇이라 답했는지 그림으로 본다 — 파랑이 맞은 것이다
-fig, ax = plt.subplots(2, 4, figsize=(11, 5.5))
-for a, p, k, row in zip(ax.ravel(), paths, sim.argmax(1), sim):
-    a.imshow(load_image(p)); a.axis('off')
-    ok = int(k) == (0 if '/ants/' in p else 1)
-    a.set_title('%s  %.3f' % (LAB[int(k)].split()[-1], row[int(k)]),
-                color='#5B3DF5' if ok else '#E8537A', fontsize=11)
-plt.tight_layout(); plt.show()"""),
-
-    Ex(9, "설명을 `['ant', 'bee']` 로 줄여 다시 재고 맞은 개수를 `n_plain` 에 담는다.\n"
-          "> 사진은 그대로다. 바뀐 것은 글뿐이다.",
-       blank="V2 = embed([to_uri(load_image(p), 336) for p in paths] + ___)\n"
-             "E2 = torch.nn.functional.normalize(V2, dim=1)\n"
-             "n_plain = int(((E2[:8] @ E2[8:].T).argmax(1) == truth).sum())",
-       answer="V2 = embed([to_uri(load_image(p), 336) for p in paths] + ['ant', 'bee'])\n"
-              "E2 = torch.nn.functional.normalize(V2, dim=1)\n"
-              "n_plain = int(((E2[:8] @ E2[8:].T).argmax(1) == truth).sum())",
-       check="print(n_plain, '/ 8')\nassert 0 <= n_plain <= 8"),
-
-    md("### 사진을 보고 말로 답한다 — VLM\n\n"
-       "여기까지는 **후보를 내가 줬다**. YOLO 는 80개 목록, Grounding DINO 는 내 문장, "
-       "NV-CLIP 은 내가 쓴 설명 두 줄이다.\n\n"
-       "VLM 은 후보를 안 준다. 사진을 **토큰 몇백 개로 바꿔 문장 앞에 붙이고**, "
-       "그다음부터는 **다음 낱말을 이어 쓴다**. 고를 후보가 낱말 전체라서 목록이 필요 없다."),
-
-    code("""# 17) 위에서 받아 온 목록에 있는 것 중 첫 번째를 쓴다 — 이름은 계속 바뀐다
-CAND = ['nvidia/nemotron-nano-12b-v2-vl',
-        'nvidia/llama-3.1-nemotron-nano-vl-8b-v1',
-        'meta/llama-3.2-11b-vision-instruct']
-VLM_MODEL = next((m for m in CAND if m in ids), CAND[0])
-print('쓸 모델', VLM_MODEL, '· 목록에 있나', VLM_MODEL in ids)"""),
-
-    code("""# 18) 사진과 물음을 같이 보내는 함수
-VLM = 'https://integrate.api.nvidia.com/v1/chat/completions'
-
-def ask(src, question, max_tokens=300):
+def read_text(src):
     im = load_image(src)
-    b64 = to_uri(im).split(',', 1)[1]
-    assert len(b64) < 180_000, '사진이 크다 — to_uri 의 side 를 줄인다'
-    msg = question + ' <img src="data:image/jpeg;base64,' + b64 + '" />'
-    r = requests.post(VLM, headers=HDR, timeout=90,
-                      json={'model': VLM_MODEL, 'max_tokens': max_tokens,
-                            'messages': [{'role': 'user', 'content': msg}]})
+    r = requests.post(OCR, headers=HDR, timeout=120,
+                      json={'input': [{'type': 'image_url', 'url': to_uri(im)}]})
     if r.status_code != 200:
         print(r.status_code, r.text[:300])
     r.raise_for_status()
-    return im, r.json()['choices'][0]['message']['content']"""),
+    return im, r.json()['data'][0]['text_detections']"""),
 
-    code("""# 19) 사진과 답을 같이 본다
-im3, txt = ask(IMG, '이 사진에 무엇이 보이는지 한국어 두 문장으로 답하라.')
-plt.figure(figsize=(4, 5.5)); plt.imshow(im3); plt.axis('off'); plt.show()
-print(txt)"""),
+    code("""# 20) 읽은 글자를 사진 위에 그린다 — 좌표는 0~1 이라 크기를 곱한다
+im3, dets = read_text(IMG)
+plt.figure(figsize=(5, 6)); plt.imshow(im3); ax = plt.gca()
+for d in dets:
+    pts = [(p['x'] * im3.width, p['y'] * im3.height) for p in d['bounding_box']['points']]
+    ax.add_patch(plt.Polygon(pts, fill=False, color='#E8537A', lw=2))
+plt.axis('off'); plt.show()
+print([d['text_prediction']['text'] for d in dets])"""),
 
-    code("""# 20) 판정 기준을 글로 바꿔 넣는다 — 코드는 그대로다
-_, ans = ask(IMG, '이 사진에 사람이 있으면 {"사람": true}, 없으면 {"사람": false} 로만 답하라.')
-print(ans)"""),
-
-    code("""# 21) 후보를 준 것과 안 준 것을 같은 사진으로 견준다
-p_one = paths[0]
-print('CLIP   후보 2개 중 →', LAB[int(sim[0].argmax())])
-_, free = ask(p_one, '이 사진에 무엇이 있는지 한국어 한 문장으로 답하라.')
-print('VLM    후보 없이  →', free.strip())"""),
+    Ex(9, "읽은 글자 중 **신뢰도 0.5 를 넘는 것만** 골라 `good` 에 담는다.",
+       blank="good = [d['text_prediction']['text'] for d in dets\n"
+             "        if d['text_prediction']['confidence'] > ___]",
+       answer="good = [d['text_prediction']['text'] for d in dets\n"
+              "        if d['text_prediction']['confidence'] > 0.5]",
+       check="print(good)\nassert isinstance(good, list)"),
 
     md("파인튜닝은 상자를 며칠 그려야 시작된다. API 는 **찾을 것을 한 줄 적으면 끝**이다.\n"
-       "대신 현장에서만 쓰는 이름은 못 알아듣고, 사진이 밖으로 나간다. 둘은 바꿔 쓰는 관계다."),
+       "대신 박스가 헐렁하고, 없는 것도 지어내고, 사진이 밖으로 나간다. 둘은 바꿔 쓰는 관계다.\n\n"
+       "사진이 **토큰 수천 개**가 되어 글과 같은 줄에 선다는 것이 day8 로 이어지는 대목이다."),
 ]
 
 MODES = {
