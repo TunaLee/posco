@@ -1,19 +1,25 @@
 """2주차 D2 — 이미지 처리 · 객체탐지 · 파인튜닝 · 추적"""
 from nbkit import md, code, h, lab, prep, Ex, Task
 
-PREP = """# ── 준비 ──────────────────────────────────────────────────────────────
-# 런타임 → 런타임 유형 변경 → T4 GPU 로 바꾸고 시작한다
-import os, sys, time, glob, torch, torch.nn as nn
+CELLS = [
+    md("## 1. 사진을 512칸으로 바꾼다"),
+    md("### 준비\n\n아래 준비 셀들을 **위에서부터 차례로** 한 번씩 실행한다.\n"
+       "런타임을 **T4 GPU** 로 바꾼 뒤에 실행해야 뒤가 빠르다."),
+
+    prep("""# 1) 오늘 쓸 것들을 불러온다
+import os, sys, time, glob
+import torch, torch.nn as nn
 import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader
-from torchvision import datasets, models, transforms
+from torchvision import datasets, models, transforms"""),
 
+    prep("""# 2) GPU 가 켜졌는지 확인한다 — cpu 가 나오면 런타임을 T4 로 바꾼다
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print('장치', device)
 if device == 'cuda':
-    print(torch.cuda.get_device_name(0))
+    print(torch.cuda.get_device_name(0))"""),
 
-# 자료 — 드라이브 폴더를 먼저 보고, 없으면 원래 자리에서 받는다
+    prep("""# 3) 사진을 내려받는다 — 폴더가 이미 있으면 건너뛴다
 DRIVE_ZIP = ''      # 강사가 알려 주는 파일 ID 를 넣으면 드라이브에서 받는다
 if not os.path.isdir('hymenoptera_data'):
     if DRIVE_ZIP:
@@ -22,33 +28,41 @@ if not os.path.isdir('hymenoptera_data'):
     if not os.path.isfile('hym.zip'):
         os.system('wget -q https://download.pytorch.org/tutorial/hymenoptera_data.zip -O hym.zip')
     os.system('unzip -q hym.zip')
+print(sorted(os.listdir('hymenoptera_data')))"""),
 
+    prep("""# 4) 크기를 맞추고 색 범위를 맞춘다 — 모델이 배울 때 쓰던 그 규칙이다
 NORM = transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
 T = transforms.Compose([transforms.Resize(256), transforms.CenterCrop(224),
-                        transforms.ToTensor(), NORM])
+                        transforms.ToTensor(), NORM])"""),
+
+    prep("""# 5) 폴더 이름이 그대로 라벨이 된다
 train = datasets.ImageFolder('hymenoptera_data/train', T)
 val   = datasets.ImageFolder('hymenoptera_data/val', T)
-print(train.classes, len(train), len(val))"""
+print(train.classes, '· 훈련', len(train), '장 · 검증', len(val), '장')"""),
 
-FEAT = """# 얼린 resnet18 으로 사진을 512칸으로 바꿔 둔다 — 한 번만 하면 된다
+    prep("""# 6) resnet18 을 받아 판정 층을 떼어 낸다 — 특징만 뽑는 몸통으로 쓴다
 net = models.resnet18(weights='DEFAULT')
-net.fc = nn.Identity()
+net.fc = nn.Identity()          # 마지막 층을 통과만 시킨다
 net.eval().to(device)
+print('판정 층 자리', net.fc)"""),
 
+    prep("""# 7) 사진 한 장을 512칸으로 바꾸는 함수
 def feats(ds):
     X, Y = [], []
-    with torch.no_grad():
+    with torch.no_grad():                      # 배우지 않는다 — 계산만 한다
         for xb, yb in DataLoader(ds, batch_size=32):
             X.append(net(xb.to(device)).cpu()); Y.append(yb)
-    return torch.cat(X), torch.cat(Y)
+    return torch.cat(X), torch.cat(Y)"""),
 
+    prep("""# 8) 397장을 전부 512칸으로 바꿔 둔다 — 한 번만 하면 된다
 t0 = time.time()
 Xtr, Ytr = feats(train)
 Xva, Yva = feats(val)
-print('%.1f초 · %s %s' % (time.time() - t0, tuple(Xtr.shape), tuple(Xva.shape)))
+print('%.1f초 · 훈련 %s · 검증 %s' % (time.time() - t0, tuple(Xtr.shape), tuple(Xva.shape)))"""),
 
+    prep("""# 9) 512칸을 받아 둘 중 하나를 고르는 층을 학습시키는 함수
 def train_head(X, Y, epochs=30, seed=42):
-    torch.manual_seed(seed)
+    torch.manual_seed(seed)                    # 고정해 둬야 매번 같은 결과가 나온다
     head = nn.Linear(512, 2)
     opt = torch.optim.Adam(head.parameters(), lr=0.001)
     loss_fn = nn.CrossEntropyLoss()
@@ -57,35 +71,20 @@ def train_head(X, Y, epochs=30, seed=42):
         for i in range(0, len(X), 32):
             b = perm[i:i + 32]
             opt.zero_grad(); loss_fn(head(X[b]), Y[b]).backward(); opt.step()
-    return head
+    return head"""),
 
+    prep("""# 10) 맞힌 비율을 재는 함수
 def acc(head, X, Y):
     with torch.no_grad():
-        return (head(X).argmax(1) == Y).float().mean().item()"""
-
-YOLO_PREP = """# 탐지 — 오픈 가중치를 받아 그대로 써 본다
-os.system(f'{sys.executable} -m pip install -q ultralytics')
-from ultralytics import YOLO
-
-if not os.path.isfile('bus.jpg'):
-    os.system('wget -q https://ultralytics.com/images/bus.jpg')
-det = YOLO('yolo11n.pt')
-print('아는 종류', len(det.names), '개 · 계수',
-      sum(p.numel() for p in det.model.parameters()))"""
-
-CELLS = [
-    md("## 1. 사진을 512칸으로 바꾼다"),
-    md("### 준비\n\n아래 두 셀을 **먼저 한 번** 실행한다. "
-       "런타임을 **T4 GPU** 로 바꾼 뒤에 실행해야 뒤가 빠르다."),
-    prep(PREP),
-    prep(FEAT),
+        return (head(X).argmax(1) == Y).float().mean().item()"""),
 
     md("사진 한 장이 512칸이 된 것을 직접 본다."),
-    code("""v = Xtr[0]
-print('512칸 중 앞 12개')
+    code("""# 첫 장의 512칸 중 앞 12개만 찍어 본다
+v = Xtr[0]
 print([round(float(x), 2) for x in v[:12]])
-print('최소 %.2f · 최대 %.2f · 0 인 칸 %d개' % (v.min(), v.max(), int((v == 0).sum())))
+print('최소 %.2f · 최대 %.2f · 0 인 칸 %d개' % (v.min(), v.max(), int((v == 0).sum())))"""),
 
+    code("""# 512칸을 8×64 로 접어 그림으로 본다 — 진한 칸이 강하게 반응한 특징이다
 plt.figure(figsize=(9, 1.4))
 plt.imshow(v.reshape(8, 64), cmap='Purples', aspect='auto')
 plt.yticks([]); plt.title('사진 한 장이 만든 512칸'); plt.show()"""),
@@ -117,11 +116,17 @@ plt.yticks([]); plt.title('사진 한 장이 만든 512칸'); plt.show()"""),
     md("## 2. Threshold 를 움직여 본다"),
     md("모델이 내놓는 것은 판정이 아니라 **확률**이다. "
        "어디서 자를지는 사람이 정한다."),
-    prep("""head = train_head(Xtr, Ytr)               # seed 가 고정이라 늘 같은 결과다
 
+    prep("""# 판정 층을 하나 만들어 둔다 — seed 가 고정이라 늘 같은 결과다
+head = train_head(Xtr, Ytr)
+print('검증 정확도 %.4f' % acc(head, Xva, Yva))"""),
+
+    prep("""# 검증 사진마다 <벌일 확률> 을 뽑아 둔다
 with torch.no_grad():
-    prob = torch.softmax(head(Xva), 1)[:, 1]      # 벌일 확률
+    prob = torch.softmax(head(Xva), 1)[:, 1]
+print('앞 8장의 확률', [round(float(x), 3) for x in prob[:8]])"""),
 
+    code("""# 자르는 자리를 옮겨 가며 무엇이 오르고 무엇이 내리는지 본다
 for t in (0.2, 0.35, 0.5, 0.65, 0.8):
     p = (prob > t).long()
     a = ((p == 0) & (Yva == 0)).sum().item() / (Yva == 0).sum().item()
@@ -144,13 +149,29 @@ plt.xlabel('Threshold'); plt.legend(); plt.grid(alpha=.3); plt.show()""",
          check="print('한쪽을 올리면 다른 쪽이 내려간다')"),
 
     md("## 3. 무엇이 어디에 있는가 — 객체탐지"),
-    prep(YOLO_PREP),
+
+    prep("""# 1) 탐지 라이브러리를 깐다 — 한 번만 하면 된다
+os.system(f'{sys.executable} -m pip install -q ultralytics')
+from ultralytics import YOLO"""),
+
+    prep("""# 2) 시험용 사진 한 장을 받는다
+if not os.path.isfile('bus.jpg'):
+    os.system('wget -q https://ultralytics.com/images/bus.jpg')
+print(os.path.isfile('bus.jpg'))"""),
+
+    prep("""# 3) 오픈 가중치를 받아 온다 — 파일이 없으면 알아서 내려받는다
+det = YOLO('yolo11n.pt')
+print('아는 종류', len(det.names), '개 · 계수',
+      sum(p.numel() for p in det.model.parameters()))"""),
+
     md("학습 없이 그대로 써 본다. 박스 하나가 **이름 · 신뢰도 · 네 숫자**다."),
-    code("""r = det('bus.jpg')[0]
+    code("""# 박스마다 무엇을 · 얼마나 확신하고 · 어디서 찾았는지 찍는다
+r = det('bus.jpg')[0]
 for b in r.boxes:
     print('%-8s %.3f  %s' % (det.names[int(b.cls)], float(b.conf),
-                             [round(v) for v in b.xyxy[0].tolist()]))
+                             [round(v) for v in b.xyxy[0].tolist()]))"""),
 
+    code("""# 같은 결과를 그림으로 본다 — plot() 은 BGR 이라 뒤집어서 넘긴다
 plt.figure(figsize=(5, 7))
 plt.imshow(r.plot()[:, :, ::-1]); plt.axis('off'); plt.show()"""),
 
@@ -174,35 +195,39 @@ print('ant 가 COCO 에 있나 →', 'ant' in det.names.values())""",
     md("가르치려면 **상자를 친 사진**이 있어야 한다. 상자는 Roboflow · Label Studio · CVAT · labelImg "
        "같은 도구에서 그리고, `YOLO` 형식으로 Export 하면 아래 폴더가 그대로 나온다.\n\n"
        "여기서는 이미 상자를 쳐 둔 **서명 데이터**를 받아 그 폴더를 열어 본다."),
-    prep("""from ultralytics.data.utils import check_det_dataset
 
-info = check_det_dataset('signature.yaml')      # 없으면 받아 온다
+    prep("""# 1) 자료를 받아 온다 — yaml 이름만 주면 폴더까지 내려받는다
+from ultralytics.data.utils import check_det_dataset
+
+info = check_det_dataset('signature.yaml')
 root = str(info['path'])
 print('폴더', root)
-print('종류', info['names'])
+print('종류', info['names'])"""),
 
+    code("""# 2) 라벨링 도구가 Export 해 주는 폴더 모양 그대로다
 for d in ('images/train', 'labels/train', 'images/val', 'labels/val'):
     print('%-14s %3d개' % (d, len(glob.glob(os.path.join(root, d, '*')))))"""),
 
     md("사진 한 장과 **같은 이름의 글자 파일**이 짝을 이룬다. 그 한 줄이 상자 하나다."),
-    code("""p = sorted(glob.glob(root + '/images/train/*'))[0]
+    code("""# 사진 하나를 골라 짝이 되는 라벨 파일을 연다
+p = sorted(glob.glob(root + '/images/train/*'))[0]
 t = p.replace('/images/', '/labels/').rsplit('.', 1)[0] + '.txt'
 print('사진', os.path.basename(p))
 print('라벨', open(t).read().strip())"""),
 
     md("글자 다섯 개를 **다시 상자로 되돌려** 본다. 사람이 도구에서 그린 그 상자다."),
-    code("""import matplotlib.image as mpimg
-
-im = mpimg.imread(p)
+    code("""# 종류번호 · 중심x · 중심y · 너비 · 높이 — 뒤 넷은 0 과 1 사이 값이다
+im = plt.imread(p)
 H, W = im.shape[:2]
 c, cx, cy, w, h = map(float, open(t).read().split()[:5])
+print('사진 %d×%d · 상자 중심 (%.0f, %.0f)' % (W, H, cx * W, cy * H))"""),
 
+    code("""# 0~1 값에 사진 크기를 곱하면 픽셀 자리가 나온다
 plt.figure(figsize=(6, 4))
 plt.imshow(im)
 plt.gca().add_patch(plt.Rectangle(((cx - w / 2) * W, (cy - h / 2) * H),
                                   w * W, h * H, fill=False, color='#E8537A', lw=2))
-plt.axis('off'); plt.title('%s · 0~1 값을 픽셀로 되돌린 상자' % info['names'][int(c)])
-plt.show()"""),
+plt.axis('off'); plt.title(info['names'][int(c)]); plt.show()"""),
 
     Ex(7, "상자가 **사진 넓이의 몇 %** 를 차지하는지 `frac` 에 담는다.\n"
           "> 너비와 높이는 이미 0 과 1 사이 값이다.",
@@ -221,14 +246,20 @@ for split in ('train', 'val'):
          check="print('이름이 같아야 짝이 된다')"),
 
     md("서명 데이터로 파인튜닝한다. 받아 온 그대로는 서명을 **하나도 못 찾는다**."),
-    prep("""ft = YOLO('yolo11n.pt')
-ft.train(data='signature.yaml', epochs=15, imgsz=320, device=device, plots=False)
+
+    prep("""# 1) 받아 온 계수에서 출발해 서명 쪽으로 옮긴다 — 몇 분 걸린다
+ft = YOLO('yolo11n.pt')
+ft.train(data='signature.yaml', epochs=15, imgsz=320, device=device, plots=False)"""),
+
+    prep("""# 2) 검증 폴더로 채점한다
 m = ft.val(data='signature.yaml')
 print('mAP50 %.4f · 정밀도 %.4f · 재현율 %.4f'
       % (m.box.map50, m.box.mp, m.box.mr))
-print('아는 종류', ft.names)
+print('아는 종류', ft.names)"""),
 
-p = sorted(glob.glob(root + '/images/val/*'))[0]   # 검증 사진 한 장"""),
+    prep("""# 3) 견줘 볼 검증 사진 한 장을 골라 둔다
+p = sorted(glob.glob(root + '/images/val/*'))[0]
+print(os.path.basename(p))"""),
 
     Ex(5, "파인튜닝한 모델로 서명 사진 한 장을 보고 **찾은 박스 수**를 `nb` 에 담는다.",
        blank="nb = len(ft(p, conf=___)[0].boxes)",
@@ -245,11 +276,15 @@ plt.show()""",
 
     md("## 5. 영상에서 같은 것을 이어 본다 — 추적"),
     md("탐지만 하면 프레임마다 박스를 새로 센다. **몇 명이 지나갔는지**는 답하지 못한다."),
-    prep("""if not os.path.isfile('people.mp4'):
+
+    prep("""# 1) 사람이 지나가는 영상을 받는다
+import cv2
+if not os.path.isfile('people.mp4'):
     os.system('wget -q https://media.roboflow.com/supervision/video-examples/'
               'people-walking.mp4 -O people.mp4')
+print(os.path.isfile('people.mp4'))"""),
 
-import cv2
+    code("""# 2) 탐지만 해 본다 — 프레임마다 박스를 새로 센다
 cap = cv2.VideoCapture('people.mp4')
 boxes = 0
 for _ in range(120):
@@ -257,10 +292,11 @@ for _ in range(120):
     if not ok: break
     boxes += len(det(fr, classes=[0], conf=0.35, verbose=False)[0].boxes)
 cap.release()
-print('탐지만 120프레임 → 박스 %d개. 그런데 몇 명인지는 모른다' % boxes)"""),
+print('120프레임에서 박스 %d개 — 그런데 몇 명인지는 모른다' % boxes)"""),
 
     md("`track` 으로 바꾸면 같은 사람에게 **같은 번호**가 붙는다."),
-    prep("""cap = cv2.VideoCapture('people.mp4')
+    prep("""# 3) track 으로 바꿔 번호별로 몇 프레임 머물렀는지 센다
+cap = cv2.VideoCapture('people.mp4')
 ids = {}
 for _ in range(120):
     ok, fr = cap.read()
@@ -270,7 +306,9 @@ for _ in range(120):
         for i in r.boxes.id.int().tolist():
             ids[i] = ids.get(i, 0) + 1
 cap.release()
-print('붙은 번호 %d개' % len(ids))
+print('붙은 번호 %d개' % len(ids))"""),
+
+    code("""# 4) 잠깐 스친 번호를 빼면 실제 인원에 가까워진다
 print('1초(25프레임) 이상 유지된 번호 %d개' % sum(1 for v in ids.values() if v >= 25))"""),
 
     Ex(6, "**2초 이상** 머문 사람이 몇 명인지 `long2` 에 담는다.\n"
