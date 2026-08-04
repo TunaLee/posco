@@ -651,10 +651,10 @@ nvidia/nvclip              404  못 쓴다</div></div></div>
   <div class="rule"></div>
   <div class="body">
     <div class="twocol w">
-      <div><div class="plot"><svg viewBox="0 0 470 196"><text x="12" y="20" font-size="11" fill="#8E8AAC" font-weight="800">부품은 셋뿐이다</text><rect x="12" y="30" width="108" height="44" rx="8" fill="#5B3DF5" stroke="none" stroke-width="1"/><text x="66" y="50" font-size="12" fill="#fff" font-weight="800" text-anchor="middle">Gradio</text><text x="66" y="65" font-size="10" fill="#DCD6F0" text-anchor="middle">화면</text><path d="M126 52 h20 l-5 -4 v8 z" fill="#8E8AAC"/><text x="154" y="56" font-size="10.5" fill="#16142B">주소 하나로 열린다 · 카메라 지원</text><rect x="12" y="88" width="108" height="44" rx="8" fill="#E8537A" stroke="none" stroke-width="1"/><text x="66" y="108" font-size="12" fill="#fff" font-weight="800" text-anchor="middle">NVIDIA API</text><text x="66" y="123" font-size="10" fill="#DCD6F0" text-anchor="middle">판정</text><path d="M126 110 h20 l-5 -4 v8 z" fill="#8E8AAC"/><text x="154" y="114" font-size="10.5" fill="#16142B">판정에 쓰는 모델</text><rect x="12" y="146" width="108" height="44" rx="8" fill="#3A1FC9" stroke="none" stroke-width="1"/><text x="66" y="166" font-size="12" fill="#fff" font-weight="800" text-anchor="middle">Neon</text><text x="66" y="181" font-size="10" fill="#DCD6F0" text-anchor="middle">남기기</text><path d="M126 168 h20 l-5 -4 v8 z" fill="#8E8AAC"/><text x="154" y="172" font-size="10.5" fill="#16142B">Postgres · 사진까지 같이 넣는다</text></svg></div></div>
-      <div><table class="ctable"><thead><tr><th>무엇</th><th>무료 한도</th><th>카드</th></tr></thead><tbody><tr><td><code>Neon</code></td><td>Postgres 0.5GB</td><td class="hl">불필요</td></tr><tr><td><code>Hugging Face Spaces</code></td><td>CPU 2코어</td><td class="hl">불필요</td></tr><tr><td><code>Cloudflare R2</code></td><td>저장소 10GB</td><td><b>필요</b></td></tr></tbody></table><div class="cap">저장소를 따로 두지 않는다 &mdash; 사진도 Neon 에 같이 넣는다</div></div>
+      <div><div class="plot"><svg viewBox="0 0 470 196"><text x="12" y="20" font-size="11" fill="#8E8AAC" font-weight="800">부품은 셋뿐이다</text><rect x="12" y="26" width="128" height="34" rx="7" fill="#5B3DF5" stroke="none" stroke-width="1"/><text x="76" y="41" font-size="11" fill="#fff" font-weight="800" text-anchor="middle">Gradio</text><text x="76" y="54" font-size="9.5" fill="#DCD6F0" text-anchor="middle">화면</text><path d="M146 43 h18 l-5 -4 v8 z" fill="#8E8AAC"/><text x="172" y="47" font-size="10" fill="#16142B">주소 하나로 열린다 · 카메라 지원</text><rect x="12" y="70" width="128" height="34" rx="7" fill="#E8537A" stroke="none" stroke-width="1"/><text x="76" y="85" font-size="11" fill="#fff" font-weight="800" text-anchor="middle">NVIDIA API</text><text x="76" y="98" font-size="9.5" fill="#DCD6F0" text-anchor="middle">판정</text><path d="M146 87 h18 l-5 -4 v8 z" fill="#8E8AAC"/><text x="172" y="91" font-size="10" fill="#16142B">판정에 쓰는 모델</text><rect x="12" y="114" width="128" height="34" rx="7" fill="#3A1FC9" stroke="none" stroke-width="1"/><text x="76" y="129" font-size="11" fill="#fff" font-weight="800" text-anchor="middle">Neon</text><text x="76" y="142" font-size="9.5" fill="#DCD6F0" text-anchor="middle">남기기</text><path d="M146 131 h18 l-5 -4 v8 z" fill="#8E8AAC"/><text x="172" y="135" font-size="10" fill="#16142B">Postgres · 사진까지 같이 넣는다</text></svg></div></div>
+      <div><table class="ctable"><thead><tr><th>무엇</th><th>무료 한도</th><th>카드</th></tr></thead><tbody><tr><td><code>Next.js</code></td><td>무료 · 오픈소스</td><td class="hl">불필요</td></tr><tr><td><code>Neon</code></td><td>Postgres 0.5GB</td><td class="hl">불필요</td></tr><tr><td><code>사진 저장</code></td><td>노트북 디스크</td><td class="hl">불필요</td></tr></tbody></table><div class="cap">밖에 빌리는 것은 판정 API 하나뿐이다</div></div>
     </div>
-    <div class="keymsg"><span class="k">부품</span><div>사진 저장소를 따로 붙이지 않는다. <b>DB 하나로 끝난다</b>.</div></div>
+    <div class="keymsg"><span class="k">부품</span><div>사진은 <b>내 노트북에 남는다</b>. 밖으로 나가는 것은 판정할 때뿐이다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="프롬프트 여덟 줄">
@@ -674,9 +674,9 @@ nvidia/nvclip              404  못 쓴다</div></div></div>
   <h2 class="s-title sm">완성된 앱의 구조</h2>
   <div class="rule"></div>
   <div class="body">
-    <div class="plot"><svg viewBox="0 0 560 212"><rect x="12" y="60" width="92" height="96" rx="10" fill="#fff" stroke="#DCD6F0" stroke-width="1.4"/><text x="58" y="92" font-size="11.5" fill="#16142B" font-weight="800" text-anchor="middle">휴대폰</text><text x="58" y="110" font-size="10" fill="#8E8AAC" text-anchor="middle">브라우저</text><text x="58" y="134" font-size="9.5" fill="#8E8AAC" text-anchor="middle">사진을 찍는다</text><path d="M108 96 h34 l-6 -5 v10 z" fill="#8E8AAC"/><text x="112" y="88" font-size="9" fill="#8E8AAC">사진</text><path d="M142 124 h-34 l6 -5 v10 z" fill="#5B3DF5"/><text x="112" y="142" font-size="9" fill="#5B3DF5">판정 · 목록</text><rect x="150" y="34" width="150" height="150" rx="10" fill="#EFEAFF" stroke="#C9BEFF" stroke-width="1"/><text x="225" y="58" font-size="12" fill="#3A1FC9" font-weight="800" text-anchor="middle">Gradio 앱</text><text x="225" y="76" font-size="9.5" fill="#8E8AAC" text-anchor="middle">내 노트북</text><rect x="164" y="88" width="122" height="22" rx="5" fill="#fff" stroke="#DCD6F0" stroke-width="1"/><text x="225" y="103" font-size="9.5" fill="#16142B" text-anchor="middle">640 으로 줄인다</text><rect x="164" y="116" width="122" height="22" rx="5" fill="#fff" stroke="#DCD6F0" stroke-width="1"/><text x="225" y="131" font-size="9.5" fill="#16142B" text-anchor="middle">base64 로 바꾼다</text><rect x="164" y="144" width="122" height="22" rx="5" fill="#fff" stroke="#DCD6F0" stroke-width="1"/><text x="225" y="159" font-size="9.5" fill="#16142B" text-anchor="middle">결과를 모은다</text><path d="M304 52 h36 l-6 -5 v10 z" fill="#8E8AAC"/><rect x="346" y="30" width="200" height="44" rx="8" fill="#E8537A" stroke="none" stroke-width="1"/><text x="360" y="50" font-size="10" fill="#fff" font-weight="800">integrate.api.nvidia.com</text><text x="360" y="65" font-size="9.5" fill="#DCD6F0">판정 · 박스</text><path d="M304 114 h36 l-6 -5 v10 z" fill="#8E8AAC"/><rect x="346" y="92" width="200" height="44" rx="8" fill="#E8537A" stroke="none" stroke-width="1"/><text x="360" y="112" font-size="10" fill="#fff" font-weight="800">ai.api.nvidia.com/cv</text><text x="360" y="127" font-size="9.5" fill="#DCD6F0">글자</text><path d="M304 176 h36 l-6 -5 v10 z" fill="#8E8AAC"/><rect x="346" y="154" width="200" height="44" rx="8" fill="#3A1FC9" stroke="none" stroke-width="1"/><text x="360" y="174" font-size="10" fill="#fff" font-weight="800">Neon Postgres</text><text x="360" y="189" font-size="9.5" fill="#DCD6F0">사진 + 결과</text></svg></div>
-    <div class="vlist"><div class="v"><span class="b">&rarr;</span><div>앱은 <b>내 노트북에서 돈다</b>. 서버를 빌리지 않는다. 주소만 밖에서 열릴 뿐이다.</div></div><div class="v"><span class="b">&#10005;</span><div>화살표 셋이 <b>밖으로 나가는 길</b>이다. 사내 규정을 볼 때 이 셋만 보면 된다.</div></div></div>
-    <div class="keymsg"><span class="k">구조</span><div>밖으로 나가는 길은 <b>셋뿐</b>이다. 나머지는 노트북 안에서 끝난다.</div></div>
+    <div class="plot"><svg viewBox="0 0 640 212"><rect x="12" y="54" width="96" height="104" rx="10" fill="#fff" stroke="#DCD6F0" stroke-width="1.4"/><text x="60" y="88" font-size="11.5" fill="#16142B" font-weight="800" text-anchor="middle">휴대폰</text><text x="60" y="106" font-size="9.5" fill="#8E8AAC" text-anchor="middle">같은 와이파이</text><text x="60" y="132" font-size="8.6" fill="#5B3DF5" font-weight="700" text-anchor="middle">192.168.0.3:3000</text><path d="M112 92 h34 l-6 -5 v10 z" fill="#8E8AAC"/><text x="116" y="84" font-size="9" fill="#8E8AAC">사진</text><path d="M146 120 h-34 l6 -5 v10 z" fill="#5B3DF5"/><text x="116" y="138" font-size="9" fill="#5B3DF5">판정 · 목록</text><rect x="154" y="28" width="156" height="156" rx="10" fill="#EFEAFF" stroke="#C9BEFF" stroke-width="1"/><text x="232" y="52" font-size="12" fill="#3A1FC9" font-weight="800" text-anchor="middle">Next.js</text><text x="232" y="70" font-size="9.5" fill="#8E8AAC" text-anchor="middle">내 노트북</text><rect x="168" y="82" width="128" height="22" rx="5" fill="#fff" stroke="#DCD6F0" stroke-width="1"/><text x="232" y="97" font-size="9.3" fill="#16142B" text-anchor="middle">app/api/analyze</text><rect x="168" y="110" width="128" height="22" rx="5" fill="#fff" stroke="#DCD6F0" stroke-width="1"/><text x="232" y="125" font-size="9.3" fill="#16142B" text-anchor="middle">640 으로 줄인다</text><rect x="168" y="138" width="128" height="22" rx="5" fill="#fff" stroke="#DCD6F0" stroke-width="1"/><text x="232" y="153" font-size="9.3" fill="#16142B" text-anchor="middle">결과를 모은다</text><path d="M314 44 h36 l-6 -5 v10 z" fill="#8E8AAC"/><rect x="356" y="22" width="200" height="44" rx="8" fill="#E8537A" stroke="none" stroke-width="1"/><text x="370" y="42" font-size="10" fill="#fff" font-weight="800">integrate.api.nvidia.com</text><text x="370" y="57" font-size="9.5" fill="#DCD6F0">판정 · 박스</text><text x="566" y="48" font-size="9.5" fill="#E8537A" font-weight="700">밖으로</text><path d="M314 106 h36 l-6 -5 v10 z" fill="#8E8AAC"/><rect x="356" y="84" width="200" height="44" rx="8" fill="#1E9E6A" stroke="none" stroke-width="1"/><text x="370" y="104" font-size="10" fill="#fff" font-weight="800">public/uploads/</text><text x="370" y="119" font-size="9.5" fill="#DCD6F0">사진 파일</text><text x="566" y="110" font-size="9.5" fill="#1E9E6A" font-weight="700">노트북 안</text><path d="M314 168 h36 l-6 -5 v10 z" fill="#8E8AAC"/><rect x="356" y="146" width="200" height="44" rx="8" fill="#3A1FC9" stroke="none" stroke-width="1"/><text x="370" y="166" font-size="10" fill="#fff" font-weight="800">Neon Postgres</text><text x="370" y="181" font-size="9.5" fill="#DCD6F0">판정 + 파일 경로</text><text x="566" y="172" font-size="9.5" fill="#1E9E6A" font-weight="700">노트북 안</text></svg></div>
+    <div class="vlist"><div class="v"><span class="b">&rarr;</span><div>앱도 사진도 <b>내 노트북에 있다</b>. 서버를 빌리지 않는다.</div></div><div class="v"><span class="b">&#10005;</span><div>밖으로 나가는 것은 <b>판정할 때 한 번</b>뿐이다. 사진 파일은 노트북을 안 떠난다.</div></div></div>
+    <div class="keymsg"><span class="k">구조</span><div>사진은 <b>노트북에 남는다</b>. 밖으로 가는 것은 판정 요청 하나다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="Codex 가 아는 것과 모르는 것">
@@ -707,7 +707,11 @@ content 는 배열 &mdash; text 와 image_url 두 개
 <span class="cm"># 글자</span>
 https://ai.api.nvidia.com/v1/cv/nvidia/nemotron-ocr-v2
 본문 {<span class="st">"input"</span>: [{<span class="st">"type"</span>: <span class="st">"image_url"</span>, <span class="st">"url"</span>: ...}]}
-좌표는 0~1 &mdash; 사진 크기를 곱한다</code></pre></div></div>
+좌표는 0~1 &mdash; 사진 크기를 곱한다
+
+<span class="cm"># 휴대폰 카메라</span>
+&lt;input type="file" accept="image/*" capture&gt;
+http 에서는 getUserMedia 가 안 된다</code></pre></div></div>
       <div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div>이 네 줄을 <b>프롬프트에 그대로 붙인다</b>. 이것만 맞으면 나머지는 Codex 가 채운다.</div></div><div class="v"><span class="b">&#10005;</span><div>이걸 안 주면 Codex 는 <b>예전 형식</b>으로 쓴다. 200 이 오는데 모델이 <b>사진을 못 본다</b>.</div></div><div class="v"><span class="b">&rarr;</span><div>수업 시작할 때 <b>한 번 찔러 확인</b>한다. 이름은 예고 없이 내려간다.</div></div></div></div>
     </div>
     <div class="keymsg"><span class="k">재료</span><div>코드를 주는 것이 아니라 <b>사실을 준다</b>. 그 차이가 오늘의 방법이다.</div></div>
@@ -794,16 +798,18 @@ launch 는 share=True 로 한다.</code></pre></div></div>
   <div class="rule"></div>
   <div class="body">
     <div class="twocol w">
-      <div><div class="code sm"><!-- lint:code-ok --><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">4단계 &mdash; 그대로 친다</span></div><pre><code>Neon Postgres 에 결과를 남긴다.
-접속 주소는 .env 의 DATABASE_URL 이다.
+      <div><div class="code sm"><!-- lint:code-ok --><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">4단계 &mdash; 그대로 친다</span></div><pre><code>사진 파일은 public/uploads 에 저장한다.
+이름은 시각과 무작위 글자를 붙여 겹치지 않게 한다.
+
+Neon Postgres 에는 결과만 남긴다.
+접속 주소는 .env.local 의 DATABASE_URL 이다.
 표 이름은 day7_checks 이고 칸은
-  id, created_at, who, image,
-  question, verdict, tokens 다.
-image 칸에는 data URI 문자열을 그대로 넣는다.
-표가 없으면 만들고, 검사할 때마다 한 줄 넣는다.</code></pre></div></div>
-      <div><div class="vlist"><div class="v"><span class="b">&#10003;</span><div><b>확인</b> &mdash; Neon 콘솔에서 줄이 늘어나는가.</div></div><div class="v"><span class="b">&#9733;</span><div>사진 저장소를 따로 안 붙인다. 한 장 100KB 라 <b>0.5GB 면 수천 장</b>이다.</div></div><div class="v"><span class="b">&#10005;</span><div>접속이 안 되면 무료 프로젝트가 <b>잠든 것</b>이다. 콘솔에서 깨운다.</div></div></div></div>
+  id · created_at · who · path
+  question · verdict · tokens 다.
+path 에는 /uploads/파일이름 을 넣는다.</code></pre></div></div>
+      <div><div class="vlist"><div class="v"><span class="b">&#10003;</span><div><b>확인</b> &mdash; <code>public/uploads</code> 에 파일이 쌓이고 표에 줄이 느는가.</div></div><div class="v"><span class="b">&#9733;</span><div>사진은 <b>파일로</b>, 표에는 <b>경로만</b>. 사진이 커도 DB 가 안 무거워진다.</div></div><div class="v"><span class="b">&#10005;</span><div><code>public</code> 아래 두면 <b>주소를 아는 사람은 다 본다</b>. 사내에 낼 때는 이 자리를 옮긴다.</div></div></div></div>
     </div>
-    <div class="keymsg"><span class="k">4단계</span><div>사진과 판정을 <b>같은 줄에</b> 남긴다. 따로 두면 나중에 못 맞춘다.</div></div>
+    <div class="keymsg"><span class="k">4단계</span><div>사진은 <b>디스크</b>에, 판정은 <b>표</b>에. 둘을 잇는 것은 경로 한 줄이다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="5단계 - 지난 검사 다시 보기">
@@ -817,7 +823,7 @@ image 칸에는 data URI 문자열을 그대로 넣는다.
 day7_checks 에서 최근 6줄을 가져와
 카드로 보여 준다.
 카드 하나는 사진, 판정, 조 이름, 시각이다.
-image 칸의 글자를 <img src> 에 그대로 넣는다.
+path 를 <img src> 에 그대로 넣으면 사진이 보인다.
 검사가 끝나면 이 영역도 같이 갱신한다.</code></pre></div></div>
       <div><div class="vlist"><div class="v"><span class="b">&#10003;</span><div><b>확인</b> &mdash; 저장한 사진이 카드로 다시 보이는가.</div></div><div class="v"><span class="b">&#9733;</span><div>이 목록이 있어야 <b>쓸모가 생긴다</b>. 한 장 보고 끝나면 장난감이다.</div></div><div class="v"><span class="b">&rarr;</span><div>조 이름을 남기면 <b>누가 무엇을 올렸는지</b> 수업 중에 바로 보인다.</div></div></div></div>
     </div>
@@ -872,21 +878,17 @@ image 칸의 글자를 <img src> 에 그대로 넣는다.
     <div class="keymsg"><span class="k">대비</span><div>막히는 곳을 <b>미리 정해 두면</b> 수업이 안 멈춘다.</div></div>
   </div>
 </section>
-<section class="slide" data-title="사라지지 않는 주소">
+<section class="slide" data-title="같은 와이파이에서 여는 법">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>배포</div>
-  <h2 class="s-title sm">사라지지 않는 주소</h2>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>접속</div>
+  <h2 class="s-title sm">같은 와이파이에서 여는 법</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twocol w">
-      <div><div class="code sm"><!-- lint:code-ok --><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">7단계 &mdash; 그대로 친다</span></div><pre><code>Hugging Face Space 에 올릴 수 있게 정리한다.
-app.py, requirements.txt, README.md 를 갖춘다.
-키는 Space Secrets 에서 읽게 하고
-.env 를 읽는 부분은 둘 다 되게 남긴다.
-launch 에 auth 를 넣어 아이디와 암호로 잠근다.</code></pre></div></div>
-      <div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div><code>gradio.live</code> 주소는 <b>사흘이면 사라진다</b>. 동료에게 주려면 고정 주소가 있어야 한다.</div></div><div class="v"><span class="b">&#10005;</span><div>Space 를 공개로 두면 <b>내 키로 남이 호출한다</b>. 반드시 잠근다.</div></div><div class="v"><span class="b">&#9733;</span><div>여기까지 오면 <b>주소만 보내면 되는 물건</b>이 된다. 그게 오늘의 끝이다.</div></div></div></div>
+      <div><div class="plot"><svg viewBox="0 0 450 200"><text x="12" y="16" font-size="11" fill="#8E8AAC" font-weight="800">설치도 배포도 없이</text><rect x="12" y="30" width="26" height="26" rx="7" fill="#5B3DF5" stroke="none" stroke-width="1"/><text x="25" y="48" font-size="12" fill="#fff" font-weight="800" text-anchor="middle">1</text><text x="50" y="44" font-size="11.5" fill="#16142B" font-weight="800">서버를 바깥에도 열어 준다</text><rect x="50" y="52" width="380" height="22" rx="5" fill="#16142B" stroke="none" stroke-width="1"/><text x="60" y="67" font-size="10" fill="#8BE9A6" font-family="var(--mono)">npm run dev -- -H 0.0.0.0</text><rect x="12" y="86" width="26" height="26" rx="7" fill="#5B3DF5" stroke="none" stroke-width="1"/><text x="25" y="104" font-size="12" fill="#fff" font-weight="800" text-anchor="middle">2</text><text x="50" y="100" font-size="11.5" fill="#16142B" font-weight="800">노트북 주소를 찾는다</text><rect x="50" y="108" width="380" height="22" rx="5" fill="#16142B" stroke="none" stroke-width="1"/><text x="60" y="123" font-size="10" fill="#8BE9A6" font-family="var(--mono)">ipconfig getifaddr en0</text><rect x="12" y="142" width="26" height="26" rx="7" fill="#5B3DF5" stroke="none" stroke-width="1"/><text x="25" y="160" font-size="12" fill="#fff" font-weight="800" text-anchor="middle">3</text><text x="50" y="156" font-size="11.5" fill="#16142B" font-weight="800">휴대폰 브라우저에 친다</text><rect x="50" y="164" width="380" height="22" rx="5" fill="#16142B" stroke="none" stroke-width="1"/><text x="60" y="179" font-size="10" fill="#8BE9A6" font-family="var(--mono)">http://192.168.0.3:3000</text></svg></div></div>
+      <div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div>노트북과 휴대폰이 <b>같은 와이파이</b>에 있으면 그만이다. 배포도 계정도 필요 없다.</div></div><div class="v"><span class="b">&#10005;</span><div><b>방화벽이 막을 수 있다.</b> 처음 실행할 때 나오는 허용 창에서 <b>개인 네트워크</b>를 켠다.</div></div><div class="v"><span class="b">&#10005;</span><div>사내 와이파이가 <b>단말끼리 통신을 막아 두면</b> 안 된다. 그때는 노트북 핫스팟을 켜고 휴대폰을 거기에 붙인다.</div></div><div class="v"><span class="b">&rarr;</span><div>카메라는 <code>&lt;input type=&quot;file&quot; capture&gt;</code> 로 연다. <b>http 에서는 이 방법만 된다</b>.</div></div></div></div>
     </div>
-    <div class="keymsg"><span class="k">배포</span><div>주소가 <b>안 바뀌어야</b> 남에게 줄 수 있다.</div></div>
+    <div class="keymsg"><span class="k">접속</span><div>같은 망에 있으면 <b>주소 하나로 끝난다</b>. 배포는 나중 일이다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="반출 - 물량 - 책임">
