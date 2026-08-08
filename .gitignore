@@ -19,8 +19,12 @@ notebooks/exam1_answer.ipynb
 *학습 평가 등록 양식*.xlsx
 *학습평가*.xlsx
 
-# day5 원본 도식 — 처리 미정
+# 커리큘럼 시간표 — 고객사·교육사 내부 문서
+*시간표*.xlsx
+
+# 원본 도식 — 덱에서 안 쓰는 붙여넣기 이미지
 docs/day5/image*.png
+docs/day7/image*.png
 
 # 실습 데이터·학습 산출물 — 저장소에 넣지 않는다
 datasets/

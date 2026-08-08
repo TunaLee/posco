@@ -1719,28 +1719,28 @@ T = 1.2 로 두 번 돌린 결과
 <section class="slide" data-title="실습 · 프롬프트 고치기">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">LAB</span><span class="dot"></span>실습</div>
-  <h2 class="s-title sm">확률이 어떻게 움직이는지 직접 보기</h2>
+  <h2 class="s-title sm">모델을 열어 직접 재기</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twocol w">
       <div>
         <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">노트북 · 다음 토큰 확률 보기</span></div>
-          <pre><code>probs = next_token_probs(<span class="st">"포도 →"</span>)
-show_top(probs, <span class="nm">5</span>)</code></pre>
-          <div class="out">'　' 0.050 · '포' 0.037 · &hellip;</div>
+          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">노트북 &middot; 다음 조각의 확률</span></div>
+          <pre><code>probs = model(**x).logits[<span class="nm">0</span>, -<span class="nm">1</span>].softmax(-<span class="nm">1</span>)
+top = probs.topk(<span class="nm">5</span>)</code></pre>
+          <div class="out">41.43%  ' 서울'&nbsp;&nbsp;&middot;&nbsp;&nbsp;7.47%  '?'&nbsp;&nbsp;&middot;&nbsp;&hellip;</div>
         </div>
       </div>
       <div>
         <div class="vlist">
-          <div class="v"><span class="b">1</span><div>같은 문장을 <b>토크나이저에 넣어</b> 몇 조각으로 갈리는지 본다. 한글과 영어를 비교한다.</div></div>
-          <div class="v"><span class="b">2</span><div>예시를 <b>0개 · 1개 · 3개</b>로 늘려 가며 1등 확률이 어떻게 오르는지 적는다.</div></div>
-          <div class="v"><span class="b">3</span><div>온도를 <b>0.2 · 1.0 · 2.0</b> 으로 바꿔 같은 문장을 세 번씩 이어 쓰게 한다.</div></div>
-          <div class="v"><span class="b">4</span><div>내 업무 프롬프트를 <b>네 칸으로 다시 적고</b> 고치기 전후를 나란히 남긴다.</div></div>
+          <div class="v"><span class="b">1</span><div>우리말 낱말 세 쌍의 <b>가까운 정도</b>를 재고, 영어 쌍보다 덜 갈리는 까닭을 적는다.</div></div>
+          <div class="v"><span class="b">2</span><div>온도를 <b>0.1 부터 3.0 까지</b> 옮기며 1등 확률을 그래프로 그린다.</div></div>
+          <div class="v"><span class="b">3</span><div><b>층과 머리</b>를 바꿔 어텐션을 그린다. 앞 층과 뒤 층이 보는 자리를 견준다.</div></div>
+          <div class="v"><span class="b">4</span><div>설비 이름 <b>세 개를 물어보고</b> 답이 맞는지 각자 판정한다.</div></div>
         </div>
       </div>
     </div>
-    <div class="keymsg"><span class="k">확인</span><div>바꾼 것 하나마다 <b>1등 확률과 실제 출력</b>을 함께 적는다. 감이 아니라 숫자로 비교한다.</div></div>
+    <div class="keymsg"><span class="k">확인</span><div>바꾼 것 하나마다 <b>숫자와 실제 출력</b>을 함께 적는다. 감이 아니라 재서 비교한다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="오늘 얻은 것">
