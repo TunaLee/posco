@@ -26,14 +26,14 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 model.to(device)
 print('장치', device)"""),
 
-    md("## 2. 토큰 — 글자도 단어도 아닌 조각"),
+    md("## 2. 토큰 — 모델이 실제로 받는 단위"),
     code("""# 문장을 모델이 보는 단위로 쪼갠다
 s = '소성로 온도가 높다'
 ids = tok(s)['input_ids']
-print(len(ids), '조각')
+print(len(ids), '토큰')
 print([tok.decode([i]) for i in ids])"""),
 
-    md("`�` 는 오류가 아니다. **글자 하나를 다 못 채운 조각**이라는 뜻이다."),
+    md("`�` 는 오류가 아니다. **토큰 하나가 글자를 다 못 채웠다**는 뜻이다."),
 
     md("### 왜 이렇게 끊나\n\n"
        "글자 하나씩 끊으면 글이 너무 길어지고, 낱말로 끊으면 **사전에 없는 낱말**에서 막힌다.\n"
@@ -67,37 +67,55 @@ for step in range(1, 6):
     words = {merge(w, a, b): c for w, c in words.items()}
     print('%d번째  %r + %r -> %r  (%d번 붙어 나왔다)' % (step, a, b, a + b, n))"""),
 
-    code("""# 합치고 나면 조각이 줄어 있다
+    code("""# 합치고 나면 토큰이 줄어 있다
 for w, c in words.items():
     print('%-16s ×%d' % (' '.join(w), c))"""),
 
     md("사람이 규칙을 적은 것이 아니다. **학습 자료에서 세어 만든 사전**이다.\n"
-       "그래서 자주 나온 낱말은 한 조각이고, 드문 낱말은 여러 조각이 된다."),
+       "그래서 자주 나온 낱말은 한 토큰이고, 드문 낱말은 여러 토큰이 된다."),
 
     code("""# 한글이라서 쪼개지는 것이 아니다 — 자주 나왔는지가 가른다
 for w in (' 작업', ' 시간', ' 문제', ' 정보', ' 안전', ' 점검', ' 베어링'):
     ids = tok(w, add_special_tokens=False)['input_ids']
-    print('%-6s %d조각  %s' % (w.strip(), len(ids), [tok.decode([i]) for i in ids]))"""),
+    print('%-6s %d토큰  %s' % (w.strip(), len(ids), [tok.decode([i]) for i in ids]))"""),
 
-    code("""# 바이트에서 시작하니 못 읽는 글자가 없다 — 대신 한글은 글자마다 세 바이트다
+    code("""# 한 글자가 실제로 어떻게 저장되는지 끝까지 펼쳐 본다
+ch = '온'
+b = ch.encode('utf-8')
+print('글자      ', ch)
+print('유니코드   U+%04X' % ord(ch))
+print('UTF-8     ', ' '.join('%02X' % x for x in b))
+print('10진수    ', list(b))
+print('2진수     ', ' '.join(format(x, '08b') for x in b))"""),
+
+    code("""# 같은 글자인데 앞에 공백이 붙으면 토큰 수가 달라진다
+for t in ('온', ' 온'):
+    ids = tok(t, add_special_tokens=False)['input_ids']
+    print('%-3r %d토큰  번호 %s  %s'
+          % (t, len(ids), ids, tok.convert_ids_to_tokens(ids)))"""),
+
+    md("`온` 은 사전에 통째로 있어 1토큰이다. 앞에 공백이 붙은 `␣온` 은 그 모양이 사전에 없어\n"
+       "**바이트 단위로 잘려** 2토큰이 된다. 앞 토큰이 글자를 다 못 채워 화면에 `\ufffd` 가 찍힌다."),
+
+    code("""# 영어와 견줘 본다 — 바이트 수가 다르다
 for ch in ('a', '온', '높'):
     print('%s  UTF-8 %d바이트  %s' % (ch, len(ch.encode()), list(ch.encode())))"""),
 
-    code("""# 문장 안에서 글자 하나가 조각 몇 개가 되는지 센다
+    code("""# 문장 안에서 글자 하나가 토큰 몇 개가 되는지 센다
 for ch in ('소', '성', '로', ' 온', '도', '가', ' 높', '다'):
-    print('%-4r %d 조각' % (ch, len(tok(ch, add_special_tokens=False)['input_ids'])))"""),
+    print('%-4r %d 토큰' % (ch, len(tok(ch, add_special_tokens=False)['input_ids'])))"""),
 
-    md("`온` 은 조각 둘, `높` 은 조각 셋이다. 한글은 자주 안 쓰여서 통째로 외워 둔 조각이 적다."),
+    md("`온` 은 토큰 둘, `높` 은 토큰 셋이다. 한글은 자주 안 쓰여서 통째로 사전에 든 것이 적다."),
 
-    code("""# 같은 뜻인데 낱말 하나에 드는 조각 수가 다르다
+    code("""# 같은 뜻인데 낱말 하나에 드는 토큰 수가 다르다
 for w in (' 온도', ' temperature', '소성로', ' kiln'):
-    print('%-14r %d 조각' % (w, len(tok(w, add_special_tokens=False)['input_ids'])))"""),
+    print('%-14r %d 토큰' % (w, len(tok(w, add_special_tokens=False)['input_ids'])))"""),
 
     code("""# 그래서 같은 말을 해도 한국어가 더 비싸다
 for t in ('소성로 온도가 높다', 'The kiln temperature is high'):
-    print('%2d 조각   %s' % (len(tok(t)['input_ids']), t))"""),
+    print('%2d 토큰   %s' % (len(tok(t)['input_ids']), t))"""),
 
-    Ex(1, "아래 문장이 몇 조각인지 세어 `n` 에 담는다.",
+    Ex(1, "아래 문장이 몇 토큰인지 세어 `n` 에 담는다.",
        setup="q = '오늘 설비 점검에서 이상이 발견되었다'",
        blank="n = len(tok(q)['input_ids'])\nn = ___",
        answer="n = len(tok(q)['input_ids'])",
@@ -119,6 +137,31 @@ print('king 의 숫자 줄', tuple(vec(' king').shape))"""),
 for a, b in ((' king', ' queen'), (' king', ' banana'), (' cat', ' dog')):
     print('%-9s ~%-9s  %.3f' % (a, b, F.cosine_similarity(vec(a), vec(b), dim=0).item()))"""),
 
+    code("""# 낱말 24개의 임베딩을 2차원으로 눌러 그려 본다
+GROUP = {'animal': (' cat', ' dog', ' horse', ' rabbit', ' bird', ' cow'),
+         'fruit':  (' apple', ' banana', ' grape', ' orange', ' peach', ' lemon'),
+         'country':(' Korea', ' Japan', ' France', ' China', ' Germany', ' Spain'),
+         'number': (' one', ' two', ' three', ' four', ' five', ' six')}
+X = torch.stack([vec(w) for ws in GROUP.values() for w in ws]).detach().float()
+X = X - X.mean(0)
+_, _, Vt = torch.pca_lowrank(X, q=2)
+P = (X @ Vt[:, :2]).numpy()
+print(P.shape)"""),
+
+    code("""# 무리가 갈리는지 눈으로 본다
+plt.figure(figsize=(8, 5))
+i = 0
+for g, ws in GROUP.items():
+    plt.scatter(P[i:i+6, 0], P[i:i+6, 1], s=90, label=g)
+    for j, w in enumerate(ws):
+        plt.annotate(w.strip(), (P[i+j, 0], P[i+j, 1]), fontsize=8,
+                     xytext=(0, 9), textcoords='offset points', ha='center')
+    i += 6
+plt.legend(); plt.grid(alpha=.2); plt.show()"""),
+
+    md("사람이 무리를 지어 준 적이 없다. **다음 토큰을 맞히도록 학습**했더니 저절로 갈렸다.\n"
+       "다만 1,536차원을 2차원으로 눌러 그린 것이라 실제 거리의 일부만 보인다."),
+
     Task(1, "우리말 낱말 세 쌍을 골라 가까운 정도를 재 본다.\n"
             "> 뜻이 가까운 쌍과 먼 쌍이 숫자로 갈리는지 본다.",
          answer="""for a, b in ((' 왕', ' 여왕'), (' 왕', ' 바나나'), (' 고양이', ' 개')):
@@ -126,8 +169,8 @@ for a, b in ((' king', ' queen'), (' king', ' banana'), (' cat', ' dog')):
          check="print('영어보다 덜 갈릴 수 있다 — 토큰이 쪼개져서다')"),
 
     md("## 4. 다음 한 토큰"),
-    md("모델이 하는 일은 하나다. **앞을 보고 다음 조각의 확률을 매기는 것**이다."),
-    prep("""# 앞부분을 넣고 다음 조각의 점수를 받아 온다
+    md("모델이 하는 일은 하나다. **앞을 보고 다음 토큰의 확률을 매기는 것**이다."),
+    prep("""# 앞부분을 넣고 다음 토큰의 점수를 받아 온다
 head = '대한민국의 수도는'
 x = tok(head, return_tensors='pt').to(device)
 with torch.no_grad():
@@ -139,7 +182,7 @@ print('후보 %d개에 확률이 매겨졌다' % probs.shape[0])"""),
 for v, i in zip(top.values, top.indices):
     print('%6.2f%%   %r' % (v * 100, tok.decode([i])))"""),
 
-    Ex(2, "1등 조각의 확률을 `p1` 에 담는다.",
+    Ex(2, "1등 토큰의 확률을 `p1` 에 담는다.",
        blank="p1 = probs.max().item()\np1 = ___",
        answer="p1 = probs.max().item()",
        check="print('%.4f' % p1)\nassert 0 < p1 <= 1"),

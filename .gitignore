@@ -15,12 +15,10 @@ docs/_archive-pptx/
 notebooks/exam*_spec.py
 notebooks/exam*_answer.ipynb
 
-# 학습평가 등록 양식 — 정답이 들어 있다
-*학습 평가 등록 양식*.xlsx
-*학습평가*.xlsx
-
-# 커리큘럼 시간표 — 고객사·교육사 내부 문서
-*시간표*.xlsx
+# 엑셀은 전부 뺀다 — 시험 정답(평가 양식)과 고객사 내부 문서(시간표)가 섞여 있고,
+# 파일 이름이 바뀌면 개별 패턴이 새어 나간다
+*.xlsx
+*.xls
 
 # 원본 도식 — 덱에서 안 쓰는 붙여넣기 이미지
 docs/day5/image*.png
