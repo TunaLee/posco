@@ -462,17 +462,17 @@
   <div class="rule"></div>
   <div class="body">
     <div class="cards c3">
-      <div class="card"><span class="n">CH0</span><h3>다음 한 토큰</h3><p>토큰 · 임베딩 · 확률 · 온도. 모델이 실제로 하는 일은 하나뿐이다.</p></div>
+      <div class="card"><span class="n">CH0</span><h3>토큰과 확률</h3><p>토큰 · 임베딩 · 확률 · 온도. 모델이 실제로 하는 일은 하나뿐이다.</p></div>
       <div class="card"><span class="n">CH1~2</span><h3>어텐션</h3><p>순서대로 읽던 방식의 한계 · 질문과 열쇠와 값 · 실제 가중치를 뽑아 본다.</p></div>
       <div class="card"><span class="n">CH3~4</span><h3>프롬프팅</h3><p>프롬프트가 왜 듣는가 · 왜 안 듣는가 · 네 칸으로 적는 틀.</p></div>
     </div>
     <div class="keymsg"><span class="k">기준</span><div>오늘의 모든 수치는 <b>모델을 직접 열어 뽑은 것</b>이다. 쓴 모델은 계수 15억 개짜리 한 대다.</div></div>
   </div>
 </section>
-<section class="slide section" data-title="[섹션] 다음 한 토큰">
+<section class="slide section" data-title="[섹션] 토큰과 확률">
   <div class="ghost">00</div>
   <div class="seyebrow">CHAPTER 00</div>
-  <h2>다음 한 토큰</h2>
+  <h2>토큰과 확률</h2>
   <div class="agenda"><span>토큰</span><span>확률</span><span>온도</span></div>
 </section>
 <section class="slide" data-title="하는 일은 하나뿐">
@@ -752,10 +752,10 @@ T = 1.2 로 두 번 돌린 결과
     <div class="keymsg"><span class="k">경계</span><div>확신에 찬 말투와 정답률은 <b>아무 관계가 없다</b>. 308도 408만큼 자신 있게 나온다.</div></div>
   </div>
 </section>
-<section class="slide section" data-title="[섹션] 여기까지 온 길">
+<section class="slide section" data-title="[섹션] LLM 이 나오기까지">
   <div class="ghost">01</div>
   <div class="seyebrow">CHAPTER 01</div>
-  <h2>여기까지 온 길</h2>
+  <h2>LLM 이 나오기까지</h2>
   <div class="agenda"><span>순서대로 읽기</span><span>어텐션</span><span>크기</span></div>
 </section>
 <section class="slide" data-title="단어를 숫자로">
@@ -1579,10 +1579,10 @@ T = 1.2 로 두 번 돌린 결과
     <div class="keymsg"><span class="k">기준</span><div>프롬프트를 고쳐도 안 되는 문제가 있다. <b>어느 쪽인지 먼저 가른다.</b></div></div>
   </div>
 </section>
-<section class="slide section" data-title="[섹션] 쓰는 틀">
+<section class="slide section" data-title="[섹션] 프롬프트 쓰는 틀">
   <div class="ghost">04</div>
   <div class="seyebrow">CHAPTER 04</div>
-  <h2>쓰는 틀</h2>
+  <h2>프롬프트 쓰는 틀</h2>
   <div class="agenda"><span>네 칸</span><span>검증</span><span>고치는 순서</span></div>
 </section>
 <section class="slide" data-title="네 칸으로 적는다">
@@ -1750,7 +1750,7 @@ top = probs.topk(<span class="nm">5</span>)</code></pre>
   <div class="rule"></div>
   <div class="body">
     <div class="cards c3">
-      <div class="card"><span class="n">원리</span><h3>다음 한 토큰</h3><p>앞부분을 받아 151,665개 중 하나의 확률을 낸다. 그것을 반복한다.</p></div>
+      <div class="card"><span class="n">원리</span><h3>토큰과 확률</h3><p>앞부분을 받아 151,665개 중 하나의 확률을 낸다. 그것을 반복한다.</p></div>
       <div class="card"><span class="n">구조</span><h3>어텐션</h3><p>점수 → 비율 → 값 섞기. 머리 12개 × 층 28겹 = 336번.</p></div>
       <div class="card"><span class="n">활용</span><h3>프롬프트</h3><p>명령이 아니라 앞부분이다. 확률을 옮길 뿐 없는 것은 못 만든다.</p></div>
     </div>

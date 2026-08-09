@@ -7,13 +7,13 @@
 |---|---|---|
 | Day 1 · 파이썬 문법 | [day1/index.html](day1/index.html) | 60 |
 | Day 2 · 데이터 다루기 | [day2/index.html](day2/index.html) | 48 |
-| Day 3 · 머신러닝 | [day3/index.html](day3/index.html) | 41 |
+| Day 3 · 머신러닝 | [day3/index.html](day3/index.html) | 47 |
 | Day 4 · 딥러닝 | [day4/index.html](day4/index.html) | 47 |
 | 특강 · AI 도구로 웹 서비스 만들기 | [special/index.html](special/index.html) | 41 |
-| 2주차 D1 · 이미지 분류 | [day5/index.html](day5/index.html) | 48 |
-| 2주차 D2 · 이미지 처리 | [day6/index.html](day6/index.html) | 29 |
-| 2주차 D3 · 이미지 처리 모듈 개발 | [day7/index.html](day7/index.html) | 21 |
-| 2주차 D4 · LLM 과 프롬프트 | [day8/index.html](day8/index.html) | 40 |
+| 2주차 D1 · 이미지 분류 | [day5/index.html](day5/index.html) | 61 |
+| 2주차 D2 · 이미지 처리 | [day6/index.html](day6/index.html) | 79 |
+| 2주차 D3 · 이미지 처리 모듈 개발 | [day7/index.html](day7/index.html) | 40 |
+| 3주차 D1 · LLM 과 프롬프트 | [day8/index.html](day8/index.html) | 52 |
 
 조작: `← →` 또는 Space · 숫자 입력 후 Enter로 점프 · `≡` 목차 · `−/+` 줌 · PDF 버튼(인쇄).
 
@@ -348,16 +348,16 @@ D3 의 「가려서 재 본다」, D4 의 「형식은 잡히고 판단은 안 �
 `Flatten` · `Linear` · `ReLU` · `Adam` · 학습 루프는 1주차 것을 그대로 쓴다.
 
 ```
-2주차 D4  LLM 과 프롬프트 — 모델을 직접 열어 확률과 어텐션을 꺼내 보며 간다
-  CH0 다음 한 토큰      하는 일은 하나 · 토큰 · 한글이 더 먹는 토큰 · 온도 · 계산기가 아니다
-  CH1 여기까지 온 길     단어를 숫자로 · 순서대로 읽던 방식의 두 한계 · 어텐션이라는 착안 ·
+3주차 D1  LLM 과 프롬프트 — 모델을 직접 열어 확률과 어텐션을 꺼내 보며 간다
+  CH0 토큰과 확률        하는 일은 하나 · 토큰 · 한글이 더 먹는 토큰 · 온도 · 계산기가 아니다
+  CH1 LLM 이 나오기까지  단어를 숫자로 · 순서대로 읽던 방식의 두 한계 · 어텐션이라는 착안 ·
                        크기 · 대답하게 만들기
   CH2 어텐션            같은 단어 다른 뜻 · 질문·열쇠·값 · 점수에서 비율로(손계산) ·
                        값을 섞는다 · 14층 0머리 실측 · 뜻 없는 낱말 통제 · 머리 336개 · 제곱 비용
   CH3 프롬프팅의 원리    프롬프트는 앞부분이다 · 같은 질문 다른 형태 · 예시를 넣으면 ·
                        예시가 듣는 이유 · 형식 지정 · messages 도 앞부분 · 지어내는 자리 ·
                        바꿀 수 있는 것과 없는 것
-  CH4 쓰는 틀           네 칸 · 틀이 있고 없고 · 형식은 잡히고 판단은 안 잡힌다 ·
+  CH4 프롬프트 쓰는 틀    네 칸 · 틀이 있고 없고 · 형식은 잡히고 판단은 안 잡힌다 ·
                        온도와 길이 · 고치는 순서 · 실습
 ```
 
