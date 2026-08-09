@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""1주차 시험 노트북 생성기.  python3 notebooks/build_exam.py
+"""시험 노트북 생성기.  python3 notebooks/build_exam.py [주차...]
 
-  exam1.ipynb         수강생용 — 빈칸
-  exam1_answer.ipynb  강사용   — 정답
+  exam<N>.ipynb         수강생용 — 빈칸
+  exam<N>_answer.ipynb  강사용   — 정답
+
+주차를 안 주면 exam<N>_spec.py 가 있는 것을 모두 만든다.
 """
-import json, os, sys
+import importlib, json, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import exam1_spec as S
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
@@ -29,7 +30,7 @@ def code(src, tag=None):
 
 
 BADGE = ("[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]"
-         "(https://colab.research.google.com/github/TunaLee/posco/blob/main/notebooks/exam1.ipynb)")
+         "(https://colab.research.google.com/github/TunaLee/posco/blob/main/notebooks/exam%d.ipynb)")
 
 HEAD = """{badge}
 
@@ -63,7 +64,7 @@ GRADE_CELL = """이름 = ""   # 여기에 이름을 적는다
 # ── 아래는 고치지 않는다 ──────────────────────────────────────────────
 import io, json, re
 _nb = None
-for _p in ('exam1.ipynb', '/content/exam1.ipynb'):
+for _p in ('exam{WK}.ipynb', '/content/exam{WK}.ipynb'):
     try:
         _nb = json.load(io.open(_p, encoding='utf-8')); break
     except Exception:
@@ -80,11 +81,12 @@ print()
 print("맞힌 문항 %d / %d" % (len(_ok), _TOTAL_N))
 print("점수      %d / %d" % (len(_ok) * _PER, _TOTAL_N * _PER))
 print()
-print("제출 파일 이름:  1주차시험_%s.ipynb" % (이름 or "이름"))"""
+print("제출 파일 이름:  {WK}주차시험_%s.ipynb" % (이름 or "이름"))"""
 
 
-def build(answer: bool):
-    cells = [md(HEAD.format(badge=BADGE, title=S.TITLE, per=S.ITEMS[0][1], total=S.TOTAL))]
+def build(S, wk, answer: bool):
+    cells = [md(HEAD.format(badge=BADGE % wk, title=S.TITLE,
+                            per=S.ITEMS[0][1], total=S.TOTAL))]
     # 검사 함수를 모아 둘 자리
     cells.append(code("_CHECKS = {}\n_PER = %d\n_TOTAL_N = %d" % (S.ITEMS[0][1], len(S.ITEMS)),
                       tag="setup"))
@@ -100,7 +102,7 @@ def build(answer: bool):
                           "def _c%d():\n%s\n_CHECKS[%d] = _c%d\n_c%d()\nprint('%d번 통과')"
                           % (no, body, no, no, no, no), tag="check%d" % no))
     cells.append(md(FOOT_STUDENT))
-    cells.append(code(GRADE_CELL, tag="grade"))
+    cells.append(code(GRADE_CELL.replace("{WK}", str(wk)), tag="grade"))
     return {"cells": cells,
             "metadata": {"kernelspec": {"display_name": "Python 3", "language": "python",
                                         "name": "python3"},
@@ -109,10 +111,15 @@ def build(answer: bool):
 
 
 if __name__ == "__main__":
-    for ans, name in ((False, "exam1.ipynb"), (True, "exam1_answer.ipynb")):
-        p = os.path.join(HERE, name)
-        with open(p, "w", encoding="utf-8") as f:
-            json.dump(build(ans), f, ensure_ascii=False, indent=1)
-        n = sum(1 for c in build(ans)["cells"] if c["cell_type"] == "code")
-        print("  %-22s 문항 %d개 · 코드 셀 %d개 · 총 %d점"
-              % (name, len(S.ITEMS), n, S.TOTAL))
+    weeks = [int(a) for a in sys.argv[1:]] or \
+            sorted(int(f[4]) for f in os.listdir(HERE)
+                   if f.startswith("exam") and f.endswith("_spec.py"))
+    for wk in weeks:
+        S = importlib.import_module("exam%d_spec" % wk)
+        for ans, name in ((False, "exam%d.ipynb" % wk), (True, "exam%d_answer.ipynb" % wk)):
+            nb = build(S, wk, ans)
+            with open(os.path.join(HERE, name), "w", encoding="utf-8") as f:
+                json.dump(nb, f, ensure_ascii=False, indent=1)
+            n = sum(1 for c in nb["cells"] if c["cell_type"] == "code")
+            print("  %-22s 문항 %d개 · 코드 셀 %d개 · 총 %d점"
+                  % (name, len(S.ITEMS), n, S.TOTAL))
