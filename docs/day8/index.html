@@ -1019,6 +1019,180 @@ T = 1.2 로 두 번 돌린 결과
     <div class="keymsg"><span class="k">이름</span><div><b>transform</b> 은 표현을 바꾼다는 뜻이다. 토큰 한 줄을 <b>주변이 반영된 한 줄</b>로 바꾸는 일을 되풀이한다.</div></div>
   </div>
 </section>
+<section class="slide" data-title="임베딩 · 인코딩 · 디코딩">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>용어</div>
+  <h2 class="s-title sm">계속 나오는 세 낱말</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="plot"><svg viewBox="0 0 1116 290"><text x="14" y="18" font-size="11" fill="#8E8AAC">세 낱말이 계속 나온다 — 뜻은 이것뿐이다</text><rect x="14" y="34" width="344" height="174" rx="10" fill="#fff" stroke="#1E9E6A" stroke-width="1.8"/><rect x="14" y="34" width="344" height="34" rx="10" fill="#1E9E6A" stroke="none" stroke-width="1"/><rect x="14" y="50" width="344" height="18" rx="0" fill="#1E9E6A" stroke="none" stroke-width="1"/><text x="32" y="57" font-size="13.5" fill="#fff" font-weight="800">임베딩</text><text x="340" y="57" font-size="10.4" fill="#fff" text-anchor="end">embedding</text><rect x="28" y="88" width="316" height="30" rx="6" fill="#F7F6FB" stroke="none" stroke-width="1"/><text x="42" y="108" font-size="10.8" fill="#16142B" font-weight="700">토큰 번호를 숫자 줄로 바꾼다</text><rect x="28" y="126" width="316" height="30" rx="6" fill="#F7F6FB" stroke="none" stroke-width="1"/><text x="42" y="146" font-size="10.8" fill="#16142B" font-weight="700">"소성로" → [0.21, -0.44, …]</text><rect x="28" y="164" width="316" height="30" rx="6" fill="#F7F6FB" stroke="none" stroke-width="1"/><text x="42" y="184" font-size="10.8" fill="#16142B" font-weight="700">뜻이 가까우면 줄도 비슷해진다</text><rect x="386" y="34" width="344" height="174" rx="10" fill="#fff" stroke="#0E8C9E" stroke-width="1.8"/><rect x="386" y="34" width="344" height="34" rx="10" fill="#0E8C9E" stroke="none" stroke-width="1"/><rect x="386" y="50" width="344" height="18" rx="0" fill="#0E8C9E" stroke="none" stroke-width="1"/><text x="404" y="57" font-size="13.5" fill="#fff" font-weight="800">인코딩</text><text x="712" y="57" font-size="10.4" fill="#fff" text-anchor="end">encoding</text><rect x="400" y="88" width="316" height="30" rx="6" fill="#F7F6FB" stroke="none" stroke-width="1"/><text x="414" y="108" font-size="10.8" fill="#16142B" font-weight="700">들어온 글을 읽어 뜻을 담는다</text><rect x="400" y="126" width="316" height="30" rx="6" fill="#F7F6FB" stroke="none" stroke-width="1"/><text x="414" y="146" font-size="10.8" fill="#16142B" font-weight="700">앞뒤를 모두 보고 정리한다</text><rect x="400" y="164" width="316" height="30" rx="6" fill="#F7F6FB" stroke="none" stroke-width="1"/><text x="414" y="184" font-size="10.8" fill="#16142B" font-weight="700">분류 · 검색 · 문서 이해에 쓴다</text><rect x="758" y="34" width="344" height="174" rx="10" fill="#fff" stroke="#E8722A" stroke-width="1.8"/><rect x="758" y="34" width="344" height="34" rx="10" fill="#E8722A" stroke="none" stroke-width="1"/><rect x="758" y="50" width="344" height="18" rx="0" fill="#E8722A" stroke="none" stroke-width="1"/><text x="776" y="57" font-size="13.5" fill="#fff" font-weight="800">디코딩</text><text x="1084" y="57" font-size="10.4" fill="#fff" text-anchor="end">decoding</text><rect x="772" y="88" width="316" height="30" rx="6" fill="#F7F6FB" stroke="none" stroke-width="1"/><text x="786" y="108" font-size="10.8" fill="#16142B" font-weight="700">담긴 뜻에서 글을 뽑아낸다</text><rect x="772" y="126" width="316" height="30" rx="6" fill="#F7F6FB" stroke="none" stroke-width="1"/><text x="786" y="146" font-size="10.8" fill="#16142B" font-weight="700">앞만 보고 한 조각씩 잇는다</text><rect x="772" y="164" width="316" height="30" rx="6" fill="#F7F6FB" stroke="none" stroke-width="1"/><text x="786" y="184" font-size="10.8" fill="#16142B" font-weight="700">작문 · 대화 · 요약에 쓴다</text><rect x="14" y="226" width="1088" height="52" rx="9" fill="#EFEAFF" stroke="none" stroke-width="1"/><text x="34" y="248" font-size="10.4" fill="#3A1FC9" font-weight="800">한 문장으로</text><text x="34" y="268" font-size="11.6" fill="#16142B" font-weight="700">임베딩으로 숫자를 만들고, 인코딩으로 뜻을 담고, 디코딩으로 글을 뽑는다</text></svg></div>
+    <div class="keymsg"><span class="k">용어</span><div><b>임베딩</b>은 숫자로 바꾸는 일, <b>인코딩</b>은 읽어서 뜻을 담는 일, <b>디코딩</b>은 그 뜻에서 글을 뽑는 일이다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="모델 계보 한눈에">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>계보</div>
+  <h2 class="s-title sm">논문 한 편에서 갈라져 나온 여덟 계열</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="shot">
+      <div class="sbar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">모델 계보 한눈에</span></div>
+      <img src="assets/era-timeline.png" alt="모델 계보 한눈에">
+    </div>
+    <div class="vlist"><div class="v"><span class="b">&rarr;</span><div>2017 Transformer 에서 Encoder · Decoder · Encoder-Decoder 로 갈리고, 비전 · 멀티모달 · 대화형 · 에이전트로 이어진다</div></div></div>
+    <div class="keymsg"><span class="k">지도</span><div>오늘 쓰는 것이 <b>어디서 갈라져 나왔는지</b> 한 장에 있다. 뒤 여덟 장이 이 순서를 하나씩 짚는다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="2017 Transformer">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>계보</div>
+  <h2 class="s-title sm">임베딩 · Self-Attention · 인코더와 디코더</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="shot">
+      <div class="sbar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">2017 Transformer</span></div>
+      <img src="assets/era-2017-transformer.png" alt="2017 Transformer">
+    </div>
+    <div class="vlist"><div class="v"><span class="b">&rarr;</span><div>입력을 임베딩으로 바꾸고, 모든 낱말이 서로를 참고하고, 인코더가 뜻을 담아 디코더가 출력을 만든다</div></div></div>
+    <div class="keymsg"><span class="k">시작</span><div>「I love NLP !」가 「Je t'aime le NLP .」이 되는 번역기였다. <b>여기 있는 세 조각이 뒤의 모든 모델에 그대로 쓰인다</b>.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="인코더와 디코더">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>구분</div>
+  <h2 class="s-title sm">뒤를 막은 쪽과 열어 둔 쪽</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="plot"><svg viewBox="0 0 1116 268"><text x="14" y="18" font-size="11" fill="#8E8AAC">같은 블록인데 어디를 보게 두느냐가 다르다</text><text x="30" y="46" font-size="12.5" fill="#0E8C9E" font-weight="800">인코더 — 앞뒤를 다 본다</text><text x="30" y="64" font-size="10" fill="#8E8AAC">빈칸을 맞히며 배운다</text><rect x="30" y="78" width="56" height="34" rx="7" fill="#fff" stroke="#DCD6F0" stroke-width="1.4"/><text x="58" y="100" font-size="13" fill="#16142B" font-weight="800" text-anchor="middle">소</text><rect x="98" y="78" width="56" height="34" rx="7" fill="#fff" stroke="#DCD6F0" stroke-width="1.4"/><text x="126" y="100" font-size="13" fill="#16142B" font-weight="800" text-anchor="middle">성</text><rect x="166" y="78" width="56" height="34" rx="7" fill="#fff" stroke="#DCD6F0" stroke-width="1.4"/><text x="194" y="100" font-size="13" fill="#16142B" font-weight="800" text-anchor="middle">로</text><rect x="234" y="78" width="56" height="34" rx="7" fill="#0E8C9E" stroke="none" stroke-width="1.4"/><text x="262" y="100" font-size="13" fill="#fff" font-weight="800" text-anchor="middle">온</text><rect x="302" y="78" width="56" height="34" rx="7" fill="#fff" stroke="#DCD6F0" stroke-width="1.4"/><text x="330" y="100" font-size="13" fill="#16142B" font-weight="800" text-anchor="middle">도</text><rect x="370" y="78" width="56" height="34" rx="7" fill="#fff" stroke="#DCD6F0" stroke-width="1.4"/><text x="398" y="100" font-size="13" fill="#16142B" font-weight="800" text-anchor="middle">가</text><path d="M58 126 C 58 150, 262 150, 262 126" stroke="#0E8C9E" stroke-width="1.5" fill="none" opacity=".75"/><path d="M126 126 C 126 150, 262 150, 262 126" stroke="#0E8C9E" stroke-width="1.5" fill="none" opacity=".75"/><path d="M194 126 C 194 150, 262 150, 262 126" stroke="#0E8C9E" stroke-width="1.5" fill="none" opacity=".75"/><path d="M330 126 C 330 150, 262 150, 262 126" stroke="#0E8C9E" stroke-width="1.5" fill="none" opacity=".75"/><path d="M398 126 C 398 150, 262 150, 262 126" stroke="#0E8C9E" stroke-width="1.5" fill="none" opacity=".75"/><text x="262" y="168" font-size="9.8" fill="#8E8AAC" font-weight="700" text-anchor="middle">가운데 조각이 보는 곳</text><text x="600" y="46" font-size="12.5" fill="#E8722A" font-weight="800">디코더 — 앞만 본다</text><text x="600" y="64" font-size="10" fill="#8E8AAC">다음 조각을 맞히며 배운다</text><rect x="600" y="78" width="56" height="34" rx="7" fill="#fff" stroke="#DCD6F0" stroke-width="1.4"/><text x="628" y="100" font-size="13" fill="#16142B" font-weight="800" text-anchor="middle">소</text><rect x="668" y="78" width="56" height="34" rx="7" fill="#fff" stroke="#DCD6F0" stroke-width="1.4"/><text x="696" y="100" font-size="13" fill="#16142B" font-weight="800" text-anchor="middle">성</text><rect x="736" y="78" width="56" height="34" rx="7" fill="#fff" stroke="#DCD6F0" stroke-width="1.4"/><text x="764" y="100" font-size="13" fill="#16142B" font-weight="800" text-anchor="middle">로</text><rect x="804" y="78" width="56" height="34" rx="7" fill="#E8722A" stroke="none" stroke-width="1.4"/><text x="832" y="100" font-size="13" fill="#fff" font-weight="800" text-anchor="middle">온</text><rect x="872" y="78" width="56" height="34" rx="7" fill="#fff" stroke="#DCD6F0" stroke-width="1.4"/><text x="900" y="100" font-size="13" fill="#16142B" font-weight="800" text-anchor="middle">도</text><rect x="940" y="78" width="56" height="34" rx="7" fill="#fff" stroke="#DCD6F0" stroke-width="1.4"/><text x="968" y="100" font-size="13" fill="#16142B" font-weight="800" text-anchor="middle">가</text><path d="M628 126 C 628 150, 832 150, 832 126" stroke="#E8722A" stroke-width="1.5" fill="none" opacity=".75"/><path d="M696 126 C 696 150, 832 150, 832 126" stroke="#E8722A" stroke-width="1.5" fill="none" opacity=".75"/><path d="M764 126 C 764 150, 832 150, 832 126" stroke="#E8722A" stroke-width="1.5" fill="none" opacity=".75"/><text x="832" y="168" font-size="9.8" fill="#8E8AAC" font-weight="700" text-anchor="middle">가운데 조각이 보는 곳</text><rect x="30" y="190" width="500" height="66" rx="9" fill="#EFF9F4" stroke="#BFE6D4" stroke-width="1"/><text x="48" y="214" font-size="11.4" fill="#0E8C9E" font-weight="800">문서를 이해하는 일에 맞다</text><text x="48" y="236" font-size="10.2" fill="#8E8AAC">BERT 계열 — 분류 · 검색 · 문서 이해</text><rect x="600" y="190" width="500" height="66" rx="9" fill="#FEF4EC" stroke="#F8D7BC" stroke-width="1"/><text x="618" y="214" font-size="11.4" fill="#E8722A" font-weight="800">글을 이어 쓰는 일에 맞다</text><text x="618" y="236" font-size="10.2" fill="#8E8AAC">GPT 계열 — 작문 · 대화 · 요약</text></svg></div>
+    <div class="keymsg"><span class="k">갈림</span><div>구조는 같다. <b>뒤를 보게 두느냐 막느냐</b>가 다를 뿐이고, 거기서 잘하는 일이 갈린다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="문장을 이해하는 쪽">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>계보</div>
+  <h2 class="s-title sm">Encoder 계열 — 빈칸 맞히기로 배운 모델</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="shot">
+      <div class="sbar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">문장을 이해하는 쪽</span></div>
+      <img src="assets/era-encoder-bert.png" alt="문장을 이해하는 쪽">
+    </div>
+    <div class="vlist"><div class="v"><span class="b">&rarr;</span><div>[MASK] 자리에 무엇이 들어갈지 앞뒤를 모두 보고 맞힌다 — 향상된 62.1% · 정확한 18.7% · 다양한 8.3%</div></div></div>
+    <div class="keymsg"><span class="k">쓰임</span><div>앞뒤를 다 보니 <b>글을 읽고 판단하는 일</b>에 맞다. 분류 · 검색 · 문서 이해가 여기에 붙는다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="글을 이어 쓰는 쪽">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>계보</div>
+  <h2 class="s-title sm">Decoder 계열 — 다음 조각 맞히기로 배운 모델</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="shot">
+      <div class="sbar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">글을 이어 쓰는 쪽</span></div>
+      <img src="assets/era-decoder-gpt.png" alt="글을 이어 쓰는 쪽">
+    </div>
+    <div class="vlist"><div class="v"><span class="b">&rarr;</span><div>「옛날 옛적에」 다음에 한 · 마을에 · 작은 … 을 한 조각씩 이어 붙여 문장을 늘려 간다</div></div></div>
+    <div class="keymsg"><span class="k">쓰임</span><div>앞만 보고 한 조각씩 잇는다. <b>오늘 노트북에서 연 Qwen 이 이 계열</b>이다. GPT 도 여기에 있다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="받아서 다른 형태로 내는 쪽">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>계보</div>
+  <h2 class="s-title sm">Encoder-Decoder — 읽은 뒤 다시 만들기</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="shot">
+      <div class="sbar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">받아서 다른 형태로 내는 쪽</span></div>
+      <img src="assets/era-encdec-t5.png" alt="받아서 다른 형태로 내는 쪽">
+    </div>
+    <div class="vlist"><div class="v"><span class="b">&rarr;</span><div>긴 기사를 짧은 요약으로, 한국어를 영어로, 질문과 문서를 답변으로 — 인코더가 읽고 디코더가 만든다</div></div></div>
+    <div class="keymsg"><span class="k">쓰임</span><div>들어온 것과 나갈 것의 <b>모양이 다를 때</b> 쓴다. 요약 · 번역 · 질의응답이 그렇다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="사진에도 같은 구조를">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>계보</div>
+  <h2 class="s-title sm">비전 트랜스포머 — 조각으로 자른 사진</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="shot">
+      <div class="sbar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">사진에도 같은 구조를</span></div>
+      <img src="assets/era-vision-vit.png" alt="사진에도 같은 구조를">
+    </div>
+    <div class="vlist"><div class="v"><span class="b">&rarr;</span><div>사진을 격자로 잘라 조각마다 토큰을 만들고, 그 관계를 학습해 종류를 맞힌다 — 자연 풍경 98.7%</div></div></div>
+    <div class="keymsg"><span class="k">연결</span><div>day7 에서 본 <b>사진이 토큰이 되는 과정</b>이 여기서 시작됐다. 글에 쓰던 구조를 사진에 그대로 옮긴 것이다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="사진과 글을 같은 자리에">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>계보</div>
+  <h2 class="s-title sm">멀티모달 — 두 인코더가 만드는 하나의 공간</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="shot">
+      <div class="sbar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">사진과 글을 같은 자리에</span></div>
+      <img src="assets/era-multimodal-clip.png" alt="사진과 글을 같은 자리에">
+    </div>
+    <div class="vlist"><div class="v"><span class="b">&rarr;</span><div>이미지 인코더와 텍스트 인코더가 각각 숫자 줄을 만들고, 같은 자리에 놓아 어느 문장이 어느 사진인지 맞춘다</div></div></div>
+    <div class="keymsg"><span class="k">연결</span><div>day7 의 <b>Open-vocabulary</b> 가 여기서 나온다. 미리 정한 종류 없이 글로 사진을 찾을 수 있게 된 까닭이다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="대화하게 만들기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>계보</div>
+  <h2 class="s-title sm">이어 쓰기에서 대답하기로 넘어간 단계</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="shot">
+      <div class="sbar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">대화하게 만들기</span></div>
+      <img src="assets/era-chat-llm.png" alt="대화하게 만들기">
+    </div>
+    <div class="vlist"><div class="v"><span class="b">&rarr;</span><div>사람의 지시를 따르도록 더 학습시키고(Instruction Tuning), 사람이 고른 답을 강화한다(RLHF)</div></div></div>
+    <div class="keymsg"><span class="k">전환</span><div><b>이어 쓰기</b>와 <b>대답하기</b>는 다른 일이다. 한 단계를 더 얹어야 질문에 답하는 모델이 된다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="대답하게 만들기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>마무리 학습</div>
+  <h2 class="s-title sm">대답이라는 이름의 이어 쓰기</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twopane">
+      <div class="pane bad">
+        <h4>글만 읽힌 상태</h4>
+        <div class="mini">입력   프랑스의 수도는
+출력   <i>루이즈로, 이곳에서 178</i></div>
+        <p>인터넷 글을 이어 쓸 뿐이다. <b>질문에 답한다는 개념 자체가 없다.</b></p>
+      </div>
+      <div class="pane good">
+        <h4>질문·답 짝을 더 학습한 뒤</h4>
+        <div class="mini">입력   질문: 프랑스의 수도는 어디인가?
+       답:
+출력   <q><b>프랑스의 수도는 파리입니다.</b></q></div>
+        <p>사람이 만든 <b>질문과 좋은 답 짝</b>을 학습시키면 답하는 형태로 이어 쓴다.</p>
+      </div>
+    </div>
+    <div class="vlist">
+      <div class="v"><span class="b">★</span><div>두 경우 모두 <b>하는 일은 같다</b>. 다음 토큰을 고른다. 달라진 것은 <b>어떤 이어 쓰기가 그럴듯한가</b>다.</div></div>
+      <div class="v"><span class="b">→</span><div>&ldquo;대답한다&rdquo; 는 것도 결국 <b>학습된 형태</b>다. 모델이 뜻을 알아들어 응하는 것이 아니다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">핵심</span><div>이 단계 덕에 <b>프롬프트가 듣는다</b>. 지시문 뒤에 지시를 따른 글이 오도록 배웠기 때문이다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="지금 쓰는 것들">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>계보</div>
+  <h2 class="s-title sm">오픈 가중치 · 긴 문맥 · 도구를 쓰는 모델</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="shot">
+      <div class="sbar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">지금 쓰는 것들</span></div>
+      <img src="assets/era-open-agent.png" alt="지금 쓰는 것들">
+    </div>
+    <div class="vlist"><div class="v"><span class="b">&rarr;</span><div>누구나 받아 쓸 수 있는 모델이 나오고, 검색 · 계산 · 이미지 이해 같은 도구를 스스로 불러 쓴다</div></div></div>
+    <div class="keymsg"><span class="k">다음</span><div><b>도구를 부르는 부분</b>이 이 다음으로 이어진다. 모델 하나로 안 되는 일을 밖에서 가져오는 방법이다.</div></div>
+  </div>
+</section>
 <section class="slide" data-title="크기를 키우자 생긴 일">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>크기</div>
@@ -1046,34 +1220,6 @@ T = 1.2 로 두 번 돌린 결과
       </div>
     </div>
     <div class="keymsg"><span class="k">읽는 법</span><div>&ldquo;몇 B 모델&rdquo; 은 <b>계수가 몇십억 개인가</b>를 말한다. 이 모델은 1.5B 다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="대답하게 만들기">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>마무리 학습</div>
-  <h2 class="s-title sm">이어 쓰던 모델을 대답하게 만든 한 단계</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twopane">
-      <div class="pane bad">
-        <h4>글만 읽힌 상태</h4>
-        <div class="mini">입력   프랑스의 수도는
-출력   <i>루이즈로, 이곳에서 178</i></div>
-        <p>인터넷 글을 이어 쓸 뿐이다. <b>질문에 답한다는 개념 자체가 없다.</b></p>
-      </div>
-      <div class="pane good">
-        <h4>질문·답 짝을 더 학습한 뒤</h4>
-        <div class="mini">입력   질문: 프랑스의 수도는 어디인가?
-       답:
-출력   <q><b>프랑스의 수도는 파리입니다.</b></q></div>
-        <p>사람이 만든 <b>질문과 좋은 답 짝</b>을 학습시키면 답하는 형태로 이어 쓴다.</p>
-      </div>
-    </div>
-    <div class="vlist">
-      <div class="v"><span class="b">★</span><div>두 경우 모두 <b>하는 일은 같다</b>. 다음 토큰을 고른다. 달라진 것은 <b>어떤 이어 쓰기가 그럴듯한가</b>다.</div></div>
-      <div class="v"><span class="b">→</span><div>&ldquo;대답한다&rdquo; 는 것도 결국 <b>학습된 형태</b>다. 모델이 뜻을 알아들어 응하는 것이 아니다.</div></div>
-    </div>
-    <div class="keymsg"><span class="k">핵심</span><div>이 단계 덕에 <b>프롬프트가 듣는다</b>. 지시문 뒤에 지시를 따른 글이 오도록 배웠기 때문이다.</div></div>
   </div>
 </section>
 <section class="slide section" data-title="[섹션] 어텐션">
