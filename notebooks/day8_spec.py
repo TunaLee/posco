@@ -35,6 +35,54 @@ print([tok.decode([i]) for i in ids])"""),
 
     md("`�` 는 오류가 아니다. **글자 하나를 다 못 채운 조각**이라는 뜻이다."),
 
+    md("### 왜 이렇게 끊나\n\n"
+       "글자 하나씩 끊으면 글이 너무 길어지고, 낱말로 끊으면 **사전에 없는 낱말**에서 막힌다.\n"
+       "그래서 **자주 붙어 나온 것부터 한 덩이로 묶어** 사전을 만든다. 이것이 BPE 다."),
+
+    code("""# 자주 붙어 나온 쌍을 합쳐 나가는 것이 BPE 다 — 작게 직접 돌려 본다
+import collections
+words = {tuple(w) + ('_',): c
+         for w, c in {'low': 5, 'lower': 2, 'newest': 6, 'widest': 3}.items()}
+print({' '.join(w): c for w, c in words.items()})"""),
+
+    code("""# 한 낱말 안에서 그 쌍을 하나로 이어 붙이는 함수
+def merge(w, a, b):
+    out, i = [], 0
+    while i < len(w):
+        if i < len(w) - 1 and w[i] == a and w[i + 1] == b:
+            out.append(a + b)
+            i += 2
+        else:
+            out.append(w[i])
+            i += 1
+    return tuple(out)"""),
+
+    code("""# 가장 자주 붙어 나온 쌍을 하나로 합친다 — 다섯 번만
+for step in range(1, 6):
+    pair = collections.Counter()
+    for w, c in words.items():
+        for i in range(len(w) - 1):
+            pair[(w[i], w[i + 1])] += c
+    (a, b), n = pair.most_common(1)[0]
+    words = {merge(w, a, b): c for w, c in words.items()}
+    print('%d번째  %r + %r -> %r  (%d번 붙어 나왔다)' % (step, a, b, a + b, n))"""),
+
+    code("""# 합치고 나면 조각이 줄어 있다
+for w, c in words.items():
+    print('%-16s ×%d' % (' '.join(w), c))"""),
+
+    md("사람이 규칙을 적은 것이 아니다. **학습 자료에서 세어 만든 사전**이다.\n"
+       "그래서 자주 나온 낱말은 한 조각이고, 드문 낱말은 여러 조각이 된다."),
+
+    code("""# 한글이라서 쪼개지는 것이 아니다 — 자주 나왔는지가 가른다
+for w in (' 작업', ' 시간', ' 문제', ' 정보', ' 안전', ' 점검', ' 베어링'):
+    ids = tok(w, add_special_tokens=False)['input_ids']
+    print('%-6s %d조각  %s' % (w.strip(), len(ids), [tok.decode([i]) for i in ids]))"""),
+
+    code("""# 바이트에서 시작하니 못 읽는 글자가 없다 — 대신 한글은 글자마다 세 바이트다
+for ch in ('a', '온', '높'):
+    print('%s  UTF-8 %d바이트  %s' % (ch, len(ch.encode()), list(ch.encode())))"""),
+
     code("""# 문장 안에서 글자 하나가 조각 몇 개가 되는지 센다
 for ch in ('소', '성', '로', ' 온', '도', '가', ' 높', '다'):
     print('%-4r %d 조각' % (ch, len(tok(ch, add_special_tokens=False)['input_ids'])))"""),
