@@ -1542,17 +1542,6 @@ T = 1.2 로 두 번 돌린 결과
     <div class="keymsg"><span class="k">흐름</span><div>한 겹은 <b>어텐션 한 번과 Feed Forward 한 번</b>이다. 이 겹을 여러 번 쌓은 것이 트랜스포머다.</div></div>
   </div>
 </section>
-<section class="slide" data-title="한 겹의 계수">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>계수</div>
-  <h2 class="s-title">어텐션 11.8% · MLP 88.2%</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="plot"><svg viewBox="0 0 1116 290"><text x="14" y="18" font-size="11" fill="#8E8AAC">계수 15억 개가 실제로 어디에 있나</text><text x="14" y="38" font-size="11.4" fill="#16142B" font-weight="700">전체 1,543,714,304</text><rect x="14" y="46" width="161.4" height="44" rx="6" fill="#DCD6F0" stroke="none" stroke-width="1"/><text x="94.7" y="67" font-size="10.8" fill="#8E8AAC" font-weight="800" text-anchor="middle">임베딩 233,373,696</text><text x="94.7" y="82" font-size="9.6" fill="#8E8AAC" text-anchor="middle">15%</text><rect x="175.4" y="46" width="914.6" height="44" rx="6" fill="#3A1FC9" stroke="none" stroke-width="1"/><text x="632.7" y="67" font-size="10.8" fill="#fff" font-weight="800" text-anchor="middle">겹 28개 1,310,339,072</text><text x="632.7" y="82" font-size="9.6" fill="#E6E1FA" text-anchor="middle">85%</text><text x="14" y="132" font-size="11.4" fill="#16142B" font-weight="700">한 겹 46,797,824</text><rect x="14" y="140" width="126.968" height="44" rx="6" fill="#0E8C9E" stroke="none" stroke-width="1"/><text x="77.484" y="161" font-size="10.8" fill="#fff" font-weight="800" text-anchor="middle">어텐션 5,507,072</text><text x="77.484" y="176" font-size="9.6" fill="#E6E1FA" text-anchor="middle">12%</text><rect x="140.968" y="140" width="949.032" height="44" rx="6" fill="#E8722A" stroke="none" stroke-width="1"/><text x="615.484" y="161" font-size="10.8" fill="#fff" font-weight="800" text-anchor="middle">MLP 41,287,680</text><text x="615.484" y="176" font-size="9.6" fill="#E6E1FA" text-anchor="middle">88%</text><rect x="14" y="214" width="530" height="64" rx="9" fill="#FEF4EC" stroke="#F8D7BC" stroke-width="1"/><text x="32" y="238" font-size="11.6" fill="#E8722A" font-weight="800">계수는 어텐션이 아니라 MLP 에 있다</text><text x="32" y="260" font-size="10" fill="#8E8AAC">한 겹에서 어텐션 11.8% · MLP 88.2% — 28겹을 합치면 전체의 75%가 MLP 다</text><rect x="570" y="214" width="532" height="64" rx="9" fill="#EFF9F4" stroke="#BFE6D4" stroke-width="1"/><text x="588" y="238" font-size="11.6" fill="#1E9E6A" font-weight="800">어텐션은 어디를 볼지만 고른다</text><text x="588" y="260" font-size="10" fill="#8E8AAC">섞을 비율을 정하는 계산이라 표가 작다. 고른 것을 가공하는 쪽이 MLP 다</text></svg></div>
-    <div class="vlist"><div class="v"><span class="b">→</span><div>어텐션이 이 장의 주인공이지만 <b>계수는 MLP 가 훨씬 많이 쓴다</b>. 어디를 볼지 고르는 일보다 고른 것을 가공하는 일에 표가 더 든다.</div></div></div>
-    <div class="keymsg"><span class="k">비중</span><div>한 겹의 계수 대부분은 <b>MLP</b> 가 쓴다. 전체 15억 개 중 <b>11억 6천만 개</b>가 MLP 다.</div></div>
-  </div>
-</section>
 <section class="slide" data-title="맥락이 가른 뜻">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>어텐션</div>
@@ -1973,37 +1962,20 @@ T = 1.2 로 두 번 돌린 결과
 <section class="slide" data-title="네 칸으로 적는다">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>틀</div>
-  <h2 class="s-title">역할 &middot; 기준 &middot; 입력 &middot; 형식 네 칸</h2>
+  <h2 class="s-title">역할 · 기준 · 입력 · 형식 네 칸</h2>
   <div class="rule"></div>
   <div class="body">
-    <div class="twocol w2">
-      <div>
-        <div class="code">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">네 칸을 채운 프롬프트</span></div>
-          <pre><code><span class="cm"># 역할</span>
-너는 소성 공정 판정기다.
-
+    <div class="twocol w">
+      <div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">네 칸을 채운 프롬프트</span></div><pre><code><span class="cm"># 역할</span>
+너는 고객 문의를 분류하는 담당자다.
 <span class="cm"># 기준</span>
-온도가 800도에서 830도 사이면 정상,
-벗어나면 이상이다.
-
+환불 · 배송 · 제품하자 · 기타 넷 중 하나로 분류한다.
 <span class="cm"># 입력</span>
-값: 소성로 온도 845도
-
+문의: 어제 받았는데 화면에 금이 가 있어요
 <span class="cm"># 형식</span>
 아래 형식으로만 답하라. 다른 말은 쓰지 마라.
-{<span class="st">"판정"</span>: <span class="st">"정상 또는 이상"</span>, <span class="st">"이유"</span>: <span class="st">"한 문장"</span>}
-{</code></pre>
-        </div>
-      </div>
-      <div>
-        <div class="vlist">
-          <div class="v"><span class="b">1</span><div><b>역할</b> &mdash; 무엇을 하는 자리인지. 맨 앞에 둔다.</div></div>
-          <div class="v"><span class="b">2</span><div><b>기준</b> &mdash; 판단에 필요한 것을 <b>직접 적어 넣는다</b>. 모델이 안다고 가정하지 않는다.</div></div>
-          <div class="v"><span class="b">3</span><div><b>입력</b> &mdash; 이번에 처리할 것. 기준과 <b>확실히 구분</b>되게 이름표를 붙인다.</div></div>
-          <div class="v"><span class="b">4</span><div><b>형식</b> &mdash; 원하는 모양을 적고 <b>첫 글자까지 깔아 준다</b>. 여는 괄호 <code>{</code> 다.</div></div>
-        </div>
-      </div>
+{"분류": "넷 중 하나", "이유": "한 문장"}</code></pre></div></div>
+      <div><div class="vlist"><div class="v"><span class="b">1</span><div><b>역할</b> &mdash; 무엇을 하는 자리인지. 맨 앞에 둔다.</div></div><div class="v"><span class="b">2</span><div><b>기준</b> &mdash; 판단에 필요한 것을 <b>직접 적어 넣는다</b>. 모델이 안다고 가정하지 않는다.</div></div><div class="v"><span class="b">3</span><div><b>입력</b> &mdash; 이번에 처리할 것. 기준과 확실히 구분되게 이름표를 붙인다.</div></div><div class="v"><span class="b">4</span><div><b>형식</b> &mdash; 원하는 모양을 그대로 적는다. 프로그램이 읽어 쓸 수 있게.</div></div></div></div>
     </div>
     <div class="keymsg"><span class="k">틀</span><div>네 칸은 <b>확률을 좁히는 순서</b>다. 자리를 정하고, 근거를 주고, 대상을 주고, 출구를 좁힌다.</div></div>
   </div>
@@ -2014,50 +1986,25 @@ T = 1.2 로 두 번 돌린 결과
   <h2 class="s-title">같은 일을 두 방식으로 시킨 결과</h2>
   <div class="rule"></div>
   <div class="body">
-    <div class="twopane">
-      <div class="pane bad">
-        <h4>그냥 물었을 때</h4>
-        <div class="mini">소성로 온도 845도. 어때?
-
-→ <q><span class="err">- 뉴스와이어
-2019년 7월 3일 금요일, 16:00
-서울--(뉴스와이어) 2019년 7월 3일 --</span></q></div>
-        <p>판정이 아니라 <b>기사처럼 이어 썼다</b>. 이 앞부분 뒤에 올 법한 글을 골랐을 뿐이다.</p>
-      </div>
-      <div class="pane good">
-        <h4>네 칸을 채웠을 때</h4>
-        <div class="mini">→ {"판정": "정상",
-   "이유": "온도가 800도에서
-            830도 사이에 있다."}</div>
-        <p>형식이 <b>정확히 맞는다</b>. 프로그램이 그대로 읽어 쓸 수 있는 모양이다.</p>
-      </div>
+    <div class="twocol w">
+      <div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">그냥 물었을 때</span></div><pre><code>고객 문의: 어제 받았는데 화면에 금이 가 있어요</code></pre><div class="out"><q>죄송합니다, 이 문제를 해결하기 위해 더 많은 정보가 필요합니다. 어떤 부분에서 문제가 발생했는지&hellip;</q></div></div><div class="cap">분류를 안 하고 되묻는다</div></div>
+      <div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">네 칸을 채웠을 때</span></div><pre><code><span class="cm"># 역할</span> 고객 문의를 분류하는 담당자
+<span class="cm"># 기준</span> 환불 · 배송 · 제품하자 · 기타
+<span class="cm"># 입력</span> 화면에 금이 가 있어요
+<span class="cm"># 형식</span> {"분류": &hellip;, "이유": &hellip;}</code></pre><div class="out">{ "분류": "환불", "이유": "상품가격과 상품 상태가 일치하지 않으므로 환불 처리" }</div></div><div class="cap">형식은 정확히 맞는다</div></div>
     </div>
-    <div class="vlist">
-      <div class="v"><span class="b">★</span><div>같은 모델이다. <b>형식은 프롬프트로 확실히 잡힌다</b> &mdash; 여는 괄호를 깔면 0.872 다.</div></div>
-      <div class="v"><span class="b">✕</span><div>그런데 <b>판정이 틀렸다</b>. 845도는 830도를 넘었으니 이상이다.</div></div>
-    </div>
+<div class="vlist"><div class="v"><span class="b">&#9733;</span><div>같은 모델이다. <b>형식은 프롬프트로 확실히 잡힌다.</b> 프로그램이 그대로 읽어 쓸 수 있는 모양이다.</div></div><div class="v"><span class="b">&#10005;</span><div>그런데 <b>분류가 틀렸다.</b> 화면이 깨진 것은 제품하자다. 이유도 문의와 관계없는 말이다.</div></div></div>
     <div class="keymsg"><span class="k">주의</span><div>형식이 맞았다고 내용이 맞은 것이 아니다. <b>둘은 따로 확인해야 한다</b>.</div></div>
   </div>
 </section>
 <section class="slide" data-title="형식은 잡히고 판단은 안 잡힌다">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>측정</div>
-  <h2 class="s-title">세 값을 넣어도 모두 정상이라는 답</h2>
+  <h2 class="s-title sm">기준 50개인데 48개가 「충분」</h2>
   <div class="rule"></div>
   <div class="body">
-    <table class="ctable">
-      <thead><tr><th>넣은 값</th><th>정답</th><th>모델의 답</th><th>모델이 붙인 이유</th></tr></thead>
-      <tbody>
-        <tr><td>845도</td><td class="hl">이상</td><td class="no">정상</td><td>온도가 800도에서 830도 사이에 있다</td></tr>
-        <tr><td>815도</td><td class="hl">정상</td><td class="yes">정상</td><td>온도가 800도에서 830도 사이에 있다</td></tr>
-        <tr><td>770도</td><td class="hl">이상</td><td class="no">정상</td><td>온도가 800도에서 830도 사이에 있다</td></tr>
-      </tbody>
-    </table>
-    <div class="vlist">
-      <div class="v"><span class="b">✕</span><div>값을 바꿔도 <b>답과 이유가 한 글자도 안 바뀐다</b>. 숫자를 비교한 적이 없다는 뜻이다.</div></div>
-      <div class="v"><span class="b">✕</span><div>이유가 <b>거짓이다</b>. 845도는 그 사이에 있지 않다. 그럴듯한 문장을 이어 썼을 뿐이다.</div></div>
-      <div class="v"><span class="b">★</span><div>형식이 완벽해서 <b>더 위험하다</b>. 사람이 보면 제대로 판정한 것처럼 보인다.</div></div>
-    </div>
+    <div class="ctable"><table><thead><tr><th>넣은 값</th><th>정답</th><th>모델의 답</th><th>모델이 붙인 이유</th></tr></thead><tbody><tr><td>120개</td><td>충분</td><td>충분</td><td><q>재고는 120개이며, 이는 50개 이상입니다</q></td></tr><tr><td>48개</td><td>부족</td><td class="hl">충분</td><td><q>현재 재고는 48개이고, 이보다 많은 수치를 가진 경우 '충분'을 반환합니다</q></td></tr><tr><td>12개</td><td>부족</td><td>부족</td><td><q>재고는 12개로, 50개 이상이어야 충분하다</q></td></tr></tbody></table></div>
+<div class="vlist"><div class="v"><span class="b">&#10005;</span><div><b>48개를 충분이라고 답했다.</b> 기준은 50개 이상인데 48은 그 아래다.</div></div><div class="v"><span class="b">&#10005;</span><div>이유가 앞뒤가 안 맞는다. <b>&ldquo;이보다 많은 수치를 가진 경우&rdquo;</b>는 문장이 성립하지 않는다.</div></div><div class="v"><span class="b">&#9733;</span><div>형식이 완벽해서 더 위험하다. 사람이 보면 <b>제대로 판정한 것처럼</b> 보인다.</div></div></div>
     <div class="keymsg"><span class="k">경계</span><div>숫자 비교 · 계산 · 사실 확인은 <b>프롬프트로 풀 문제가 아니다</b>. 코드로 하고 모델에는 말만 맡긴다.</div></div>
   </div>
 </section>
@@ -2104,28 +2051,21 @@ T = 1.2 로 두 번 돌린 결과
 <section class="slide" data-title="실습 · 프롬프트 고치기">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">LAB</span><span class="dot"></span>실습</div>
-  <h2 class="s-title">모델을 열어 직접 재기</h2>
+  <h2 class="s-title">내 업무 프롬프트를 네 칸으로 다시 쓰기</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twocol w">
-      <div>
-        <div class="code sm">
-          <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">노트북 &middot; 다음 토큰의 확률</span></div>
-          <pre><code>probs = model(**x).logits[<span class="nm">0</span>, -<span class="nm">1</span>].softmax(-<span class="nm">1</span>)
-top = probs.topk(<span class="nm">5</span>)</code></pre>
-          <div class="out">41.43%  ' 서울'&nbsp;&nbsp;&middot;&nbsp;&nbsp;7.47%  '?'&nbsp;&nbsp;&middot;&nbsp;&hellip;</div>
-        </div>
-      </div>
-      <div>
-        <div class="vlist">
-          <div class="v"><span class="b">1</span><div>우리말 낱말 세 쌍의 <b>가까운 정도</b>를 재고, 영어 쌍보다 덜 갈리는 까닭을 적는다.</div></div>
-          <div class="v"><span class="b">2</span><div>온도를 <b>0.1 부터 3.0 까지</b> 옮기며 1등 확률을 그래프로 그린다.</div></div>
-          <div class="v"><span class="b">3</span><div><b>층과 머리</b>를 바꿔 어텐션을 그린다. 앞 층과 뒤 층이 보는 자리를 견준다.</div></div>
-          <div class="v"><span class="b">4</span><div>설비 이름 <b>세 개를 물어보고</b> 답이 맞는지 각자 판정한다.</div></div>
-        </div>
-      </div>
+      <div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">ChatGPT 에 그대로 넣어 본다</span></div><pre><code><span class="cm"># 역할</span>
+너는 회의록에서 할 일을 뽑는 담당자다.
+<span class="cm"># 기준</span>
+맡은 사람과 기한이 있는 것만 할 일이다.
+<span class="cm"># 입력</span>
+(회의록을 여기에 붙인다)
+<span class="cm"># 형식</span>
+표로만 답하라. 열은 할 일 · 담당 · 기한.</code></pre></div></div>
+      <div><div class="vlist"><div class="v"><span class="b">1</span><div>같은 질문을 <b>세 가지 형태</b>로 넣어 본다 &mdash; 그냥 / 역할을 붙여 / 형식을 지정해.</div></div><div class="v"><span class="b">2</span><div>규칙을 말로 설명하는 대신 <b>예시 세 줄</b>을 붙여 같은 일을 시킨다.</div></div><div class="v"><span class="b">3</span><div>네 칸 틀로 다시 적고 <b>고치기 전후를 나란히</b> 남긴다.</div></div><div class="v"><span class="b">4</span><div>숫자를 <b>비교하게 시켜 본다</b>. 값을 서너 개 바꿔 넣고 답이 맞는지 센다.</div></div><div class="v"><span class="b">5</span><div><b>회사 안에서만 아는 것</b>을 물어보고 지어내는지 확인한다.</div></div></div></div>
     </div>
-    <div class="keymsg"><span class="k">확인</span><div>바꾼 것 하나마다 <b>숫자와 실제 출력</b>을 함께 적는다. 감이 아니라 재서 비교한다.</div></div>
+    <div class="keymsg"><span class="k">확인</span><div>바꾼 것 하나마다 <b>바뀐 출력</b>을 함께 남긴다. 무엇이 들었는지 알 수 있어야 한다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="오늘 얻은 것">
@@ -2141,9 +2081,9 @@ top = probs.topk(<span class="nm">5</span>)</code></pre>
     </div>
     <div class="vlist">
       <div class="v"><span class="b">★</span><div>프롬프트로 <b>안 되는 것</b>이 남는다. 없는 근거는 <b>RAG</b> 로 넣고, 못 하는 계산은 <b>도구</b>를 붙인다.</div></div>
-      <div class="v"><span class="b">→</span><div><b>모델은 답을 아는 것이 아니라 그럴듯한 다음 토큰을 고른다.</b></div></div>
+      <div class="v"><span class="b">→</span><div>형식은 프롬프트로 잡히지만 <b>판단은 잡히지 않는다</b>. 숫자 비교와 사실 확인은 코드로 한다.</div></div>
     </div>
-    <div class="keymsg"><span class="k">다음</span><div>모델은 답을 아는 것이 아니라 <b>그럴듯한 다음 토큰</b>을 고른다. 오늘 본 것이 전부 여기서 나온다.</div></div>
+    <div class="keymsg"><span class="k">결론</span><div>모델은 답을 아는 것이 아니라 <b>그럴듯한 다음 토큰</b>을 고른다. 오늘 본 것이 전부 여기서 나온다.</div></div>
   </div>
 </section>
     </div>
