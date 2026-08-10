@@ -400,17 +400,6 @@
     <div class="keymsg"><span class="k">기준</span><div><b>열 이름 · 자료형 · 범위 · 결측 수</b>면 코드를 만들기에 충분하다. 값은 한 줄도 필요 없다.</div></div>
   </div>
 </section>
-<section class="slide" data-title="반출의 경계">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>판단</div>
-  <h2 class="s-title">반출의 경계</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="ctable"><table><thead><tr><th>붙여 넣는 것</th><th>반출인가</th><th>왜</th></tr></thead><tbody><tr><td>열 이름 목록</td><td>아니다</td><td>이름은 값이 아니다</td></tr><tr><td>자료형 · 결측 수</td><td>아니다</td><td>세어 본 결과다</td></tr><tr><td>최솟값 · 최댓값 · 평균</td><td>경우에 따라</td><td>한 건짜리 표라면 그 값이 곧 원본이다</td></tr><tr><td>한 행이라도 그대로</td><td class="hl">반출이다</td><td>배치번호와 설비호기가 들어 있다</td></tr><tr><td>엑셀 파일 첨부</td><td class="hl">반출이다</td><td>더 볼 것도 없다</td></tr></tbody></table></div>
-<div class="vlist"><div class="v"><span class="b">&#9733;</span><div><b>평균과 범위도 조심한다.</b> 데이터가 적으면 요약이 원본을 그대로 드러낸다.</div></div><div class="v"><span class="b">&rarr;</span><div>헷갈리면 기준은 하나다 &mdash; <b>이 글만 보고 특정 배치를 알 수 있는가</b>.</div></div></div>
-    <div class="keymsg"><span class="k">기준</span><div>판단이 애매하면 보내지 않는다. <b>안 보내도 코드는 나온다</b>.</div></div>
-  </div>
-</section>
 <section class="slide" data-title="info() 와 describe()">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>코드</div>
@@ -430,21 +419,6 @@ df.isna().sum()</code></pre></div></div>
     </div>
 <div class="vlist"><div class="v"><span class="b">&rarr;</span><div><b>결측이 어디에 몇 개</b>인지, <b>값의 범위</b>가 어디까지인지가 나온다. 전처리 코드를 짜는 데 필요한 것은 이게 전부다.</div></div><div class="v"><span class="b">&#9733;</span><div>더 안전하게 하려면 <b>같은 모양의 가짜 표</b>를 만들어 보낸다. 열 이름만 같고 값은 난수다.</div></div></div>
     <div class="keymsg"><span class="k">방법</span><div><code>info()</code> 와 <code>describe()</code> 의 출력만 붙여 넣는다. 표 자체는 열지도 않는다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="값이 새는 세 경로">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>함정</div>
-  <h2 class="s-title">에러 메시지 · 출력 · 화면 캡처</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="vlist"><div class="v"><span class="b">1</span><div><b>에러 메시지를 그대로 붙일 때</b> &mdash; <code>KeyError: B00115</code> 처럼 배치번호가 그대로 들어 있다.</div></div><div class="v"><span class="b">2</span><div><b>출력을 통째로 붙일 때</b> &mdash; <code>df.head()</code> 결과에는 값이 다 있다.</div></div><div class="v"><span class="b">3</span><div><b>화면을 캡처해 올릴 때</b> &mdash; 글자가 아니라 그림이어도 값은 값이다.</div></div></div>
-    <div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">붙이기 전에 지운다</span></div><pre><code><span class='cm'># 에러만 남기고 값은 지운다</span>
-KeyError: '???'          <span class='cm'># B00115 → ???</span>
-
-<span class='cm'># 출력은 모양만</span>
-df.dtypes               <span class='cm'># head() 말고</span></code></pre></div>
-    <div class="keymsg"><span class="k">습관</span><div>붙여 넣기 전에 <b>한 번 읽는다</b>. 값이 보이면 지우고 붙인다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="Codex 에 넣는 프롬프트">
@@ -470,62 +444,11 @@ df.dtypes               <span class='cm'># head() 말고</span></code></pre></di
     <div class="keymsg"><span class="k">요령</span><div>데이터를 못 준다는 것을 <b>제약이 아니라 조건으로</b> 적는다. 그러면 그 조건에 맞는 코드가 온다.</div></div>
   </div>
 </section>
-<section class="slide" data-title="같은 모양의 가짜 표">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>방법</div>
-  <h2 class="s-title">난수로 만든 sample.csv</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol w">
-      <div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">모양만 같은 표를 만든다</span></div><pre><code><span class='cm'># 열 이름과 자료형만 그대로</span>
-fake = pd.DataFrame({
-  '소성온도': np.random.uniform(750, 950, 10),
-  '입도':    np.random.uniform(5, 20, 10),
-  '설비호기': np.random.choice(list('ABCDEF'), 10),
-  '양품여부': np.random.choice([0, 1], 10)})
-fake.to_csv('sample.csv', index=False)</code></pre></div></div>
-      <div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>이 파일은 <b>마음 놓고 올릴 수 있다</b>. 원본과 열 이름만 같고 값은 난수다.</div></div><div class="v"><span class="b">&#9733;</span><div>Codex 가 <b>실제로 돌려 보며</b> 코드를 고칠 수 있어 결과가 더 낫다.</div></div><div class="v"><span class="b">&#10005;</span><div>값의 <b>분포</b>는 다르다. 이상치 처리는 따로 알려 줘야 한다.</div></div></div></div>
-    </div>
-    <div class="keymsg"><span class="k">방법</span><div>모양만 있는 글보다 <b>돌려 볼 수 있는 가짜 표</b>가 낫다. 원본은 그대로 둔다.</div></div>
-  </div>
-</section>
 <section class="slide section" data-title="[섹션] 전처리">
   <div class="ghost">01</div>
   <div class="seyebrow">CHAPTER 01</div>
   <h2>전처리</h2>
   <div class="agenda"><span>결측</span><span>이상치</span><span>글자 열</span><span>누수</span></div>
-</section>
-<section class="slide" data-title="첫 세 줄">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>시작</div>
-  <h2 class="s-title">shape · dtypes · isna()</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol w">
-      <div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">세 줄이면 표의 성격이 나온다</span></div><pre><code>df.shape          <span class='cm'># 몇 행 몇 열</span>
-df.dtypes         <span class='cm'># 숫자인가 글자인가</span>
-df.isna().sum()   <span class='cm'># 어디가 비었나</span></code></pre><div class="out">(1412, 11)</div></div></div>
-      <div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div><b>행 1,412 · 열 11.</b> 이 정도면 노트북에서 다 돈다.</div></div><div class="v"><span class="b">&#10005;</span><div><b>불순물과 입도가 글자로 읽혔다.</b> 숫자여야 하는데 아니다.</div></div><div class="v"><span class="b">&rarr;</span><div><b>입도 112건 · 수분율 73건이 비었다.</b> 합쳐 185건, 전체의 13%다.</div></div></div></div>
-    </div>
-    <div class="keymsg"><span class="k">시작</span><div>숫자여야 할 열이 <b>글자로 읽혔다면</b> 읽는 방법부터 잘못된 것이다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="읽는 방법">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>실측</div>
-  <h2 class="s-title">쉼표 하나가 글자로 만든 열</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol w">
-      <div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">그냥 읽으면</span></div><pre><code>df = pd.read_csv('batch_quality.csv')
-df['불순물'].head(3)</code></pre><div class="out">['1,024', '800', '871']  ← 글자다</div></div></div>
-      <div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">옵션을 주면</span></div><pre><code>df = pd.read_csv('batch_quality.csv',
-                 thousands=',',
-                 na_values=['N/A', '-'])</code></pre><div class="out">1024, 800, 871  ← 숫자다</div></div></div>
-    </div>
-<div class="vlist"><div class="v"><span class="b">&rarr;</span><div>쉼표 하나 때문에 <b>불순물 열 전체가 글자</b>가 됐다. 평균도 못 낸다.</div></div><div class="v"><span class="b">&#9733;</span><div><code>N/A</code> 와 <code>-</code> 도 결측으로 읽어야 한다. 안 그러면 <b>글자 「N/A」</b> 가 값으로 들어앉는다.</div></div></div>
-    <div class="keymsg"><span class="k">함정</span><div>읽기가 틀리면 그 뒤가 전부 틀린다. <b>dtypes 로 먼저 확인한다</b>.</div></div>
-  </div>
 </section>
 <section class="slide" data-title="전처리 순서">
   <div class="coord"><b></b> / <span class="tot"></span></div>
@@ -546,33 +469,6 @@ df['불순물'].head(3)</code></pre><div class="out">['1,024', '800', '871']  �
     <div class="shot"><div class="sbar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">성형압력 분포 · 배치 1,412건</span></div><img src="assets/outlier.png" alt="성형압력 이상치"></div>
 <div class="vlist"><div class="v"><span class="b">&rarr;</span><div>999 를 그대로 두면 <b>평균이 36.5</b> 로 잡힌다. 빼면 실제 최대가 <b>31.4</b> 다.</div></div><div class="v"><span class="b">&#9733;</span><div>센서가 못 읽었을 때 넣는 값이다. 숫자로 보이지만 <b>결측이다</b>.</div></div></div>
     <div class="keymsg"><span class="k">함정</span><div>평균 · 표준편차가 이상하면 <b>먼저 히스토그램을 그린다</b>. 숫자만 보면 못 찾는다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="글자 열 다듬기">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>실측</div>
-  <h2 class="s-title">설비 여섯 대, 스물네 가지 표기</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="plot"><svg viewBox="0 0 1116 216"><text x="14" y="18" font-size="11" fill="#8E8AAC" font-weight="700">설비호기 열에 실제로 들어 있던 값</text><rect x="14" y="34" width="168" height="34" rx="6" fill="#fff" stroke="#DCD6F0" stroke-width="1"/><text x="28" y="57" font-size="12" fill="#16142B" font-weight="800" font-family="ui-monospace,SFMono-Regular,Menlo,monospace">'A'</text><text x="168" y="57" font-size="10.4" fill="#8E8AAC" text-anchor="end">176</text><rect x="198" y="34" width="168" height="34" rx="6" fill="#fff" stroke="#DCD6F0" stroke-width="1"/><text x="212" y="57" font-size="12" fill="#16142B" font-weight="800" font-family="ui-monospace,SFMono-Regular,Menlo,monospace">'D'</text><text x="352" y="57" font-size="10.4" fill="#8E8AAC" text-anchor="end">171</text><rect x="382" y="34" width="168" height="34" rx="6" fill="#fff" stroke="#DCD6F0" stroke-width="1"/><text x="396" y="57" font-size="12" fill="#16142B" font-weight="800" font-family="ui-monospace,SFMono-Regular,Menlo,monospace">'E'</text><text x="536" y="57" font-size="10.4" fill="#8E8AAC" text-anchor="end">169</text><rect x="566" y="34" width="168" height="34" rx="6" fill="#fff" stroke="#DCD6F0" stroke-width="1"/><text x="580" y="57" font-size="12" fill="#16142B" font-weight="800" font-family="ui-monospace,SFMono-Regular,Menlo,monospace">'C'</text><text x="720" y="57" font-size="10.4" fill="#8E8AAC" text-anchor="end">161</text><rect x="750" y="34" width="168" height="34" rx="6" fill="#fff" stroke="#DCD6F0" stroke-width="1"/><text x="764" y="57" font-size="12" fill="#16142B" font-weight="800" font-family="ui-monospace,SFMono-Regular,Menlo,monospace">'F'</text><text x="904" y="57" font-size="10.4" fill="#8E8AAC" text-anchor="end">160</text><rect x="934" y="34" width="168" height="34" rx="6" fill="#fff" stroke="#DCD6F0" stroke-width="1"/><text x="948" y="57" font-size="12" fill="#16142B" font-weight="800" font-family="ui-monospace,SFMono-Regular,Menlo,monospace">'B'</text><text x="1088" y="57" font-size="10.4" fill="#8E8AAC" text-anchor="end">153</text><rect x="14" y="78" width="168" height="34" rx="6" fill="#fff" stroke="#DCD6F0" stroke-width="1"/><text x="28" y="101" font-size="12" fill="#16142B" font-weight="800" font-family="ui-monospace,SFMono-Regular,Menlo,monospace">'A '</text><text x="168" y="101" font-size="10.4" fill="#8E8AAC" text-anchor="end">31</text><rect x="198" y="78" width="168" height="34" rx="6" fill="#fff" stroke="#DCD6F0" stroke-width="1"/><text x="212" y="101" font-size="12" fill="#16142B" font-weight="800" font-family="ui-monospace,SFMono-Regular,Menlo,monospace">'f'</text><text x="352" y="101" font-size="10.4" fill="#8E8AAC" text-anchor="end">30</text><rect x="382" y="78" width="168" height="34" rx="6" fill="#fff" stroke="#DCD6F0" stroke-width="1"/><text x="396" y="101" font-size="12" fill="#16142B" font-weight="800" font-family="ui-monospace,SFMono-Regular,Menlo,monospace">'a'</text><text x="536" y="101" font-size="10.4" fill="#8E8AAC" text-anchor="end">30</text><rect x="566" y="78" width="168" height="34" rx="6" fill="#fff" stroke="#DCD6F0" stroke-width="1"/><text x="580" y="101" font-size="12" fill="#16142B" font-weight="800" font-family="ui-monospace,SFMono-Regular,Menlo,monospace">' F'</text><text x="720" y="101" font-size="10.4" fill="#8E8AAC" text-anchor="end">28</text><rect x="750" y="78" width="168" height="34" rx="6" fill="#fff" stroke="#DCD6F0" stroke-width="1"/><text x="764" y="101" font-size="12" fill="#16142B" font-weight="800" font-family="ui-monospace,SFMono-Regular,Menlo,monospace">'b'</text><text x="904" y="101" font-size="10.4" fill="#8E8AAC" text-anchor="end">27</text><rect x="934" y="78" width="168" height="34" rx="6" fill="#fff" stroke="#DCD6F0" stroke-width="1"/><text x="948" y="101" font-size="12" fill="#16142B" font-weight="800" font-family="ui-monospace,SFMono-Regular,Menlo,monospace">'E '</text><text x="1088" y="101" font-size="10.4" fill="#8E8AAC" text-anchor="end">27</text><text x="14" y="140" font-size="11" fill="#E8537A" font-weight="800">… 모두 24가지</text><path d="M240 134 h52" stroke="#3A1FC9" stroke-width="2"/><path d="M300 134 l-7 -5 v10 z" fill="#3A1FC9"/><text x="320" y="140" font-size="11.5" fill="#3A1FC9" font-weight="800" font-family="ui-monospace,SFMono-Regular,Menlo,monospace">df['설비호기'].str.strip().str.upper()</text><rect x="14" y="158" width="1088" height="50" rx="8" fill="#EFF9F4" stroke="#BFE6D4" stroke-width="1"/><text x="34" y="188" font-size="12" fill="#1E9E6A" font-weight="800">다듬고 나면  A 249 · D 240 · F 239 · E 235 · C 227 · B 222  —  24가지가 6가지로</text></svg></div>
-<div class="vlist"><div class="v"><span class="b">&#10005;</span><div>앞뒤 <b>공백</b>과 <b>대소문자</b>가 섞여 있다. 사람 눈에는 같아 보인다.</div></div><div class="v"><span class="b">&rarr;</span><div>다듬지 않고 펴면 열이 <b>30개</b>가 된다. 다듬으면 <b>12개</b>다.</div></div></div>
-    <div class="keymsg"><span class="k">순서</span><div>글자 열은 <b>펴기 전에 다듬는다</b>. 순서를 바꾸면 쓸모없는 열이 스무 개 생긴다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="글자 열 펴기">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>변환</div>
-  <h2 class="s-title">get_dummies</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol w">
-      <div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">한 줄이면 된다</span></div><pre><code>X = pd.get_dummies(X,
-      columns=['설비호기', '교대조'],
-      drop_first=True)</code></pre><div class="out">8열 → 12열</div></div></div>
-      <div>    <div class="ctable"><table><thead><tr><th>전</th><th>후</th></tr></thead><tbody><tr><td>설비호기 = A</td><td>설비호기_B 0 · 설비호기_C 0 · …</td></tr><tr><td>설비호기 = C</td><td>설비호기_B 0 · 설비호기_C 1 · …</td></tr><tr><td>교대조 = night</td><td>교대조_night 1</td></tr></tbody></table></div></div>
-    </div>
-<div class="vlist"><div class="v"><span class="b">&rarr;</span><div>값 하나가 <b>열 여러 개의 0과 1</b> 로 바뀐다.</div></div><div class="v"><span class="b">&#9733;</span><div><code>drop_first=True</code> 로 한 열을 뺀다. 나머지가 다 0이면 그것이라 <b>없어도 알 수 있다</b>.</div></div></div>
-    <div class="keymsg"><span class="k">변환</span><div>글자를 숫자로 바꾸는 일이다. 순서가 없는 값이라 <b>1·2·3으로 매기면 안 된다</b>.</div></div>
   </div>
 </section>
 <section class="slide" data-title="결측">
@@ -597,33 +493,6 @@ df['불순물'].head(3)</code></pre><div class="out">['1,024', '800', '871']  �
     <div class="keymsg"><span class="k">순서</span><div>모델을 만들기 전에 그린다. <b>그림에서 안 보이는 것은 모델도 못 찾는다</b>.</div></div>
   </div>
 </section>
-<section class="slide" data-title="스케일링">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>실측</div>
-  <h2 class="s-title">StandardScaler 가 필요한 모델</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="ctable"><table><thead><tr><th></th><th>스케일링 안 함</th><th>스케일링 함</th></tr></thead><tbody><tr><td>로지스틱 · 정확도</td><td>0.909</td><td>0.904</td></tr><tr><td>로지스틱 · 불량 재현율</td><td>0.636</td><td class="hl">0.667</td></tr><tr><td>랜덤포레스트</td><td>필요 없다</td><td>필요 없다</td></tr></tbody></table></div>
-<div class="vlist"><div class="v"><span class="b">&rarr;</span><div>소성온도는 850 언저리, 수분율은 1.2 언저리다. <b>크기가 700배 다르다</b>.</div></div><div class="v"><span class="b">&rarr;</span><div>로지스틱은 값의 크기에 끌려가므로 맞춰 준다 &mdash; <b>재현율 0.636 → 0.667</b>.</div></div><div class="v"><span class="b">&#9733;</span><div>나무 계열은 <b>크기를 안 본다</b>. 「820보다 큰가」만 따지므로 맞출 필요가 없다.</div></div></div>
-    <div class="keymsg"><span class="k">기준</span><div><b>거리를 재는 모델은 맞추고, 갈라 나가는 모델은 안 맞춘다.</b></div></div>
-  </div>
-</section>
-<section class="slide" data-title="나누기">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>기준</div>
-  <h2 class="s-title">비율을 지켜 가르는 stratify</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol w">
-      <div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">한 줄로 가른다</span></div><pre><code>Xtr, Xte, ytr, yte = train_test_split(
-    X, y, test_size=0.25,
-    random_state=42,
-    stratify=y)</code></pre><div class="out">학습 1,059 · 검증 353</div></div></div>
-      <div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div><b>학습 18.8% · 검증 18.7%</b> 로 불량 비율이 같게 갈렸다.</div></div><div class="v"><span class="b">&#10005;</span><div><code>stratify</code> 를 빼면 검증에 불량이 <b>몰리거나 거의 없을 수</b> 있다. 그러면 성적이 운에 달린다.</div></div><div class="v"><span class="b">&#9733;</span><div><code>random_state</code> 를 고정해야 <b>다시 돌려도 같은 결과</b>가 나온다.</div></div></div></div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>적은 쪽이 있는 데이터는 <b>반드시 비율을 지켜</b> 가른다.</div></div>
-  </div>
-</section>
 <section class="slide" data-title="데이터 누수">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>함정</div>
@@ -640,16 +509,6 @@ df['불순물'].head(3)</code></pre><div class="out">['1,024', '800', '871']  �
   <h2>예측과 검증</h2>
   <div class="agenda"><span>모델 둘</span><span>정확도의 함정</span><span>임계</span></div>
 </section>
-<section class="slide" data-title="모델 둘의 차이">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>구분</div>
-  <h2 class="s-title">로지스틱 회귀와 랜덤포레스트</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="plot"><svg viewBox="0 0 1116 220"><rect x="14" y="20" width="530" height="190" rx="10" fill="#fff" stroke="#0E8C9E" stroke-width="1.5"/><text x="34" y="50" font-size="13.5" fill="#0E8C9E" font-weight="800">로지스틱 회귀</text><text x="34" y="76" font-size="11" fill="#16142B">값들을 저울에 달아 하나의 점수로</text><text x="34" y="100" font-size="10.6" fill="#8E8AAC" font-family="ui-monospace,SFMono-Regular,Menlo,monospace">0.51 × 소성온도  −  0.32 × 불순물  + …</text><rect x="34" y="118" width="486" height="76" rx="8" fill="#F7F6FB" stroke="none" stroke-width="1"/><text x="52" y="142" font-size="10.6" fill="#16142B">어느 값이 얼마나 미는지 그대로 보인다</text><text x="52" y="164" font-size="10.6" fill="#E8537A">값이 겹쳐 작용하면 못 잡는다</text><text x="52" y="186" font-size="10.6" fill="#8E8AAC">스케일을 맞춰 줘야 한다</text><rect x="572" y="20" width="530" height="190" rx="10" fill="#fff" stroke="#3A1FC9" stroke-width="1.5"/><text x="592" y="50" font-size="13.5" fill="#3A1FC9" font-weight="800">랜덤포레스트</text><text x="592" y="76" font-size="11" fill="#16142B">「온도가 820 아래인가」 로 계속 갈라 나간다</text><text x="592" y="100" font-size="10.6" fill="#8E8AAC">나무 300그루가 따로 판단하고 표를 모은다</text><rect x="592" y="118" width="486" height="76" rx="8" fill="#F7F6FB" stroke="none" stroke-width="1"/><text x="610" y="142" font-size="10.6" fill="#16142B">겹쳐 작용하는 값을 알아서 잡는다</text><text x="610" y="164" font-size="10.6" fill="#E8537A">왜 그렇게 봤는지 설명이 어렵다</text><text x="610" y="186" font-size="10.6" fill="#8E8AAC">스케일을 안 맞춰도 된다</text></svg></div>
-    <div class="keymsg"><span class="k">선택</span><div>설명이 필요하면 <b>로지스틱</b>, 성적이 필요하면 <b>랜덤포레스트</b>다. 먼저 둘 다 돌려 본다.</div></div>
-  </div>
-</section>
 <section class="slide" data-title="모델 둘의 성적">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>실측</div>
@@ -659,34 +518,6 @@ df['불순물'].head(3)</code></pre><div class="out">['1,024', '800', '871']  �
     <div class="ctable"><table><thead><tr><th></th><th>정확도</th><th>불량 재현율</th><th>불량 정밀도</th></tr></thead><tbody><tr><td>전부 양품이라 찍기</td><td class="hl">0.813</td><td>0.000</td><td>—</td></tr><tr><td>로지스틱 회귀</td><td>0.904</td><td>0.667</td><td>0.786</td></tr><tr><td>랜덤포레스트</td><td>0.966</td><td>0.864</td><td>0.950</td></tr></tbody></table></div>
 <div class="vlist"><div class="v"><span class="b">&#10005;</span><div><b>아무것도 안 하고 「전부 양품」이라 찍어도 정확도 0.813</b> 이다. 불량이 18.8% 뿐이라 그렇다.</div></div><div class="v"><span class="b">&rarr;</span><div>봐야 할 것은 <b>불량 재현율</b> — 있는 불량 중 몇 개를 잡았나다.</div></div></div>
     <div class="keymsg"><span class="k">기준</span><div>정확도 하나로 고르지 않는다. <b>적은 쪽을 얼마나 잡았는지</b>로 고른다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="과적합">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>실측</div>
-  <h2 class="s-title">학습 1.000 · 검증 0.921</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="plot"><svg viewBox="0 0 1116 216"><text x="14" y="18" font-size="11" fill="#8E8AAC" font-weight="700">학습 데이터 성적과 검증 데이터 성적</text><text x="14" y="54" font-size="11.4" fill="#16142B" font-weight="700">결정나무 · 깊이 제한 없음</text><text x="300" y="54" font-size="10" fill="#8E8AAC">학습</text><rect x="340" y="42" width="300" height="16" rx="4" fill="#F7F6FB" stroke="none" stroke-width="1"/><rect x="340" y="42" width="300" height="16" rx="4" fill="#8E8AAC" stroke="none" stroke-width="1"/><text x="652" y="54" font-size="10.6" fill="#8E8AAC" font-weight="800">1.000</text><text x="714" y="54" font-size="10" fill="#8E8AAC">검증</text><rect x="754" y="42" width="300" height="16" rx="4" fill="#F7F6FB" stroke="none" stroke-width="1"/><rect x="754" y="42" width="276.3" height="16" rx="4" fill="#E8537A" stroke="none" stroke-width="1"/><text x="1066" y="54" font-size="10.6" fill="#E8537A" font-weight="800">0.921</text><text x="300" y="76" font-size="10" fill="#E8537A" font-weight="700">차이 0.079</text><text x="14" y="112" font-size="11.4" fill="#16142B" font-weight="700">결정나무 · 깊이 4</text><text x="300" y="112" font-size="10" fill="#8E8AAC">학습</text><rect x="340" y="100" width="300" height="16" rx="4" fill="#F7F6FB" stroke="none" stroke-width="1"/><rect x="340" y="100" width="282.3" height="16" rx="4" fill="#8E8AAC" stroke="none" stroke-width="1"/><text x="652" y="112" font-size="10.6" fill="#8E8AAC" font-weight="800">0.941</text><text x="714" y="112" font-size="10" fill="#8E8AAC">검증</text><rect x="754" y="100" width="300" height="16" rx="4" fill="#F7F6FB" stroke="none" stroke-width="1"/><rect x="754" y="100" width="280.5" height="16" rx="4" fill="#1E9E6A" stroke="none" stroke-width="1"/><text x="1066" y="112" font-size="10.6" fill="#1E9E6A" font-weight="800">0.935</text><text x="300" y="134" font-size="10" fill="#8E8AAC" font-weight="700">차이 0.006</text><text x="14" y="170" font-size="11.4" fill="#16142B" font-weight="700">랜덤포레스트 · 나무 300</text><text x="300" y="170" font-size="10" fill="#8E8AAC">학습</text><rect x="340" y="158" width="300" height="16" rx="4" fill="#F7F6FB" stroke="none" stroke-width="1"/><rect x="340" y="158" width="300" height="16" rx="4" fill="#8E8AAC" stroke="none" stroke-width="1"/><text x="652" y="170" font-size="10.6" fill="#8E8AAC" font-weight="800">1.000</text><text x="714" y="170" font-size="10" fill="#8E8AAC">검증</text><rect x="754" y="158" width="300" height="16" rx="4" fill="#F7F6FB" stroke="none" stroke-width="1"/><rect x="754" y="158" width="289.8" height="16" rx="4" fill="#3A1FC9" stroke="none" stroke-width="1"/><text x="1066" y="170" font-size="10.6" fill="#3A1FC9" font-weight="800">0.966</text><text x="300" y="192" font-size="10" fill="#8E8AAC" font-weight="700">차이 0.034</text></svg></div>
-<div class="vlist"><div class="v"><span class="b">&#10005;</span><div>깊이를 안 막으면 <b>학습 데이터를 통째로 외운다</b>. 학습 1.000 인데 검증은 0.921 이다.</div></div><div class="v"><span class="b">&rarr;</span><div>깊이를 4로 막으면 학습 성적이 내려가는 대신 <b>둘의 차이가 0.006</b> 으로 준다.</div></div><div class="v"><span class="b">&#9733;</span><div>랜덤포레스트도 학습은 1.000 이다. 다만 <b>나무 300그루의 표를 모아</b> 검증이 덜 떨어진다.</div></div></div>
-    <div class="keymsg"><span class="k">신호</span><div><b>학습과 검증의 차이가 크면 외운 것이다.</b> 학습 성적만 보면 못 알아챈다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="교차검증">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>검증</div>
-  <h2 class="s-title">교차검증 5겹 · 0.936 ± 0.004</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol w">
-      <div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">다섯 조각으로 갈라 돌린다</span></div><pre><code>from sklearn.model_selection import cross_val_score
-
-cv = cross_val_score(model, X, y, cv=5)
-print(cv.mean(), cv.std())</code></pre><div class="out">0.943 0.933 0.933 0.933 0.936
-평균 0.936 · 흔들림 0.004</div></div></div>
-      <div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>한 번 나눈 성적은 <b>어떻게 갈렸는지에 따라</b> 달라진다.</div></div><div class="v"><span class="b">&rarr;</span><div>다섯 번 재서 <b>평균과 흔들림</b>을 같이 본다.</div></div><div class="v"><span class="b">&#9733;</span><div>흔들림 <b>0.004</b> 면 어떻게 갈라도 비슷하다는 뜻이다. 이 값이 크면 데이터가 모자란 것이다.</div></div></div></div>
-    </div>
-    <div class="keymsg"><span class="k">기준</span><div>성적은 <b>숫자 하나가 아니라 평균과 흔들림</b>으로 말한다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="무엇을 놓쳤나">
@@ -710,28 +541,6 @@ print(cv.mean(), cv.std())</code></pre><div class="out">0.943 0.933 0.933 0.933 
     <div class="keymsg"><span class="k">선택</span><div>놓친 불량 한 건의 값과 헛경보 한 건의 값을 <b>돈으로 환산해</b> 임계를 정한다.</div></div>
   </div>
 </section>
-<section class="slide" data-title="임계 곡선">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>실측</div>
-  <h2 class="s-title">임계 0.05 부터 0.95 까지</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="shot"><div class="sbar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">검증 353건 · 임계를 0.05 부터 0.95 까지</span></div><img src="assets/threshold.png" alt="임계 곡선"></div>
-<div class="vlist"><div class="v"><span class="b">&rarr;</span><div>왼쪽으로 갈수록 <b>놓친 불량은 줄고 헛경보는 는다</b>. 둘은 같이 못 줄인다.</div></div><div class="v"><span class="b">&#9733;</span><div>두 선이 만나는 곳이 답이 아니다. <b>어느 쪽이 더 비싼지</b>가 답을 정한다.</div></div></div>
-    <div class="keymsg"><span class="k">선택</span><div>놓친 불량 한 건이 헛경보 열 건보다 비싸면 <b>임계를 왼쪽으로</b> 옮긴다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="class_weight">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>실측</div>
-  <h2 class="s-title">class_weight='balanced'</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="ctable"><table><thead><tr><th>설정</th><th>불량 재현율</th><th>불량 정밀도</th></tr></thead><tbody><tr><td>그대로</td><td>0.864</td><td>0.950</td></tr><tr><td>class_weight='balanced'</td><td class="hl">0.818</td><td>0.915</td></tr></tbody></table></div>
-<div class="vlist"><div class="v"><span class="b">&#10005;</span><div>적은 쪽에 힘을 실었는데 <b>재현율이 오히려 내려갔다</b>. 0.864 → 0.818.</div></div><div class="v"><span class="b">&rarr;</span><div>이 데이터는 불량이 18.8% 로 <b>그렇게 치우치지 않았다</b>. 손댈 필요가 없었다.</div></div><div class="v"><span class="b">&#9733;</span><div>적은 쪽이 <b>1~2%</b> 일 때 쓴다. 그때는 안 쓰면 아예 못 잡는다.</div></div></div>
-    <div class="keymsg"><span class="k">교훈</span><div><b>좋다는 설정을 다 켜지 않는다.</b> 하나 바꾸고 재고, 나빠지면 되돌린다.</div></div>
-  </div>
-</section>
 <section class="slide" data-title="중요도">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>실측</div>
@@ -748,17 +557,6 @@ print(cv.mean(), cv.std())</code></pre><div class="out">0.943 0.933 0.933 0.933 
   <div class="seyebrow">CHAPTER 03</div>
   <h2>웹 앱에 붙이기</h2>
   <div class="agenda"><span>모듈로 떼기</span><span>화면</span><span>사내 적용</span></div>
-</section>
-<section class="slide" data-title="전체 흐름">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>정리</div>
-  <h2 class="s-title">엑셀에서 판정 화면까지</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="plot"><svg viewBox="0 0 1116 176"><rect x="14" y="40" width="196" height="78" rx="9" fill="#F7F6FB" stroke="none" stroke-width="1.5"/><text x="112" y="74" font-size="13" fill="#8E8AAC" font-weight="800" text-anchor="middle">엑셀</text><text x="112" y="98" font-size="9.8" fill="#8E8AAC" text-anchor="middle">내 노트북</text><path d="M214 79 h10" stroke="#8E8AAC" stroke-width="2"/><path d="M232 79 l-7 -5 v10 z" fill="#8E8AAC"/><rect x="236" y="40" width="196" height="78" rx="9" fill="#fff" stroke="#0E8C9E" stroke-width="1.5"/><text x="334" y="74" font-size="13" fill="#0E8C9E" font-weight="800" text-anchor="middle">전처리</text><text x="334" y="98" font-size="9.8" fill="#8E8AAC" text-anchor="middle">pandas</text><path d="M436 79 h10" stroke="#8E8AAC" stroke-width="2"/><path d="M454 79 l-7 -5 v10 z" fill="#8E8AAC"/><rect x="458" y="40" width="196" height="78" rx="9" fill="#fff" stroke="#3A1FC9" stroke-width="1.5"/><text x="556" y="74" font-size="13" fill="#3A1FC9" font-weight="800" text-anchor="middle">학습</text><text x="556" y="98" font-size="9.8" fill="#8E8AAC" text-anchor="middle">scikit-learn</text><path d="M658 79 h10" stroke="#8E8AAC" stroke-width="2"/><path d="M676 79 l-7 -5 v10 z" fill="#8E8AAC"/><rect x="680" y="40" width="196" height="78" rx="9" fill="#fff" stroke="#1E9E6A" stroke-width="1.5"/><text x="778" y="74" font-size="13" fill="#1E9E6A" font-weight="800" text-anchor="middle">model.pkl</text><text x="778" y="98" font-size="9.8" fill="#8E8AAC" text-anchor="middle">파일 하나</text><path d="M880 79 h10" stroke="#8E8AAC" stroke-width="2"/><path d="M898 79 l-7 -5 v10 z" fill="#8E8AAC"/><rect x="902" y="40" width="196" height="78" rx="9" fill="#16142B" stroke="none" stroke-width="1.5"/><text x="1000" y="74" font-size="13" fill="#fff" font-weight="800" text-anchor="middle">웹 앱</text><text x="1000" y="98" font-size="9.8" fill="#9C93D8" text-anchor="middle">판정 화면</text><path d="M14 22 h430" stroke="#E8537A" stroke-width="1.6"/><text x="228" y="16" font-size="10.4" fill="#E8537A" font-weight="800" text-anchor="middle">여기까지는 밖으로 안 나간다</text><path d="M680 138 h422" stroke="#1E9E6A" stroke-width="1.6"/><text x="890" y="158" font-size="10.4" fill="#1E9E6A" font-weight="800" text-anchor="middle">앱에 들어가는 것은 모델 파일과 코드뿐</text></svg></div>
-<div class="vlist"><div class="v"><span class="b">&rarr;</span><div>Codex 는 <b>가운데 두 칸의 코드</b>를 만들어 줄 뿐이다. 데이터는 만지지 않는다.</div></div><div class="v"><span class="b">&#9733;</span><div>앱에 들어가는 것은 <b>model.pkl 과 판정 코드</b>다. 원본 표는 넣지 않는다.</div></div></div>
-    <div class="keymsg"><span class="k">구조</span><div>데이터는 왼쪽에 머물고 <b>오른쪽으로는 결과만</b> 간다.</div></div>
-  </div>
 </section>
 <section class="slide" data-title="model.pkl">
   <div class="coord"><b></b> / <span class="tot"></span></div>
@@ -788,19 +586,6 @@ p = model.predict_proba(row)[0][0]
   <div class="body">
     <div class="plot"><svg viewBox="0 0 1116 220"><text x="14" y="18" font-size="11" fill="#8E8AAC" font-weight="700">만들 화면</text><rect x="14" y="32" width="420" height="180" rx="10" fill="#fff" stroke="#DCD6F0" stroke-width="1.4"/><rect x="14" y="32" width="420" height="30" rx="10" fill="#F7F6FB" stroke="none" stroke-width="1"/><rect x="14" y="48" width="420" height="14" rx="0" fill="#F7F6FB" stroke="none" stroke-width="1"/><text x="34" y="52" font-size="11" fill="#16142B" font-weight="800">배치 조건 넣기</text><text x="34" y="88" font-size="10.4" fill="#8E8AAC">소성온도</text><rect x="120" y="74" width="290" height="20" rx="4" fill="#F7F6FB" stroke="none" stroke-width="1"/><text x="34" y="114" font-size="10.4" fill="#8E8AAC">소성시간</text><rect x="120" y="100" width="290" height="20" rx="4" fill="#F7F6FB" stroke="none" stroke-width="1"/><text x="34" y="140" font-size="10.4" fill="#8E8AAC">입도</text><rect x="120" y="126" width="290" height="20" rx="4" fill="#F7F6FB" stroke="none" stroke-width="1"/><text x="34" y="166" font-size="10.4" fill="#8E8AAC">수분율</text><rect x="120" y="152" width="290" height="20" rx="4" fill="#F7F6FB" stroke="none" stroke-width="1"/><text x="34" y="192" font-size="10.4" fill="#8E8AAC">불순물</text><rect x="120" y="178" width="290" height="20" rx="4" fill="#F7F6FB" stroke="none" stroke-width="1"/><path d="M448 122 h36" stroke="#8E8AAC" stroke-width="2"/><path d="M492 122 l-7 -5 v10 z" fill="#8E8AAC"/><rect x="506" y="62" width="240" height="120" rx="10" fill="#16142B" stroke="none" stroke-width="1"/><text x="626" y="106" font-size="15" fill="#fff" font-weight="800" text-anchor="middle">판정</text><text x="626" y="132" font-size="10" fill="#9C93D8" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace">model.pkl</text><path d="M760 122 h36" stroke="#8E8AAC" stroke-width="2"/><path d="M804 122 l-7 -5 v10 z" fill="#8E8AAC"/><rect x="818" y="32" width="284" height="180" rx="10" fill="#fff" stroke="#DCD6F0" stroke-width="1.4"/><text x="838" y="60" font-size="11" fill="#8E8AAC" font-weight="700">결과</text><rect x="838" y="72" width="244" height="56" rx="8" fill="#FDEFF3" stroke="none" stroke-width="1"/><text x="960" y="100" font-size="17" fill="#E8537A" font-weight="800" text-anchor="middle">불량 위험</text><text x="960" y="120" font-size="11" fill="#8E8AAC" text-anchor="middle">불량 확률 0.41</text><text x="838" y="152" font-size="10" fill="#8E8AAC" font-weight="700">가장 크게 기여한 값</text><text x="838" y="174" font-size="10.2" fill="#16142B">소성온도 812.4  (가운데에서 멀다)</text><text x="838" y="196" font-size="10.2" fill="#16142B">불순물 1,240  (높음)</text></svg></div>
     <div class="keymsg"><span class="k">화면</span><div>판정만 내지 않는다. <b>왜 그렇게 봤는지</b>를 같이 낸다. 근거가 없으면 현장이 안 쓴다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="언제 다시 학습하나">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>운영</div>
-  <h2 class="s-title">재학습의 신호</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="vlist"><div class="v"><span class="b">1</span><div><b>설비나 원료가 바뀌었을 때</b> &mdash; 배운 것과 다른 상황이 된다.</div></div><div class="v"><span class="b">2</span><div><b>맞히는 비율이 내려갈 때</b> &mdash; 매달 지난달 판정과 실제 결과를 견줘 본다.</div></div><div class="v"><span class="b">3</span><div><b>데이터가 크게 늘었을 때</b> &mdash; 1,412건에서 5,000건이 되면 다시 배울 값이 있다.</div></div></div>
-    <div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">견주는 코드도 같이 만들어 둔다</span></div><pre><code><span class='cm'># 지난달 판정과 실제 결과를 맞춰 본다</span>
-맞힌 비율 = (지난달판정 == 실제결과).mean()
-print(맞힌 비율)          <span class='cm'># 0.9 아래로 내려가면 다시 학습</span></code></pre></div>
-    <div class="keymsg"><span class="k">운영</span><div>모델은 <b>낡는다</b>. 다시 잴 방법을 처음부터 같이 만들어 둔다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="사내 적용">
@@ -845,6 +630,245 @@ df.describe()</code></pre></div></div>
     </div>
 <div class="vlist"><div class="v"><span class="b">&#9733;</span><div>정확도 1.000 이 나오면 <b>누수를 먼저 의심한다</b>. 예측 시점보다 뒤에 나오는 열이 섞였는지 본다.</div></div></div>
     <div class="keymsg"><span class="k">결론</span><div>도구가 막혀도 <b>데이터를 안 보내고 일하는 방법</b>이 있다. 오늘 만든 것이 그대로 사내로 간다.</div></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 반출을 막는 장치">
+  <div class="ghost">04</div>
+  <div class="seyebrow">CHAPTER 04</div>
+  <h2>반출을 막는 장치</h2>
+  <div class="agenda"><span>경계</span><span>새는 경로</span><span>가짜 표</span></div>
+</section>
+<section class="slide" data-title="반출의 경계">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>판단</div>
+  <h2 class="s-title">반출의 경계</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="ctable"><table><thead><tr><th>붙여 넣는 것</th><th>반출인가</th><th>왜</th></tr></thead><tbody><tr><td>열 이름 목록</td><td>아니다</td><td>이름은 값이 아니다</td></tr><tr><td>자료형 · 결측 수</td><td>아니다</td><td>세어 본 결과다</td></tr><tr><td>최솟값 · 최댓값 · 평균</td><td>경우에 따라</td><td>한 건짜리 표라면 그 값이 곧 원본이다</td></tr><tr><td>한 행이라도 그대로</td><td class="hl">반출이다</td><td>배치번호와 설비호기가 들어 있다</td></tr><tr><td>엑셀 파일 첨부</td><td class="hl">반출이다</td><td>더 볼 것도 없다</td></tr></tbody></table></div>
+<div class="vlist"><div class="v"><span class="b">&#9733;</span><div><b>평균과 범위도 조심한다.</b> 데이터가 적으면 요약이 원본을 그대로 드러낸다.</div></div><div class="v"><span class="b">&rarr;</span><div>헷갈리면 기준은 하나다 &mdash; <b>이 글만 보고 특정 배치를 알 수 있는가</b>.</div></div></div>
+    <div class="keymsg"><span class="k">기준</span><div>판단이 애매하면 보내지 않는다. <b>안 보내도 코드는 나온다</b>.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="값이 새는 세 경로">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>함정</div>
+  <h2 class="s-title">에러 메시지 · 출력 · 화면 캡처</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="vlist"><div class="v"><span class="b">1</span><div><b>에러 메시지를 그대로 붙일 때</b> &mdash; <code>KeyError: B00115</code> 처럼 배치번호가 그대로 들어 있다.</div></div><div class="v"><span class="b">2</span><div><b>출력을 통째로 붙일 때</b> &mdash; <code>df.head()</code> 결과에는 값이 다 있다.</div></div><div class="v"><span class="b">3</span><div><b>화면을 캡처해 올릴 때</b> &mdash; 글자가 아니라 그림이어도 값은 값이다.</div></div></div>
+    <div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">붙이기 전에 지운다</span></div><pre><code><span class='cm'># 에러만 남기고 값은 지운다</span>
+KeyError: '???'          <span class='cm'># B00115 → ???</span>
+
+<span class='cm'># 출력은 모양만</span>
+df.dtypes               <span class='cm'># head() 말고</span></code></pre></div>
+    <div class="keymsg"><span class="k">습관</span><div>붙여 넣기 전에 <b>한 번 읽는다</b>. 값이 보이면 지우고 붙인다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="같은 모양의 가짜 표">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>방법</div>
+  <h2 class="s-title">난수로 만든 sample.csv</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">모양만 같은 표를 만든다</span></div><pre><code><span class='cm'># 열 이름과 자료형만 그대로</span>
+fake = pd.DataFrame({
+  '소성온도': np.random.uniform(750, 950, 10),
+  '입도':    np.random.uniform(5, 20, 10),
+  '설비호기': np.random.choice(list('ABCDEF'), 10),
+  '양품여부': np.random.choice([0, 1], 10)})
+fake.to_csv('sample.csv', index=False)</code></pre></div></div>
+      <div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>이 파일은 <b>마음 놓고 올릴 수 있다</b>. 원본과 열 이름만 같고 값은 난수다.</div></div><div class="v"><span class="b">&#9733;</span><div>Codex 가 <b>실제로 돌려 보며</b> 코드를 고칠 수 있어 결과가 더 낫다.</div></div><div class="v"><span class="b">&#10005;</span><div>값의 <b>분포</b>는 다르다. 이상치 처리는 따로 알려 줘야 한다.</div></div></div></div>
+    </div>
+    <div class="keymsg"><span class="k">방법</span><div>모양만 있는 글보다 <b>돌려 볼 수 있는 가짜 표</b>가 낫다. 원본은 그대로 둔다.</div></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 전처리 더 보기">
+  <div class="ghost">05</div>
+  <div class="seyebrow">CHAPTER 05</div>
+  <h2>전처리 더 보기</h2>
+  <div class="agenda"><span>읽기</span><span>글자 열</span><span>스케일링</span><span>분할</span></div>
+</section>
+<section class="slide" data-title="첫 세 줄">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>시작</div>
+  <h2 class="s-title">shape · dtypes · isna()</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">세 줄이면 표의 성격이 나온다</span></div><pre><code>df.shape          <span class='cm'># 몇 행 몇 열</span>
+df.dtypes         <span class='cm'># 숫자인가 글자인가</span>
+df.isna().sum()   <span class='cm'># 어디가 비었나</span></code></pre><div class="out">(1412, 11)</div></div></div>
+      <div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div><b>행 1,412 · 열 11.</b> 이 정도면 노트북에서 다 돈다.</div></div><div class="v"><span class="b">&#10005;</span><div><b>불순물과 입도가 글자로 읽혔다.</b> 숫자여야 하는데 아니다.</div></div><div class="v"><span class="b">&rarr;</span><div><b>입도 112건 · 수분율 73건이 비었다.</b> 합쳐 185건, 전체의 13%다.</div></div></div></div>
+    </div>
+    <div class="keymsg"><span class="k">시작</span><div>숫자여야 할 열이 <b>글자로 읽혔다면</b> 읽는 방법부터 잘못된 것이다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="읽는 방법">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>실측</div>
+  <h2 class="s-title">쉼표 하나가 글자로 만든 열</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">그냥 읽으면</span></div><pre><code>df = pd.read_csv('batch_quality.csv')
+df['불순물'].head(3)</code></pre><div class="out">['1,024', '800', '871']  ← 글자다</div></div></div>
+      <div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">옵션을 주면</span></div><pre><code>df = pd.read_csv('batch_quality.csv',
+                 thousands=',',
+                 na_values=['N/A', '-'])</code></pre><div class="out">1024, 800, 871  ← 숫자다</div></div></div>
+    </div>
+<div class="vlist"><div class="v"><span class="b">&rarr;</span><div>쉼표 하나 때문에 <b>불순물 열 전체가 글자</b>가 됐다. 평균도 못 낸다.</div></div><div class="v"><span class="b">&#9733;</span><div><code>N/A</code> 와 <code>-</code> 도 결측으로 읽어야 한다. 안 그러면 <b>글자 「N/A」</b> 가 값으로 들어앉는다.</div></div></div>
+    <div class="keymsg"><span class="k">함정</span><div>읽기가 틀리면 그 뒤가 전부 틀린다. <b>dtypes 로 먼저 확인한다</b>.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="글자 열 다듬기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>실측</div>
+  <h2 class="s-title">설비 여섯 대, 스물네 가지 표기</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="plot"><svg viewBox="0 0 1116 216"><text x="14" y="18" font-size="11" fill="#8E8AAC" font-weight="700">설비호기 열에 실제로 들어 있던 값</text><rect x="14" y="34" width="168" height="34" rx="6" fill="#fff" stroke="#DCD6F0" stroke-width="1"/><text x="28" y="57" font-size="12" fill="#16142B" font-weight="800" font-family="ui-monospace,SFMono-Regular,Menlo,monospace">'A'</text><text x="168" y="57" font-size="10.4" fill="#8E8AAC" text-anchor="end">176</text><rect x="198" y="34" width="168" height="34" rx="6" fill="#fff" stroke="#DCD6F0" stroke-width="1"/><text x="212" y="57" font-size="12" fill="#16142B" font-weight="800" font-family="ui-monospace,SFMono-Regular,Menlo,monospace">'D'</text><text x="352" y="57" font-size="10.4" fill="#8E8AAC" text-anchor="end">171</text><rect x="382" y="34" width="168" height="34" rx="6" fill="#fff" stroke="#DCD6F0" stroke-width="1"/><text x="396" y="57" font-size="12" fill="#16142B" font-weight="800" font-family="ui-monospace,SFMono-Regular,Menlo,monospace">'E'</text><text x="536" y="57" font-size="10.4" fill="#8E8AAC" text-anchor="end">169</text><rect x="566" y="34" width="168" height="34" rx="6" fill="#fff" stroke="#DCD6F0" stroke-width="1"/><text x="580" y="57" font-size="12" fill="#16142B" font-weight="800" font-family="ui-monospace,SFMono-Regular,Menlo,monospace">'C'</text><text x="720" y="57" font-size="10.4" fill="#8E8AAC" text-anchor="end">161</text><rect x="750" y="34" width="168" height="34" rx="6" fill="#fff" stroke="#DCD6F0" stroke-width="1"/><text x="764" y="57" font-size="12" fill="#16142B" font-weight="800" font-family="ui-monospace,SFMono-Regular,Menlo,monospace">'F'</text><text x="904" y="57" font-size="10.4" fill="#8E8AAC" text-anchor="end">160</text><rect x="934" y="34" width="168" height="34" rx="6" fill="#fff" stroke="#DCD6F0" stroke-width="1"/><text x="948" y="57" font-size="12" fill="#16142B" font-weight="800" font-family="ui-monospace,SFMono-Regular,Menlo,monospace">'B'</text><text x="1088" y="57" font-size="10.4" fill="#8E8AAC" text-anchor="end">153</text><rect x="14" y="78" width="168" height="34" rx="6" fill="#fff" stroke="#DCD6F0" stroke-width="1"/><text x="28" y="101" font-size="12" fill="#16142B" font-weight="800" font-family="ui-monospace,SFMono-Regular,Menlo,monospace">'A '</text><text x="168" y="101" font-size="10.4" fill="#8E8AAC" text-anchor="end">31</text><rect x="198" y="78" width="168" height="34" rx="6" fill="#fff" stroke="#DCD6F0" stroke-width="1"/><text x="212" y="101" font-size="12" fill="#16142B" font-weight="800" font-family="ui-monospace,SFMono-Regular,Menlo,monospace">'f'</text><text x="352" y="101" font-size="10.4" fill="#8E8AAC" text-anchor="end">30</text><rect x="382" y="78" width="168" height="34" rx="6" fill="#fff" stroke="#DCD6F0" stroke-width="1"/><text x="396" y="101" font-size="12" fill="#16142B" font-weight="800" font-family="ui-monospace,SFMono-Regular,Menlo,monospace">'a'</text><text x="536" y="101" font-size="10.4" fill="#8E8AAC" text-anchor="end">30</text><rect x="566" y="78" width="168" height="34" rx="6" fill="#fff" stroke="#DCD6F0" stroke-width="1"/><text x="580" y="101" font-size="12" fill="#16142B" font-weight="800" font-family="ui-monospace,SFMono-Regular,Menlo,monospace">' F'</text><text x="720" y="101" font-size="10.4" fill="#8E8AAC" text-anchor="end">28</text><rect x="750" y="78" width="168" height="34" rx="6" fill="#fff" stroke="#DCD6F0" stroke-width="1"/><text x="764" y="101" font-size="12" fill="#16142B" font-weight="800" font-family="ui-monospace,SFMono-Regular,Menlo,monospace">'b'</text><text x="904" y="101" font-size="10.4" fill="#8E8AAC" text-anchor="end">27</text><rect x="934" y="78" width="168" height="34" rx="6" fill="#fff" stroke="#DCD6F0" stroke-width="1"/><text x="948" y="101" font-size="12" fill="#16142B" font-weight="800" font-family="ui-monospace,SFMono-Regular,Menlo,monospace">'E '</text><text x="1088" y="101" font-size="10.4" fill="#8E8AAC" text-anchor="end">27</text><text x="14" y="140" font-size="11" fill="#E8537A" font-weight="800">… 모두 24가지</text><path d="M240 134 h52" stroke="#3A1FC9" stroke-width="2"/><path d="M300 134 l-7 -5 v10 z" fill="#3A1FC9"/><text x="320" y="140" font-size="11.5" fill="#3A1FC9" font-weight="800" font-family="ui-monospace,SFMono-Regular,Menlo,monospace">df['설비호기'].str.strip().str.upper()</text><rect x="14" y="158" width="1088" height="50" rx="8" fill="#EFF9F4" stroke="#BFE6D4" stroke-width="1"/><text x="34" y="188" font-size="12" fill="#1E9E6A" font-weight="800">다듬고 나면  A 249 · D 240 · F 239 · E 235 · C 227 · B 222  —  24가지가 6가지로</text></svg></div>
+<div class="vlist"><div class="v"><span class="b">&#10005;</span><div>앞뒤 <b>공백</b>과 <b>대소문자</b>가 섞여 있다. 사람 눈에는 같아 보인다.</div></div><div class="v"><span class="b">&rarr;</span><div>다듬지 않고 펴면 열이 <b>30개</b>가 된다. 다듬으면 <b>12개</b>다.</div></div></div>
+    <div class="keymsg"><span class="k">순서</span><div>글자 열은 <b>펴기 전에 다듬는다</b>. 순서를 바꾸면 쓸모없는 열이 스무 개 생긴다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="글자 열 펴기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>변환</div>
+  <h2 class="s-title">get_dummies</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">한 줄이면 된다</span></div><pre><code>X = pd.get_dummies(X,
+      columns=['설비호기', '교대조'],
+      drop_first=True)</code></pre><div class="out">8열 → 12열</div></div></div>
+      <div>    <div class="ctable"><table><thead><tr><th>전</th><th>후</th></tr></thead><tbody><tr><td>설비호기 = A</td><td>설비호기_B 0 · 설비호기_C 0 · …</td></tr><tr><td>설비호기 = C</td><td>설비호기_B 0 · 설비호기_C 1 · …</td></tr><tr><td>교대조 = night</td><td>교대조_night 1</td></tr></tbody></table></div></div>
+    </div>
+<div class="vlist"><div class="v"><span class="b">&rarr;</span><div>값 하나가 <b>열 여러 개의 0과 1</b> 로 바뀐다.</div></div><div class="v"><span class="b">&#9733;</span><div><code>drop_first=True</code> 로 한 열을 뺀다. 나머지가 다 0이면 그것이라 <b>없어도 알 수 있다</b>.</div></div></div>
+    <div class="keymsg"><span class="k">변환</span><div>글자를 숫자로 바꾸는 일이다. 순서가 없는 값이라 <b>1·2·3으로 매기면 안 된다</b>.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="스케일링">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>실측</div>
+  <h2 class="s-title">StandardScaler 가 필요한 모델</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="ctable"><table><thead><tr><th></th><th>스케일링 안 함</th><th>스케일링 함</th></tr></thead><tbody><tr><td>로지스틱 · 정확도</td><td>0.909</td><td>0.904</td></tr><tr><td>로지스틱 · 불량 재현율</td><td>0.636</td><td class="hl">0.667</td></tr><tr><td>랜덤포레스트</td><td>필요 없다</td><td>필요 없다</td></tr></tbody></table></div>
+<div class="vlist"><div class="v"><span class="b">&rarr;</span><div>소성온도는 850 언저리, 수분율은 1.2 언저리다. <b>크기가 700배 다르다</b>.</div></div><div class="v"><span class="b">&rarr;</span><div>로지스틱은 값의 크기에 끌려가므로 맞춰 준다 &mdash; <b>재현율 0.636 → 0.667</b>.</div></div><div class="v"><span class="b">&#9733;</span><div>나무 계열은 <b>크기를 안 본다</b>. 「820보다 큰가」만 따지므로 맞출 필요가 없다.</div></div></div>
+    <div class="keymsg"><span class="k">기준</span><div><b>거리를 재는 모델은 맞추고, 갈라 나가는 모델은 안 맞춘다.</b></div></div>
+  </div>
+</section>
+<section class="slide" data-title="나누기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>기준</div>
+  <h2 class="s-title">비율을 지켜 가르는 stratify</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">한 줄로 가른다</span></div><pre><code>Xtr, Xte, ytr, yte = train_test_split(
+    X, y, test_size=0.25,
+    random_state=42,
+    stratify=y)</code></pre><div class="out">학습 1,059 · 검증 353</div></div></div>
+      <div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div><b>학습 18.8% · 검증 18.7%</b> 로 불량 비율이 같게 갈렸다.</div></div><div class="v"><span class="b">&#10005;</span><div><code>stratify</code> 를 빼면 검증에 불량이 <b>몰리거나 거의 없을 수</b> 있다. 그러면 성적이 운에 달린다.</div></div><div class="v"><span class="b">&#9733;</span><div><code>random_state</code> 를 고정해야 <b>다시 돌려도 같은 결과</b>가 나온다.</div></div></div></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>적은 쪽이 있는 데이터는 <b>반드시 비율을 지켜</b> 가른다.</div></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 검증 더 보기">
+  <div class="ghost">06</div>
+  <div class="seyebrow">CHAPTER 06</div>
+  <h2>검증 더 보기</h2>
+  <div class="agenda"><span>모델 차이</span><span>과적합</span><span>교차검증</span><span>임계</span></div>
+</section>
+<section class="slide" data-title="모델 둘의 차이">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>구분</div>
+  <h2 class="s-title">로지스틱 회귀와 랜덤포레스트</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="plot"><svg viewBox="0 0 1116 220"><rect x="14" y="20" width="530" height="190" rx="10" fill="#fff" stroke="#0E8C9E" stroke-width="1.5"/><text x="34" y="50" font-size="13.5" fill="#0E8C9E" font-weight="800">로지스틱 회귀</text><text x="34" y="76" font-size="11" fill="#16142B">값들을 저울에 달아 하나의 점수로</text><text x="34" y="100" font-size="10.6" fill="#8E8AAC" font-family="ui-monospace,SFMono-Regular,Menlo,monospace">0.51 × 소성온도  −  0.32 × 불순물  + …</text><rect x="34" y="118" width="486" height="76" rx="8" fill="#F7F6FB" stroke="none" stroke-width="1"/><text x="52" y="142" font-size="10.6" fill="#16142B">어느 값이 얼마나 미는지 그대로 보인다</text><text x="52" y="164" font-size="10.6" fill="#E8537A">값이 겹쳐 작용하면 못 잡는다</text><text x="52" y="186" font-size="10.6" fill="#8E8AAC">스케일을 맞춰 줘야 한다</text><rect x="572" y="20" width="530" height="190" rx="10" fill="#fff" stroke="#3A1FC9" stroke-width="1.5"/><text x="592" y="50" font-size="13.5" fill="#3A1FC9" font-weight="800">랜덤포레스트</text><text x="592" y="76" font-size="11" fill="#16142B">「온도가 820 아래인가」 로 계속 갈라 나간다</text><text x="592" y="100" font-size="10.6" fill="#8E8AAC">나무 300그루가 따로 판단하고 표를 모은다</text><rect x="592" y="118" width="486" height="76" rx="8" fill="#F7F6FB" stroke="none" stroke-width="1"/><text x="610" y="142" font-size="10.6" fill="#16142B">겹쳐 작용하는 값을 알아서 잡는다</text><text x="610" y="164" font-size="10.6" fill="#E8537A">왜 그렇게 봤는지 설명이 어렵다</text><text x="610" y="186" font-size="10.6" fill="#8E8AAC">스케일을 안 맞춰도 된다</text></svg></div>
+    <div class="keymsg"><span class="k">선택</span><div>설명이 필요하면 <b>로지스틱</b>, 성적이 필요하면 <b>랜덤포레스트</b>다. 먼저 둘 다 돌려 본다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="과적합">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>실측</div>
+  <h2 class="s-title">학습 1.000 · 검증 0.921</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="plot"><svg viewBox="0 0 1116 216"><text x="14" y="18" font-size="11" fill="#8E8AAC" font-weight="700">학습 데이터 성적과 검증 데이터 성적</text><text x="14" y="54" font-size="11.4" fill="#16142B" font-weight="700">결정나무 · 깊이 제한 없음</text><text x="300" y="54" font-size="10" fill="#8E8AAC">학습</text><rect x="340" y="42" width="300" height="16" rx="4" fill="#F7F6FB" stroke="none" stroke-width="1"/><rect x="340" y="42" width="300" height="16" rx="4" fill="#8E8AAC" stroke="none" stroke-width="1"/><text x="652" y="54" font-size="10.6" fill="#8E8AAC" font-weight="800">1.000</text><text x="714" y="54" font-size="10" fill="#8E8AAC">검증</text><rect x="754" y="42" width="300" height="16" rx="4" fill="#F7F6FB" stroke="none" stroke-width="1"/><rect x="754" y="42" width="276.3" height="16" rx="4" fill="#E8537A" stroke="none" stroke-width="1"/><text x="1066" y="54" font-size="10.6" fill="#E8537A" font-weight="800">0.921</text><text x="300" y="76" font-size="10" fill="#E8537A" font-weight="700">차이 0.079</text><text x="14" y="112" font-size="11.4" fill="#16142B" font-weight="700">결정나무 · 깊이 4</text><text x="300" y="112" font-size="10" fill="#8E8AAC">학습</text><rect x="340" y="100" width="300" height="16" rx="4" fill="#F7F6FB" stroke="none" stroke-width="1"/><rect x="340" y="100" width="282.3" height="16" rx="4" fill="#8E8AAC" stroke="none" stroke-width="1"/><text x="652" y="112" font-size="10.6" fill="#8E8AAC" font-weight="800">0.941</text><text x="714" y="112" font-size="10" fill="#8E8AAC">검증</text><rect x="754" y="100" width="300" height="16" rx="4" fill="#F7F6FB" stroke="none" stroke-width="1"/><rect x="754" y="100" width="280.5" height="16" rx="4" fill="#1E9E6A" stroke="none" stroke-width="1"/><text x="1066" y="112" font-size="10.6" fill="#1E9E6A" font-weight="800">0.935</text><text x="300" y="134" font-size="10" fill="#8E8AAC" font-weight="700">차이 0.006</text><text x="14" y="170" font-size="11.4" fill="#16142B" font-weight="700">랜덤포레스트 · 나무 300</text><text x="300" y="170" font-size="10" fill="#8E8AAC">학습</text><rect x="340" y="158" width="300" height="16" rx="4" fill="#F7F6FB" stroke="none" stroke-width="1"/><rect x="340" y="158" width="300" height="16" rx="4" fill="#8E8AAC" stroke="none" stroke-width="1"/><text x="652" y="170" font-size="10.6" fill="#8E8AAC" font-weight="800">1.000</text><text x="714" y="170" font-size="10" fill="#8E8AAC">검증</text><rect x="754" y="158" width="300" height="16" rx="4" fill="#F7F6FB" stroke="none" stroke-width="1"/><rect x="754" y="158" width="289.8" height="16" rx="4" fill="#3A1FC9" stroke="none" stroke-width="1"/><text x="1066" y="170" font-size="10.6" fill="#3A1FC9" font-weight="800">0.966</text><text x="300" y="192" font-size="10" fill="#8E8AAC" font-weight="700">차이 0.034</text></svg></div>
+<div class="vlist"><div class="v"><span class="b">&#10005;</span><div>깊이를 안 막으면 <b>학습 데이터를 통째로 외운다</b>. 학습 1.000 인데 검증은 0.921 이다.</div></div><div class="v"><span class="b">&rarr;</span><div>깊이를 4로 막으면 학습 성적이 내려가는 대신 <b>둘의 차이가 0.006</b> 으로 준다.</div></div><div class="v"><span class="b">&#9733;</span><div>랜덤포레스트도 학습은 1.000 이다. 다만 <b>나무 300그루의 표를 모아</b> 검증이 덜 떨어진다.</div></div></div>
+    <div class="keymsg"><span class="k">신호</span><div><b>학습과 검증의 차이가 크면 외운 것이다.</b> 학습 성적만 보면 못 알아챈다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="교차검증">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>검증</div>
+  <h2 class="s-title">교차검증 5겹 · 0.936 ± 0.004</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w">
+      <div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">다섯 조각으로 갈라 돌린다</span></div><pre><code>from sklearn.model_selection import cross_val_score
+
+cv = cross_val_score(model, X, y, cv=5)
+print(cv.mean(), cv.std())</code></pre><div class="out">0.943 0.933 0.933 0.933 0.936
+평균 0.936 · 흔들림 0.004</div></div></div>
+      <div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>한 번 나눈 성적은 <b>어떻게 갈렸는지에 따라</b> 달라진다.</div></div><div class="v"><span class="b">&rarr;</span><div>다섯 번 재서 <b>평균과 흔들림</b>을 같이 본다.</div></div><div class="v"><span class="b">&#9733;</span><div>흔들림 <b>0.004</b> 면 어떻게 갈라도 비슷하다는 뜻이다. 이 값이 크면 데이터가 모자란 것이다.</div></div></div></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>성적은 <b>숫자 하나가 아니라 평균과 흔들림</b>으로 말한다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="임계 곡선">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>실측</div>
+  <h2 class="s-title">임계 0.05 부터 0.95 까지</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="shot"><div class="sbar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">검증 353건 · 임계를 0.05 부터 0.95 까지</span></div><img src="assets/threshold.png" alt="임계 곡선"></div>
+<div class="vlist"><div class="v"><span class="b">&rarr;</span><div>왼쪽으로 갈수록 <b>놓친 불량은 줄고 헛경보는 는다</b>. 둘은 같이 못 줄인다.</div></div><div class="v"><span class="b">&#9733;</span><div>두 선이 만나는 곳이 답이 아니다. <b>어느 쪽이 더 비싼지</b>가 답을 정한다.</div></div></div>
+    <div class="keymsg"><span class="k">선택</span><div>놓친 불량 한 건이 헛경보 열 건보다 비싸면 <b>임계를 왼쪽으로</b> 옮긴다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="class_weight">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>실측</div>
+  <h2 class="s-title">class_weight='balanced'</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="ctable"><table><thead><tr><th>설정</th><th>불량 재현율</th><th>불량 정밀도</th></tr></thead><tbody><tr><td>그대로</td><td>0.864</td><td>0.950</td></tr><tr><td>class_weight='balanced'</td><td class="hl">0.818</td><td>0.915</td></tr></tbody></table></div>
+<div class="vlist"><div class="v"><span class="b">&#10005;</span><div>적은 쪽에 힘을 실었는데 <b>재현율이 오히려 내려갔다</b>. 0.864 → 0.818.</div></div><div class="v"><span class="b">&rarr;</span><div>이 데이터는 불량이 18.8% 로 <b>그렇게 치우치지 않았다</b>. 손댈 필요가 없었다.</div></div><div class="v"><span class="b">&#9733;</span><div>적은 쪽이 <b>1~2%</b> 일 때 쓴다. 그때는 안 쓰면 아예 못 잡는다.</div></div></div>
+    <div class="keymsg"><span class="k">교훈</span><div><b>좋다는 설정을 다 켜지 않는다.</b> 하나 바꾸고 재고, 나빠지면 되돌린다.</div></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 운영">
+  <div class="ghost">07</div>
+  <div class="seyebrow">CHAPTER 07</div>
+  <h2>운영</h2>
+  <div class="agenda"><span>전체 흐름</span><span>재학습</span></div>
+</section>
+<section class="slide" data-title="전체 흐름">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>정리</div>
+  <h2 class="s-title">엑셀에서 판정 화면까지</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="plot"><svg viewBox="0 0 1116 176"><rect x="14" y="40" width="196" height="78" rx="9" fill="#F7F6FB" stroke="none" stroke-width="1.5"/><text x="112" y="74" font-size="13" fill="#8E8AAC" font-weight="800" text-anchor="middle">엑셀</text><text x="112" y="98" font-size="9.8" fill="#8E8AAC" text-anchor="middle">내 노트북</text><path d="M214 79 h10" stroke="#8E8AAC" stroke-width="2"/><path d="M232 79 l-7 -5 v10 z" fill="#8E8AAC"/><rect x="236" y="40" width="196" height="78" rx="9" fill="#fff" stroke="#0E8C9E" stroke-width="1.5"/><text x="334" y="74" font-size="13" fill="#0E8C9E" font-weight="800" text-anchor="middle">전처리</text><text x="334" y="98" font-size="9.8" fill="#8E8AAC" text-anchor="middle">pandas</text><path d="M436 79 h10" stroke="#8E8AAC" stroke-width="2"/><path d="M454 79 l-7 -5 v10 z" fill="#8E8AAC"/><rect x="458" y="40" width="196" height="78" rx="9" fill="#fff" stroke="#3A1FC9" stroke-width="1.5"/><text x="556" y="74" font-size="13" fill="#3A1FC9" font-weight="800" text-anchor="middle">학습</text><text x="556" y="98" font-size="9.8" fill="#8E8AAC" text-anchor="middle">scikit-learn</text><path d="M658 79 h10" stroke="#8E8AAC" stroke-width="2"/><path d="M676 79 l-7 -5 v10 z" fill="#8E8AAC"/><rect x="680" y="40" width="196" height="78" rx="9" fill="#fff" stroke="#1E9E6A" stroke-width="1.5"/><text x="778" y="74" font-size="13" fill="#1E9E6A" font-weight="800" text-anchor="middle">model.pkl</text><text x="778" y="98" font-size="9.8" fill="#8E8AAC" text-anchor="middle">파일 하나</text><path d="M880 79 h10" stroke="#8E8AAC" stroke-width="2"/><path d="M898 79 l-7 -5 v10 z" fill="#8E8AAC"/><rect x="902" y="40" width="196" height="78" rx="9" fill="#16142B" stroke="none" stroke-width="1.5"/><text x="1000" y="74" font-size="13" fill="#fff" font-weight="800" text-anchor="middle">웹 앱</text><text x="1000" y="98" font-size="9.8" fill="#9C93D8" text-anchor="middle">판정 화면</text><path d="M14 22 h430" stroke="#E8537A" stroke-width="1.6"/><text x="228" y="16" font-size="10.4" fill="#E8537A" font-weight="800" text-anchor="middle">여기까지는 밖으로 안 나간다</text><path d="M680 138 h422" stroke="#1E9E6A" stroke-width="1.6"/><text x="890" y="158" font-size="10.4" fill="#1E9E6A" font-weight="800" text-anchor="middle">앱에 들어가는 것은 모델 파일과 코드뿐</text></svg></div>
+<div class="vlist"><div class="v"><span class="b">&rarr;</span><div>Codex 는 <b>가운데 두 칸의 코드</b>를 만들어 줄 뿐이다. 데이터는 만지지 않는다.</div></div><div class="v"><span class="b">&#9733;</span><div>앱에 들어가는 것은 <b>model.pkl 과 판정 코드</b>다. 원본 표는 넣지 않는다.</div></div></div>
+    <div class="keymsg"><span class="k">구조</span><div>데이터는 왼쪽에 머물고 <b>오른쪽으로는 결과만</b> 간다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="언제 다시 학습하나">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>운영</div>
+  <h2 class="s-title">재학습의 신호</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="vlist"><div class="v"><span class="b">1</span><div><b>설비나 원료가 바뀌었을 때</b> &mdash; 배운 것과 다른 상황이 된다.</div></div><div class="v"><span class="b">2</span><div><b>맞히는 비율이 내려갈 때</b> &mdash; 매달 지난달 판정과 실제 결과를 견줘 본다.</div></div><div class="v"><span class="b">3</span><div><b>데이터가 크게 늘었을 때</b> &mdash; 1,412건에서 5,000건이 되면 다시 배울 값이 있다.</div></div></div>
+    <div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">견주는 코드도 같이 만들어 둔다</span></div><pre><code><span class='cm'># 지난달 판정과 실제 결과를 맞춰 본다</span>
+맞힌 비율 = (지난달판정 == 실제결과).mean()
+print(맞힌 비율)          <span class='cm'># 0.9 아래로 내려가면 다시 학습</span></code></pre></div>
+    <div class="keymsg"><span class="k">운영</span><div>모델은 <b>낡는다</b>. 다시 잴 방법을 처음부터 같이 만들어 둔다.</div></div>
   </div>
 </section>
 
