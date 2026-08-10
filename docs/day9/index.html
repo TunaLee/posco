@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>공정 데이터로 불량 미리 잡기</title>
+<title>에이전트와 컨텍스트</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.min.css" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -354,8 +354,8 @@
 <section class="slide cover active" data-title="표지 · Day 9">
   <div class="aperture"></div><div class="ring"></div>
   <div class="wrap">
-    <div class="kick"><span class="pill">WEEK 2 · DAY 4</span><span>TABULAR ML</span></div>
-    <h1>공정 데이터로<br/>불량 미리 잡기</h1>
+    <div class="kick"><span class="pill">WEEK 3 · DAY 2</span><span>AGENT</span></div>
+    <h1>에이전트와<br/>컨텍스트</h1>
   </div>
 </section>
 <section class="slide" data-title="오늘의 일정">
@@ -364,35 +364,418 @@
   <h2 class="s-title">오늘의 일정</h2>
   <div class="rule"></div>
   <div class="body">
-    <div class="cards c4">
-      <div class="card"><span class="n">CH0</span><h3>데이터를 안 보내고</h3><p>표를 통째로 올리면 유출이다. 모양만 보내고 코드를 받는다.</p></div>
-      <div class="card"><span class="n">CH1</span><h3>전처리</h3><p>결측 · 이상치 · 글자 열. 손대는 순서가 정해져 있다.</p></div>
-      <div class="card"><span class="n">CH2</span><h3>예측과 검증</h3><p>정확도 하나로 속지 않는다. 놓친 불량을 센다.</p></div>
-      <div class="card"><span class="n">CH3</span><h3>웹 앱에 붙이기</h3><p>만든 모듈을 화면 뒤에 놓는다.</p></div>
+    <div class="cards c3">
+      <div class="card"><span class="n">CH0~1</span><h3>에이전트란</h3><p>워크플로와 무엇이 다른가. 두뇌 · 계획 · 기억 · 도구 네 가지로 이루어진다.</p></div>
+      <div class="card"><span class="n">CH2</span><h3>직접 만들기</h3><p>판단 · 행동 · 관찰 세 단계를 도는 루프. 멈추는 조건을 같이 만든다.</p></div>
+      <div class="card"><span class="n">CH3~4</span><h3>컨텍스트 엔지니어링</h3><p>넣을 수 있는 양이 정해져 있다. 무엇을 넣고 무엇을 뺄지 정하는 일이다.</p></div>
     </div>
-    <div class="keymsg"><span class="k">기준</span><div>오늘의 모든 수치는 <b>공정 데이터 1,412건을 실제로 돌려</b> 뽑은 것이다.</div></div>
+    <div class="keymsg"><span class="k">기준</span><div>에이전트는 <b>모델이 스스로 다음 수를 정하는 구조</b>다. 코드가 정하면 워크플로다. 뒤쪽 <b>부록</b>은 공정 데이터를 다루는 별도 한 벌이다.</div></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 에이전트란">
+  <div class="ghost">00</div>
+  <div class="seyebrow">CHAPTER 00</div>
+  <h2>에이전트란</h2>
+  <div class="agenda"><span>어원</span><span>워크플로와의 차이</span><span>언제 쓰나</span></div>
+</section>
+<section class="slide" data-title="어원 · agent">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>어원</div>
+  <h2 class="s-title sm">agent의 어원</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">L</span><div>라틴어 <b>agere</b> — ‘하다·행하다’</div></div><div class="v"><span class="b">→</span><div><b>agent</b> = 행위를 하는 자 · 대리인</div></div></div></div><div class="formula"><div class="big">agere (행하다)</div><div class="big" style="color:#C792FF">→ agent = 행위 주체</div></div></div><div class="keymsg"><span class="k">감각</span><div>‘여행 에이전트·부동산 에이전트’처럼 — <b>목표를 받아 나 대신 행동</b>하는 존재.</div></div></div>
+</section>
+<section class="slide" data-title="직관 · 일상 속 에이전트">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>직관</div>
+  <h2 class="s-title sm">일상 속 에이전트</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div><b>여행 에이전트</b> — 나 대신 알아보고 예약한다</div></div><div class="v"><span class="b">→</span><div><b>비서</b> — 목표만 주면 스스로 처리한다</div></div><div class="v"><span class="b">★</span><div>공통점 — <b>목표 → 스스로 판단 → 대신 행동</b></div></div></div><div class="keymsg"><span class="k">연결</span><div>소프트웨어 에이전트도 똑같다 — 목표를 주면 <b>스스로 판단해 도구로 행동</b>한다.</div></div></div>
+</section>
+<section class="slide" data-title="AI에서의 에이전트">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>배경</div>
+  <h2 class="s-title sm">AI에서의 에이전트</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>고전 AI — 환경을 <b>지각</b>하고 <b>행동</b>하는 것</div></div><div class="v"><span class="b">→</span><div>강화학습 — <b>상태→행동→보상</b>의 반복 루프</div></div><div class="v"><span class="b">i</span><div>깊게는 안 간다 — <b>‘루프’</b> 개념만 챙기면 충분</div></div></div></div><div class="formula"><div class="big">지각 → 행동</div><div class="big" style="color:#82D3FF">→ 결과 → 다시</div></div></div><div class="keymsg"><span class="k">챙길 것</span><div>‘관찰→행동→관찰’의 <b>루프</b> — 이 루프의 판단을 LLM 이 맡으면 LLM 에이전트다.</div></div></div>
+</section>
+<section class="slide" data-title="LLM 에이전트">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>전환</div>
+  <h2 class="s-title sm">LLM 에이전트</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div>판단부(무엇을 할까)를 <b>대형 언어모델</b>로</div></div><div class="v"><span class="b">→</span><div>LLM이 <b>도구 선택·추론</b>을 자연어로 수행</div></div><div class="v"><span class="b">★</span><div>여기에 <b>도구 + 루프</b>를 붙이면 에이전트</div></div></div><div class="keymsg"><span class="k">핵심</span><div>LLM 에이전트 = <b>LLM을 두뇌로</b>, 도구와 루프로 감싼 행위 주체.</div></div></div>
+</section>
+<section class="slide" data-title="[그림] 워크플로 vs 에이전트">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>한눈에</div>
+  <h2 class="s-title sm">코드가 정하나, 모델이 정하나</h2>
+  <div class="rule"></div>
+  <div class="body" style="justify-content:center;padding-top:4px">
+    <div><img src="assets/workflow-vs-agent.webp" alt="워크플로(정해진 경로)와 에이전트(모델이 결정) 비교" style="display:block;margin:0 auto;max-width:100%;max-height:452px;border-radius:10px;border:1px solid var(--line)"/></div>
+  </div>
+</section>
+<section class="slide" data-title="언제 에이전트를 쓰나">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>판단</div>
+  <h2 class="s-title sm">에이전트를 쓸 자리와 피할 자리</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twopane"><div class="pane good"><h4>쓸 때</h4><p><b>경로를 미리 못 정하는</b> 개방형 문제. 단계 수를 알 수 없을 때.</p><div class="mini">유연함이 필요</div></div><div class="pane bad"><h4>피할 때</h4><p>프롬프트·검색·예시로 <b>충분한</b> 경우.</p><div class="mini">지연·비용↑ 거래</div></div></div><div class="keymsg"><span class="k">원칙</span><div>단순한 걸로 되면 에이전트를 <b>쓰지 마라</b> — 필요할 때만.</div></div></div>
+</section>
+<section class="slide section" data-title="[섹션] 무엇으로 이루어지나">
+  <div class="ghost">01</div>
+  <div class="seyebrow">CHAPTER 01</div>
+  <h2>무엇으로 이루어지나</h2>
+  <div class="agenda"><span>세 기둥</span><span>ReAct</span><span>도구</span></div>
+</section>
+<section class="slide" data-title="세 기둥">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>지도</div>
+  <h2 class="s-title sm">에이전트의 세 기둥</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="cards c3"><div class="card"><span class="n">두뇌</span><h3>LLM</h3><p>판단의 중심.</p></div><div class="card"><span class="n">01</span><h3>계획</h3><p>쪼개고, 되돌아본다.</p></div><div class="card"><span class="n">02</span><h3>기억</h3><p>단기(대화)·장기(검색).</p></div><div class="card"><span class="n">03</span><h3>도구</h3><p>바깥과 상호작용.</p></div></div><div class="keymsg"><span class="k">범위</span><div>이론은 여기까지 — 세부 알고리즘은 <b>생략</b>. 나머지는 코드로.</div></div></div>
+</section>
+<section class="slide" data-title="계획 개요">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>계획</div>
+  <h2 class="s-title sm">계획 (Planning)</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twopane"><div class="pane good"><h4>쪼개기</h4><p>큰 목표를 <b>작은 단계</b>로 나눈다.</p><div class="mini">Chain of Thought</div></div><div class="pane good"><h4>되돌아보기</h4><p>결과를 보고 <b>다음을 고친다</b>.</p><div class="mini">ReAct · self-correction</div></div></div><div class="keymsg"><span class="k">실전</span><div>뒤에 나오는 <b>멀티스텝</b>과 <b>자기수정</b>이 각각 이 둘이다.</div></div></div>
+</section>
+<section class="slide" data-title="Chain of Thought">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>CoT</div>
+  <h2 class="s-title sm">Chain of Thought</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>중간 <b>추론 과정</b>을 펼치게 한다</div></div><div class="v"><span class="b">→</span><div>어려운 문제를 <b>쉬운 단계들</b>로</div></div><div class="v"><span class="b">i</span><div>가장 단순하고 강력한 기법</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">cot.txt</span></div><pre><code><span class="cm"># 프롬프트에 한 줄</span>
+"차근차근 <span class="st">단계별로</span> 생각해줘."
+
+<span class="cm"># 모델이 중간 단계를 스스로 펼친다</span></code></pre></div></div></div>
+</section>
+<section class="slide" data-title="ReAct · 어원">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>ReAct</div>
+  <h2 class="s-title sm">ReAct = Reason + Act</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">Re</span><div><b>Reason</b> — 무엇을 할지 <b>생각</b></div></div><div class="v"><span class="b">Act</span><div><b>Act</b> — 도구로 <b>행동</b></div></div><div class="v"><span class="b">→</span><div>생각·행동·관찰을 <b>번갈아</b></div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">react.txt</span></div><pre><code><span class="kw">Thought</span>: 연차 규정을 찾아야겠다
+<span class="kw">Action</span>: search_docs(<span class="st">"연차"</span>)
+<span class="kw">Observation</span>: 3영업일 전
+<span class="kw">Thought</span>: 답할 수 있다 → 종료</code></pre></div></div><div class="keymsg"><span class="k">핵심</span><div><b>ReAct 를 코드로 옮긴 것</b>이 에이전트다.</div></div></div>
+</section>
+<section class="slide" data-title="ReAct · 흐름">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>ReAct</div>
+  <h2 class="s-title sm">ReAct 루프의 흐름</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="pipe"><div class="step"><div class="si">1</div><div class="sn">Thought</div><div class="sd">무엇을 할까</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">2</div><div class="sn">Action</div><div class="sd">도구 호출</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">3</div><div class="sn">Observation</div><div class="sd">결과 관찰</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">↻</div><div class="sn">반복</div><div class="sd">목표까지</div></div></div><div class="keymsg"><span class="k">연결</span><div>CH2 의 코드가 <b>이 그림 그대로</b>다.</div></div></div>
+</section>
+<section class="slide" data-title="[그림] ReAct vs function calling">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>한눈에</div>
+  <h2 class="s-title sm">텍스트 파싱 vs 구조화 호출</h2>
+  <div class="rule"></div>
+  <div class="body" style="justify-content:center;padding-top:4px">
+    <div><img src="assets/react-vs-function-calling.webp" alt="원래 ReAct(텍스트 파싱)와 요즘 function calling(구조화 호출) 비교" style="display:block;margin:0 auto;max-width:100%;max-height:452px;border-radius:10px;border:1px solid var(--line)"/></div>
+  </div>
+</section>
+<section class="slide" data-title="도구">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>도구</div>
+  <h2 class="s-title sm">도구 (Tool)</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>최신 정보·계산·행동을 <b>외부 도구</b>로</div></div><div class="v"><span class="b">→</span><div>모델에 <b>이름·설명·스키마</b>로 알린다(function calling)</div></div><div class="v"><span class="b">→</span><div>직접 만든 <b>MCP 서버</b>를 도구로 붙일 수 있다</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">tools.py</span></div><pre><code>tools = to_openai_tools(       <span class="cm"># MCP→함수 스펙</span>
+    <span class="kw">await</span> client.list_tools())
+<span class="cm"># 모델이 이 목록에서 골라 부른다</span></code></pre></div></div><div class="keymsg"><span class="k">문서화</span><div>도구 설명은 <b>모델용 프롬프트</b> — 구체적일수록 잘 고른다(Anthropic).</div></div></div>
+</section>
+<section class="slide" data-title="[그림] 단기·장기 기억">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>한눈에</div>
+  <h2 class="s-title sm">기억의 두 층</h2>
+  <div class="rule"></div>
+  <div class="body" style="justify-content:center;padding-top:4px">
+    <div><img src="assets/memory-short-long.webp" alt="단기기억(대화 messages)과 장기기억(벡터 검색·RAG)" style="display:block;margin:0 auto;max-width:100%;max-height:452px;border-radius:10px;border:1px solid var(--line)"/></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 직접 만들기">
+  <div class="ghost">02</div>
+  <div class="seyebrow">CHAPTER 02</div>
+  <h2>직접 만들기</h2>
+  <div class="agenda"><span>루프</span><span>시스템 프롬프트</span><span>안전장치</span></div>
+</section>
+<section class="slide" data-title="출발점 · run_agent">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>출발점</div>
+  <h2 class="s-title sm">run_agent — 최소 에이전트</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w2"><div><div class="vlist"><div class="v"><span class="b">→</span><div>아래 <b>run_agent</b> 열 줄이 이미 <b>ReAct 루프</b>다</div></div><div class="v"><span class="b">→</span><div>판단 → 도구 실행 → 관찰 → 반복</div></div><div class="v"><span class="b">★</span><div>이 한 줄에서 시작해 조건과 안전장치를 붙여 나간다</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">run_agent.py</span></div><pre><code><span class="kw">while</span> True:
+    msg = llm.chat(messages, tools)  <span class="cm"># 판단</span>
+    <span class="kw">if</span> <span class="kw">not</span> msg.tool_calls:
+        <span class="kw">return</span> msg.content         <span class="cm"># 종료</span>
+    run_tools(msg.tool_calls)        <span class="cm"># 행동·관찰</span></code></pre></div></div></div>
+</section>
+<section class="slide" data-title="루프의 세 단계">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>구조</div>
+  <h2 class="s-title sm">루프의 세 단계 — 판단 · 행동 · 관찰</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">1</span><div><b>판단</b> — 도구를 부를지/답할지 결정</div></div><div class="v"><span class="b">2</span><div><b>행동</b> — 고른 도구를 실행</div></div><div class="v"><span class="b">3</span><div><b>관찰</b> — 결과를 messages에 되먹인다</div></div><div class="v"><span class="b">↻</span><div><b>반복</b> — 도구를 더 안 부를 때까지</div></div></div><div class="keymsg"><span class="k">한 줄</span><div>이게 ReAct다 — <b>개념과 코드가 같은 그림</b>.</div></div></div>
+</section>
+<section class="slide" data-title="시스템 프롬프트">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>조종</div>
+  <h2 class="s-title sm">시스템 프롬프트</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>system 메시지 = 에이전트의 <b>성격·규칙·톤</b></div></div><div class="v"><span class="b">→</span><div>“필요하면 도구로 근거를 찾아라” 한 줄이 <b>도구 사용</b>을 좌우</div></div><div class="v"><span class="b">★</span><div>언제 도구 쓸지, 어떻게 답할지 <b>여기서</b> 정해진다</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">system.py</span></div><pre><code><span class="cm"># 에이전트의 성격·규칙 = 첫 메시지</span>
+system = <span class="st">"너는 업무 비서다. 필요하면 도구로
+근거를 찾아 한국어로 간결히 답하라."</span>
+messages = [{<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: system}, ...]</code></pre></div></div><div class="keymsg"><span class="k">실전</span><div>같은 도구라도 <b>시스템 프롬프트가 행동을 바꾼다</b> — 먼저 여기를 손보라.</div></div></div>
+</section>
+<section class="slide" data-title="도구를 안 써야 할 때">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>판단</div>
+  <h2 class="s-title sm">도구를 안 부르는 편이 나은 경우</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div>간단한 질문·상식은 <b>그냥 답</b> — 도구는 비용·지연</div></div><div class="v"><span class="b">→</span><div>도구는 <b>‘모델이 모르는/바깥’</b> 일에만</div></div><div class="v"><span class="b">→</span><div>시스템 프롬프트로 “<b>필요할 때만</b> 도구” 지시</div></div></div><div class="keymsg"><span class="k">감각</span><div>좋은 에이전트는 도구를 <b>‘안 쓸 때’</b>도 안다.</div></div></div>
+</section>
+<section class="slide" data-title="[그림] 루프 탈출 조건">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>한눈에</div>
+  <h2 class="s-title sm">무한 루프를 막는 조건</h2>
+  <div class="rule"></div>
+  <div class="body" style="justify-content:center;padding-top:4px">
+    <div><img src="assets/loop-exit.webp" alt="while 루프와 에이전트 루프의 탈출(종료) 조건" style="display:block;margin:0 auto;max-width:100%;max-height:452px;border-radius:10px;border:1px solid var(--line)"/></div>
+  </div>
+</section>
+<section class="slide" data-title="안전장치">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>안전</div>
+  <h2 class="s-title sm">안전장치 — max_steps</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div><b>반복 한도</b> — 같은 실수를 무한 반복하지 않게</div></div><div class="v"><span class="b">→</span><div><b>비용 감각</b> — 스텝마다 토큰이 쌓인다</div></div><div class="v"><span class="b">→</span><div><b>위험 도구는 확인</b> — 삭제·결제는 사람에게 되묻는다</div></div></div><div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></div><div class="ct"><h4>주의</h4><p>자율성이 클수록 안전장치가 중요 — <b>한도·확인·로그</b>는 기본.</p></div></div></div>
+</section>
+<section class="slide" data-title="멀티스텝">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>실전</div>
+  <h2 class="s-title sm">멀티스텝</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w2"><div><div class="vlist"><div class="v"><span class="b">→</span><div>검색하고 → 그 결과로 또 행동</div></div><div class="v"><span class="b">→</span><div>루프가 <b>여러 번</b> 돈다</div></div><div class="v"><span class="b">★</span><div>로그 <b>[LLM → 도구]</b>가 몇 번 찍히는지 보라</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">multistep.log</span></div><pre><code>Q: 보고서 할일 추가하고 목록 보여줘
+  [LLM → 도구] add_task(...)
+  [LLM → 도구] list_tasks(...)
+A: 추가했고, 현재 3건입니다.</code></pre></div></div></div>
+</section>
+<section class="slide" data-title="병렬 호출 vs 순차 의존">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>구분</div>
+  <h2 class="s-title sm">병렬 호출 vs 순차 의존</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="cards c2">
+    <div class="card"><span class="n">루프 1회</span><h3>병렬 호출</h3><p>“추가하고 목록 보여줘” — 도구 두 개를 <b>한 번에</b> 부르면 끝. 순차 판단이 <b>아니다</b>.</p></div>
+    <div class="card" style="border-color:#CFEDE7;background:#F3FBF9"><span class="n">루프 2회 이상</span><h3>순차 의존</h3><p>“<b>마지막</b> 할 일의 우선순위를 높음으로” — <b>id를 알아낸 뒤</b>라야 다음 도구를 부를 수 있다.</p></div>
+  </div>
+  <div class="code sm" style="margin-top:16px"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">trace</span></div><pre><code>  [루프 <span class="nm">1</span>] list_tasks({})              <span class="cm"># 여기서 id를 알아낸다</span>
+  [루프 <span class="nm">2</span>] set_priority({<span class="st">'task_id'</span>: <span class="nm">3</span>, ...})   <span class="cm"># ← 앞 결과가 있어야 가능</span>
+
+→ 도구를 부른 루프 <span class="nm">2</span>회
+<span class="st">✅ 진짜 멀티스텝 — 앞 결과를 보고 '다음' 도구를 정했다</span></code></pre></div>
+  <div class="keymsg" style="margin-top:14px"><span class="k">확인법</span><div>도구를 부른 루프가 <b>2회 이상</b>이면 멀티스텝이다. 로그를 세면 바로 나온다.</div></div></div>
+</section>
+<section class="slide" data-title="계획 먼저 (plan-and-execute)">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>패턴</div>
+  <h2 class="s-title sm">Plan-and-Execute</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div>즉흥(ReAct) 대신 <b>먼저 계획</b>을 세우게</div></div><div class="v"><span class="b">→</span><div>계획 → 단계별 실행 → (막히면) 재계획</div></div><div class="v"><span class="b">★</span><div>단계가 많은 일에서 <b>갈피를 덜 잃는다</b></div></div></div><div class="pipe q" style="margin-top:14px"><div class="step"><div class="si">1</div><div class="sn">계획</div><div class="sd">단계 나열</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">2</div><div class="sn">실행</div><div class="sd">하나씩</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">↻</div><div class="sn">재계획</div><div class="sd">필요시</div></div></div><div class="keymsg" style="margin-top:14px"><span class="k">선택</span><div>짧은 일은 ReAct(즉흥), 긴 일은 plan-execute(선계획) — 상황에 맞게.</div></div></div>
+</section>
+<section class="slide" data-title="메모리 붙이기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>기억</div>
+  <h2 class="s-title sm">메모리 — 대화 유지</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w2"><div><div class="vlist"><div class="v"><span class="b">→</span><div>매 호출이 새 대화면 <b>기억이 없다</b></div></div><div class="v"><span class="b">→</span><div>messages를 <b>여러 질문에 걸쳐</b> 유지</div></div><div class="v"><span class="b">★</span><div>“방금 그 작업” 같은 지시가 풀린다</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">agent.py</span></div><pre><code><span class="kw">class</span> Agent:
+    <span class="kw">def</span> __init__(self, system):
+        self.messages = [system]   <span class="cm"># 유지</span>
+    <span class="kw">async def</span> ask(self, q): ...   <span class="cm"># 위에 쌓기</span></code></pre></div></div></div>
+</section>
+<section class="slide" data-title="self-correction">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>자기수정</div>
+  <h2 class="s-title sm">Self-correction — 에러 되먹임</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w2"><div><div class="vlist"><div class="v"><span class="b">✕</span><div>에러로 <b>루프가 죽으면</b> 자기수정 불가</div></div><div class="v"><span class="b">✓</span><div>에러를 <b>결과처럼 되먹이면</b> 고쳐 재시도</div></div><div class="v"><span class="b">★</span><div>에러 문구가 곧 다음 행동의 힌트가 된다</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">selfcorrect.py</span></div><pre><code><span class="kw">try</span>:
+    out = call_tool(tc.name, tc.args)
+<span class="kw">except</span> Exception <span class="kw">as</span> e:
+    out = <span class="st">f"오류: {e}"</span>       <span class="cm"># 죽지 말고</span>
+messages.append(result(out))     <span class="cm"># 되먹임</span></code></pre></div></div></div>
+</section>
+<section class="slide" data-title="도구 설계 원칙">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>원칙</div>
+  <h2 class="s-title sm">도구 설계 원칙</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div><b>하나의 일</b>만 — 여러 일 하면 오용된다</div></div><div class="v"><span class="b">→</span><div>이름·설명은 <b>구체적으로</b> (모델용 프롬프트)</div></div><div class="v"><span class="b">→</span><div><b>친절한 에러</b> — 고칠 방법을 알려준다</div></div><div class="v"><span class="b">→</span><div><b>예측 가능한 반환</b> — 구조화 출력</div></div></div><div class="keymsg"><span class="k">감각</span><div>도구 목록은 곧 <b>모델의 메뉴판</b> — 깔끔할수록 잘 고른다.</div></div></div>
+</section>
+<section class="slide" data-title="흔한 실수·팁">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>팁</div>
+  <h2 class="s-title sm">흔한 실수와 팁</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div><b>tool_calls를 messages에 안 넣음</b> → 대화가 깨진다</div></div><div class="v"><span class="b">→</span><div><b>종료조건 없음</b> → 무한 루프. 항상 한도를</div></div><div class="v"><span class="b">→</span><div><b>에러에서 죽음</b> → try/except로 되먹여라</div></div><div class="v"><span class="b">→</span><div><b>thinking 모드</b> → 토큰 폭주. -instruct + 끄기</div></div></div><div class="keymsg"><span class="k">감각</span><div>에이전트 디버깅의 8할은 <b>‘로그를 찍어’ 흐름을 보는 것</b>.</div></div></div>
+</section>
+<section class="slide" data-title="관찰·디버깅 (트레이싱)">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>관찰</div>
+  <h2 class="s-title sm">트레이싱 — 관찰과 디버깅</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div>에이전트는 <b>블랙박스</b>가 되기 쉽다 — 스텝을 찍어라</div></div><div class="v"><span class="b">→</span><div>기본 — <b>print 로그</b>: 어떤 도구를 어떤 인자로 불렀나</div></div><div class="v"><span class="b">→</span><div>실무 — <b>트레이싱 도구</b>(LangSmith 등)로 흐름·토큰·지연을 한눈에</div></div></div><div class="keymsg"><span class="k">실전</span><div>안 보이면 못 고친다 — <b>흐름을 눈으로 보는 것</b>이 먼저.</div></div></div>
+</section>
+<section class="slide section" data-title="[섹션] 컨텍스트 엔지니어링">
+  <div class="ghost">03</div>
+  <div class="seyebrow">CHAPTER 03</div>
+  <h2>컨텍스트 엔지니어링</h2>
+  <div class="agenda"><span>유한 자원</span><span>네 가지 기법</span><span>고르는 법</span></div>
+</section>
+<section class="slide" data-title="배경 — 프롬프트에서 컨텍스트로">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>배경</div>
+  <h2 class="s-title sm">질의응답에서 에이전트로</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div><h4 style="margin:0 0 8px">단발 질의응답 시대</h4><div class="vlist"><div class="v"><span class="b">→</span><div>내가 쓴 <b>프롬프트 한 덩어리</b>가 입력의 전부였다.</div></div><div class="v"><span class="b">→</span><div>잘 쓰는 법 = <b>프롬프트 엔지니어링</b>.</div></div><div class="v"><span class="b">→</span><div>대화가 끝나면 컨텍스트도 끝났다.</div></div></div></div></div><div><div><h4 style="margin:0 0 8px">에이전트 시대</h4><div class="vlist"><div class="v"><span class="b">→</span><div>루프가 돌면서 <b>도구 결과·파일 내용·에러</b>가 계속 쌓인다.</div></div><div class="v"><span class="b">→</span><div>내가 안 써도 <b>컨텍스트가 저절로 자란다</b>.</div></div><div class="v"><span class="b">★</span><div>이제 문제는 <b>무엇을 남기고 무엇을 버리느냐</b>다.</div></div></div></div></div></div><div class="keymsg"><span class="k">그래서</span><div>프롬프트를 잘 쓰는 것만으로 부족해졌다. <b>컨텍스트를 관리하는 일</b>이 별도의 기술이 됐다.</div></div></div>
+</section>
+<section class="slide" data-title="긴 컨텍스트의 함정">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>역설</div>
+  <h2 class="s-title sm">긴 컨텍스트의 함정</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>컨텍스트 윈도우는 계속 커졌다 — 수만 토큰에서 <b>수십만·백만</b>까지.</div></div><div class="v"><span class="b">✕</span><div>그런데 <b>넣을 수 있다고 다 넣으면 오히려 나빠진다</b>.</div></div><div class="v"><span class="b">→</span><div><b>lost in the middle</b> — 긴 입력의 <b>가운데</b>에 둔 정보를 모델이 잘 못 쓴다.</div></div><div class="v"><span class="b">→</span><div><b>context rot</b> — 길어질수록 관계 파악이 흐려지고 앞서 본 규칙을 잊는다.</div></div><div class="v"><span class="b">→</span><div>비용 — 매 턴마다 <b>전체를 다시 보낸다</b>. 길수록 매 턴이 비싸진다.</div></div></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">에이전트 한 세션의 실제 컨텍스트</span></div><pre><code>system  프롬프트 · 룰(CLAUDE.md)
++ tools  도구 스펙 전부
++ 파일    read_file 로 읽은 내용
++ 결과    도구 호출 결과 (에러 포함)
++ 대화    지금까지의 모든 턴
+
+= 루프가 돌수록 계속 커진다</code></pre></div></div></div><div class="keymsg"><span class="k">전환</span><div>질문이 바뀐다 — <b>무엇을 넣을까</b>가 아니라 <b>무엇을 빼도 되는가</b>.</div></div></div>
+</section>
+<section class="slide" data-title="[그림] 컨텍스트 엔지니어링 한눈에">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>한눈에</div>
+  <h2 class="s-title sm">컨텍스트 예산과 우선순위</h2>
+  <div class="rule"></div>
+  <div class="body" style="justify-content:center;padding-top:4px"><div style="text-align:center"><img src="assets/context-engineering-overview.webp" alt="컨텍스트 엔지니어링 — 문제(정보는 많은데 컨텍스트 창은 제한적) · 기존 방식(다 넣거나 적당히 자르기) · 해결(선별·구성·배치·전달)" style="display:block;margin:0 auto;max-width:100%;max-height:470px;border-radius:10px;border:1px solid var(--line)"/></div></div>
+</section>
+<section class="slide" data-title="컨텍스트 = 유한 자원">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>관점</div>
+  <h2 class="s-title sm">컨텍스트는 유한 자원</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div>토큰이 늘수록 정확도가 떨어진다(<b>context rot</b>)</div></div><div class="v"><span class="b">→</span><div>주의(attention)는 유한 — 길수록 관계 파악이 흐려진다</div></div><div class="v"><span class="b">★</span><div>목표 — <b>가장 작은 고신호 토큰 집합</b>을 찾는 것</div></div></div><div class="keymsg"><span class="k">전환</span><div>‘다 넣기’가 아니라 <b>‘꼭 필요한 것만’</b> — 이게 컨텍스트 엔지니어링.</div></div></div>
+</section>
+<section class="slide" data-title="컨텍스트의 구성 요소">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>구성</div>
+  <h2 class="s-title sm">컨텍스트의 구성 요소</h2>
+  <div class="rule"></div>
+  <div class="body"><table class="ctable"><thead><tr><th>요소</th><th>원칙</th></tr></thead><tbody><tr><td><b>시스템 프롬프트</b></td><td>명확하게 — 너무 구체(brittle)도 너무 추상(vague)도 아니게</td></tr><tr><td><b>도구</b></td><td>기능 중복 없이, <b>토큰 효율적</b> 결과</td></tr><tr><td><b>예시(few-shot)</b></td><td>엣지 나열 말고 <b>대표 사례</b>로</td></tr><tr><td><b>히스토리</b></td><td>동적으로 <b>필요한 부분만</b></td></tr><tr><td><b>검색 결과</b></td><td>필요할 때만(just-in-time) 로드</td></tr></tbody></table><div class="keymsg"><span class="k">한 줄</span><div>각 요소가 <b>윈도우를 두고 경쟁</b>한다 — 신호 대비 토큰을 따진다.</div></div></div>
+</section>
+<section class="slide" data-title="기법 1 · Compaction">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>기법</div>
+  <h2 class="s-title sm">기법 1 — Compaction</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>한계에 다다른 대화를 <b>요약</b>해 새 윈도우로</div></div><div class="v"><span class="b">→</span><div><b>결정·미해결 버그는 보존</b>, 중복 출력은 제거</div></div><div class="v"><span class="b">→</span><div>긴 왕복 작업에서 <b>연속성</b>을 지킨다</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">compaction</span></div><pre><code><span class="cm"># 대화가 길어지면</span>
+요약 = summarize(old_messages)
+messages = [system, 요약] + recent   <span class="cm"># 새 윈도우</span></code></pre></div></div><div class="keymsg"><span class="k">언제</span><div>왕복이 많은 <b>긴 작업</b>에 — Claude Code의 자동 컴팩션이 이것.</div></div></div>
+</section>
+<section class="slide" data-title="기법 2 · 구조화된 메모">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>기법</div>
+  <h2 class="s-title sm">기법 2 — 구조화된 메모</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div>중요한 걸 <b>컨텍스트 밖 메모리</b>에 적는다</div></div><div class="v"><span class="b">→</span><div>예 — <b>TODO 리스트</b>, 진행 상황 노트</div></div><div class="v"><span class="b">→</span><div>장기 작업에서 <b>의존성·결정</b>을 잃지 않는다</div></div></div><div class="callout mint"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></div><div class="ct"><h4>비유</h4><p>머릿속에만 담지 말고 <b>수첩에 적는다</b> — 나중에 그 수첩만 다시 본다.</p></div></div></div>
+</section>
+<section class="slide" data-title="기법 3 · 서브에이전트 격리">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>기법</div>
+  <h2 class="s-title sm">기법 3 — 서브에이전트 격리</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div>메인은 <b>고수준 계획</b>, 서브는 <b>깊은 탐색</b></div></div><div class="v"><span class="b">→</span><div>서브는 광범위하게 보고 <b>1~2천 토큰 요약</b>만 반환</div></div><div class="v"><span class="b">→</span><div>메인 컨텍스트를 <b>깨끗하게</b> 유지</div></div></div><div class="keymsg"><span class="k">이득</span><div>복잡한 조사에서 <b>병렬 탐색 + 컨텍스트 절약</b>을 동시에.</div></div></div>
+</section>
+<section class="slide" data-title="기법 4 · Just-in-time">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>기법</div>
+  <h2 class="s-title sm">기법 4 — Just-in-time 로딩</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>전부 로드하지 말고 <b>가벼운 식별자</b>(경로·링크)만</div></div><div class="v"><span class="b">→</span><div>런타임에 도구로 <b>필요한 것만</b> 로드</div></div><div class="v"><span class="b">→</span><div>점진적 발견 — 맥락을 <b>그때그때</b> 채운다</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">jit.py</span></div><pre><code><span class="cm"># 미리: 경로만</span>
+files = list_files()          <span class="cm"># 식별자만</span>
+<span class="cm"># 필요할 때: 내용</span>
+text = read(files[i])         <span class="cm"># 그때 로드</span></code></pre></div></div><div class="keymsg"><span class="k">연결</span><div>이틀 뒤에 다루는 <b>RAG</b> 가 곧 just-in-time 검색이다.</div></div></div>
+</section>
+<section class="slide" data-title="기법 선택 가이드">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>선택</div>
+  <h2 class="s-title sm">기법 선택 가이드</h2>
+  <div class="rule"></div>
+  <div class="body"><table class="ctable"><thead><tr><th>기법</th><th>최적 상황</th></tr></thead><tbody><tr><td><b>Compaction</b></td><td>왕복이 많은 긴 대화</td></tr><tr><td><b>구조화 메모</b></td><td>마일스톤 있는 반복 개발</td></tr><tr><td><b>서브에이전트</b></td><td>병렬 탐색이 이득인 복잡한 조사</td></tr><tr><td><b>Just-in-time</b></td><td>동적·자주 바뀌는 데이터</td></tr></tbody></table><div class="keymsg"><span class="k">실전</span><div>하나만 쓰기보다 <b>섞어서</b> — 일부 미리, 나머지는 필요할 때.</div></div></div>
+</section>
+<section class="slide section" data-title="[섹션] 한계와 원칙">
+  <div class="ghost">04</div>
+  <div class="seyebrow">CHAPTER 04</div>
+  <h2>한계와 원칙</h2>
+  <div class="agenda"><span>못 하는 것</span><span>안전</span><span>정리</span></div>
+</section>
+<section class="slide" data-title="한계">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>한계</div>
+  <h2 class="s-title sm">에이전트의 한계</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="biglist"><div class="li"><div class="num">1</div><div class="tx"><h4>유한 문맥</h4><p>대화·도구 응답이 문맥 창을 넘치면 잊는다 → CH3.</p></div></div><div class="li"><div class="num">2</div><div class="tx"><h4>긴 계획</h4><p>여러 단계 계획·예외 조정이 아직 서툴다.</p></div></div><div class="li"><div class="num">3</div><div class="tx"><h4>형식 신뢰성</h4><p>출력이 형식을 어길 수 있다 → 검증 필요.</p></div></div></div></div>
+</section>
+<section class="slide" data-title="안전과 원칙">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>원칙</div>
+  <h2 class="s-title sm">안전과 설계 원칙</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twopane"><div class="pane good"><h4>안전</h4><p><b>한도</b>로 폭주 막고, <b>되돌릴 수 없는 행동</b>은 확인받고, <b>로그</b>로 감사.</p><div class="mini">사람이 개입할 여지를</div></div><div class="pane good"><h4>원칙</h4><p><b>단순함</b> · 계획을 <b>투명</b>하게 · 도구 <b>문서화</b>.</p><div class="mini">필요에 맞는 시스템</div></div></div><div class="keymsg"><span class="k">한 줄</span><div>성공 = 가장 정교한 게 아니라 <b>필요에 맞는</b> 시스템을 짓는 것.</div></div></div>
+</section>
+<section class="slide section" data-title="[섹션] 부록 · 공정 데이터로 불량 미리 잡기">
+  <div class="seyebrow">APPENDIX</div>
+  <h2>부록 — 공정 데이터로 불량 미리 잡기</h2>
+  <p>표를 밖으로 내보내지 않고 Codex 로 전처리·예측·웹 앱까지 붙이는 한 벌이다.</p>
+  <div class="agenda"><span>반출 없이</span><span>전처리</span><span>예측과 검증</span><span>웹 앱</span></div>
+</section>
+<section class="slide" data-title="부록에서 다루는 것">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>부록</div>
+  <h2 class="s-title">부록이 다루는 네 단계</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c4">
+      <div class="card"><span class="n">CH5</span><h3>데이터를 안 보내고</h3><p>표를 통째로 올리면 유출이다. 모양만 보내고 코드를 받는다.</p></div>
+      <div class="card"><span class="n">CH6</span><h3>전처리</h3><p>결측 · 이상치 · 글자 열. 손대는 순서가 정해져 있다.</p></div>
+      <div class="card"><span class="n">CH7</span><h3>예측과 검증</h3><p>정확도 하나로 속지 않는다. 놓친 불량을 센다.</p></div>
+      <div class="card"><span class="n">CH8</span><h3>웹 앱에 붙이기</h3><p>만든 모듈을 화면 뒤에 놓는다.</p></div>
+    </div>
+    <div class="keymsg"><span class="k">기준</span><div>부록의 모든 수치는 <b>공정 데이터 1,412건을 실제로 돌려</b> 뽑은 것이다.</div></div>
   </div>
 </section>
 <section class="slide section" data-title="[섹션] 원본 없이 코드 받기">
-  <div class="ghost">00</div>
-  <div class="seyebrow">CHAPTER 00</div>
+  <div class="ghost">05</div>
+  <div class="seyebrow">CHAPTER 05</div>
   <h2>원본 없이 코드 받기</h2>
   <div class="agenda"><span>유출</span><span>스키마</span><span>가짜 표본</span></div>
 </section>
-<section class="slide" data-title="오늘 푸는 문제">
+<section class="slide" data-title="부록이 푸는 문제">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>문제</div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>문제</div>
   <h2 class="s-title">엑셀 1,412건과 반출 금지</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="plot"><svg viewBox="0 0 1116 194"><text x="14" y="18" font-size="11" fill="#8E8AAC" font-weight="700">하고 싶은 일</text><rect x="14" y="30" width="330" height="150" rx="9" fill="#F7F6FB" stroke="none" stroke-width="1"/><text x="34" y="58" font-size="13" fill="#16142B" font-weight="800">소성이 끝나기 전에</text><text x="34" y="80" font-size="13" fill="#16142B" font-weight="800">이 배치가 불량일지 안다면</text><text x="34" y="112" font-size="11" fill="#8E8AAC">·  미리 조건을 바꾼다</text><text x="34" y="134" font-size="11" fill="#8E8AAC">·  검사 인력을 그쪽에 붙인다</text><text x="34" y="156" font-size="11" fill="#8E8AAC">·  버리는 원료가 준다</text><text x="390" y="18" font-size="11" fill="#8E8AAC" font-weight="700">가진 것</text><rect x="390" y="30" width="330" height="150" rx="9" fill="#fff" stroke="#DCD6F0" stroke-width="1.4"/><text x="410" y="58" font-size="13" fill="#3A1FC9" font-weight="800">엑셀 한 장</text><text x="410" y="84" font-size="11" fill="#16142B">배치 1,412건 · 열 11개</text><text x="410" y="106" font-size="10" fill="#8E8AAC">소성온도 · 소성시간 · 입도 · 수분율</text><text x="410" y="126" font-size="10" fill="#8E8AAC">불순물 · 성형압력 · 설비호기 · 교대조</text><text x="410" y="156" font-size="11" fill="#E8537A" font-weight="800">결과: 양품 1,147 · 불량 265</text><text x="766" y="18" font-size="11" fill="#8E8AAC" font-weight="700">막는 것</text><rect x="766" y="30" width="336" height="150" rx="9" fill="#FDEFF3" stroke="#F6C7D5" stroke-width="1"/><text x="786" y="58" font-size="13" fill="#E8537A" font-weight="800">이 표를 밖으로 보낼 수 없다</text><text x="786" y="86" font-size="11" fill="#16142B">Codex 든 ChatGPT 든</text><text x="786" y="106" font-size="11" fill="#16142B">붙여 넣는 순간 반출이다</text><text x="786" y="138" font-size="10.4" fill="#8E8AAC">규정이 막으면</text><text x="786" y="158" font-size="10.4" fill="#8E8AAC">기술 이야기는 의미가 없다</text></svg></div>
 <div class="vlist"><div class="v"><span class="b">&rarr;</span><div><b>도구를 못 쓰는 것이 아니다.</b> 데이터를 안 보내면서 도구를 쓰는 방법이 있다.</div></div></div>
-    <div class="keymsg"><span class="k">오늘</span><div>데이터는 <b>내 노트북에서만</b> 돌고, 밖으로 나가는 것은 <b>표의 모양</b>뿐이다.</div></div>
+    <div class="keymsg"><span class="k">전제</span><div>데이터는 <b>내 노트북에서만</b> 돌고, 밖으로 나가는 것은 <b>표의 모양</b>뿐이다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="스키마와 값">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>기준</div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>기준</div>
   <h2 class="s-title">스키마와 값</h2>
   <div class="rule"></div>
   <div class="body">
@@ -402,7 +785,7 @@
 </section>
 <section class="slide" data-title="info() 와 describe()">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>코드</div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>코드</div>
   <h2 class="s-title">info() · describe() 의 출력</h2>
   <div class="rule"></div>
   <div class="body">
@@ -423,7 +806,7 @@ df.isna().sum()</code></pre></div></div>
 </section>
 <section class="slide" data-title="Codex 에 넣는 프롬프트">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>프롬프트</div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>프롬프트</div>
   <h2 class="s-title">역할 · 데이터 · 할 일 · 형식</h2>
   <div class="rule"></div>
   <div class="body">
@@ -445,14 +828,14 @@ df.isna().sum()</code></pre></div></div>
   </div>
 </section>
 <section class="slide section" data-title="[섹션] 전처리">
-  <div class="ghost">01</div>
-  <div class="seyebrow">CHAPTER 01</div>
+  <div class="ghost">06</div>
+  <div class="seyebrow">CHAPTER 06</div>
   <h2>전처리</h2>
   <div class="agenda"><span>결측</span><span>이상치</span><span>글자 열</span><span>누수</span></div>
 </section>
 <section class="slide" data-title="전처리 순서">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>순서</div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>순서</div>
   <h2 class="s-title">읽기 → 이상치 → 결측 → 인코딩 → 분할</h2>
   <div class="rule"></div>
   <div class="body">
@@ -462,7 +845,7 @@ df.isna().sum()</code></pre></div></div>
 </section>
 <section class="slide" data-title="이상치">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>실측</div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>실측</div>
   <h2 class="s-title">성형압력 999 가 18건</h2>
   <div class="rule"></div>
   <div class="body">
@@ -473,7 +856,7 @@ df.isna().sum()</code></pre></div></div>
 </section>
 <section class="slide" data-title="결측">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>선택</div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>선택</div>
   <h2 class="s-title">입도 112건 · 수분율 73건</h2>
   <div class="rule"></div>
   <div class="body">
@@ -484,7 +867,7 @@ df.isna().sum()</code></pre></div></div>
 </section>
 <section class="slide" data-title="분포와 산점도">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>실측</div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>실측</div>
   <h2 class="s-title">소성온도 분포와 불순물 산점도</h2>
   <div class="rule"></div>
   <div class="body">
@@ -495,7 +878,7 @@ df.isna().sum()</code></pre></div></div>
 </section>
 <section class="slide" data-title="데이터 누수">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>함정</div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>함정</div>
   <h2 class="s-title">정확도 1.000 이라는 경고</h2>
   <div class="rule"></div>
   <div class="body">
@@ -504,14 +887,14 @@ df.isna().sum()</code></pre></div></div>
   </div>
 </section>
 <section class="slide section" data-title="[섹션] 예측과 검증">
-  <div class="ghost">02</div>
-  <div class="seyebrow">CHAPTER 02</div>
+  <div class="ghost">07</div>
+  <div class="seyebrow">CHAPTER 07</div>
   <h2>예측과 검증</h2>
   <div class="agenda"><span>모델 둘</span><span>정확도의 함정</span><span>임계</span></div>
 </section>
 <section class="slide" data-title="모델 둘의 성적">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>실측</div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>실측</div>
   <h2 class="s-title">로지스틱 0.904 · 랜덤포레스트 0.966</h2>
   <div class="rule"></div>
   <div class="body">
@@ -522,7 +905,7 @@ df.isna().sum()</code></pre></div></div>
 </section>
 <section class="slide" data-title="무엇을 놓쳤나">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>실측</div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>실측</div>
   <h2 class="s-title">놓친 불량 9건 · 헛경보 3건</h2>
   <div class="rule"></div>
   <div class="body">
@@ -532,7 +915,7 @@ df.isna().sum()</code></pre></div></div>
 </section>
 <section class="slide" data-title="임계를 낮추면">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>실측</div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>실측</div>
   <h2 class="s-title">임계 0.5 · 0.3 · 0.2</h2>
   <div class="rule"></div>
   <div class="body">
@@ -543,7 +926,7 @@ df.isna().sum()</code></pre></div></div>
 </section>
 <section class="slide" data-title="중요도">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>실측</div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>실측</div>
   <h2 class="s-title">소성온도 0.513 · 불순물 0.160</h2>
   <div class="rule"></div>
   <div class="body">
@@ -553,14 +936,14 @@ df.isna().sum()</code></pre></div></div>
   </div>
 </section>
 <section class="slide section" data-title="[섹션] 웹 앱에 붙이기">
-  <div class="ghost">03</div>
-  <div class="seyebrow">CHAPTER 03</div>
+  <div class="ghost">08</div>
+  <div class="seyebrow">CHAPTER 08</div>
   <h2>웹 앱에 붙이기</h2>
   <div class="agenda"><span>모듈로 떼기</span><span>화면</span><span>사내 적용</span></div>
 </section>
 <section class="slide" data-title="model.pkl">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>구조</div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>구조</div>
   <h2 class="s-title">model.pkl 로 갈라 두기</h2>
   <div class="rule"></div>
   <div class="body">
@@ -580,7 +963,7 @@ p = model.predict_proba(row)[0][0]
 </section>
 <section class="slide" data-title="화면 한 장">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>화면</div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>화면</div>
   <h2 class="s-title">판정 화면 한 장</h2>
   <div class="rule"></div>
   <div class="body">
@@ -590,13 +973,13 @@ p = model.predict_proba(row)[0][0]
 </section>
 <section class="slide" data-title="사내 적용">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>적용</div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>적용</div>
   <h2 class="s-title">사내 도구로의 이식</h2>
   <div class="rule"></div>
   <div class="body">
-    <div class="ctable"><table><thead><tr><th>오늘 쓴 것</th><th>사내에서는</th><th>바뀌는가</th></tr></thead><tbody><tr><td>Codex 로 코드 만들기</td><td>VS Code + 사내 LLM API</td><td>도구만 바뀐다</td></tr><tr><td>pandas · scikit-learn</td><td>그대로</td><td>안 바뀐다</td></tr><tr><td>모델 파일 (model.pkl)</td><td>그대로</td><td>안 바뀐다</td></tr><tr><td>웹 앱 띄우기</td><td>사내 배포 환경</td><td>도구만 바뀐다</td></tr><tr><td>원본 데이터</td><td class="hl">한 번도 밖으로 안 보냈다</td><td>옮길 것이 없다</td></tr></tbody></table></div>
+    <div class="ctable"><table><thead><tr><th>여기서 쓴 것</th><th>사내에서는</th><th>바뀌는가</th></tr></thead><tbody><tr><td>Codex 로 코드 만들기</td><td>VS Code + 사내 LLM API</td><td>도구만 바뀐다</td></tr><tr><td>pandas · scikit-learn</td><td>그대로</td><td>안 바뀐다</td></tr><tr><td>모델 파일 (model.pkl)</td><td>그대로</td><td>안 바뀐다</td></tr><tr><td>웹 앱 띄우기</td><td>사내 배포 환경</td><td>도구만 바뀐다</td></tr><tr><td>원본 데이터</td><td class="hl">한 번도 밖으로 안 보냈다</td><td>옮길 것이 없다</td></tr></tbody></table></div>
 <div class="vlist"><div class="v"><span class="b">&#9733;</span><div><b>데이터가 처음부터 안 나갔다.</b> 그래서 사내로 옮길 때 다시 검토할 것이 없다.</div></div><div class="v"><span class="b">&rarr;</span><div>바뀌는 것은 <b>코드를 만들어 주는 도구</b>와 <b>앱을 띄우는 곳</b>뿐이다. 전처리 · 모델 · 판정은 그대로다.</div></div></div>
-    <div class="keymsg"><span class="k">적용</span><div>오늘 배운 것 중 <b>도구는 바뀌고 방법은 남는다</b>. 그래서 도구가 막혀도 일은 된다.</div></div>
+    <div class="keymsg"><span class="k">적용</span><div><b>도구는 바뀌고 방법은 남는다</b>. 그래서 도구가 막혀도 일은 된다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="실습 · 내 데이터로">
@@ -617,10 +1000,10 @@ df.describe()</code></pre></div></div>
     <div class="keymsg"><span class="k">확인</span><div>한 번이라도 <b>값이 화면에 찍혔다면</b> 붙여 넣기 전에 지운다.</div></div>
   </div>
 </section>
-<section class="slide" data-title="오늘 얻은 것">
+<section class="slide" data-title="부록의 한 줄">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>정리</div>
-  <h2 class="s-title">오늘의 한 줄</h2>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>정리</div>
+  <h2 class="s-title">부록의 한 줄</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="cards c3">
@@ -629,18 +1012,18 @@ df.describe()</code></pre></div></div>
       <div class="card"><span class="n">검증</span><h3>적은 쪽을 본다</h3><p>전부 양품이라 찍어도 0.813 이다. 놓친 불량을 센다.</p></div>
     </div>
 <div class="vlist"><div class="v"><span class="b">&#9733;</span><div>정확도 1.000 이 나오면 <b>누수를 먼저 의심한다</b>. 예측 시점보다 뒤에 나오는 열이 섞였는지 본다.</div></div></div>
-    <div class="keymsg"><span class="k">결론</span><div>도구가 막혀도 <b>데이터를 안 보내고 일하는 방법</b>이 있다. 오늘 만든 것이 그대로 사내로 간다.</div></div>
+    <div class="keymsg"><span class="k">결론</span><div>도구가 막혀도 <b>데이터를 안 보내고 일하는 방법</b>이 있다. 여기서 만든 것이 그대로 사내로 간다.</div></div>
   </div>
 </section>
 <section class="slide section" data-title="[섹션] 반출을 막는 장치">
-  <div class="ghost">04</div>
-  <div class="seyebrow">CHAPTER 04</div>
+  <div class="ghost">09</div>
+  <div class="seyebrow">CHAPTER 09</div>
   <h2>반출을 막는 장치</h2>
   <div class="agenda"><span>경계</span><span>새는 경로</span><span>가짜 표</span></div>
 </section>
 <section class="slide" data-title="반출의 경계">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>판단</div>
+  <div class="eyebrow"><span class="tag">CH9</span><span class="dot"></span>판단</div>
   <h2 class="s-title">반출의 경계</h2>
   <div class="rule"></div>
   <div class="body">
@@ -651,7 +1034,7 @@ df.describe()</code></pre></div></div>
 </section>
 <section class="slide" data-title="값이 새는 세 경로">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>함정</div>
+  <div class="eyebrow"><span class="tag">CH9</span><span class="dot"></span>함정</div>
   <h2 class="s-title">에러 메시지 · 출력 · 화면 캡처</h2>
   <div class="rule"></div>
   <div class="body">
@@ -666,7 +1049,7 @@ df.dtypes               <span class='cm'># head() 말고</span></code></pre></di
 </section>
 <section class="slide" data-title="같은 모양의 가짜 표">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>방법</div>
+  <div class="eyebrow"><span class="tag">CH9</span><span class="dot"></span>방법</div>
   <h2 class="s-title">난수로 만든 sample.csv</h2>
   <div class="rule"></div>
   <div class="body">
@@ -684,14 +1067,14 @@ fake.to_csv('sample.csv', index=False)</code></pre></div></div>
   </div>
 </section>
 <section class="slide section" data-title="[섹션] 전처리 더 보기">
-  <div class="ghost">05</div>
-  <div class="seyebrow">CHAPTER 05</div>
+  <div class="ghost">10</div>
+  <div class="seyebrow">CHAPTER 10</div>
   <h2>전처리 더 보기</h2>
   <div class="agenda"><span>읽기</span><span>글자 열</span><span>스케일링</span><span>분할</span></div>
 </section>
 <section class="slide" data-title="첫 세 줄">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>시작</div>
+  <div class="eyebrow"><span class="tag">CH10</span><span class="dot"></span>시작</div>
   <h2 class="s-title">shape · dtypes · isna()</h2>
   <div class="rule"></div>
   <div class="body">
@@ -706,7 +1089,7 @@ df.isna().sum()   <span class='cm'># 어디가 비었나</span></code></pre><div
 </section>
 <section class="slide" data-title="읽는 방법">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>실측</div>
+  <div class="eyebrow"><span class="tag">CH10</span><span class="dot"></span>실측</div>
   <h2 class="s-title">쉼표 하나가 글자로 만든 열</h2>
   <div class="rule"></div>
   <div class="body">
@@ -723,7 +1106,7 @@ df['불순물'].head(3)</code></pre><div class="out">['1,024', '800', '871']  �
 </section>
 <section class="slide" data-title="글자 열 다듬기">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>실측</div>
+  <div class="eyebrow"><span class="tag">CH10</span><span class="dot"></span>실측</div>
   <h2 class="s-title">설비 여섯 대, 스물네 가지 표기</h2>
   <div class="rule"></div>
   <div class="body">
@@ -734,7 +1117,7 @@ df['불순물'].head(3)</code></pre><div class="out">['1,024', '800', '871']  �
 </section>
 <section class="slide" data-title="글자 열 펴기">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>변환</div>
+  <div class="eyebrow"><span class="tag">CH10</span><span class="dot"></span>변환</div>
   <h2 class="s-title">get_dummies</h2>
   <div class="rule"></div>
   <div class="body">
@@ -750,7 +1133,7 @@ df['불순물'].head(3)</code></pre><div class="out">['1,024', '800', '871']  �
 </section>
 <section class="slide" data-title="스케일링">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>실측</div>
+  <div class="eyebrow"><span class="tag">CH10</span><span class="dot"></span>실측</div>
   <h2 class="s-title">StandardScaler 가 필요한 모델</h2>
   <div class="rule"></div>
   <div class="body">
@@ -761,7 +1144,7 @@ df['불순물'].head(3)</code></pre><div class="out">['1,024', '800', '871']  �
 </section>
 <section class="slide" data-title="나누기">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>기준</div>
+  <div class="eyebrow"><span class="tag">CH10</span><span class="dot"></span>기준</div>
   <h2 class="s-title">비율을 지켜 가르는 stratify</h2>
   <div class="rule"></div>
   <div class="body">
@@ -776,14 +1159,14 @@ df['불순물'].head(3)</code></pre><div class="out">['1,024', '800', '871']  �
   </div>
 </section>
 <section class="slide section" data-title="[섹션] 검증 더 보기">
-  <div class="ghost">06</div>
-  <div class="seyebrow">CHAPTER 06</div>
+  <div class="ghost">11</div>
+  <div class="seyebrow">CHAPTER 11</div>
   <h2>검증 더 보기</h2>
   <div class="agenda"><span>모델 차이</span><span>과적합</span><span>교차검증</span><span>임계</span></div>
 </section>
 <section class="slide" data-title="모델 둘의 차이">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>구분</div>
+  <div class="eyebrow"><span class="tag">CH11</span><span class="dot"></span>구분</div>
   <h2 class="s-title">로지스틱 회귀와 랜덤포레스트</h2>
   <div class="rule"></div>
   <div class="body">
@@ -793,7 +1176,7 @@ df['불순물'].head(3)</code></pre><div class="out">['1,024', '800', '871']  �
 </section>
 <section class="slide" data-title="과적합">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>실측</div>
+  <div class="eyebrow"><span class="tag">CH11</span><span class="dot"></span>실측</div>
   <h2 class="s-title">학습 1.000 · 검증 0.921</h2>
   <div class="rule"></div>
   <div class="body">
@@ -804,7 +1187,7 @@ df['불순물'].head(3)</code></pre><div class="out">['1,024', '800', '871']  �
 </section>
 <section class="slide" data-title="교차검증">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>검증</div>
+  <div class="eyebrow"><span class="tag">CH11</span><span class="dot"></span>검증</div>
   <h2 class="s-title">교차검증 5겹 · 0.936 ± 0.004</h2>
   <div class="rule"></div>
   <div class="body">
@@ -821,7 +1204,7 @@ print(cv.mean(), cv.std())</code></pre><div class="out">0.943 0.933 0.933 0.933 
 </section>
 <section class="slide" data-title="임계 곡선">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>실측</div>
+  <div class="eyebrow"><span class="tag">CH11</span><span class="dot"></span>실측</div>
   <h2 class="s-title">임계 0.05 부터 0.95 까지</h2>
   <div class="rule"></div>
   <div class="body">
@@ -832,7 +1215,7 @@ print(cv.mean(), cv.std())</code></pre><div class="out">0.943 0.933 0.933 0.933 
 </section>
 <section class="slide" data-title="class_weight">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>실측</div>
+  <div class="eyebrow"><span class="tag">CH11</span><span class="dot"></span>실측</div>
   <h2 class="s-title">class_weight='balanced'</h2>
   <div class="rule"></div>
   <div class="body">
@@ -842,14 +1225,14 @@ print(cv.mean(), cv.std())</code></pre><div class="out">0.943 0.933 0.933 0.933 
   </div>
 </section>
 <section class="slide section" data-title="[섹션] 운영">
-  <div class="ghost">07</div>
-  <div class="seyebrow">CHAPTER 07</div>
+  <div class="ghost">12</div>
+  <div class="seyebrow">CHAPTER 12</div>
   <h2>운영</h2>
   <div class="agenda"><span>전체 흐름</span><span>재학습</span></div>
 </section>
 <section class="slide" data-title="전체 흐름">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>정리</div>
+  <div class="eyebrow"><span class="tag">CH12</span><span class="dot"></span>정리</div>
   <h2 class="s-title">엑셀에서 판정 화면까지</h2>
   <div class="rule"></div>
   <div class="body">
@@ -860,7 +1243,7 @@ print(cv.mean(), cv.std())</code></pre><div class="out">0.943 0.933 0.933 0.933 
 </section>
 <section class="slide" data-title="언제 다시 학습하나">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>운영</div>
+  <div class="eyebrow"><span class="tag">CH12</span><span class="dot"></span>운영</div>
   <h2 class="s-title">재학습의 신호</h2>
   <div class="rule"></div>
   <div class="body">
@@ -871,6 +1254,7 @@ print(맞힌 비율)          <span class='cm'># 0.9 아래로 내려가면 다�
     <div class="keymsg"><span class="k">운영</span><div>모델은 <b>낡는다</b>. 다시 잴 방법을 처음부터 같이 만들어 둔다.</div></div>
   </div>
 </section>
+
 
 
     </div>

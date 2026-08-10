@@ -14,8 +14,7 @@
 | 2주차 D2 · 이미지 처리 | [day6/index.html](day6/index.html) | 79 |
 | 2주차 D3 · 이미지 처리 모듈 개발 | [day7/index.html](day7/index.html) | 40 |
 | 3주차 D1 · LLM 과 프롬프트 | [day8/index.html](day8/index.html) | 80 |
-| 3주차 D2 · 에이전트의 구조 | [day10/index.html](day10/index.html) | 47 |
-| 별도 · 공정 데이터로 불량 미리 잡기 | [day9/index.html](day9/index.html) | 44 |
+| 3주차 D2 · 에이전트의 구조 (+ 부록 공정 데이터) | [day9/index.html](day9/index.html) | 91 |
 
 조작: `← →` 또는 Space · 숫자 입력 후 Enter로 점프 · `≡` 목차 · `−/+` 줌 · PDF 버튼(인쇄).
 
@@ -225,7 +224,7 @@ pptx 기반 이전 덱은 [_archive-pptx/](_archive-pptx/)에 보관돼 있다.
 | 8/4 | 이미지 처리 | [day6/index.html](day6/index.html) |
 | 8/5 | 이미지 처리 모듈 개발 | [day7/index.html](day7/index.html) |
 | 8/10 | LLM 의 원리와 프롬프팅 | [day8/index.html](day8/index.html) |
-| 8/11 | 에이전트의 구조 | [day10/index.html](day10/index.html) |
+| 8/11 | 에이전트의 구조 | [day9/index.html](day9/index.html) |
 | 8/12 | RAG — 내 문서로 답하게 하기 | 기존 강의 D01 을 줄여 옮긴다 |
 | 8/13 | RAG 심화 — 검색 품질 | 기존 강의 D02 를 줄여 옮긴다 |
 | 8/14 | MCP — 도구를 붙이는 규약 | 기존 강의 D04·D06 을 줄여 옮긴다 |
