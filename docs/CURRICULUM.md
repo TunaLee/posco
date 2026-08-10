@@ -14,7 +14,7 @@
 | 2주차 D2 · 이미지 처리 | [day6/index.html](day6/index.html) | 79 |
 | 2주차 D3 · 이미지 처리 모듈 개발 | [day7/index.html](day7/index.html) | 40 |
 | 3주차 D1 · LLM 과 프롬프트 | [day8/index.html](day8/index.html) | 80 |
-| 2주차 D4 · 공정 데이터로 불량 미리 잡기 | [day9/index.html](day9/index.html) | 24 |
+| 2주차 D4 · 공정 데이터로 불량 미리 잡기 | [day9/index.html](day9/index.html) | 40 |
 
 조작: `← →` 또는 Space · 숫자 입력 후 Enter로 점프 · `≡` 목차 · `−/+` 줌 · PDF 버튼(인쇄).
 
