@@ -320,6 +320,185 @@ print(run_agent('A라인과 B라인 중 어제 불량률이 높은 쪽은?'))"""
     md("**도구를 늘려도 루프는 그대로다.** 바뀌는 것은 목록과 설명뿐이다.\n"
        "그래서 에이전트를 키우는 일은 코드를 늘리는 일이 아니라 **도구를 정리하는 일**이 된다."),
 
+    md("## 11. 반출본 만들기 — 컬럼 이름부터"),
+    md("여기서부터는 **공정 데이터를 Codex 에 어떻게 넘기느냐**의 문제다.\n\n"
+       "개인정보라면 이름·사번 같은 식별자만 떼면 됐다. 공정 데이터는 반대다.\n"
+       "코팅 로딩, 전극 밀도, 화성 전압 — **그 숫자 자체가 레시피**라 뗄 식별자가 없다.\n"
+       "그래서 값을 지우는 대신 **절대값을 안 넘기는 형태로 바꿔서** 넘긴다."),
+
+    prep("""# 셀 공정 기록 2,400행을 읽어 온다. 난수로 만든 가상 데이터라 이 파일 자체는 반출 걱정이 없다.
+import pandas as pd, numpy as np
+
+URL = 'https://tunalee.github.io/posco/data/cell_process.csv'
+df = pd.read_csv(URL, parse_dates=['시각'])
+print(df.shape)
+print(df.head(3).to_string(index=False))"""),
+
+    md("### 이대로 붙이면 무엇이 나가나"),
+
+    code("""# 값을 한 줄도 안 보내고 컬럼 이름만 보내도 이만큼이 나간다
+print(list(df.columns))"""),
+
+    md("`화성_3단계_CV_전압` 하나로 **화성 공정이 몇 단인지, 어느 단이 CV 구간인지**가 드러난다.\n"
+       "`NMP_투입비` 는 슬러리 배합이고, `코팅_로딩_mg_cm2` 와 `전극_밀도` 는 셀 설계값이다.\n"
+       "**값보다 컬럼명이 먼저 샌다.**"),
+
+    code("""# 값도 마찬가지다 — 118.5 를 보면 건조로 온도대가, 3.48 을 보면 프레스 후 밀도가 그대로 보인다
+print(df[['건조_ZONE2_TEMP', '코팅_로딩_mg_cm2', '전극_밀도', '화성_3단계_CV_전압']]
+      .head(3).to_string(index=False))"""),
+
+    code("""# 로트 번호와 시각도 값이다 — 순번 증가율에서 생산량이, 간격에서 tact time 이 나온다
+print(df['로트번호'].head(2).tolist(), '...', df['로트번호'].tail(1).tolist())
+print('로트 수', df['로트번호'].nunique())
+print('가장 흔한 간격', df['시각'].diff().mode()[0])"""),
+
+    md("### 내보내기 전에 표부터 손본다"),
+    md("이 표에는 실제 라인에서 흔한 사고가 일부러 들어 있다. **반출본을 만들기 전에** 잡아 둔다.\n"
+       "안 잡고 변환하면 평균과 표준편차가 오염돼서 반출본 전체가 틀어진다."),
+
+    code("""# 어디에 무엇이 있는지 훑는다
+print('결측       ', df.isna().sum()[lambda s: s > 0].to_dict())
+run = df['프레스_1호기_압력'].groupby((df['프레스_1호기_압력'].diff() != 0).cumsum()).size()
+print('같은 값 연속', run.max(), '행')
+print('ZONE1 범위 ', df['건조_ZONE1_TEMP'].min(), '~', df['건조_ZONE1_TEMP'].max())
+print('시각 역행  ', (df['시각'].diff().dt.total_seconds() < 0).sum(), '건')
+print('시각 중복  ', df['시각'].duplicated().sum(), '건')"""),
+
+    md("네 가지가 그대로 보인다.\n\n"
+       "| 무엇 | 어디에 | 왜 생기나 |\n|---|---|---|\n"
+       "| 연속 결측 40행 | `건조_ZONE2_TEMP` | 센서 단선 |\n"
+       "| 같은 값 60행 | `프레스_1호기_압력` | 값 고착 — 센서가 멎었다 |\n"
+       "| 최대 278.6 | `건조_ZONE1_TEMP` | 화씨가 섞여 들어왔다 |\n"
+       "| 역행 3건 · 중복 15건 | `시각` | 수집기 재시작 |"),
+
+    code("""# 화씨로 들어온 구간만 되돌린다. 섭씨 라인이 126~140 이라 150 을 넘으면 화씨로 본다.
+mask = df['건조_ZONE1_TEMP'] > 150
+df.loc[mask, '건조_ZONE1_TEMP'] = ((df.loc[mask, '건조_ZONE1_TEMP'] - 32) * 5 / 9).round(1)
+print('되돌린 행', mask.sum(), '· 범위', df['건조_ZONE1_TEMP'].min(), '~', df['건조_ZONE1_TEMP'].max())"""),
+
+    code("""# 고착 구간은 결측으로 돌린다. 그대로 두면 평균과 표준편차가 끌려간다.
+same = df['프레스_1호기_압력'].diff() == 0
+df.loc[same, '프레스_1호기_압력'] = np.nan
+print('결측으로 돌린 행', same.sum())
+df = df.sort_values('시각').drop_duplicates('시각').reset_index(drop=True)
+print('정렬·중복 제거 후', len(df), '행')"""),
+
+    md("### 이름 규칙 — 물리량은 남기고 공정 맥락은 지운다"),
+    md("`FEAT_017` 처럼 다 지우면 모델이 **무슨 값인지 몰라** 코드 품질이 떨어진다.\n"
+       "그래서 앞부분에 **물리량 종류**만 남기고, 뒷부분의 공정 이름을 순번으로 바꾼다.\n\n"
+       "| 원본 | 익명명 | 살아 있는 정보 |\n|---|---|---|\n"
+       "| 건조_ZONE2_TEMP | `TEMP_D2` | 온도끼리 같이 볼 만하다 |\n"
+       "| 프레스_1호기_압력 | `PRES_B1` | 압력이다 |\n"
+       "| 화성_3단계_CV_전압 | `VOLT_P3` | 전압이다 |\n"
+       "| NMP_투입비 | `RATIO_M2` | 비율이라 합이 1일 수 있다 |"),
+
+    prep("""# 컬럼마다 (익명명, 변환 방식, 파라미터) 를 정해 둔 표. 이 표가 곧 반출 스크립트 명세다.
+#   spec : (x - target) / tol   — 스펙이 있는 값. 관리도·Cpk 가 그대로 나온다
+#   z    : (x - 평균) / 표준편차 — 스펙을 모를 때. 상관·회귀가 그대로 나온다
+#   rank : 백분위                — 순서만 남긴다. 회귀에는 못 쓴다
+RULE = {
+    '건조_ZONE2_TEMP':   ('TEMP_D2',  'spec', (120.0, 5.0)),
+    '프레스_1호기_압력':  ('PRES_B1',  'z',    None),
+    '코팅_로딩_mg_cm2':  ('LOAD_C1',  'z',    None),
+    '화성_3단계_CV_전압': ('VOLT_P3',  'z',    None),
+    'NMP_투입비':        ('RATIO_M2', 'rank', None),
+}
+for src, (dst, how, p) in RULE.items():
+    print('%-18s -> %-9s %s' % (src, dst, how))"""),
+
+    prep("""# 표대로 바꿔 주는 함수. 여기 코드는 안 고친다 — 위의 RULE 만 고친다.
+def export(df, rule):
+    out = pd.DataFrame(index=df.index)
+    for src, (dst, how, p) in rule.items():
+        x = df[src].astype(float)
+        if   how == 'spec': out[dst] = ((x - p[0]) / p[1]).round(3)
+        elif how == 'z':    out[dst] = ((x - x.mean()) / x.std()).round(3)
+        elif how == 'rank': out[dst] = x.rank(pct=True).round(3)
+    out['LOT'] = pd.factorize(df['로트번호'])[0]        # 순번을 지운다
+    out['MC']  = pd.factorize(df['설비호기'])[0]        # 호기 이름을 지운다
+    out['T']   = ((df['시각'] - df['시각'].min())
+                  .dt.total_seconds() / 3600).round(2)  # t0 기준 시간
+    return out"""),
+
+    prep("""# 반출본을 만들어 본다
+out = export(df, RULE)
+print(out.head(3).to_string(index=False))"""),
+
+    md("이제 `-0.32` 만 보고는 건조 온도가 **80도대인지 120도대인지 알 수 없다**.\n"
+       "`LOT` 은 0 부터 다시 매겨 생산량이 안 보이고, `T` 는 첫 행을 0 으로 잡은 상대 시간이다."),
+
+    md("### 나가도 되는 모양인지 자동으로 본다"),
+
+    prep("""# 사람 눈으로 매번 보지 않는다. 검사기를 하나 만들어 두고 그것만 통과시킨다.
+def check(out, src, rule):
+    bad = []
+    ko = [c for c in out.columns if any('가' <= ch <= '힣' for ch in c)]
+    if ko:
+        bad.append('한글 컬럼명이 남았다: %s' % ko)
+    same = [c for c in out.columns if c in src.columns]
+    if same:
+        bad.append('원본 컬럼명이 그대로다: %s' % same)
+    for c in out.columns:
+        for s in src.select_dtypes('number').columns:
+            if out[c].round(3).equals(src[s].round(3)):
+                bad.append('%s 가 원본 %s 와 같은 값이다' % (c, s))
+    print('\\n'.join(bad) if bad else '내보내도 되는 모양이다')
+
+check(out, df, RULE)"""),
+
+    md("### 분석 결과가 정말 그대로 나오는지"),
+
+    code("""# 원본에서 잰 상관과 반출본에서 잰 상관을 견준다
+pair = [('건조_ZONE2_TEMP', 'TEMP_D2'), ('프레스_1호기_압력', 'PRES_B1'),
+        ('코팅_로딩_mg_cm2', 'LOAD_C1')]
+a = df[[s for s, _ in pair]].corr().round(3).values
+b = out[[d for _, d in pair]].corr().round(3).values
+print('원본 상관\\n', a)
+print('반출본 상관\\n', b)
+print('같은가:', (a == b).all())"""),
+
+    md("**같다.** 상관·회귀·관리도 판정·이상탐지·PCA 는 값을 선형으로 옮겨도 결과가 안 바뀐다.\n"
+       "그래서 절대값을 안 넘기고도 분석 코드는 그대로 만들 수 있다."),
+
+    Ex(4, "`RULE` 에서 `NMP_투입비` 의 방식을 `'rank'` 에서 `'z'` 로 바꾸고 다시 만들어 본다.\n"
+          "> 방식 이름 한 글자만 바꾸면 된다. 함수는 안 고친다.\n"
+          "> 분위 변환은 순서만 남기고 선형성이 깨져서 회귀에 못 쓴다는 것을 눈으로 본다.",
+       setup="# RULE 의 값 부분만 바꾸는 문제다",
+       blank="RULE['NMP_투입비'] = ('RATIO_M2', '___', None)",
+       answer="RULE['NMP_투입비'] = ('RATIO_M2', 'z', None)",
+       check="""out2 = export(df, RULE)
+print('rank 일 때 상관', round(out['RATIO_M2'].corr(out['TEMP_D2']), 3))
+print('z 일 때 상관   ', round(out2['RATIO_M2'].corr(out2['TEMP_D2']), 3))
+print('원본 상관      ', round(df['NMP_투입비'].corr(df['건조_ZONE2_TEMP']), 3))"""),
+
+    md("### 매핑 표는 사내에만 둔다"),
+
+    code("""# 어느 익명명이 무엇이었는지는 로컬 파일로만 남긴다. 이 파일은 절대 밖으로 나가지 않는다.
+mapping = pd.DataFrame([(s, d, h, str(p)) for s, (d, h, p) in RULE.items()],
+                       columns=['원본명', '익명명', '방식', '파라미터'])
+mapping.to_csv('mapping_local.csv', index=False)
+print(mapping.to_string(index=False))"""),
+
+    md("이 표가 **반출 스크립트 명세**다. 한 번 정해 두면 컬럼이 늘어도 매번 판단할 일이 없다."),
+
+    Task(4, "`df` 를 **자기 업무 표**로 바꾸고, 컬럼마다 `RULE` 을 채운다.\n"
+            "> ① 익명명은 「물리량_순번」 으로 짓는다 — 공정 이름·설비 이름은 넣지 않는다.\n"
+            "> ② 스펙이 있으면 `spec`, 없으면 `z`, 순서만 보면 되면 `rank`.\n"
+            "> ③ `check()` 가 「내보내도 되는 모양이다」를 찍을 때까지 고친다.",
+         blank="""MY_RULE = {
+    '___': ('___', '___', ___),
+    '___': ('___', '___', ___),
+}
+my_out = export(df, MY_RULE)
+check(my_out, df, MY_RULE)""",
+         answer="""MY_RULE = {
+    '건조_ZONE2_TEMP':  ('TEMP_D2', 'spec', (120.0, 5.0)),
+    '코팅_로딩_mg_cm2': ('LOAD_C1', 'z',    None),
+}
+my_out = export(df, MY_RULE)
+check(my_out, df, MY_RULE)""",
+         check="print(my_out.head(3).to_string(index=False))"),
+
     md("### 사내에 붙일 때 챙길 것\n\n"
        "| 챙길 것 | 왜 |\n|---|---|\n"
        "| 데이터는 도구 안에 둔다 | 표를 프롬프트에 통째로 넣으면 그대로 반출이다 |\n"
@@ -331,7 +510,9 @@ print(run_agent('A라인과 B라인 중 어제 불량률이 높은 쪽은?'))"""
 
 MODES = {
     ("ex", 1): "together", ("ex", 2): "together", ("ex", 3): "solo",
+    ("ex", 4): "together",
     ("task", 1): "solo", ("task", 2): "solo", ("task", 3): "team",
+    ("task", 4): "solo",
 }
 
 SPEC = ("에이전트의 구조", "설비 일지를 대신 찾아 주는 비서를 만든다", CELLS, MODES)
