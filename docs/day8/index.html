@@ -1162,6 +1162,20 @@ T = 1.2 로 두 번 돌린 결과
     <div class="keymsg"><span class="k">쓰임</span><div>들어온 것과 나갈 것의 <b>모양이 다를 때</b> 쓴다. 요약 · 번역 · 질의응답이 그렇다.</div></div>
   </div>
 </section>
+<section class="slide" data-title="잠재 공간">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>구조</div>
+  <h2 class="s-title">인코더와 디코더 사이에 있는 것</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="shot">
+      <div class="sbar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">latent space &middot; 잠재 공간</span></div>
+      <img src="assets/latent-space.png" alt="잠재 공간">
+    </div>
+    <div class="vlist"><div class="v"><span class="b">&rarr;</span><div>인코더가 글이든 사진이든 <b>같은 공간의 벡터</b>로 바꾼다. 뜻이 비슷하면 그 공간에서 가까이 놓인다.</div></div><div class="v"><span class="b">&rarr;</span><div>디코더를 무엇으로 붙이느냐에 따라 나오는 것이 갈린다 &mdash; <b>글로 내면 문장, 픽셀로 내면 사진</b>이다.</div></div></div>
+    <div class="keymsg"><span class="k">가운데</span><div>인코더와 디코더가 만나는 자리가 <b>잠재 공간</b>이다. 들어온 것을 여기까지 밀어 넣고, 여기서 원하는 모양으로 꺼낸다.</div></div>
+  </div>
+</section>
 <section class="slide" data-title="비전 트랜스포머">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>계보</div>
