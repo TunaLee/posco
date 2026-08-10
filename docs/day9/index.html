@@ -552,6 +552,26 @@
   <div class="rule"></div>
   <div class="body"><div class="vlist"><div class="v"><span class="b">1</span><div><b>판단</b> — 도구를 부를지/답할지 결정</div></div><div class="v"><span class="b">2</span><div><b>행동</b> — 고른 도구를 실행</div></div><div class="v"><span class="b">3</span><div><b>관찰</b> — 결과를 messages에 되먹인다</div></div><div class="v"><span class="b">↻</span><div><b>반복</b> — 도구를 더 안 부를 때까지</div></div></div><div class="keymsg"><span class="k">한 줄</span><div>앞 장 <b>run_agent</b> 열 줄이 이 세 단계를 그대로 돈다.</div></div></div>
 </section>
+<section class="slide" data-title="메시지 목록과 역할">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>구조</div>
+  <h2 class="s-title sm">역할이 붙은 줄 목록</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w2"><div><div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>모델에 보내는 것은 문장 하나가 아니라 <b>역할이 붙은 줄 목록</b>이다.</div></div>
+  <div class="v"><span class="b">&rarr;</span><div><code>system</code> 은 사용자에게 보이지 않는 첫 줄 &mdash; 성격 · 규칙 · 하지 말 것.</div></div>
+  <div class="v"><span class="b">&rarr;</span><div><code>user</code> 와 <code>assistant</code> 는 실제로 오간 말이다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>매 호출마다 <b>목록 전체를 다시 보낸다</b>. 모델 쪽에 남는 것은 없다.</div></div>
+</div></div>
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">messages</span></div><pre><code>messages = [
+  {<span class="st">"role"</span>: <span class="st">"system"</span>,    <span class="st">"content"</span>: <span class="st">"너는 공정 데이터 비서다.
+                              모르면 모른다고 답한다."</span>},
+  {<span class="st">"role"</span>: <span class="st">"user"</span>,      <span class="st">"content"</span>: <span class="st">"3호기 어제 불량률은?"</span>},
+  {<span class="st">"role"</span>: <span class="st">"assistant"</span>, <span class="st">"content"</span>: <span class="st">"1.8% 입니다."</span>},
+  {<span class="st">"role"</span>: <span class="st">"user"</span>,      <span class="st">"content"</span>: <span class="st">"그럼 그제는?"</span>},   <span class="cm"># 앞 줄이 같이 가야 통한다</span>
+]</code></pre></div></div>
+<div class="keymsg"><span class="k">자리</span><div><code>system</code> 은 <b>사용자가 바꿀 수 없는 자리</b>다. 지켜야 할 규칙은 여기에 적는다.</div></div></div>
+</section>
 <section class="slide" data-title="시스템 프롬프트">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>조종</div>
@@ -565,9 +585,9 @@ messages = [{<span class="st">"role"</span>: <span class="st">"system"</span>, <
 <section class="slide" data-title="도구를 안 써야 할 때">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>판단</div>
-  <h2 class="s-title sm">도구를 안 부르는 편이 싼 질문</h2>
+  <h2 class="s-title sm">도구 없이 답해도 되는 질문</h2>
   <div class="rule"></div>
-  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div>간단한 질문·상식은 <b>그냥 답</b> — 도구는 비용·지연</div></div><div class="v"><span class="b">→</span><div>도구는 <b>‘모델이 모르는/바깥’</b> 일에만</div></div><div class="v"><span class="b">→</span><div>시스템 프롬프트로 “<b>필요할 때만</b> 도구” 지시</div></div></div><div class="keymsg"><span class="k">감각</span><div>좋은 에이전트는 도구를 <b>‘안 쓸 때’</b>도 안다.</div></div></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div>상식이나 간단한 질문은 <b>그냥 답하는 편</b>이 빠르고 싸다</div></div><div class="v"><span class="b">→</span><div>도구는 <b>‘모델이 모르는/바깥’</b> 일에만</div></div><div class="v"><span class="b">→</span><div>시스템 프롬프트로 “<b>필요할 때만</b> 도구” 지시</div></div></div><div class="keymsg"><span class="k">감각</span><div>좋은 에이전트는 도구를 <b>‘안 쓸 때’</b>도 안다.</div></div></div>
 </section>
 <section class="slide" data-title="[그림] 루프 탈출 조건">
   <div class="coord"><b></b> / <span class="tot"></span></div>
@@ -673,6 +693,53 @@ messages.append(result(out))     <span class="cm"># 되먹임</span></code></pre
   <div class="rule"></div>
   <div class="body"><div class="twocol w"><div><div><h4 style="margin:0 0 8px">단발 질의응답 시대</h4><div class="vlist"><div class="v"><span class="b">→</span><div>내가 쓴 <b>프롬프트 한 덩어리</b>가 입력의 전부였다.</div></div><div class="v"><span class="b">→</span><div>잘 쓰는 법 = <b>프롬프트 엔지니어링</b>.</div></div><div class="v"><span class="b">→</span><div>대화가 끝나면 컨텍스트도 끝났다.</div></div></div></div></div><div><div><h4 style="margin:0 0 8px">에이전트 시대</h4><div class="vlist"><div class="v"><span class="b">→</span><div>루프가 돌면서 <b>도구 결과·파일 내용·에러</b>가 계속 쌓인다.</div></div><div class="v"><span class="b">→</span><div>내가 안 써도 <b>컨텍스트가 저절로 자란다</b>.</div></div><div class="v"><span class="b">★</span><div>이제 문제는 <b>무엇을 남기고 무엇을 버리느냐</b>다.</div></div></div></div></div></div><div class="keymsg"><span class="k">그래서</span><div>프롬프트를 잘 쓰는 것만으로 부족해졌다. <b>컨텍스트를 관리하는 일</b>이 별도의 기술이 됐다.</div></div></div>
 </section>
+<section class="slide" data-title="컨텍스트 창이란">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>단위</div>
+  <h2 class="s-title sm">한 번에 들어갈 수 있는 토큰 수</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="plot"><svg viewBox="0 0 1116 168"><rect x="14.0" y="46" width="17.0" height="58" fill="#7A5BFF"/><rect x="31.0" y="46" width="25.5" height="58" fill="#9B84FF"/><rect x="56.5" y="46" width="127.5" height="58" fill="#C0B2FF"/><rect x="184.0" y="46" width="527.0" height="58" fill="#3A1FC9"/><rect x="711.0" y="46" width="391.0" height="58" fill="#EFECFA"/><rect x="14" y="46" width="1088" height="58" rx="8" fill="none" stroke="#DCD6F0" stroke-width="1.4"/><text x="14" y="34" font-size="11" fill="#8E8AAC" font-weight="700">컨텍스트 창 128,000 토큰 &mdash; 매 호출마다 이 안에 전부 다시 들어간다</text><rect x="14.0" y="126" width="10" height="10" rx="3" fill="#7A5BFF"/><text x="30.0" y="135" font-size="11.5" fill="#16142B" font-weight="700">시스템 프롬프트</text><text x="30.0" y="153" font-size="11" fill="#8E8AAC">2,000 토큰</text><rect x="164.0" y="126" width="10" height="10" rx="3" fill="#9B84FF"/><text x="180.0" y="135" font-size="11.5" fill="#16142B" font-weight="700">도구 정의</text><text x="180.0" y="153" font-size="11" fill="#8E8AAC">3,000 토큰</text><rect x="314.0" y="126" width="10" height="10" rx="3" fill="#C0B2FF"/><text x="330.0" y="135" font-size="11.5" fill="#16142B" font-weight="700">주고받은 말</text><text x="330.0" y="153" font-size="11" fill="#8E8AAC">15,000 토큰</text><rect x="464.0" y="126" width="10" height="10" rx="3" fill="#3A1FC9"/><text x="480.0" y="135" font-size="11.5" fill="#16142B" font-weight="700">도구가 돌려준 것</text><text x="480.0" y="153" font-size="11" fill="#8E8AAC">62,000 토큰</text><rect x="991.0" y="126" width="10" height="10" rx="3" fill="#EFECFA"/><text x="1007.0" y="135" font-size="11.5" fill="#16142B" font-weight="700">남은 자리</text><text x="1007.0" y="153" font-size="11" fill="#8E8AAC">46,000 토큰</text></svg></div><div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>모델은 지난 대화를 <b>가지고 있지 않다</b>. 물을 때마다 처음부터 전부 다시 읽는다.</div></div>
+  <div class="v"><span class="b">&rarr;</span><div>그 &lsquo;전부&rsquo; 가 들어갈 수 있는 크기가 <b>컨텍스트 창</b>이다. 한글은 대략 한 글자에 한 토큰.</div></div>
+</div>
+<div class="keymsg"><span class="k">감각</span><div>128,000 토큰이면 A4 <b>예순 쪽</b>쯤이다. 커 보이지만 도구 결과 몇 번이면 찬다.</div></div></div>
+</section>
+<section class="slide" data-title="토큰이 쌓이는 모습">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>누적</div>
+  <h2 class="s-title sm">사람 말 스무 토큰, 조회 결과 수천 토큰</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w2"><div><div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>사람이 치는 말은 한 줄에 <b>스무 토큰 남짓</b>이다.</div></div>
+  <div class="v"><span class="b">&rarr;</span><div>조회 한 번이 <b>수천 토큰</b>을 돌려준다. 표를 그대로 받으면 더 크다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>지운 적이 없으면 <b>턴이 끝나도 그대로 남는다</b>.</div></div>
+</div></div>
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">예시 · 누적 토큰</span></div><pre><code>턴 1  질문 30 · 답 120                    누적     <span class="nm">150</span>
+턴 2  질문 20 · 조회 1,200 · 답 200        누적   <span class="nm">1,570</span>
+턴 3  질문 25 · 조회 3,400 · 답 180        누적   <span class="nm">5,175</span>
+  ...
+턴 12 질문 20 · 조회 9,800 · 답 240        누적 <span class="st">118,400</span>  <span class="cm"># 창이 거의 찼다</span></code></pre></div></div>
+<div class="keymsg"><span class="k">원인</span><div>길어지는 것은 대화가 아니라 <b>도구가 돌려준 것</b>이다. 줄일 자리도 거기다.</div></div></div>
+</section>
+<section class="slide" data-title="창이 넘치면">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>증상</div>
+  <h2 class="s-title sm">넘칠 때 조용히 나빠지는 것들</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="plot"><svg viewBox="0 0 1116 132">
+<text x="14" y="20" font-size="11" fill="#8E8AAC" font-weight="700">들어온 것</text>
+<rect x="14" y="30" width="1088" height="34" rx="8" fill="#EFECFA" stroke="#DCD6F0" stroke-width="1.2"/>
+<rect x="14" y="30" width="1088" height="34" rx="8" fill="#C0B2FF" opacity=".55"/>
+<text x="14" y="88" font-size="11" fill="#8E8AAC" font-weight="700">실제로 모델이 읽는 것</text>
+<rect x="14" y="98" width="250" height="26" rx="7" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="30" y="116" font-size="11.5" fill="#8E8AAC" font-weight="700">잘려 나간 앞부분</text>
+<rect x="278" y="98" width="824" height="26" rx="7" fill="#3A1FC9"/>
+<text x="296" y="116" font-size="11.5" fill="#fff" font-weight="700">창에 들어간 뒷부분</text>
+</svg></div>
+<div class="twopane"><div class="pane bad"><h4>겉으로 보이는 것</h4><p>아까 말한 것을 <b>다시 묻는다</b>. 정해 준 형식을 어긴다. 엉뚱한 도구를 부른다.</p><div class="mini">에러는 나지 않는다</div></div>
+<div class="pane good"><h4>실제로 벌어진 것</h4><p>앞에서부터 밀려 나가 <b>system 의 규칙까지</b> 사라졌다.</p><div class="mini">잘림 · 자동 요약</div></div></div>
+<div class="keymsg"><span class="k">경계</span><div>넘쳐도 <b>멈추지 않는다</b>. 답은 계속 나오고 품질만 떨어진다.</div></div></div>
+</section>
 <section class="slide" data-title="긴 컨텍스트의 함정">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>역설</div>
@@ -715,6 +782,27 @@ messages.append(result(out))     <span class="cm"># 되먹임</span></code></pre
   <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>한계에 다다른 대화를 <b>요약</b>해 새 윈도우로</div></div><div class="v"><span class="b">→</span><div><b>결정·미해결 버그는 보존</b>, 중복 출력은 제거</div></div><div class="v"><span class="b">→</span><div>긴 왕복 작업에서 <b>연속성</b>을 지킨다</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">compaction</span></div><pre><code><span class="cm"># 대화가 길어지면</span>
 요약 = summarize(old_messages)
 messages = [system, 요약] + recent   <span class="cm"># 새 윈도우</span></code></pre></div></div><div class="keymsg"><span class="k">언제</span><div>왕복이 많은 <b>긴 작업</b>에 — Claude Code의 자동 컴팩션이 이것.</div></div></div>
+</section>
+<section class="slide" data-title="요약 전과 후">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>예시</div>
+  <h2 class="s-title sm">118,400 토큰이 6,200 이 되는 자리</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">요약 전</span></div><pre><code>system                  2,000
+도구 정의                3,000
+턴 1~12 주고받은 말      15,000
+조회 결과 전문           98,400
+합계                   <span class="st">118,400</span></code></pre></div>
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">요약 후</span></div><pre><code>system                  2,000
+도구 정의                3,000
+<span class="nm">요약</span> 정한 것 · 못 푼 것    <span class="nm">900</span>
+최근 두 턴 원문            <span class="nm">300</span>
+합계                     <span class="st">6,200</span></code></pre></div></div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>남기는 것 &mdash; <b>정한 것 · 아직 못 푼 것 · 파일 경로</b>. 다음 판단에 쓰이는 것들이다.</div></div>
+  <div class="v"><span class="b">&rarr;</span><div>버리는 것 &mdash; 중복 출력, 이미 반영된 조회 결과 전문.</div></div>
+</div>
+<div class="keymsg"><span class="k">주의</span><div>요약은 <b>되돌릴 수 없다</b>. 무엇을 남길지 정해 두지 않으면 필요한 것이 먼저 사라진다.</div></div></div>
 </section>
 <section class="slide" data-title="기법 2 · 구조화된 메모">
   <div class="coord"><b></b> / <span class="tot"></span></div>
