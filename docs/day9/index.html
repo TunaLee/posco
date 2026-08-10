@@ -642,12 +642,24 @@ A: 추가했고, 현재 3건입니다.</code></pre></div></div></div>
 <section class="slide" data-title="메모리 붙이기">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>기억</div>
-  <h2 class="s-title sm">messages 를 여러 질문에 걸쳐 남기기</h2>
+  <h2 class="s-title sm">한 질문에 일곱 줄로 자란 messages</h2>
   <div class="rule"></div>
-  <div class="body"><div class="twocol w2"><div><div class="vlist"><div class="v"><span class="b">→</span><div>매 호출이 새 대화면 <b>기억이 없다</b></div></div><div class="v"><span class="b">→</span><div>messages를 <b>여러 질문에 걸쳐</b> 유지</div></div><div class="v"><span class="b">★</span><div>“방금 그 작업” 같은 지시가 풀린다</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">agent.py</span></div><pre><code><span class="kw">class</span> Agent:
-    <span class="kw">def</span> __init__(self, system):
-        self.messages = [system]   <span class="cm"># 유지</span>
-    <span class="kw">async def</span> ask(self, q): ...   <span class="cm"># 위에 쌓기</span></code></pre></div></div></div>
+  <div class="body">
+    <div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">「3호기 어제 불량률은?」 한 번을 푸는 동안</span></div><pre><code>messages = [
+  {<span class="st">"role"</span>: <span class="st">"system"</span>,    <span class="st">"content"</span>: <span class="st">"너는 공정 데이터 비서다. ..."</span>},   <span class="cm"># 처음부터 있던 줄</span>
+  {<span class="st">"role"</span>: <span class="st">"user"</span>,      <span class="st">"content"</span>: <span class="st">"3호기 어제 불량률은?"</span>},
+  {<span class="st">"role"</span>: <span class="st">"assistant"</span>, <span class="st">"tool_calls"</span>: [machine_info(machine=<span class="st">"3호기"</span>)]},  <span class="cm"># 답이 아니라 호출</span>
+  {<span class="st">"role"</span>: <span class="st">"tool"</span>,      <span class="st">"content"</span>: <span class="st">"3호기: B라인, 생산 1530개, 불량 28개"</span>},
+  {<span class="st">"role"</span>: <span class="st">"assistant"</span>, <span class="st">"tool_calls"</span>: [calc(expr=<span class="st">"28/1530*100"</span>)]},      <span class="cm"># 앞 줄을 보고 정했다</span>
+  {<span class="st">"role"</span>: <span class="st">"tool"</span>,      <span class="st">"content"</span>: <span class="st">"1.830065359477124"</span>},
+  {<span class="st">"role"</span>: <span class="st">"assistant"</span>, <span class="st">"content"</span>: <span class="st">"3호기 어제 불량률은 1.83 퍼센트입니다."</span>},
+]</code></pre></div>
+    <div class="vlist">
+      <div class="v"><span class="b">&rarr;</span><div>모델이 부른 것(<code>assistant</code>)과 도구가 돌려준 것(<code>tool</code>)이 <b>번갈아 쌓인다</b>.</div></div>
+      <div class="v"><span class="b">&#9733;</span><div>다음 질문에도 이 목록을 <b>이어서 쓰면</b> 「방금 그 작업」 같은 말이 통한다. 그것이 메모리다.</div></div>
+    </div>
+    <div class="keymsg"><span class="k">비용</span><div>매 호출마다 <b>목록 전체</b>가 다시 간다 &mdash; 일곱 줄이면 일곱 줄을 통째로 보낸다.</div></div>
+  </div>
 </section>
 <section class="slide" data-title="self-correction">
   <div class="coord"><b></b> / <span class="tot"></span></div>
