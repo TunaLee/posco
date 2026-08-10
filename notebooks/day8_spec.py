@@ -294,6 +294,157 @@ print(gen('고로가 뭐야?', n=40))"""),
 
     md("프롬프트는 **앞부분을 바꿔 확률을 옮기는 일**이다.\n"
        "형식과 말투는 이걸로 잡히지만, **없는 지식은 만들어 내지 못한다**."),
+
+    md("## 8. 큰 모델로 데이터 처리하기"),
+    md("여기까지는 계수 15억 개짜리 한 대로 봤다. 실무에서 쓰는 것은 이보다 크다.\n"
+       "**build.nvidia.com** 에서 키를 받으면 여러 크기의 모델을 무료로 불러 쓸 수 있다."),
+
+    md("### 준비 — 키 받기\n\n"
+       "1. `build.nvidia.com` 에 접속해 로그인한다\n"
+       "2. 아무 모델이나 열고 **Get API Key** 를 누른다\n"
+       "3. `nvapi-` 로 시작하는 키를 복사해 아래 셀에 붙여 넣는다"),
+
+    prep("""# 키는 화면에 안 찍히게 받는다
+import getpass, json, urllib.request, urllib.error
+KEY = getpass.getpass('nvapi- 로 시작하는 키: ')
+print('키 길이', len(KEY))"""),
+
+    prep("""# 모델 하나에 물어보는 함수 — 실패해도 노트북이 멈추지 않게 한다
+URL = 'https://integrate.api.nvidia.com/v1/chat/completions'
+
+def nv(model, prompt, n=400, temp=0):
+    body = json.dumps({'model': model, 'max_tokens': n, 'temperature': temp,
+                       'messages': [{'role': 'user', 'content': prompt}]}).encode()
+    req = urllib.request.Request(URL, data=body, headers={
+        'Authorization': 'Bearer ' + KEY,
+        'Content-Type': 'application/json', 'Accept': 'application/json'})
+    try:
+        with urllib.request.urlopen(req, timeout=120) as f:
+            return json.load(f)['choices'][0]['message']['content'].strip()
+    except Exception as e:
+        return '[실패] %s' % str(e)[:60]
+
+print(nv('meta/llama-3.1-8b-instruct', '한 단어로만 답하라. 대한민국의 수도는?', 10))"""),
+
+    prep("""# 오늘 쓸 모델 — 크기가 다르다
+MODELS = [('3B',  'meta/llama-3.2-3b-instruct'),
+          ('8B',  'meta/llama-3.1-8b-instruct'),
+          ('49B', 'nvidia/llama-3.3-nemotron-super-49b-v1')]
+for tag, name in MODELS:
+    print('%-4s %s' % (tag, name))"""),
+
+    md("70B(`meta/llama-3.3-70b-instruct`)도 있지만 붐빌 때 자주 실패한다. 시간이 남으면 넣어 본다."),
+
+    md("### 크기를 바꾸면 달라지는 것"),
+    md("5절에서 이 노트북의 1.5B 모델은 **재고 48개를 「충분」** 이라고 답했다. 기준은 50개였다.\n"
+       "같은 프롬프트를 크기가 다른 모델에 넣어 본다."),
+
+    code("""# 같은 프롬프트, 크기만 다르다
+STOCK = ('# 역할\\n너는 재고 담당자다.\\n'
+         '# 기준\\n재고가 50개 이상이면 충분, 미만이면 부족이다.\\n'
+         '# 입력\\n재고: 48개\\n'
+         '# 형식\\n아래 형식으로만 답하라. 다른 말은 쓰지 마라.\\n'
+         '{"판정": "충분 또는 부족", "이유": "한 문장"}')
+
+for tag, name in MODELS:
+    print('%-4s %s' % (tag, nv(name, STOCK, 60).replace('\\n', ' ')[:90]))"""),
+
+    md("셋 다 맞힌다. **작아서 틀렸던 것은 키우면 풀린다.**"),
+
+    md("### 계산은 키워도 안 되나"),
+    code("""# 같은 계산을 세 크기에 물어본다
+CALC = '생산 3,847개 중 불량 89개다. 불량률을 퍼센트로 소수점 둘째 자리까지 구하라. 숫자만 답하라.'
+print('정답 2.31\\n')
+for tag, name in MODELS:
+    print('%-4s %s' % (tag, nv(name, CALC, 90).replace('\\n', ' ')[:80]))"""),
+
+    md("**크면 맞는다는 법이 없다.** 8B 가 3B 보다 큰데 나누는 수를 잘못 잡기도 한다.\n"
+       "계산은 크기로 푸는 문제가 아니라 **코드로 옮길 문제**다."),
+
+    code("""# 코드로 하면 한 줄이다
+print(round(89 / 3847 * 100, 2))"""),
+
+    md("### 적어 둔 기록을 표로"),
+    md("현장 기록은 사람이 자유롭게 적은 글이다. 그대로는 세거나 거를 수 없다.\n"
+       "**형식을 못 박아** 표로 바꾸면 그때부터 데이터가 된다."),
+
+    prep("""# 손으로 적은 점검 기록 여섯 줄
+LOG = '\\n'.join([
+ '3/4 09:12 A라인 3호기 소음 커짐, 베어링 교체 요청 - 김철수',
+ '3/4 14:30 B라인 컨베이어 벨트 장력 느슨함. 조정함 - 이영희',
+ '3/5 08:05 A라인 3호기 베어링 교체 완료, 소음 정상 - 김철수',
+ '3/5 11:20 C라인 온도 센서 값 튐. 케이블 접촉 불량으로 확인, 재결선 - 박민수',
+ '3/6 16:45 B라인 벨트 다시 느슨해짐. 장력 조정만으로는 안 될 듯, 교체 검토 필요 - 이영희',
+ '3/7 10:00 정기 점검. 특이사항 없음 - 박민수'])
+print(LOG)"""),
+
+    code("""# 네 칸 틀로 표를 뽑는다
+TABLE = ('# 역할\\n너는 설비 점검 기록을 정리하는 담당자다.\\n'
+         '# 기준\\n조치가 끝났으면 완료, 후속 작업이 남았으면 미완이다.\\n'
+         '# 입력\\n' + LOG + '\\n'
+         '# 형식\\n마크다운 표로만 답하라. 다른 말은 쓰지 마라.\\n'
+         '열은 날짜 · 설비 · 증상 · 조치 · 상태 다섯 개다.')
+
+print(nv('meta/llama-3.1-8b-instruct', TABLE, 700))"""),
+
+    md("표가 나오면 `pandas` 로 읽어 세거나 거를 수 있다. **글이 데이터가 되는 지점**이다.\n"
+       "다만 `재결선` 을 미완으로 볼지 완료로 볼지는 **기준을 어떻게 적었느냐**가 정한다."),
+
+    Ex(4, "기준 한 줄만 고쳐서 `재결선` 이 완료로 나오게 만든다.",
+       setup="RULE2 = '원인을 찾아 손을 댔으면 완료다. 부품 교체나 재점검이 남았으면 미완이다.'",
+       blank="T2 = TABLE.replace('조치가 끝났으면 완료, 후속 작업이 남았으면 미완이다.', ___)",
+       answer="T2 = TABLE.replace('조치가 끝났으면 완료, 후속 작업이 남았으면 미완이다.', RULE2)",
+       check="print(nv('meta/llama-3.1-8b-instruct', T2, 700))"),
+
+    md("### 내 데이터로 직접"),
+    md("여기서부터는 **각자 자기 업무 데이터**로 한다. 아래 세 칸을 채우면 프롬프트가 만들어진다."),
+
+    code("""# 1) 내 데이터를 붙인다 — 회의록 · 문의 · 로그 무엇이든
+MY_DATA = '\\n'.join([
+ '여기에 붙여 넣는다.',
+ '여러 줄이어도 된다.'])
+
+print('%d자 · %d줄' % (len(MY_DATA), MY_DATA.count(chr(10)) + 1))"""),
+
+    code("""# 2) 네 칸을 채운다 — ___ 자리를 자기 말로 바꾼다
+ROLE   = '너는 ___ 를 정리하는 담당자다.'
+RULE   = '___ 이면 ___ 로 본다.'
+FORMAT = '마크다운 표로만 답하라. 열은 ___ · ___ · ___ 다.'
+
+MY_PROMPT = ('# 역할\\n' + ROLE + '\\n'
+             '# 기준\\n' + RULE + '\\n'
+             '# 입력\\n' + MY_DATA + '\\n'
+             '# 형식\\n' + FORMAT)
+print(MY_PROMPT)"""),
+
+    code("""# 3) 돌려 본다
+print(nv('meta/llama-3.1-8b-instruct', MY_PROMPT, 600))"""),
+
+    Task(5, "위 세 칸을 자기 업무 데이터로 채워 표가 나오게 만든다.\n"
+            "> 한 번에 안 되면 **기준과 형식만** 고쳐 가며 세 번까지 해 본다.",
+         answer="""MY_DATA = '\\n'.join([
+ '어제 받았는데 화면에 금이 가 있어요',
+ '주문한 지 일주일인데 아직 안 왔어요',
+ '색이 사진이랑 너무 달라서 반품하고 싶어요'])
+ROLE   = '너는 고객 문의를 분류하는 담당자다.'
+RULE   = '환불 · 배송 · 제품하자 · 기타 넷 중 하나로 분류한다.'
+FORMAT = '마크다운 표로만 답하라. 열은 문의 · 분류 · 근거 세 개다.'
+MY_PROMPT = ('# 역할\\n' + ROLE + '\\n# 기준\\n' + RULE + '\\n'
+             '# 입력\\n' + MY_DATA + '\\n# 형식\\n' + FORMAT)
+print(nv('meta/llama-3.1-8b-instruct', MY_PROMPT, 500))""",
+         check="print('한 번에 하나씩만 고친다 — 여러 곳을 바꾸면 무엇이 들었는지 모른다')"),
+
+    Task(6, "같은 프롬프트를 **3B 와 49B 에 각각** 넣어 결과를 견준다.\n"
+            "> 크기를 키워야 되는 일인지, 프롬프트를 고쳐야 되는 일인지 가른다.",
+         answer="""for tag, name in [('3B', 'meta/llama-3.2-3b-instruct'),
+                  ('49B', 'nvidia/llama-3.3-nemotron-super-49b-v1')]:
+    print('===== %s =====' % tag)
+    print(nv(name, MY_PROMPT, 500))
+    print()""",
+         check="print('크기로 풀리는 것과 프롬프트로 풀리는 것은 다르다')"),
+
+    md("**형식이 안 잡히면 프롬프트를 고친다. 판단이 틀리면 모델을 키운다. "
+       "계산이 틀리면 코드로 옮긴다.**\n둘 이상을 한꺼번에 고치면 무엇이 들었는지 알 수 없다."),
 ]
 
 MODES = {
@@ -301,6 +452,7 @@ MODES = {
     ("ex", 2): "together", ("task", 2): "solo",
     ("task", 3): "solo",
     ("ex", 3): "together", ("task", 4): "team",
+    ("ex", 4): "together", ("task", 5): "solo", ("task", 6): "team",
 }
 
-SPEC = ("LLM 과 프롬프트", "모델을 직접 열어 토큰 · 확률 · 어텐션을 본다", CELLS, MODES)
+SPEC = ("LLM 과 프롬프트", "모델을 열어 보고 API 로 데이터를 처리한다", CELLS, MODES)
