@@ -905,27 +905,207 @@ text = read(files[i])         <span class="cm"># 그때 로드</span></code></pr
 <section class="slide" data-title="부록에서 다루는 것">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>부록</div>
-  <h2 class="s-title">반출 없이 · 전처리 · 검증 · 웹 앱</h2>
+  <h2 class="s-title">반출 통제 · 코드 받기 · 전처리 · 검증</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="cards c4">
-      <div class="card"><span class="n">CH5</span><h3>데이터를 안 보내고</h3><p>표를 통째로 올리면 유출이다. 모양만 보내고 코드를 받는다.</p></div>
-      <div class="card"><span class="n">CH6</span><h3>전처리</h3><p>결측 · 이상치 · 글자 열. 손대는 순서가 정해져 있다.</p></div>
-      <div class="card"><span class="n">CH7</span><h3>예측과 검증</h3><p>정확도 하나로 속지 않는다. 놓친 불량을 센다.</p></div>
-      <div class="card"><span class="n">CH8</span><h3>웹 앱에 붙이기</h3><p>만든 모듈을 화면 뒤에 놓는다.</p></div>
+      <div class="card"><span class="n">CH5</span><h3>반출 통제</h3><p>값 자체가 기밀이다. 컬럼명과 값을 바꿔 내보내는 규칙을 먼저 정한다.</p></div>
+      <div class="card"><span class="n">CH6</span><h3>코드만 받기</h3><p>표를 통째로 올리면 유출이다. 모양만 보내고 코드를 받는다.</p></div>
+      <div class="card"><span class="n">CH7</span><h3>전처리</h3><p>결측 · 이상치 · 글자 열. 손대는 순서가 정해져 있다.</p></div>
+      <div class="card"><span class="n">CH8</span><h3>예측과 검증</h3><p>정확도 하나로 속지 않는다. 놓친 불량을 센다.</p></div>
     </div>
     <div class="keymsg"><span class="k">기준</span><div>부록의 모든 수치는 <b>공정 데이터 1,412건을 실제로 돌려</b> 뽑은 것이다.</div></div>
   </div>
 </section>
-<section class="slide section" data-title="[섹션] 원본 없이 코드 받기">
+<section class="slide section" data-title="[섹션] 반출 없이 데이터프레임 다루기">
   <div class="ghost">05</div>
   <div class="seyebrow">CHAPTER 05</div>
+  <h2>반출 없이 데이터프레임 다루기</h2>
+  <p>이차전지 공정 데이터는 값 자체가 레시피다. 가릴 식별자가 없다.</p>
+  <div class="agenda"><span>무차원화</span><span>컬럼명</span><span>메타데이터</span><span>규칙표</span></div>
+</section>
+<section class="slide" data-title="가릴 식별자가 없다">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>전제</div>
+  <h2 class="s-title sm">가릴 식별자가 없는 데이터</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twopane">
+  <div class="pane good"><h4>개인정보라면</h4><p>이름 · 사번 같은 <b>식별자를 떼면</b> 값은 그대로 쓸 수 있다.</p><div class="mini">가명처리가 통한다</div></div>
+  <div class="pane bad"><h4>공정 데이터는</h4><p>코팅 로딩 mg/cm&sup2;, 프레스 후 전극 밀도, N/P 비, 화성 C-rate, 에이징 온도.</p><div class="mini">이 숫자가 곧 레시피다</div></div>
+</div>
+<div class="vlist"><div class="v"><span class="b">&rarr;</span><div>떼어 낼 이름이 없다. <b>값과 기밀이 같은 것</b>이라 마스킹·해싱이 걸릴 자리가 없다.</div></div></div>
+<div class="keymsg"><span class="k">전환</span><div>지울 칸을 찾는 대신 <b>절대값을 넘기지 않고도 되는 분석</b>을 고른다.</div></div></div>
+</section>
+<section class="slide" data-title="무차원화">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>기법</div>
+  <h2 class="s-title sm">(x &minus; target) / tol</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w2"><div><div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>상관 · 회귀 · 관리도 판정 · 이상탐지 · PCA 는 <b>값을 선형으로 옮겨도 결과가 같다</b>.</div></div>
+  <div class="v"><span class="b">&rarr;</span><div>그래서 절대값을 안 넘겨도 <b>분석 품질이 거의 안 떨어진다</b>.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>&minus;0.32 만 봐서는 건조 온도가 <b>80도대인지 120도대인지 알 수 없다</b>.</div></div>
+</div></div>
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">변환</span></div><pre><code><span class="cm"># 원본 — 그대로는 못 나간다</span>
+건조_ZONE2_TEMP = <span class="nm">118.4</span>   <span class="cm"># target 120, tol ±5</span>
+
+<span class="cm"># 반출본 — 스펙 기준으로 옮긴다</span>
+DRY_Z2_T = <span class="st">-0.32</span>          <span class="cm"># (x - target) / tol</span>
+
+<span class="cm"># Cpk · 관리도 이탈 · 드리프트 · 호기 간 산포</span>
+<span class="cm"># 전부 이 형태로 그대로 나온다</span></code></pre></div></div>
+<div class="keymsg"><span class="k">원리</span><div>버리는 것은 <b>단위와 기준점</b>이고, 남기는 것은 <b>관계</b>다.</div></div></div>
+</section>
+<section class="slide" data-title="변환 세 가지">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>고르기</div>
+  <h2 class="s-title sm">스펙 정규화 · z-score · 분위 변환</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="ctable"><table><thead><tr><th>방식</th><th>식</th><th>남는 것</th><th>주의</th></tr></thead><tbody>
+  <tr><td>스펙 정규화</td><td>(x &minus; target) / tol</td><td>공정능력 · 판정 기준</td><td>target · tol 자체가 기밀이면 이 값도 새면 안 된다</td></tr>
+  <tr><td>z-score</td><td>(x &minus; &mu;) / &sigma;</td><td>상관 · 분포 모양</td><td>&mu; · &sigma; 는 로컬에만 둔다</td></tr>
+  <tr><td>분위 변환</td><td>백분위</td><td>순서 · 단조 관계</td><td>선형성이 깨져 회귀에는 못 쓴다</td></tr>
+</tbody></table></div>
+<div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></div><div class="ct"><h4>안 되는 방법</h4><p>단위만 지우거나 임의 배수를 곱하는 것. 파라미터별 전형 범위가 문헌에 다 있어 <b>도메인 지식으로 역산된다</b> &mdash; 「밀도 3.5」면 양극 프레스 후 값인 것이 바로 보인다.</p></div></div>
+<div class="keymsg"><span class="k">기준</span><div>회귀까지 갈 것이면 <b>앞의 둘</b>, 순위만 보면 되면 <b>분위 변환</b>.</div></div></div>
+</section>
+<section class="slide" data-title="컬럼명 가명처리">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>이름</div>
+  <h2 class="s-title sm">VOLT_P3_S3 로 바꾸는 이유</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w2"><div><div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div><code>화성_3단계_CV_전압</code> 같은 이름은 <b>그 자체가 레시피</b>다.</div></div>
+  <div class="v"><span class="b">&rarr;</span><div>그렇다고 <code>FEAT_017</code> 로 다 지우면 도메인 추론이 죽어 <b>코드 품질이 떨어진다</b>.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div><b>물리량 종류는 남기고 공정 맥락만 지운다.</b> 매핑 표는 로컬에만 둔다.</div></div>
+</div></div>
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">이름 규칙</span></div><pre><code>화성_3단계_CV_전압  &rarr;  <span class="st">VOLT_P3_S3</span>
+프레스_1호기_압력    &rarr;  <span class="st">PRES_B1</span>
+NMP_투입비          &rarr;  <span class="st">RATIO_M2</span>
+
+<span class="cm"># 살아 있는 판단</span>
+<span class="cm">#  전압끼리는 같이 볼 만하다</span>
+<span class="cm">#  비율 변수는 합이 1일 수 있다</span></code></pre></div></div>
+<div class="keymsg"><span class="k">선</span><div>모델이 <b>무슨 물리량인지는 알고</b>, <b>어느 공정인지는 모르게</b> 두는 것이 절충점이다.</div></div></div>
+</section>
+<section class="slide" data-title="메타데이터 누출">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>더 큰 구멍</div>
+  <h2 class="s-title sm">로트 번호와 타임스탬프가 흘리는 것</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="ctable"><table><thead><tr><th>남아 있는 것</th><th>여기서 역산되는 것</th></tr></thead><tbody>
+  <tr><td>공정 단계 수</td><td>화성 프로토콜이 몇 단인지 &mdash; 단계 수 자체가 노하우다</td></tr>
+  <tr><td class="hl">로트 · 시리얼 ID</td><td class="hl">순번 증가율로 생산량. 고객사 코드가 박혀 있는 경우가 많다</td></tr>
+  <tr><td>타임스탬프</td><td>설비 간 간격에서 tact time, 시간대별 밀도에서 가동률과 capacity</td></tr>
+  <tr><td>장비 벤더 · 모델 · 호기 수</td><td>라인 구성과 투자 규모</td></tr>
+  <tr><td>USL / LSL · 수율</td><td>판정 기준이자 기술 수준. 수율은 경영 정보다</td></tr>
+</tbody></table></div>
+<div class="vlist"><div class="v"><span class="b">&#9733;</span><div>스펙 정규화를 쓰면 한계선이 <b>&plusmn;1 로 고정</b>돼 USL/LSL 문제가 같이 풀린다.</div></div></div>
+<div class="keymsg"><span class="k">경계</span><div>숫자를 다 가려도 <b>이 다섯이 남아 있으면</b> 가린 값이 되돌아온다.</div></div></div>
+</section>
+<section class="slide" data-title="반출본 만들기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>코드</div>
+  <h2 class="s-title sm">반출용 데이터프레임 만들기</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">export.py</span></div><pre><code>RULE = {<span class="st">'건조_ZONE2_TEMP'</span>: (<span class="st">'DRY_Z2_T'</span>, <span class="st">'spec'</span>, (<span class="nm">120.0</span>, <span class="nm">5.0</span>)),
+        <span class="st">'프레스_1호기_압력'</span>: (<span class="st">'PRES_B1'</span>, <span class="st">'z'</span>, <span class="kw">None</span>)}
+out = pd.DataFrame(index=df.index)          <span class="cm"># 원본 df 는 여기서만 읽는다</span>
+<span class="kw">for</span> src, (dst, how, p) <span class="kw">in</span> RULE.items():
+    x = df[src]
+    <span class="kw">if</span>   how == <span class="st">'spec'</span>: out[dst] = (x - p[<span class="nm">0</span>]) / p[<span class="nm">1</span>]
+    <span class="kw">elif</span> how == <span class="st">'z'</span>:    out[dst] = (x - x.mean()) / x.std()</code></pre></div>
+<div class="code sm" style="margin-top:12px"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">id · 시간</span></div><pre><code>out[<span class="st">'LOT'</span>] = pd.factorize(df[<span class="st">'로트번호'</span>])[<span class="nm">0</span>]        <span class="cm"># 순번을 지운다</span>
+out[<span class="st">'T'</span>]   = (df[<span class="st">'시각'</span>] - df[<span class="st">'시각'</span>].min()).dt.total_seconds() / <span class="nm">3600</span></code></pre></div>
+<div class="keymsg"><span class="k">확인</span><div>반출본에 <b>원본 컬럼명 · 원본 값 · 원본 ID 가 하나도 없어야</b> 내보낸다.</div></div></div>
+</section>
+<section class="slide" data-title="어디까지 되나">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>범위</div>
+  <h2 class="s-title sm">정규화 데이터가 감당하는 범위</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="ctable"><table><thead><tr><th>하려는 일</th><th>정규화 데이터로</th><th>비고</th></tr></thead><tbody>
+  <tr><td>SPC 관리도 · Cpk / Ppk</td><td>된다</td><td>스펙 정규화하면 그대로</td></tr>
+  <tr><td>상관 · 회귀 · 인자 스크리닝</td><td>된다</td><td>선형변환에 불변</td></tr>
+  <tr><td>이상탐지 · 드리프트 · 산포 비교</td><td>된다</td><td>시간축은 상대화, 그룹 라벨은 익명화</td></tr>
+  <tr><td>PCA · 클러스터링</td><td>된다</td><td>스케일링 방식만 일관되게</td></tr>
+  <tr><td class="hl">물리 타당성 검증</td><td class="hl">사내에서만</td><td class="hl">절대값이 있어야 판단이 된다</td></tr>
+  <tr><td class="hl">전기화학 모델 피팅 · 신규 스펙 설정</td><td class="hl">안 된다</td><td class="hl">실물리량이 필수다</td></tr>
+</tbody></table></div>
+<div class="keymsg"><span class="k">경계선</span><div>코드와 방법은 <b>위쪽에서 다 끝난다</b>. 사내로 넘길 것은 <b>아래 두 줄</b>뿐이다.</div></div></div>
+</section>
+<section class="slide" data-title="합성 데이터">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>대안</div>
+  <h2 class="s-title sm">센서 단선 · 값 고착 · 단위 혼입</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>공정 수치는 <b>정규분포 + 완만한 드리프트 + 간헐 스파이크 + 설비 교체 시 계단</b> 구조라 만들기 쉽다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>실데이터로는 <b>만나기 어려운 상황</b>을 일부러 심어 두면 코드가 더 견고해진다.</div></div>
+</div>
+<div class="ctable" style="margin-top:12px"><table><thead><tr><th>심어 둘 것</th><th>이걸로 잡히는 코드</th></tr></thead><tbody>
+  <tr><td>센서 단선 — 연속 결측 구간</td><td>결측 처리와 보간 경계</td></tr>
+  <tr><td>값 고착 — 같은 값 반복</td><td>센서 이상 판정</td></tr>
+  <tr><td>단위 혼입 — &deg;C 와 &deg;F, mm 와 &mu;m</td><td>범위 검사</td></tr>
+  <tr><td>로트 경계 레벨 시프트</td><td>드리프트와 시프트 구분</td></tr>
+  <tr><td>타임스탬프 역행 · 중복</td><td>정렬과 중복 제거</td></tr>
+</tbody></table></div><div class="keymsg"><span class="k">이득</span><div>합성 데이터는 반출 걱정이 없고, <b>심어 둔 만큼 예외 처리가 늘어난다</b>.</div></div></div>
+</section>
+<section class="slide" data-title="그림과 에러">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>샌다</div>
+  <h2 class="s-title sm">관리도 한 장에 찍히는 UCL 과 눈금</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twopane">
+  <div class="pane bad"><h4>차트</h4><p>관리도 한 장에 <b>UCL · LCL · y축 눈금 · 스펙선</b>이 전부 찍혀 나온다.</p><div class="mini">보여주는 것 = 데이터를 넘기는 것</div></div>
+  <div class="pane bad"><h4>에러 메시지</h4><p><code>ValueError: temperature 847.2 out of range</code> &mdash; 값이 그대로 붙어 나온다.</p><div class="mini">붙여 넣기 전에 지운다</div></div>
+</div>
+<div class="vlist">
+  <div class="v"><span class="b">&#9733;</span><div>원칙은 <b>플롯 코드만 만들고 렌더링은 사내에서</b> 한다.</div></div>
+  <div class="v"><span class="b">&rarr;</span><div>배치를 꼭 봐야 하면 <b>축 라벨 · 눈금 · 컬러바 수치를 지운</b> 판으로 본다.</div></div>
+</div>
+<div class="keymsg"><span class="k">한 줄</span><div>표를 안 보내 놓고 <b>그림과 에러로 흘리는 것</b>이 가장 흔한 사고다.</div></div></div>
+</section>
+<section class="slide" data-title="변환 규칙표">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>시작점</div>
+  <h2 class="s-title sm">컬럼별 변환 규칙표</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="ctable"><table><thead><tr><th>원본명</th><th>익명명</th><th>변환식</th><th>파라미터 보관</th></tr></thead><tbody>
+  <tr><td>건조_ZONE2_TEMP</td><td>DRY_Z2_T</td><td>(x &minus; 120) / 5</td><td>사내 서버</td></tr>
+  <tr><td>프레스_1호기_압력</td><td>PRES_B1</td><td>(x &minus; &mu;) / &sigma;</td><td>사내 서버</td></tr>
+  <tr><td>로트번호</td><td>LOT</td><td>재번호</td><td>매핑 표 · 사내</td></tr>
+  <tr><td>시각</td><td>T</td><td>t0 기준 시간</td><td>t0 · 사내</td></tr>
+</tbody></table></div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>이 표가 그대로 <b>반출 스크립트 명세</b>가 된다. 매번 판단할 일이 없어진다.</div></div>
+  <div class="v"><span class="b">&rarr;</span><div>통제 절차를 문서로 남기는 것 자체가 <b>영업비밀의 비밀관리성 요건</b>에 도움이 된다.</div></div>
+</div>
+<div class="keymsg"><span class="k">첫걸음</span><div>컬럼 목록을 뽑아 <b>네 칸을 채우는 것</b>부터 한다. 그 다음은 스크립트가 한다.</div></div></div>
+</section>
+<section class="slide" data-title="법으로 걸리는 자리">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>법</div>
+  <h2 class="s-title sm">국가핵심기술과 국외 유출</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>이차전지 관련 기술 중 <b>산업기술보호법상 국가핵심기술</b>로 지정된 항목이 있다.</div></div>
+  <div class="v"><span class="b">&rarr;</span><div>해당되면 별도의 <b>보호조치 의무</b>가 붙고, <b>국외 유출은 형사처벌</b> 대상이다.</div></div>
+  <div class="v"><span class="b">&rarr;</span><div>데이터가 <b>해외 소재 인프라를 경유하는 구조</b>인지가 쟁점이 될 수 있다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>지정 목록은 <b>산업부 고시</b>로 관리되고 개정된다. 현행 기준을 확인해야 한다.</div></div>
+</div>
+<div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></div><div class="ct"><h4>판단 주체</h4><p>개인이 정할 사안이 아니다. <b>사내 보안팀 또는 산업기술보호 담당</b>에게 먼저 확인한 뒤 진행한다.</p></div></div>
+<div class="keymsg"><span class="k">순서</span><div>기술로 막는 것이 먼저가 아니다. <b>무엇이 나가도 되는지부터</b> 확인받는다.</div></div></div>
+</section>
+<section class="slide section" data-title="[섹션] 원본 없이 코드 받기">
+  <div class="ghost">06</div>
+  <div class="seyebrow">CHAPTER 06</div>
   <h2>원본 없이 코드 받기</h2>
   <div class="agenda"><span>유출</span><span>스키마</span><span>가짜 표본</span></div>
 </section>
 <section class="slide" data-title="부록이 푸는 문제">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>문제</div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>문제</div>
   <h2 class="s-title">엑셀 1,412건과 반출 금지</h2>
   <div class="rule"></div>
   <div class="body">
@@ -936,7 +1116,7 @@ text = read(files[i])         <span class="cm"># 그때 로드</span></code></pr
 </section>
 <section class="slide" data-title="스키마와 값">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>기준</div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>기준</div>
   <h2 class="s-title">스키마와 값</h2>
   <div class="rule"></div>
   <div class="body">
@@ -946,7 +1126,7 @@ text = read(files[i])         <span class="cm"># 그때 로드</span></code></pr
 </section>
 <section class="slide" data-title="info() 와 describe()">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>코드</div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>코드</div>
   <h2 class="s-title">info() · describe() 의 출력</h2>
   <div class="rule"></div>
   <div class="body">
@@ -967,7 +1147,7 @@ df.isna().sum()</code></pre></div></div>
 </section>
 <section class="slide" data-title="Codex 에 넣는 프롬프트">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>프롬프트</div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>프롬프트</div>
   <h2 class="s-title">역할 · 데이터 · 할 일 · 형식</h2>
   <div class="rule"></div>
   <div class="body">
@@ -989,14 +1169,14 @@ df.isna().sum()</code></pre></div></div>
   </div>
 </section>
 <section class="slide section" data-title="[섹션] 전처리">
-  <div class="ghost">06</div>
-  <div class="seyebrow">CHAPTER 06</div>
+  <div class="ghost">07</div>
+  <div class="seyebrow">CHAPTER 07</div>
   <h2>전처리</h2>
   <div class="agenda"><span>결측</span><span>이상치</span><span>글자 열</span><span>누수</span></div>
 </section>
 <section class="slide" data-title="전처리 순서">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>순서</div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>순서</div>
   <h2 class="s-title">읽기 → 이상치 → 결측 → 인코딩 → 분할</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1006,7 +1186,7 @@ df.isna().sum()</code></pre></div></div>
 </section>
 <section class="slide" data-title="이상치">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>실측</div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>실측</div>
   <h2 class="s-title">성형압력 999 가 18건</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1017,7 +1197,7 @@ df.isna().sum()</code></pre></div></div>
 </section>
 <section class="slide" data-title="결측">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>선택</div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>선택</div>
   <h2 class="s-title">입도 112건 · 수분율 73건</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1028,7 +1208,7 @@ df.isna().sum()</code></pre></div></div>
 </section>
 <section class="slide" data-title="분포와 산점도">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>실측</div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>실측</div>
   <h2 class="s-title">소성온도 분포와 불순물 산점도</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1039,7 +1219,7 @@ df.isna().sum()</code></pre></div></div>
 </section>
 <section class="slide" data-title="데이터 누수">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>함정</div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>함정</div>
   <h2 class="s-title">정확도 1.000 이라는 경고</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1048,14 +1228,14 @@ df.isna().sum()</code></pre></div></div>
   </div>
 </section>
 <section class="slide section" data-title="[섹션] 예측과 검증">
-  <div class="ghost">07</div>
-  <div class="seyebrow">CHAPTER 07</div>
+  <div class="ghost">08</div>
+  <div class="seyebrow">CHAPTER 08</div>
   <h2>예측과 검증</h2>
   <div class="agenda"><span>모델 둘</span><span>정확도의 함정</span><span>임계</span></div>
 </section>
 <section class="slide" data-title="모델 둘의 성적">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>실측</div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>실측</div>
   <h2 class="s-title">로지스틱 0.904 · 랜덤포레스트 0.966</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1066,7 +1246,7 @@ df.isna().sum()</code></pre></div></div>
 </section>
 <section class="slide" data-title="무엇을 놓쳤나">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>실측</div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>실측</div>
   <h2 class="s-title">놓친 불량 9건 · 헛경보 3건</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1076,7 +1256,7 @@ df.isna().sum()</code></pre></div></div>
 </section>
 <section class="slide" data-title="임계를 낮추면">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>실측</div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>실측</div>
   <h2 class="s-title">임계 0.5 · 0.3 · 0.2</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1087,7 +1267,7 @@ df.isna().sum()</code></pre></div></div>
 </section>
 <section class="slide" data-title="중요도">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>실측</div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>실측</div>
   <h2 class="s-title">소성온도 0.513 · 불순물 0.160</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1097,14 +1277,14 @@ df.isna().sum()</code></pre></div></div>
   </div>
 </section>
 <section class="slide section" data-title="[섹션] 웹 앱에 붙이기">
-  <div class="ghost">08</div>
-  <div class="seyebrow">CHAPTER 08</div>
+  <div class="ghost">09</div>
+  <div class="seyebrow">CHAPTER 09</div>
   <h2>웹 앱에 붙이기</h2>
   <div class="agenda"><span>모듈로 떼기</span><span>화면</span><span>사내 적용</span></div>
 </section>
 <section class="slide" data-title="model.pkl">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>구조</div>
+  <div class="eyebrow"><span class="tag">CH9</span><span class="dot"></span>구조</div>
   <h2 class="s-title">model.pkl 로 갈라 두기</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1124,7 +1304,7 @@ p = model.predict_proba(row)[0][0]
 </section>
 <section class="slide" data-title="화면 한 장">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>화면</div>
+  <div class="eyebrow"><span class="tag">CH9</span><span class="dot"></span>화면</div>
   <h2 class="s-title">판정 화면 한 장</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1134,7 +1314,7 @@ p = model.predict_proba(row)[0][0]
 </section>
 <section class="slide" data-title="사내 적용">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>적용</div>
+  <div class="eyebrow"><span class="tag">CH9</span><span class="dot"></span>적용</div>
   <h2 class="s-title">사내 도구로의 이식</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1163,7 +1343,7 @@ df.describe()</code></pre></div></div>
 </section>
 <section class="slide" data-title="부록의 한 줄">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>정리</div>
+  <div class="eyebrow"><span class="tag">CH9</span><span class="dot"></span>정리</div>
   <h2 class="s-title">부록의 한 줄</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1177,14 +1357,14 @@ df.describe()</code></pre></div></div>
   </div>
 </section>
 <section class="slide section" data-title="[섹션] 반출을 막는 장치">
-  <div class="ghost">09</div>
-  <div class="seyebrow">CHAPTER 09</div>
+  <div class="ghost">10</div>
+  <div class="seyebrow">CHAPTER 10</div>
   <h2>반출을 막는 장치</h2>
   <div class="agenda"><span>경계</span><span>새는 경로</span><span>가짜 표</span></div>
 </section>
 <section class="slide" data-title="반출의 경계">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH9</span><span class="dot"></span>판단</div>
+  <div class="eyebrow"><span class="tag">CH10</span><span class="dot"></span>판단</div>
   <h2 class="s-title">반출의 경계</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1195,7 +1375,7 @@ df.describe()</code></pre></div></div>
 </section>
 <section class="slide" data-title="값이 새는 세 경로">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH9</span><span class="dot"></span>함정</div>
+  <div class="eyebrow"><span class="tag">CH10</span><span class="dot"></span>함정</div>
   <h2 class="s-title">에러 메시지 · 출력 · 화면 캡처</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1210,7 +1390,7 @@ df.dtypes               <span class='cm'># head() 말고</span></code></pre></di
 </section>
 <section class="slide" data-title="같은 모양의 가짜 표">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH9</span><span class="dot"></span>방법</div>
+  <div class="eyebrow"><span class="tag">CH10</span><span class="dot"></span>방법</div>
   <h2 class="s-title">난수로 만든 sample.csv</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1228,14 +1408,14 @@ fake.to_csv('sample.csv', index=False)</code></pre></div></div>
   </div>
 </section>
 <section class="slide section" data-title="[섹션] 전처리 더 보기">
-  <div class="ghost">10</div>
-  <div class="seyebrow">CHAPTER 10</div>
+  <div class="ghost">11</div>
+  <div class="seyebrow">CHAPTER 11</div>
   <h2>전처리 더 보기</h2>
   <div class="agenda"><span>읽기</span><span>글자 열</span><span>스케일링</span><span>분할</span></div>
 </section>
 <section class="slide" data-title="첫 세 줄">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH10</span><span class="dot"></span>시작</div>
+  <div class="eyebrow"><span class="tag">CH11</span><span class="dot"></span>시작</div>
   <h2 class="s-title">shape · dtypes · isna()</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1250,7 +1430,7 @@ df.isna().sum()   <span class='cm'># 어디가 비었나</span></code></pre><div
 </section>
 <section class="slide" data-title="읽는 방법">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH10</span><span class="dot"></span>실측</div>
+  <div class="eyebrow"><span class="tag">CH11</span><span class="dot"></span>실측</div>
   <h2 class="s-title">쉼표 하나가 글자로 만든 열</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1267,7 +1447,7 @@ df['불순물'].head(3)</code></pre><div class="out">['1,024', '800', '871']  �
 </section>
 <section class="slide" data-title="글자 열 다듬기">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH10</span><span class="dot"></span>실측</div>
+  <div class="eyebrow"><span class="tag">CH11</span><span class="dot"></span>실측</div>
   <h2 class="s-title">설비 여섯 대, 스물네 가지 표기</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1278,7 +1458,7 @@ df['불순물'].head(3)</code></pre><div class="out">['1,024', '800', '871']  �
 </section>
 <section class="slide" data-title="글자 열 펴기">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH10</span><span class="dot"></span>변환</div>
+  <div class="eyebrow"><span class="tag">CH11</span><span class="dot"></span>변환</div>
   <h2 class="s-title">get_dummies</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1294,7 +1474,7 @@ df['불순물'].head(3)</code></pre><div class="out">['1,024', '800', '871']  �
 </section>
 <section class="slide" data-title="스케일링">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH10</span><span class="dot"></span>실측</div>
+  <div class="eyebrow"><span class="tag">CH11</span><span class="dot"></span>실측</div>
   <h2 class="s-title">StandardScaler 가 필요한 모델</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1305,7 +1485,7 @@ df['불순물'].head(3)</code></pre><div class="out">['1,024', '800', '871']  �
 </section>
 <section class="slide" data-title="나누기">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH10</span><span class="dot"></span>기준</div>
+  <div class="eyebrow"><span class="tag">CH11</span><span class="dot"></span>기준</div>
   <h2 class="s-title">비율을 지켜 가르는 stratify</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1320,14 +1500,14 @@ df['불순물'].head(3)</code></pre><div class="out">['1,024', '800', '871']  �
   </div>
 </section>
 <section class="slide section" data-title="[섹션] 검증 더 보기">
-  <div class="ghost">11</div>
-  <div class="seyebrow">CHAPTER 11</div>
+  <div class="ghost">12</div>
+  <div class="seyebrow">CHAPTER 12</div>
   <h2>검증 더 보기</h2>
   <div class="agenda"><span>모델 차이</span><span>과적합</span><span>교차검증</span><span>임계</span></div>
 </section>
 <section class="slide" data-title="모델 둘의 차이">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH11</span><span class="dot"></span>구분</div>
+  <div class="eyebrow"><span class="tag">CH12</span><span class="dot"></span>구분</div>
   <h2 class="s-title">로지스틱 회귀와 랜덤포레스트</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1337,7 +1517,7 @@ df['불순물'].head(3)</code></pre><div class="out">['1,024', '800', '871']  �
 </section>
 <section class="slide" data-title="과적합">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH11</span><span class="dot"></span>실측</div>
+  <div class="eyebrow"><span class="tag">CH12</span><span class="dot"></span>실측</div>
   <h2 class="s-title">학습 1.000 · 검증 0.921</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1348,7 +1528,7 @@ df['불순물'].head(3)</code></pre><div class="out">['1,024', '800', '871']  �
 </section>
 <section class="slide" data-title="교차검증">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH11</span><span class="dot"></span>검증</div>
+  <div class="eyebrow"><span class="tag">CH12</span><span class="dot"></span>검증</div>
   <h2 class="s-title">교차검증 5겹 · 0.936 ± 0.004</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1365,7 +1545,7 @@ print(cv.mean(), cv.std())</code></pre><div class="out">0.943 0.933 0.933 0.933 
 </section>
 <section class="slide" data-title="임계 곡선">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH11</span><span class="dot"></span>실측</div>
+  <div class="eyebrow"><span class="tag">CH12</span><span class="dot"></span>실측</div>
   <h2 class="s-title">임계 0.05 부터 0.95 까지</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1376,7 +1556,7 @@ print(cv.mean(), cv.std())</code></pre><div class="out">0.943 0.933 0.933 0.933 
 </section>
 <section class="slide" data-title="class_weight">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH11</span><span class="dot"></span>실측</div>
+  <div class="eyebrow"><span class="tag">CH12</span><span class="dot"></span>실측</div>
   <h2 class="s-title">class_weight='balanced'</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1386,14 +1566,14 @@ print(cv.mean(), cv.std())</code></pre><div class="out">0.943 0.933 0.933 0.933 
   </div>
 </section>
 <section class="slide section" data-title="[섹션] 운영">
-  <div class="ghost">12</div>
-  <div class="seyebrow">CHAPTER 12</div>
+  <div class="ghost">13</div>
+  <div class="seyebrow">CHAPTER 13</div>
   <h2>운영</h2>
   <div class="agenda"><span>전체 흐름</span><span>재학습</span></div>
 </section>
 <section class="slide" data-title="전체 흐름">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH12</span><span class="dot"></span>정리</div>
+  <div class="eyebrow"><span class="tag">CH13</span><span class="dot"></span>정리</div>
   <h2 class="s-title">엑셀에서 판정 화면까지</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1404,7 +1584,7 @@ print(cv.mean(), cv.std())</code></pre><div class="out">0.943 0.933 0.933 0.933 
 </section>
 <section class="slide" data-title="언제 다시 학습하나">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH12</span><span class="dot"></span>운영</div>
+  <div class="eyebrow"><span class="tag">CH13</span><span class="dot"></span>운영</div>
   <h2 class="s-title">재학습의 신호</h2>
   <div class="rule"></div>
   <div class="body">
