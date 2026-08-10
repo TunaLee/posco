@@ -438,7 +438,7 @@
   <div class="ghost">01</div>
   <div class="seyebrow">CHAPTER 01</div>
   <h2>에이전트를 이루는 네 가지</h2>
-  <div class="agenda"><span>세 기둥</span><span>ReAct</span><span>도구</span></div>
+  <div class="agenda"><span>세 기둥</span><span>CoT</span><span>도구</span></div>
 </section>
 <section class="slide" data-title="세 기둥">
   <div class="coord"><b></b> / <span class="tot"></span></div>
@@ -452,7 +452,7 @@
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>계획</div>
   <h2 class="s-title sm">쪼개기와 되돌아보기</h2>
   <div class="rule"></div>
-  <div class="body"><div class="twopane"><div class="pane good"><h4>쪼개기</h4><p>큰 목표를 <b>작은 단계</b>로 나눈다.</p><div class="mini">Chain of Thought</div></div><div class="pane good"><h4>되돌아보기</h4><p>결과를 보고 <b>다음을 고친다</b>.</p><div class="mini">ReAct · self-correction</div></div></div><div class="keymsg"><span class="k">실전</span><div>뒤에 나오는 <b>멀티스텝</b>과 <b>자기수정</b>이 각각 이 둘이다.</div></div></div>
+  <div class="body"><div class="twopane"><div class="pane good"><h4>쪼개기</h4><p>큰 목표를 <b>작은 단계</b>로 나눈다.</p><div class="mini">Chain of Thought</div></div><div class="pane good"><h4>되돌아보기</h4><p>결과를 보고 <b>다음을 고친다</b>.</p><div class="mini">self-correction</div></div></div><div class="keymsg"><span class="k">실전</span><div>뒤에 나오는 <b>멀티스텝</b>과 <b>자기수정</b>이 각각 이 둘이다.</div></div></div>
 </section>
 <section class="slide" data-title="Chain of Thought">
   <div class="coord"><b></b> / <span class="tot"></span></div>
@@ -477,32 +477,6 @@
     </div>
     <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></div><div class="ct"><h4>여기까지</h4><p>자릿수가 더 늘면 다시 틀리고, 중간 줄도 <b>그럴듯하게 틀릴 수 있다</b>. 맞았는지 확인할 방법이 없다.</p></div></div>
     <div class="keymsg"><span class="k">한 줄</span><div>어려운 한 번을 <b>쉬운 여러 번</b>으로 바꾸는 것 &mdash; 이것이 Chain of Thought 다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="ReAct · 어원">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>ReAct</div>
-  <h2 class="s-title sm">생각과 행동을 번갈아 놓기</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">Re</span><div><b>Reason</b> — 무엇을 할지 <b>생각</b></div></div><div class="v"><span class="b">Act</span><div><b>Act</b> — 도구로 <b>행동</b></div></div><div class="v"><span class="b">→</span><div>생각·행동·관찰을 <b>번갈아</b></div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">react.txt</span></div><pre><code><span class="kw">Thought</span>: 연차 규정을 찾아야겠다
-<span class="kw">Action</span>: search_docs(<span class="st">"연차"</span>)
-<span class="kw">Observation</span>: 3영업일 전
-<span class="kw">Thought</span>: 답할 수 있다 → 종료</code></pre></div></div><div class="keymsg"><span class="k">핵심</span><div><b>ReAct 를 코드로 옮긴 것</b>이 에이전트다.</div></div></div>
-</section>
-<section class="slide" data-title="ReAct · 흐름">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>흐름</div>
-  <h2 class="s-title sm">Thought → Action → Observation</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="pipe"><div class="step"><div class="si">1</div><div class="sn">Thought</div><div class="sd">무엇을 할까</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">2</div><div class="sn">Action</div><div class="sd">도구 호출</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">3</div><div class="sn">Observation</div><div class="sd">결과 관찰</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">↻</div><div class="sn">반복</div><div class="sd">목표까지</div></div></div><div class="keymsg"><span class="k">연결</span><div>CH2 의 코드가 <b>이 그림 그대로</b>다.</div></div></div>
-</section>
-<section class="slide" data-title="[그림] ReAct vs function calling">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>변화</div>
-  <h2 class="s-title sm">초기 ReAct 와 지금의 function calling</h2>
-  <div class="rule"></div>
-  <div class="body" style="justify-content:center;padding-top:4px">
-    <div><img src="assets/react-vs-function-calling.webp" alt="원래 ReAct(텍스트 파싱)와 요즘 function calling(구조화 호출) 비교" style="display:block;margin:0 auto;max-width:100%;max-height:452px;border-radius:10px;border:1px solid var(--line)"/></div>
   </div>
 </section>
 <section class="slide" data-title="모델 혼자서는 안 되는 일">
@@ -565,7 +539,7 @@
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>출발점</div>
   <h2 class="s-title sm">열 줄짜리 run_agent</h2>
   <div class="rule"></div>
-  <div class="body"><div class="twocol w2"><div><div class="vlist"><div class="v"><span class="b">→</span><div>아래 <b>run_agent</b> 열 줄이 이미 <b>ReAct 루프</b>다</div></div><div class="v"><span class="b">→</span><div>판단 → 도구 실행 → 관찰 → 반복</div></div><div class="v"><span class="b">★</span><div>이 한 줄에서 시작해 조건과 안전장치를 붙여 나간다</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">run_agent.py</span></div><pre><code><span class="kw">while</span> True:
+  <div class="body"><div class="twocol w2"><div><div class="vlist"><div class="v"><span class="b">→</span><div>아래 <b>run_agent</b> 열 줄이 이미 <b>판단 · 행동 · 관찰</b>이다</div></div><div class="v"><span class="b">→</span><div>판단 → 도구 실행 → 관찰 → 반복</div></div><div class="v"><span class="b">★</span><div>이 한 줄에서 시작해 조건과 안전장치를 붙여 나간다</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">run_agent.py</span></div><pre><code><span class="kw">while</span> True:
     msg = llm.chat(messages, tools)  <span class="cm"># 판단</span>
     <span class="kw">if</span> <span class="kw">not</span> msg.tool_calls:
         <span class="kw">return</span> msg.content         <span class="cm"># 종료</span>
@@ -576,7 +550,7 @@
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>구조</div>
   <h2 class="s-title sm">판단 · 행동 · 관찰의 반복</h2>
   <div class="rule"></div>
-  <div class="body"><div class="vlist"><div class="v"><span class="b">1</span><div><b>판단</b> — 도구를 부를지/답할지 결정</div></div><div class="v"><span class="b">2</span><div><b>행동</b> — 고른 도구를 실행</div></div><div class="v"><span class="b">3</span><div><b>관찰</b> — 결과를 messages에 되먹인다</div></div><div class="v"><span class="b">↻</span><div><b>반복</b> — 도구를 더 안 부를 때까지</div></div></div><div class="keymsg"><span class="k">한 줄</span><div>이게 ReAct다 — <b>개념과 코드가 같은 그림</b>.</div></div></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">1</span><div><b>판단</b> — 도구를 부를지/답할지 결정</div></div><div class="v"><span class="b">2</span><div><b>행동</b> — 고른 도구를 실행</div></div><div class="v"><span class="b">3</span><div><b>관찰</b> — 결과를 messages에 되먹인다</div></div><div class="v"><span class="b">↻</span><div><b>반복</b> — 도구를 더 안 부를 때까지</div></div></div><div class="keymsg"><span class="k">한 줄</span><div>앞 장 <b>run_agent</b> 열 줄이 이 세 단계를 그대로 돈다.</div></div></div>
 </section>
 <section class="slide" data-title="시스템 프롬프트">
   <div class="coord"><b></b> / <span class="tot"></span></div>
@@ -642,7 +616,7 @@ A: 추가했고, 현재 3건입니다.</code></pre></div></div></div>
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>패턴</div>
   <h2 class="s-title sm">계획을 먼저 세우고 실행하기</h2>
   <div class="rule"></div>
-  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div>즉흥(ReAct) 대신 <b>먼저 계획</b>을 세우게</div></div><div class="v"><span class="b">→</span><div>계획 → 단계별 실행 → (막히면) 재계획</div></div><div class="v"><span class="b">★</span><div>단계가 많은 일에서 <b>갈피를 덜 잃는다</b></div></div></div><div class="pipe q" style="margin-top:14px"><div class="step"><div class="si">1</div><div class="sn">계획</div><div class="sd">단계 나열</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">2</div><div class="sn">실행</div><div class="sd">하나씩</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">↻</div><div class="sn">재계획</div><div class="sd">필요시</div></div></div><div class="keymsg" style="margin-top:14px"><span class="k">선택</span><div>짧은 일은 ReAct(즉흥), 긴 일은 plan-execute(선계획) — 상황에 맞게.</div></div></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div>그때그때 정하는 대신 <b>먼저 계획</b>을 세우게</div></div><div class="v"><span class="b">→</span><div>계획 → 단계별 실행 → (막히면) 재계획</div></div><div class="v"><span class="b">★</span><div>단계가 많은 일에서 <b>갈피를 덜 잃는다</b></div></div></div><div class="pipe q" style="margin-top:14px"><div class="step"><div class="si">1</div><div class="sn">계획</div><div class="sd">단계 나열</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">2</div><div class="sn">실행</div><div class="sd">하나씩</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">↻</div><div class="sn">재계획</div><div class="sd">필요시</div></div></div><div class="keymsg" style="margin-top:14px"><span class="k">선택</span><div>짧은 일은 그때그때, <b>단계가 많은 일은 계획 먼저</b>.</div></div></div>
 </section>
 <section class="slide" data-title="메모리 붙이기">
   <div class="coord"><b></b> / <span class="tot"></span></div>
