@@ -162,11 +162,22 @@ plt.legend(); plt.grid(alpha=.2); plt.show()"""),
     md("사람이 무리를 지어 준 적이 없다. **다음 토큰을 맞히도록 학습**했더니 저절로 갈렸다.\n"
        "다만 1,536차원을 2차원으로 눌러 그린 것이라 실제 거리의 일부만 보인다."),
 
-    Task(1, "우리말 낱말 세 쌍을 골라 가까운 정도를 재 본다.\n"
+    prep("""# 낱말 쌍 목록을 주면 가까운 정도를 재서 찍어 주는 함수
+def show_sim(pairs):
+    for a, b in pairs:
+        v = F.cosine_similarity(vec(a), vec(b), dim=0).item()
+        print('%-8s ~ %-8s  %.3f' % (a, b, v))
+
+show_sim([(' king', ' queen'), (' king', ' banana')])"""),
+
+    Task(1, "아래 목록에 **우리말 낱말 쌍 세 개**를 넣는다. 앞에 빈칸을 붙인다.\n"
             "> 뜻이 가까운 쌍과 먼 쌍이 숫자로 갈리는지 본다.",
-         answer="""for a, b in ((' 왕', ' 여왕'), (' 왕', ' 바나나'), (' 고양이', ' 개')):
-    print('%-8s ~%-8s  %.3f' % (a, b, F.cosine_similarity(vec(a), vec(b), dim=0).item()))""",
-         check="print('영어보다 덜 갈릴 수 있다 — 토큰이 쪼개져서다')"),
+         setup="",
+         blank="""PAIRS = [(' ___', ' ___'), (' ___', ' ___'), (' ___', ' ___')]
+show_sim(PAIRS)""",
+         answer="""PAIRS = [(' 왕', ' 여왕'), (' 왕', ' 바나나'), (' 고양이', ' 개')]
+show_sim(PAIRS)""",
+         check="print('우리말은 영어보다 덜 갈릴 수 있다 — 토큰이 쪼개져서다')"),
 
     md("## 4. 다음 한 토큰"),
     md("모델이 하는 일은 하나다. **앞을 보고 다음 토큰의 확률을 매기는 것**이다."),
@@ -194,12 +205,20 @@ for T in (0.2, 1.0, 2.0):
     print('T=%.1f  ' % T,
           ['%s %.1f%%' % (tok.decode([i]), v * 100) for v, i in zip(t3.values, t3.indices)])"""),
 
-    Task(2, "온도를 **0.1 부터 3.0 까지** 옮기며 1등 확률이 어떻게 되는지 그래프로 그린다.\n"
-            "> 낮추면 1로 붙고 높이면 평평해지는 것이 보여야 한다.",
-         answer="""ts = [0.1, 0.3, 0.5, 0.8, 1.0, 1.5, 2.0, 3.0]
-ys = [(logits / t).softmax(-1).max().item() for t in ts]
-plt.plot(ts, ys, marker='o'); plt.xlabel('temperature'); plt.ylabel('1등 확률')
-plt.grid(alpha=.3); plt.show()""",
+    prep("""# 온도 목록을 주면 1등 확률을 재서 찍어 주는 함수
+def show_temp(temps):
+    for T in temps:
+        p1 = (logits / T).softmax(-1).max().item()
+        print('T=%.1f   1등 확률 %.4f' % (T, p1))
+
+show_temp([1.0])"""),
+
+    Task(2, "아래 목록에 **온도를 다섯 개** 넣는다. 0.1 부터 3.0 사이로 고른다.\n"
+            "> 낮추면 1에 붙고 높이면 낮아지는 것이 숫자로 보여야 한다.",
+         blank="""TEMPS = [___, ___, ___, ___, ___]
+show_temp(TEMPS)""",
+         answer="""TEMPS = [0.1, 0.5, 1.0, 2.0, 3.0]
+show_temp(TEMPS)""",
          check="print('온도는 순위를 바꾸지 않는다 — 차이를 얼마나 크게 볼지만 정한다')"),
 
     md("## 6. 어텐션 — 어디를 보고 고르나"),
@@ -222,13 +241,25 @@ plt.xticks(range(len(labels)), labels, rotation=45, ha='right')
 plt.yticks(range(len(labels)), labels)
 plt.title('%d층 %d번 머리' % (L, H)); plt.colorbar(); plt.show()"""),
 
-    Task(3, "층과 머리를 바꿔 가며 그려 본다.\n"
-            "> 앞 층은 옆 토큰을, 뒤 층은 멀리 있는 토큰을 보는 경향이 있는지 확인한다.",
-         answer="""fig, ax = plt.subplots(1, 3, figsize=(13, 4))
-for a, (L, H) in zip(ax, [(0, 0), (14, 0), (26, 3)]):
-    a.imshow(A[L][0, H].float().cpu(), cmap='Purples')
-    a.set_title('%d층 %d번' % (L, H)); a.set_xticks([]); a.set_yticks([])
-plt.show()""",
+    prep("""# 층과 머리 번호를 주면 그려 주는 함수
+def draw(L, H):
+    lab = [tok.decode([i]) for i in x2['input_ids'][0]]
+    plt.figure(figsize=(5, 4))
+    plt.imshow(A[L][0, H].float().cpu(), cmap='Purples')
+    plt.xticks(range(len(lab)), lab, rotation=45, ha='right')
+    plt.yticks(range(len(lab)), lab)
+    plt.title('%d층 %d번 머리' % (L, H)); plt.show()
+
+draw(14, 0)"""),
+
+    Task(3, "층과 머리 번호를 바꿔 세 번 그려 본다. 층은 0~27, 머리는 0~11 이다.\n"
+            "> 앞 층과 뒤 층이 보는 자리가 다른지 확인한다.",
+         blank="""draw(___, ___)
+draw(___, ___)
+draw(___, ___)""",
+         answer="""draw(0, 0)
+draw(14, 0)
+draw(26, 3)""",
          check="print('머리마다 보는 자리가 다르다')"),
 
     md("## 7. 프롬프트는 앞부분이다"),
@@ -286,10 +317,20 @@ print('[예시 붙여]', gen(few, n=40))"""),
     code("""# 모델이 모르는 말을 물어본다
 print(gen('고로가 뭐야?', n=40))"""),
 
-    Task(4, "현장에서 쓰는 설비 이름 세 개를 물어보고 답이 맞는지 본다.\n"
+    prep("""# 낱말 목록을 주면 하나씩 물어봐 주는 함수
+def ask_all(words):
+    for w in words:
+        print('[%s] %s' % (w, gen('%s가 뭐야? 한 문장으로 답해라.' % w, n=40)))
+        print()
+
+ask_all(['고로'])"""),
+
+    Task(4, "아래 목록에 **현장에서 쓰는 이름 세 개**를 넣고 답이 맞는지 본다.\n"
             "> 틀린 답을 얼마나 자신 있게 말하는지 함께 확인한다.",
-         answer="""for w in ('고로', '전로', '소성로'):
-    print('[%s] %s\\n' % (w, gen('%s가 뭐야? 한 문장으로 답해라.' % w, n=40)))""",
+         blank="""WORDS = ['___', '___', '___']
+ask_all(WORDS)""",
+         answer="""WORDS = ['고로', '전로', '소성로']
+ask_all(WORDS)""",
          check="print('모르면 비운 채 두지 않고 그럴듯한 말을 채워 넣는다')"),
 
     md("프롬프트는 **앞부분을 바꿔 확률을 옮기는 일**이다.\n"
@@ -422,6 +463,16 @@ print(nv('meta/llama-3.1-8b-instruct', MY_PROMPT, 600))"""),
 
     Task(5, "위 세 칸을 자기 업무 데이터로 채워 표가 나오게 만든다.\n"
             "> 한 번에 안 되면 **기준과 형식만** 고쳐 가며 세 번까지 해 본다.",
+         blank="""MY_DATA = '\\n'.join([
+ '___',
+ '___'])
+ROLE   = '너는 ___ 를 정리하는 담당자다.'
+RULE   = '___ 이면 ___ 로 본다.'
+FORMAT = '마크다운 표로만 답하라. 열은 ___ · ___ · ___ 다.'
+
+MY_PROMPT = ('# 역할\\n' + ROLE + '\\n# 기준\\n' + RULE + '\\n'
+             '# 입력\\n' + MY_DATA + '\\n# 형식\\n' + FORMAT)
+print(nv('meta/llama-3.1-8b-instruct', MY_PROMPT, 500))""",
          answer="""MY_DATA = '\\n'.join([
  '어제 받았는데 화면에 금이 가 있어요',
  '주문한 지 일주일인데 아직 안 왔어요',
@@ -434,13 +485,17 @@ MY_PROMPT = ('# 역할\\n' + ROLE + '\\n# 기준\\n' + RULE + '\\n'
 print(nv('meta/llama-3.1-8b-instruct', MY_PROMPT, 500))""",
          check="print('한 번에 하나씩만 고친다 — 여러 곳을 바꾸면 무엇이 들었는지 모른다')"),
 
-    Task(6, "같은 프롬프트를 **3B 와 49B 에 각각** 넣어 결과를 견준다.\n"
+    prep("""# 프롬프트 하나를 여러 크기에 넣어 나란히 찍어 주는 함수
+def compare(prompt, n=500):
+    for tag, name in MODELS:
+        print('=' * 8, tag, '=' * 8)
+        print(nv(name, prompt, n))
+        print()"""),
+
+    Task(6, "위에서 만든 `MY_PROMPT` 를 **크기가 다른 모델들에** 넣어 결과를 견준다.\n"
             "> 크기를 키워야 되는 일인지, 프롬프트를 고쳐야 되는 일인지 가른다.",
-         answer="""for tag, name in [('3B', 'meta/llama-3.2-3b-instruct'),
-                  ('49B', 'nvidia/llama-3.3-nemotron-super-49b-v1')]:
-    print('===== %s =====' % tag)
-    print(nv(name, MY_PROMPT, 500))
-    print()""",
+         blank="""compare(MY_PROMPT)""",
+         answer="""compare(MY_PROMPT)""",
          check="print('크기로 풀리는 것과 프롬프트로 풀리는 것은 다르다')"),
 
     md("**형식이 안 잡히면 프롬프트를 고친다. 판단이 틀리면 모델을 키운다. "

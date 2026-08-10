@@ -59,15 +59,19 @@ def t(no, text):
     return md(f"> **실습문제 {no}.** {text}")
 
 class Task:
-    """실습문제 — 빈 자리에 직접 작성한다"""
+    """실습문제 — blank 를 주면 그 뼈대를 채우게 하고, 없으면 빈 자리를 준다"""
     kind = "task"
 
-    def __init__(self, no, prompt, answer, check, setup=""):
-        self.no, self.prompt, self.answer, self.check, self.setup = no, prompt, answer, check, setup
+    def __init__(self, no, prompt, answer, check, setup="", blank=None):
+        self.no, self.prompt, self.answer, self.check = no, prompt, answer, check
+        self.setup, self.blank = setup, blank
         self.mode = "solo"
 
     def cells(self, solution):
-        body = self.answer if solution else "# 여기에 작성한다\n"
+        if solution:
+            body = self.answer
+        else:
+            body = self.blank if self.blank else "# 여기에 작성한다\n"
         src = "\n".join(x for x in (self.setup, body, "", self.check) if x)
         return [t(getattr(self, "display_no", self.no), self.prompt), code(src)]
 
