@@ -30,3 +30,7 @@ runs/
 ft/
 *.pt
 yolo*.pt
+
+# 로컬 키 — 절대 커밋 금지
+.env
+.env.*
