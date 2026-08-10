@@ -493,6 +493,30 @@
     <div class="keymsg"><span class="k">공통</span><div>넷 다 <b>모델 안에 답이 없다</b>. 모르는 채로 그럴듯한 문장을 만들어 낸다.</div></div>
   </div>
 </section>
+<section class="slide" data-title="자리별로 쪼개 계산시키기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>해법</div>
+  <h2 class="s-title sm">17 &times; 20 과 17 &times; 4 로 쪼개기</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twocol w2">
+      <div><div class="vlist">
+        <div class="v"><span class="b">&rarr;</span><div>모델은 <b>한 번에 한 토큰씩</b> 만들고, 방금 쓴 줄을 다시 자기 입력으로 읽는다.</div></div>
+        <div class="v"><span class="b">&rarr;</span><div>단계를 쓰게 하면 어려운 곱셈 하나가 <b>쉬운 곱셈 둘과 덧셈 하나</b>로 갈린다.</div></div>
+        <div class="v"><span class="b">&#9733;</span><div>종이에 적어 가며 푸는 것과 같다. 이것이 <b>Chain of Thought</b> 다.</div></div>
+      </div></div>
+      <div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">cot.txt</span></div><pre><code><span class="cm"># 그냥 물으면</span>
+17 &times; 24 = 308            <span class="cm"># 틀림</span>
+
+<span class="cm"># "자리별로 나눠 계산해줘" 를 붙이면</span>
+17 &times; 20 = <span class="nm">340</span>
+17 &times;  4 = <span class="nm">68</span>
+<span class="nm">340</span> + <span class="nm">68</span>  = <span class="st">408</span>      <span class="cm"># 맞음</span></code></pre></div>
+    </div>
+    <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></div><div class="ct"><h4>여기까지</h4><p>자릿수가 더 늘면 다시 틀리고, 중간 줄도 <b>그럴듯하게 틀릴 수 있다</b>. 맞았는지 확인할 방법이 없다.</p></div></div>
+    <div class="keymsg"><span class="k">역할</span><div>CoT 는 <b>순서를 세우는 데</b> 쓰고, 정확한 값은 <b>계산기에 맡긴다</b>. 그래서 도구가 필요하다.</div></div>
+  </div>
+</section>
 <section class="slide" data-title="도구를 붙였을 때">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>대조</div>
