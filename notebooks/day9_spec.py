@@ -28,11 +28,13 @@ def chat(messages, tools=None, n=400, temp=0):
     req = urllib.request.Request(URL, data=json.dumps(body).encode(), headers={
         'Authorization': 'Bearer ' + KEY,
         'Content-Type': 'application/json', 'Accept': 'application/json'})
-    try:
-        with urllib.request.urlopen(req, timeout=120) as f:
-            return json.load(f)['choices'][0]['message']
-    except Exception as e:
-        return {'role': 'assistant', 'content': '[실패] %s' % str(e)[:80]}"""),
+    for _ in range(2):                  # 붐빌 때가 있어 한 번 더 시도한다
+        try:
+            with urllib.request.urlopen(req, timeout=180) as f:
+                return json.load(f)['choices'][0]['message']
+        except Exception as e:
+            err = str(e)[:80]
+    return {'role': 'assistant', 'content': '[실패] %s' % err}"""),
 
     prep("""# 한 문장만 물어볼 때 쓰는 짧은 이름
 def say(text, n=200):
@@ -273,6 +275,8 @@ print(brief)
 print()
 print('원본 %d자 -> 요약 %d자' % (len(json.dumps(LAST, ensure_ascii=False)), len(brief)))"""),
 
+    md("> 이 셀은 보내는 글이 길어서 가끔 `[실패] timed out` 이 뜬다. 그때는 다시 실행하면 된다."),
+
     md("요약은 **되돌릴 수 없다**. 무엇을 남길지 미리 정해 두지 않으면 필요한 것부터 사라진다.\n"
        "그래서 실무에서는 「정한 것 · 못 푼 것 · 파일 경로」처럼 **남길 항목을 먼저 정해 두고** 요약시킨다."),
 
@@ -349,21 +353,17 @@ print(df.head(3).to_string(index=False))"""),
 
     md("### 이대로 붙이면 무엇이 나가나"),
 
-    code("""# 값을 한 줄도 안 보내고 컬럼 이름만 보내도 이만큼이 나간다
-print(list(df.columns))"""),
+    code("""# 컬럼 이름만으로도, 값 몇 줄만으로도, 로트 번호와 시각만으로도 새어 나간다
+print(list(df.columns))
+print()
+print(df[['건조_ZONE2_TEMP', '코팅_로딩_mg_cm2', '전극_밀도']].head(3).to_string(index=False))
+print()
+print('로트', df['로트번호'].iloc[0], '~', df['로트번호'].iloc[-1], '· 총', df['로트번호'].nunique(), '개')
+print('가장 흔한 간격', df['시각'].diff().mode()[0])"""),
 
     md("`화성_3단계_CV_전압` 하나로 **화성 공정이 몇 단인지, 어느 단이 CV 구간인지**가 드러난다.\n"
        "`NMP_투입비` 는 슬러리 배합이고, `코팅_로딩_mg_cm2` 와 `전극_밀도` 는 셀 설계값이다.\n"
        "**값보다 컬럼명이 먼저 샌다.**"),
-
-    code("""# 값도 마찬가지다 — 118.5 를 보면 건조로 온도대가, 3.48 을 보면 프레스 후 밀도가 그대로 보인다
-print(df[['건조_ZONE2_TEMP', '코팅_로딩_mg_cm2', '전극_밀도', '화성_3단계_CV_전압']]
-      .head(3).to_string(index=False))"""),
-
-    code("""# 로트 번호와 시각도 값이다 — 순번 증가율에서 생산량이, 간격에서 tact time 이 나온다
-print(df['로트번호'].head(2).tolist(), '...', df['로트번호'].tail(1).tolist())
-print('로트 수', df['로트번호'].nunique())
-print('가장 흔한 간격', df['시각'].diff().mode()[0])"""),
 
     md("### 내보내기 전에 표부터 손본다"),
     md("이 표에는 실제 라인에서 흔한 사고가 일부러 들어 있다. **반출본을 만들기 전에** 잡아 둔다.\n"
@@ -384,17 +384,16 @@ print('시각 중복  ', df['시각'].duplicated().sum(), '건')"""),
        "| 최대 278.6 | `건조_ZONE1_TEMP` | 화씨가 섞여 들어왔다 |\n"
        "| 역행 3건 · 중복 15건 | `시각` | 수집기 재시작 |"),
 
-    prep("""# 화씨로 들어온 구간만 되돌린다. 섭씨 라인이 126~140 이라 150 을 넘으면 화씨로 본다.
-mask = df['건조_ZONE1_TEMP'] > 150
+    prep("""# 세 가지를 한 번에 손본다. 이 표를 고친 다음에야 반출본을 만든다.
+mask = df['건조_ZONE1_TEMP'] > 150                      # 화씨로 들어온 구간
 df.loc[mask, '건조_ZONE1_TEMP'] = ((df.loc[mask, '건조_ZONE1_TEMP'] - 32) * 5 / 9).round(1)
-print('되돌린 행', mask.sum(), '· 범위', df['건조_ZONE1_TEMP'].min(), '~', df['건조_ZONE1_TEMP'].max())"""),
 
-    prep("""# 고착 구간은 결측으로 돌린다. 그대로 두면 평균과 표준편차가 끌려간다.
-same = df['프레스_1호기_압력'].diff() == 0
+same = df['프레스_1호기_압력'].diff() == 0               # 값 고착 — 그대로 두면 평균이 끌려간다
 df.loc[same, '프레스_1호기_압력'] = np.nan
-print('결측으로 돌린 행', same.sum())
-df = df.sort_values('시각').drop_duplicates('시각').reset_index(drop=True)
-print('정렬·중복 제거 후', len(df), '행')"""),
+
+df = df.sort_values('시각').drop_duplicates('시각').reset_index(drop=True)   # 시각 사고
+print('화씨 %d행 되돌림 · 고착 %d행 결측 처리 · 정렬·중복 제거 후 %d행'
+      % (mask.sum(), same.sum(), len(df)))"""),
 
     md("### 이름 규칙 — 물리량은 남기고 공정 맥락은 지운다"),
     md("`FEAT_017` 처럼 다 지우면 모델이 **무슨 값인지 몰라** 코드 품질이 떨어진다.\n"
@@ -448,7 +447,7 @@ def export(df, rule):
     out['OK']  = (df[TARGET] == '양품').astype(int)  # ⑤ 목표 — 그대로 둔다
     return out"""),
 
-    prep("""# 반출본을 만들어 본다
+    prep("""# 반출본을 만들고, 검사를 통과하면 파일로 남긴다
 out = export(df, RULE)
 print(out.head(3).to_string(index=False))"""),
 
@@ -474,6 +473,20 @@ def check(out, src, rule):
 
 check(out, df, RULE)"""),
 
+    md("### 통과했으면 파일로 남긴다"),
+    md("반출본은 **한 번 만들어 파일로 굳힌다**. 매번 다시 만들면 그때그때 달라진다.\n"
+       "z-score 는 평균과 표준편차로 계산하니까, 행이 하나만 늘어도 값이 전부 조금씩 바뀐다."),
+
+    prep("""# 반출본 CSV 와 매핑 표를 나눠 저장한다
+out.to_csv('export.csv', index=False)                 # 이것만 반출 대상이다
+pd.DataFrame([(s_, d, h, str(p)) for s_, (d, h, p) in RULE.items()],
+             columns=['원본명', '익명명', '방식', '파라미터']).to_csv('mapping_local.csv', index=False)
+print('export.csv %d행 %d열  ·  mapping_local.csv %d행' % (*out.shape, len(RULE)))
+print('mapping_local.csv 는 사내에만 둔다')"""),
+
+    md("파일이 둘로 갈린다. **`export.csv` 는 나가도 되고, `mapping_local.csv` 는 절대 안 된다.**\n"
+       "이름을 그렇게 지어 두면 실수로 같이 올리는 일이 준다."),
+
     md("### 분석 결과가 정말 그대로 나오는지"),
 
     code("""# 원본에서 잰 상관과 반출본에서 잰 상관을 견준다
@@ -498,14 +511,6 @@ print('같은가:', (a == b).all())"""),
 print('rank 일 때 상관', round(out['RATIO_M2'].corr(out['TEMP_D2']), 3))
 print('z 일 때 상관   ', round(out2['RATIO_M2'].corr(out2['TEMP_D2']), 3))
 print('원본 상관      ', round(df['NMP_투입비'].corr(df['건조_ZONE2_TEMP']), 3))"""),
-
-    md("### 매핑 표는 사내에만 둔다"),
-
-    code("""# 어느 익명명이 무엇이었는지는 로컬 파일로만 남긴다. 이 파일은 절대 밖으로 나가지 않는다.
-mapping = pd.DataFrame([(s, d, h, str(p)) for s, (d, h, p) in RULE.items()],
-                       columns=['원본명', '익명명', '방식', '파라미터'])
-mapping.to_csv('mapping_local.csv', index=False)
-print(mapping.to_string(index=False))"""),
 
     md("이 표가 **반출 스크립트 명세**다. 한 번 정해 두면 컬럼이 늘어도 매번 판단할 일이 없다."),
 
@@ -588,22 +593,20 @@ print('열', list(X.columns))"""),
     md("`LOT` 과 `T` 를 뺀 이유가 있다. **다음 달 로트에는 그 번호가 없다.**\n"
        "지금 데이터에서만 잘 맞고 실제로는 못 쓰는 열이다. 정답 `OK` 도 당연히 뺀다."),
 
-    prep("""# 학습과 검증을 먼저 가른다. 비율을 지켜서 가른다.
+    prep("""# 가르고, 성적 찍는 함수를 만들고, 기준선부터 본다
 Xtr, Xte, ytr, yte = train_test_split(X, y, test_size=0.2, stratify=y, random_state=0)
-print('학습 %d행 · 검증 %d행 · 검증 불량 %d건' % (len(Xtr), len(Xte), (yte == 0).sum()))"""),
 
-    prep("""# 성적을 한 줄로 찍어 주는 함수
 def score(name, m):
     p = m.predict(Xte)
     print('%-14s 정확도 %.3f  불량 재현율 %.3f  불량 정밀도 %.3f'
-          % (name, accuracy_score(yte, p),
-             recall_score(yte, p, pos_label=0), precision_score(yte, p, pos_label=0)))
-    return p"""),
+          % (name, accuracy_score(yte, p), recall_score(yte, p, pos_label=0),
+             precision_score(yte, p, pos_label=0, zero_division=0)))
+    return p
 
-    code("""# 기준선부터 만든다 — 전부 양품이라고 찍으면 몇 점인가
-print('전부 양품이라 찍기  정확도 %.3f  불량 재현율 %.000f' % ((yte == 1).mean(), 0))"""),
+print('학습 %d행 · 검증 %d행 · 검증 불량 %d건' % (len(Xtr), len(Xte), (yte == 0).sum()))
+print('%-14s 정확도 %.3f  불량 재현율 0.000  ← 기준선' % ('전부 양품', (yte == 1).mean()))"""),
 
-    prep("""# 단순한 것부터
+    prep("""# 단순한 것부터 — 로지스틱과 랜덤포레스트
 lr = LogisticRegression(max_iter=1000).fit(Xtr, ytr)
 rf = RandomForestClassifier(n_estimators=200, random_state=0).fit(Xtr, ytr)
 _ = score('로지스틱', lr)
@@ -634,14 +637,11 @@ print('문턱 %.1f → 잡은 불량 %d · 놓친 불량 %d · 헛경보 %d'
     md("학습은 **한 번**, 판정은 **매번**이다. 그래서 갈라 둔다.\n"
        "학습한 모델을 파일로 저장해 두면 다음부터는 불러 쓰기만 하면 된다."),
 
-    code("""# 한 번 저장
+    code("""# 한 번 저장하고, 이후로는 불러 쓰기만 한다
 joblib.dump({'model': rf, 'columns': list(X.columns)}, 'model.pkl')
-print('저장 완료')"""),
 
-    code("""# 이후로는 불러 쓰기만 — 새 배치 한 줄을 판정한다
 bundle = joblib.load('model.pkl')
 m, cols = bundle['model'], bundle['columns']
-
 row = Xte.iloc[[0]][cols]                      # 실제로는 새로 들어온 한 줄
 prob = m.predict_proba(row)[0][0]
 print('불량 확률 %.3f → %s' % (prob, '불량 위험' if prob >= 0.5 else '양품'))"""),
