@@ -129,3 +129,28 @@ df = pd.read_csv(url, parse_dates=['시각'])
 | 단위 혼입 — 화씨 48행 | `건조_ZONE1_TEMP` | 범위 검사와 되돌리기 |
 | 로트 경계 레벨 시프트 | `코팅_로딩_mg_cm2` | 드리프트와 시프트 구분 |
 | 시각 역행 3건 · 중복 15건 | `시각` | 정렬과 중복 제거 |
+
+---
+
+# RAG 실습용 문서 — docs/data/docs/*.txt
+
+**실제 법령 조문**이다. 지어낸 글이 아니라서 검색 결과를 원문과 대조할 수 있다.
+법령은 저작권법 제7조에 따라 보호 대상이 아니라 그대로 쓸 수 있다.
+수집기는 [`data/fetch_docs.py`](../../data/fetch_docs.py), 출처는 위키문헌이다.
+
+| 파일 | 문서 | 크기 | 왜 이걸 쓰나 |
+|---|---|---|---|
+| `labor_standards.txt` | 근로기준법 | 27,417자 | 연차 · 근로시간 — 누구나 물어보는 것 |
+| `occupational_safety.txt` | 산업안전보건법 | 56,954자 | 안전보건교육 · 작업중지 — 현장 질문 |
+| `industrial_tech.txt` | 산업기술의 유출방지 및 보호에 관한 법률 | 16,794자 | 국가핵심기술 — 반출 통제와 이어진다 |
+| `privacy.txt` | 개인정보 보호법 | 39,615자 | 수집 · 이용 · 파기 |
+
+조문 단위로 자르면 **354조각**, 평균 391자가 된다.
+
+```python
+url = 'https://tunalee.github.io/posco/data/docs/labor_standards.txt'
+text = urllib.request.urlopen(url).read().decode('utf-8')
+```
+
+머리말 세 줄은 `#` 로 시작하는 주석이라 읽을 때 걸러 낸다.
+개정 여부는 국가법령정보센터에서 확인한다 — 위키문헌 판이 최신이 아닐 수 있다.
