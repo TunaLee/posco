@@ -1006,21 +1006,21 @@ DRY_Z2_T = <span class="st">-0.32</span>          <span class="cm"># (x - target
 <section class="slide" data-title="컬럼명 가명처리">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>이름</div>
-  <h2 class="s-title sm">VOLT_P3_S3 로 바꾸는 이유</h2>
+  <h2 class="s-title sm">컬럼명은 FEAT_01 부터 다시</h2>
   <div class="rule"></div>
   <div class="body"><div class="twocol w2"><div><div class="vlist">
   <div class="v"><span class="b">&rarr;</span><div><code>화성_3단계_CV_전압</code> 같은 이름은 <b>그 자체가 레시피</b>다.</div></div>
-  <div class="v"><span class="b">&rarr;</span><div>그렇다고 <code>FEAT_017</code> 로 다 지우면 도메인 추론이 죽어 <b>코드 품질이 떨어진다</b>.</div></div>
-  <div class="v"><span class="b">&#9733;</span><div><b>물리량 종류는 남기고 공정 맥락만 지운다.</b> 매핑 표는 로컬에만 둔다.</div></div>
+  <div class="v"><span class="b">&rarr;</span><div>기본은 <b>전부 번호로</b> 바꾼다. 되돌리는 것은 사내의 매핑 표로 한다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>학습과 평가는 이름을 <b>안 본다</b>. 결측 · 스케일링 · 모델 · 성적 전부 그대로 나온다.</div></div>
 </div></div>
-<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">이름 규칙</span></div><pre><code>화성_3단계_CV_전압  &rarr;  <span class="st">VOLT_P3_S3</span>
-프레스_1호기_압력    &rarr;  <span class="st">PRES_B1</span>
-NMP_투입비          &rarr;  <span class="st">RATIO_M2</span>
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">이름 규칙</span></div><pre><code>화성_3단계_CV_전압  &rarr;  <span class="st">FEAT_01</span>
+프레스_1호기_압력    &rarr;  <span class="st">FEAT_02</span>
+NMP_투입비          &rarr;  <span class="st">FEAT_03</span>
 
-<span class="cm"># 살아 있는 판단</span>
-<span class="cm">#  전압끼리는 같이 볼 만하다</span>
-<span class="cm">#  비율 변수는 합이 1일 수 있다</span></code></pre></div></div>
-<div class="keymsg"><span class="k">선</span><div>모델이 <b>무슨 물리량인지는 알고</b>, <b>어느 공정인지는 모르게</b> 두는 것이 절충점이다.</div></div></div>
+<span class="cm"># 매핑 표는 사내에만 둔다</span>
+<span class="cm"># 결과를 읽을 때 이 표로 되돌린다</span></code></pre></div></div>
+<div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></div><div class="ct"><h4>물리량만 남기는 방법도 있다</h4><p><code>VOLT_01</code> · <code>RATIO_02</code> 처럼 종류만 남기면 밖에서 <b>범위 검사나 파생 변수</b>를 같이 받기 쉽다. 대신 그 종류만큼은 흘린다 &mdash; <b>얻는 것과 새는 것을 견줘 고른다</b>.</p></div></div>
+<div class="keymsg"><span class="k">기본</span><div>이름은 <b>사내에서 붙인다</b>. 밖으로 나갈 때는 번호로 충분하다.</div></div></div>
 </section>
 <section class="slide" data-title="메타데이터 누출">
   <div class="coord"><b></b> / <span class="tot"></span></div>
