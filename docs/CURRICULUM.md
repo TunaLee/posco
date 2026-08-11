@@ -16,6 +16,8 @@
 | 3주차 D1 · LLM 과 프롬프트 | [day8/index.html](day8/index.html) | 80 |
 | 3주차 D2 · 에이전트의 구조 (+ 부록 공정 데이터) | [day9/index.html](day9/index.html) | 98 |
 
+부록 60장부터의 강의 노트 — [day9/NOTES.md](day9/NOTES.md)
+
 조작: `← →` 또는 Space · 숫자 입력 후 Enter로 점프 · `≡` 목차 · `−/+` 줌 · PDF 버튼(인쇄).
 
 ---
