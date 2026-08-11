@@ -1122,34 +1122,6 @@ out = pd.DataFrame(index=df.index)          <span class="cm"># 원본 df 는 여
 out[<span class="st">'T'</span>]   = (df[<span class="st">'시각'</span>] - df[<span class="st">'시각'</span>].min()).dt.total_seconds() / <span class="nm">3600</span></code></pre></div>
 <div class="keymsg"><span class="k">확인</span><div>반출본에 <b>원본 컬럼명 · 원본 값 · 원본 ID 가 하나도 없어야</b> 내보낸다.</div></div></div>
 </section>
-<section class="slide" data-title="처리까지 적어 주는 프롬프트">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>프롬프트</div>
-  <h2 class="s-title sm">끝난 처리와 남은 처리를 갈라 적은 프롬프트</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">반출본 스키마와 함께 붙인다</span></div><pre><code><span class="cm"># 역할</span>
-너는 공정 데이터로 불량을 예측하는 코드를 쓰는 사람이다.
-
-<span class="cm"># 데이터 — 값은 못 준다. 반출본의 모양만 준다</span>
-행 2385 · 열 9. 목표는 OK (1 양품 · 0 불량, 불량 311건)
-TEMP_D2 float 결측40 범위 -2.41~1.86   <span class="cm"># 스펙 정규화 끝남</span>
-PRES_B1 float 결측60 범위 -3.02~2.98   <span class="cm"># z-score 끝남</span>
-MC_1..MC_4 int 0/1                     <span class="cm"># 원핫 끝남</span>
-LOT int 0~59 / T float 0~119.9         <span class="cm"># 재번호 · 상대시간 끝남</span>
-
-<span class="cm"># 이미 끝난 것 — 다시 하지 마라</span>
-컬럼 가명처리 · 정규화 · 원핫 · 재번호 · 상대시간
-
-<span class="cm"># 남은 것 — 이것만 해라</span>
-결측 처리 · 분할 · 모델 둘 비교 · 놓친 불량 세기
-
-<span class="cm"># 형식</span>
-바로 돌아가는 파이썬 코드로 준다. 데이터를 출력하는 줄은 넣지 마라.</code></pre></div>
-<div class="vlist">
-  <div class="v"><span class="b">&#9733;</span><div><b>「이미 끝난 것」을 안 적으면</b> 정규화와 인코딩을 한 번 더 하는 코드가 온다.</div></div>
-</div>
-<div class="keymsg"><span class="k">요령</span><div>반출본의 <b>스키마를 그대로 붙인다</b>. 열 이름과 범위만 있으면 코드를 짜기에 충분하다.</div></div></div>
-</section>
 <section class="slide" data-title="어디까지 되나">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>범위</div>
@@ -1165,18 +1137,21 @@ LOT int 0~59 / T float 0~119.9         <span class="cm"># 재번호 · 상대시
 </tbody></table></div>
 <div class="keymsg"><span class="k">경계선</span><div>코드와 방법은 <b>위쪽에서 다 끝난다</b>. 사내로 넘길 것은 <b>아래 두 줄</b>뿐이다.</div></div></div>
 </section>
-<section class="slide" data-title="합성 데이터">
+<section class="slide" data-title="정규화 전에 잡을 것">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>대안</div>
-  <h2 class="s-title sm">센서 단선 · 값 고착 · 단위 혼입</h2>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>선행</div>
+  <h2 class="s-title sm">표준편차 19.4 와 1.9 — 화씨 48행의 값</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="shot">
       <div class="sbar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">cell_process.csv &mdash; 2,400행</span></div>
-      <img src="assets/anomaly-cases.png" alt="센서 단선 · 값 고착 · 단위 혼입 · 레벨 시프트 · 시각 역행 다섯 가지를 실제 데이터로 그린 그림">
+      <img style="max-height:238px" src="assets/anomaly-cases.png" alt="센서 단선 · 값 고착 · 단위 혼입 · 레벨 시프트 · 시각 역행 다섯 가지">
     </div>
-    <div class="vlist"><div class="v"><span class="b">&#9733;</span><div>다섯 가지를 <b>일부러 심어 둔 표</b>로 연습한다. 실데이터로는 다 모으기 어렵다.</div></div></div>
-    <div class="keymsg"><span class="k">이득</span><div>합성 데이터는 반출 걱정이 없고, <b>심어 둔 만큼 예외 처리가 늘어난다</b>.</div></div>
+    <div class="ctable" style="margin-top:10px"><table><thead><tr><th>건조 ZONE1 온도</th><th>평균</th><th>표준편차</th><th>z-score 를 씌우면</th></tr></thead><tbody>
+      <tr><td class="hl">화씨 48행을 그대로 두면</td><td class="hl">134.2</td><td class="hl">19.4</td><td class="hl">모든 값이 열 배로 눌린다</td></tr>
+      <tr><td>되돌리고 나면</td><td>131.4</td><td>1.9</td><td>제 폭으로 나온다</td></tr>
+    </tbody></table></div>
+    <div class="keymsg"><span class="k">순서</span><div>반출본은 <b>손본 표에서</b> 만든다. 오염된 값으로 평균과 표준편차를 구하면 <b>반출본 전체가 어긋난다</b>.</div></div>
   </div>
 </section>
 <section class="slide" data-title="그림과 에러">
@@ -1295,6 +1270,34 @@ df.isna().sum()</code></pre></div></div>
 <div class="vlist"><div class="v"><span class="b">&#9733;</span><div><b>「값은 못 준다」를 먼저 적는다.</b> 안 적으면 <code>df.head()</code> 를 찍는 코드를 준다.</div></div><div class="v"><span class="b">&rarr;</span><div>성형압력 범위에 <b>999</b> 가 있다고 알려 주면 이상치 처리를 먼저 넣어 준다.</div></div></div>
     <div class="keymsg"><span class="k">요령</span><div>데이터를 못 준다는 것을 <b>제약이 아니라 조건으로</b> 적는다. 그러면 그 조건에 맞는 코드가 온다.</div></div>
   </div>
+</section>
+<section class="slide" data-title="처리까지 적어 주는 프롬프트">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>프롬프트</div>
+  <h2 class="s-title sm">끝난 처리와 남은 처리를 갈라 적은 프롬프트</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">반출본 스키마와 함께 붙인다</span></div><pre><code><span class="cm"># 역할</span>
+너는 공정 데이터로 불량을 예측하는 코드를 쓰는 사람이다.
+
+<span class="cm"># 데이터 — 값은 못 준다. 반출본의 모양만 준다</span>
+행 2385 · 열 9. 목표는 OK (1 양품 · 0 불량, 불량 311건)
+TEMP_D2 float 결측40 범위 -2.41~1.86   <span class="cm"># 스펙 정규화 끝남</span>
+PRES_B1 float 결측60 범위 -3.02~2.98   <span class="cm"># z-score 끝남</span>
+MC_1..MC_4 int 0/1                     <span class="cm"># 원핫 끝남</span>
+LOT int 0~59 / T float 0~119.9         <span class="cm"># 재번호 · 상대시간 끝남</span>
+
+<span class="cm"># 이미 끝난 것 — 다시 하지 마라</span>
+컬럼 가명처리 · 정규화 · 원핫 · 재번호 · 상대시간
+
+<span class="cm"># 남은 것 — 이것만 해라</span>
+결측 처리 · 분할 · 모델 둘 비교 · 놓친 불량 세기
+
+<span class="cm"># 형식</span>
+바로 돌아가는 파이썬 코드로 준다. 데이터를 출력하는 줄은 넣지 마라.</code></pre></div>
+<div class="vlist">
+  <div class="v"><span class="b">&#9733;</span><div><b>「이미 끝난 것」을 안 적으면</b> 정규화와 인코딩을 한 번 더 하는 코드가 온다.</div></div>
+</div>
+<div class="keymsg"><span class="k">요령</span><div>반출본의 <b>스키마를 그대로 붙인다</b>. 열 이름과 범위만 있으면 코드를 짜기에 충분하다.</div></div></div>
 </section>
 <section class="slide section" data-title="[섹션] 전처리">
   <div class="ghost">07</div>
@@ -1428,11 +1431,11 @@ df.isna().sum()</code></pre></div></div>
     <div class="keymsg"><span class="k">판단</span><div><b>놓친 불량과 헛경보는 값이 다르다.</b> 숫자 하나로 못 고르고 현장이 정해야 한다.</div></div>
   </div>
 </section>
-<section class="slide section" data-title="[섹션] 웹 앱에 붙이기">
+<section class="slide section" data-title="[섹션] 모델 파일로 남기기">
   <div class="ghost">09</div>
   <div class="seyebrow">CHAPTER 09</div>
-  <h2>웹 앱에 붙이기</h2>
-  <div class="agenda"><span>모듈로 떼기</span><span>화면</span><span>사내 적용</span></div>
+  <h2>모델 파일로 남기기</h2>
+  <div class="agenda"><span>학습과 판정을 가른다</span><span>model.pkl</span><span>실습</span></div>
 </section>
 <section class="slide" data-title="model.pkl">
   <div class="coord"><b></b> / <span class="tot"></span></div>
@@ -1452,27 +1455,6 @@ p = model.predict_proba(row)[0][0]
     </div>
 <div class="vlist"><div class="v"><span class="b">&rarr;</span><div>학습은 <b>느리고 한 번</b>, 판정은 <b>빠르고 매번</b>이다. 이 둘을 갈라 둔다.</div></div><div class="v"><span class="b">&#9733;</span><div>앱에는 <b>모델 파일과 판정 코드만</b> 들어간다. 원본 표는 안 들어간다.</div></div></div>
     <div class="keymsg"><span class="k">구조</span><div>학습과 판정을 갈라 두면 <b>데이터를 앱에 안 넣고</b>도 판정이 된다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="화면 한 장">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH9</span><span class="dot"></span>화면</div>
-  <h2 class="s-title">판정 화면 한 장</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="plot"><svg viewBox="0 0 1116 220"><text x="14" y="18" font-size="11" fill="#8E8AAC" font-weight="700">만들 화면</text><rect x="14" y="32" width="420" height="180" rx="10" fill="#fff" stroke="#DCD6F0" stroke-width="1.4"/><rect x="14" y="32" width="420" height="30" rx="10" fill="#F7F6FB" stroke="none" stroke-width="1"/><rect x="14" y="48" width="420" height="14" rx="0" fill="#F7F6FB" stroke="none" stroke-width="1"/><text x="34" y="52" font-size="11" fill="#16142B" font-weight="800">배치 조건 넣기</text><text x="34" y="88" font-size="10.4" fill="#8E8AAC">소성온도</text><rect x="120" y="74" width="290" height="20" rx="4" fill="#F7F6FB" stroke="none" stroke-width="1"/><text x="34" y="114" font-size="10.4" fill="#8E8AAC">소성시간</text><rect x="120" y="100" width="290" height="20" rx="4" fill="#F7F6FB" stroke="none" stroke-width="1"/><text x="34" y="140" font-size="10.4" fill="#8E8AAC">입도</text><rect x="120" y="126" width="290" height="20" rx="4" fill="#F7F6FB" stroke="none" stroke-width="1"/><text x="34" y="166" font-size="10.4" fill="#8E8AAC">수분율</text><rect x="120" y="152" width="290" height="20" rx="4" fill="#F7F6FB" stroke="none" stroke-width="1"/><text x="34" y="192" font-size="10.4" fill="#8E8AAC">불순물</text><rect x="120" y="178" width="290" height="20" rx="4" fill="#F7F6FB" stroke="none" stroke-width="1"/><path d="M448 122 h36" stroke="#8E8AAC" stroke-width="2"/><path d="M492 122 l-7 -5 v10 z" fill="#8E8AAC"/><rect x="506" y="62" width="240" height="120" rx="10" fill="#16142B" stroke="none" stroke-width="1"/><text x="626" y="106" font-size="15" fill="#fff" font-weight="800" text-anchor="middle">판정</text><text x="626" y="132" font-size="10" fill="#9C93D8" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace">model.pkl</text><path d="M760 122 h36" stroke="#8E8AAC" stroke-width="2"/><path d="M804 122 l-7 -5 v10 z" fill="#8E8AAC"/><rect x="818" y="32" width="284" height="180" rx="10" fill="#fff" stroke="#DCD6F0" stroke-width="1.4"/><text x="838" y="60" font-size="11" fill="#8E8AAC" font-weight="700">결과</text><rect x="838" y="72" width="244" height="56" rx="8" fill="#FDEFF3" stroke="none" stroke-width="1"/><text x="960" y="100" font-size="17" fill="#E8537A" font-weight="800" text-anchor="middle">불량 위험</text><text x="960" y="120" font-size="11" fill="#8E8AAC" text-anchor="middle">불량 확률 0.41</text><text x="838" y="152" font-size="10" fill="#8E8AAC" font-weight="700">가장 크게 기여한 값</text><text x="838" y="174" font-size="10.2" fill="#16142B">소성온도 812.4  (가운데에서 멀다)</text><text x="838" y="196" font-size="10.2" fill="#16142B">불순물 1,240  (높음)</text></svg></div>
-    <div class="keymsg"><span class="k">화면</span><div>판정만 내지 않는다. <b>왜 그렇게 봤는지</b>를 같이 낸다. 근거가 없으면 현장이 안 쓴다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="사내 적용">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH9</span><span class="dot"></span>적용</div>
-  <h2 class="s-title">사내 도구로의 이식</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="ctable"><table><thead><tr><th>여기서 쓴 것</th><th>사내에서는</th><th>바뀌는가</th></tr></thead><tbody><tr><td>Codex 로 코드 만들기</td><td>VS Code + 사내 LLM API</td><td>도구만 바뀐다</td></tr><tr><td>pandas · scikit-learn</td><td>그대로</td><td>안 바뀐다</td></tr><tr><td>모델 파일 (model.pkl)</td><td>그대로</td><td>안 바뀐다</td></tr><tr><td>웹 앱 띄우기</td><td>사내 배포 환경</td><td>도구만 바뀐다</td></tr><tr><td>원본 데이터</td><td class="hl">한 번도 밖으로 안 보냈다</td><td>옮길 것이 없다</td></tr></tbody></table></div>
-<div class="vlist"><div class="v"><span class="b">&#9733;</span><div><b>데이터가 처음부터 안 나갔다.</b> 그래서 사내로 옮길 때 다시 검토할 것이 없다.</div></div><div class="v"><span class="b">&rarr;</span><div>바뀌는 것은 <b>코드를 만들어 주는 도구</b>와 <b>앱을 띄우는 곳</b>뿐이다. 전처리 · 모델 · 판정은 그대로다.</div></div></div>
-    <div class="keymsg"><span class="k">적용</span><div><b>도구는 바뀌고 방법은 남는다</b>. 그래서 도구가 막혀도 일은 된다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="실습 · 내 데이터로">
@@ -1517,11 +1499,11 @@ df.describe()</code></pre></div></div>
 <section class="slide" data-title="전체 흐름">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH10</span><span class="dot"></span>정리</div>
-  <h2 class="s-title">엑셀에서 판정 화면까지</h2>
+  <h2 class="s-title">엑셀에서 model.pkl 까지</h2>
   <div class="rule"></div>
   <div class="body">
-    <div class="plot"><svg viewBox="0 0 1116 176"><rect x="14" y="40" width="196" height="78" rx="9" fill="#F7F6FB" stroke="none" stroke-width="1.5"/><text x="112" y="74" font-size="13" fill="#8E8AAC" font-weight="800" text-anchor="middle">엑셀</text><text x="112" y="98" font-size="9.8" fill="#8E8AAC" text-anchor="middle">내 노트북</text><path d="M214 79 h10" stroke="#8E8AAC" stroke-width="2"/><path d="M232 79 l-7 -5 v10 z" fill="#8E8AAC"/><rect x="236" y="40" width="196" height="78" rx="9" fill="#fff" stroke="#0E8C9E" stroke-width="1.5"/><text x="334" y="74" font-size="13" fill="#0E8C9E" font-weight="800" text-anchor="middle">전처리</text><text x="334" y="98" font-size="9.8" fill="#8E8AAC" text-anchor="middle">pandas</text><path d="M436 79 h10" stroke="#8E8AAC" stroke-width="2"/><path d="M454 79 l-7 -5 v10 z" fill="#8E8AAC"/><rect x="458" y="40" width="196" height="78" rx="9" fill="#fff" stroke="#3A1FC9" stroke-width="1.5"/><text x="556" y="74" font-size="13" fill="#3A1FC9" font-weight="800" text-anchor="middle">학습</text><text x="556" y="98" font-size="9.8" fill="#8E8AAC" text-anchor="middle">scikit-learn</text><path d="M658 79 h10" stroke="#8E8AAC" stroke-width="2"/><path d="M676 79 l-7 -5 v10 z" fill="#8E8AAC"/><rect x="680" y="40" width="196" height="78" rx="9" fill="#fff" stroke="#1E9E6A" stroke-width="1.5"/><text x="778" y="74" font-size="13" fill="#1E9E6A" font-weight="800" text-anchor="middle">model.pkl</text><text x="778" y="98" font-size="9.8" fill="#8E8AAC" text-anchor="middle">파일 하나</text><path d="M880 79 h10" stroke="#8E8AAC" stroke-width="2"/><path d="M898 79 l-7 -5 v10 z" fill="#8E8AAC"/><rect x="902" y="40" width="196" height="78" rx="9" fill="#16142B" stroke="none" stroke-width="1.5"/><text x="1000" y="74" font-size="13" fill="#fff" font-weight="800" text-anchor="middle">웹 앱</text><text x="1000" y="98" font-size="9.8" fill="#9C93D8" text-anchor="middle">판정 화면</text><path d="M14 22 h430" stroke="#E8537A" stroke-width="1.6"/><text x="228" y="16" font-size="10.4" fill="#E8537A" font-weight="800" text-anchor="middle">여기까지는 밖으로 안 나간다</text><path d="M680 138 h422" stroke="#1E9E6A" stroke-width="1.6"/><text x="890" y="158" font-size="10.4" fill="#1E9E6A" font-weight="800" text-anchor="middle">앱에 들어가는 것은 모델 파일과 코드뿐</text></svg></div>
-<div class="vlist"><div class="v"><span class="b">&rarr;</span><div>Codex 는 <b>가운데 두 칸의 코드</b>를 만들어 줄 뿐이다. 데이터는 만지지 않는다.</div></div><div class="v"><span class="b">&#9733;</span><div>앱에 들어가는 것은 <b>model.pkl 과 판정 코드</b>다. 원본 표는 넣지 않는다.</div></div></div>
+    <div class="plot"><svg viewBox="0 0 1116 176"><rect x="14" y="40" width="196" height="78" rx="9" fill="#F7F6FB" stroke="none" stroke-width="1.5"/><text x="112" y="74" font-size="13" fill="#8E8AAC" font-weight="800" text-anchor="middle">엑셀</text><text x="112" y="98" font-size="9.8" fill="#8E8AAC" text-anchor="middle">내 노트북</text><path d="M214 79 h10" stroke="#8E8AAC" stroke-width="2"/><path d="M232 79 l-7 -5 v10 z" fill="#8E8AAC"/><rect x="236" y="40" width="196" height="78" rx="9" fill="#fff" stroke="#0E8C9E" stroke-width="1.5"/><text x="334" y="74" font-size="13" fill="#0E8C9E" font-weight="800" text-anchor="middle">전처리</text><text x="334" y="98" font-size="9.8" fill="#8E8AAC" text-anchor="middle">pandas</text><path d="M436 79 h10" stroke="#8E8AAC" stroke-width="2"/><path d="M454 79 l-7 -5 v10 z" fill="#8E8AAC"/><rect x="458" y="40" width="196" height="78" rx="9" fill="#fff" stroke="#3A1FC9" stroke-width="1.5"/><text x="556" y="74" font-size="13" fill="#3A1FC9" font-weight="800" text-anchor="middle">학습</text><text x="556" y="98" font-size="9.8" fill="#8E8AAC" text-anchor="middle">scikit-learn</text><path d="M658 79 h10" stroke="#8E8AAC" stroke-width="2"/><path d="M676 79 l-7 -5 v10 z" fill="#8E8AAC"/><rect x="680" y="40" width="196" height="78" rx="9" fill="#fff" stroke="#1E9E6A" stroke-width="1.5"/><text x="778" y="74" font-size="13" fill="#1E9E6A" font-weight="800" text-anchor="middle">model.pkl</text><text x="778" y="98" font-size="9.8" fill="#8E8AAC" text-anchor="middle">파일 하나</text><path d="M880 79 h10" stroke="#8E8AAC" stroke-width="2"/><path d="M898 79 l-7 -5 v10 z" fill="#8E8AAC"/><rect x="902" y="40" width="196" height="78" rx="9" fill="#16142B" stroke="none" stroke-width="1.5"/><text x="1000" y="74" font-size="13" fill="#fff" font-weight="800" text-anchor="middle">웹 앱</text><text x="1000" y="98" font-size="9.8" fill="#9C93D8" text-anchor="middle">한 줄씩 판정</text><path d="M14 22 h430" stroke="#E8537A" stroke-width="1.6"/><text x="228" y="16" font-size="10.4" fill="#E8537A" font-weight="800" text-anchor="middle">여기까지는 밖으로 안 나간다</text><path d="M680 138 h422" stroke="#1E9E6A" stroke-width="1.6"/><text x="890" y="158" font-size="10.4" fill="#1E9E6A" font-weight="800" text-anchor="middle">앱에 들어가는 것은 모델 파일과 코드뿐</text></svg></div>
+<div class="vlist"><div class="v"><span class="b">&rarr;</span><div>Codex 는 <b>가운데 두 칸의 코드</b>를 만들어 줄 뿐이다. 데이터는 만지지 않는다.</div></div><div class="v"><span class="b">&#9733;</span><div>남는 것은 <b>model.pkl 과 판정 코드</b>다. 원본 표는 자리를 안 옮긴다.</div></div></div>
     <div class="keymsg"><span class="k">구조</span><div>데이터는 왼쪽에 머물고 <b>오른쪽으로는 결과만</b> 간다.</div></div>
   </div>
 </section>

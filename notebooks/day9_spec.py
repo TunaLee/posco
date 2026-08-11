@@ -568,6 +568,99 @@ my_out = export(df, MY_RULE)
 check(my_out, df, MY_RULE)""",
          check="print(my_out.head(3).to_string(index=False))"),
 
+    md("## 12. 반출본으로 모델까지"),
+    md("여기서부터는 **Codex 가 준 코드를 사내에서 돌리는 자리**다.\n"
+       "앞 절에서 만든 `out` 하나로 학습부터 판정까지 간다. 원본 `df` 는 더 안 쓴다."),
+
+    prep("""# 학습에 넣을 것과 뺄 것을 먼저 가른다
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, recall_score, precision_score, confusion_matrix
+import joblib
+import numpy as np
+
+DROP = ['OK', 'LOT', 'T']        # 정답과, 새 로트에는 없을 번호·시각
+X = out.drop(columns=DROP).fillna(out.median(numeric_only=True))
+y = out['OK']
+print('열', list(X.columns))"""),
+
+    md("`LOT` 과 `T` 를 뺀 이유가 있다. **다음 달 로트에는 그 번호가 없다.**\n"
+       "지금 데이터에서만 잘 맞고 실제로는 못 쓰는 열이다. 정답 `OK` 도 당연히 뺀다."),
+
+    prep("""# 학습과 검증을 먼저 가른다. 비율을 지켜서 가른다.
+Xtr, Xte, ytr, yte = train_test_split(X, y, test_size=0.2, stratify=y, random_state=0)
+print('학습 %d행 · 검증 %d행 · 검증 불량 %d건' % (len(Xtr), len(Xte), (yte == 0).sum()))"""),
+
+    prep("""# 성적을 한 줄로 찍어 주는 함수
+def score(name, m):
+    p = m.predict(Xte)
+    print('%-14s 정확도 %.3f  불량 재현율 %.3f  불량 정밀도 %.3f'
+          % (name, accuracy_score(yte, p),
+             recall_score(yte, p, pos_label=0), precision_score(yte, p, pos_label=0)))
+    return p"""),
+
+    code("""# 기준선부터 만든다 — 전부 양품이라고 찍으면 몇 점인가
+print('전부 양품이라 찍기  정확도 %.3f  불량 재현율 %.000f' % ((yte == 1).mean(), 0))"""),
+
+    prep("""# 단순한 것부터
+lr = LogisticRegression(max_iter=1000).fit(Xtr, ytr)
+rf = RandomForestClassifier(n_estimators=200, random_state=0).fit(Xtr, ytr)
+_ = score('로지스틱', lr)
+p_rf = score('랜덤포레스트', rf)"""),
+
+    md("**로지스틱의 불량 재현율이 0.000 이다.** 정확도는 0.870 으로 기준선과 똑같다.\n"
+       "전부 양품이라고 찍은 것과 **한 글자도 다르지 않다**. 정확도만 봤으면 못 알아챈다.\n"
+       "랜덤포레스트는 0.387 — 있는 불량 62건 중 24건을 잡았다. 이쪽이 실제로 일을 한 것이다."),
+
+    code("""# 무엇을 놓쳤는지 센다
+cm = confusion_matrix(yte, p_rf, labels=[0, 1])
+print('잡은 불량 %d건 · 놓친 불량 %d건' % (cm[0][0], cm[0][1]))
+print('헛경보   %d건 · 맞은 양품 %d건' % (cm[1][0], cm[1][1]))"""),
+
+    Ex(5, "판정 문턱을 **0.5 에서 0.3 으로** 낮춰 놓친 불량이 몇 건으로 주는지 본다.\n"
+          "> 숫자 하나만 바꾼다. 놓친 불량은 줄고 헛경보는 는다.",
+       setup="# predict_proba 는 불량일 확률을 돌려준다",
+       blank="THRESHOLD = ___",
+       answer="THRESHOLD = 0.3",
+       check="""# 문턱 0.5 에서는 잡은 24 · 놓친 38 · 헛경보 6 이었다
+prob = rf.predict_proba(Xte)[:, 0]
+pred = np.where(prob >= THRESHOLD, 0, 1)
+cm2 = confusion_matrix(yte, pred, labels=[0, 1])
+print('문턱 %.1f → 잡은 불량 %d · 놓친 불량 %d · 헛경보 %d'
+      % (THRESHOLD, cm2[0][0], cm2[0][1], cm2[1][0]))"""),
+
+    md("### 파일 하나로 남긴다"),
+    md("학습은 **한 번**, 판정은 **매번**이다. 그래서 갈라 둔다.\n"
+       "학습한 모델을 파일로 저장해 두면 다음부터는 불러 쓰기만 하면 된다."),
+
+    code("""# 한 번 저장
+joblib.dump({'model': rf, 'columns': list(X.columns)}, 'model.pkl')
+print('저장 완료')"""),
+
+    code("""# 이후로는 불러 쓰기만 — 새 배치 한 줄을 판정한다
+bundle = joblib.load('model.pkl')
+m, cols = bundle['model'], bundle['columns']
+
+row = Xte.iloc[[0]][cols]                      # 실제로는 새로 들어온 한 줄
+prob = m.predict_proba(row)[0][0]
+print('불량 확률 %.3f → %s' % (prob, '불량 위험' if prob >= 0.5 else '양품'))"""),
+
+    md("`columns` 를 같이 저장한 이유는 **열 순서가 어긋나면 조용히 틀리기** 때문이다.\n"
+       "판정할 때 같은 순서로 맞춰 넣는다."),
+
+    Task(6, "여기까지를 **자기 데이터로** 한 번 더 돌린다.\n"
+            "> ① 11절의 `RULE` 을 자기 열로 채운다 → ② `out` 을 다시 만든다 →\n"
+            "> ③ 이 절을 그대로 실행한다. **코드는 한 줄도 안 고친다.**\n"
+            "> 목표 열 이름만 `OK` 로 맞춰 두면 된다.",
+         blank="""# 11절로 올라가 RULE 을 고치고 out 을 다시 만든 뒤 여기를 실행한다
+print(out.shape, list(out.columns))""",
+         answer="""print(out.shape, list(out.columns))""",
+         check="print('열이 바뀌어도 학습·저장·판정 코드는 그대로다')"),
+
+    md("**여기까지가 오늘의 전부다.** 표를 밖으로 한 줄도 안 보내고 "
+       "`model.pkl` 하나를 만들었다.\n웹 앱에 붙이는 것은 이 파일을 불러 쓰는 일뿐이다."),
+
     md("### 사내에 붙일 때 챙길 것\n\n"
        "| 챙길 것 | 왜 |\n|---|---|\n"
        "| 데이터는 도구 안에 둔다 | 표를 프롬프트에 통째로 넣으면 그대로 반출이다 |\n"
@@ -581,7 +674,8 @@ MODES = {
     ("ex", 1): "together", ("ex", 2): "together", ("ex", 3): "solo",
     ("ex", 4): "together",
     ("task", 1): "solo", ("task", 2): "solo", ("task", 3): "team",
-    ("task", 4): "solo", ("task", 5): "team",
+    ("task", 4): "solo", ("task", 5): "team", ("task", 6): "solo",
+    ("ex", 5): "together",
 }
 
 SPEC = ("에이전트의 구조", "설비 일지를 대신 찾아 주는 비서를 만든다", CELLS, MODES)
