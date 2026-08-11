@@ -384,12 +384,12 @@ print('시각 중복  ', df['시각'].duplicated().sum(), '건')"""),
        "| 최대 278.6 | `건조_ZONE1_TEMP` | 화씨가 섞여 들어왔다 |\n"
        "| 역행 3건 · 중복 15건 | `시각` | 수집기 재시작 |"),
 
-    code("""# 화씨로 들어온 구간만 되돌린다. 섭씨 라인이 126~140 이라 150 을 넘으면 화씨로 본다.
+    prep("""# 화씨로 들어온 구간만 되돌린다. 섭씨 라인이 126~140 이라 150 을 넘으면 화씨로 본다.
 mask = df['건조_ZONE1_TEMP'] > 150
 df.loc[mask, '건조_ZONE1_TEMP'] = ((df.loc[mask, '건조_ZONE1_TEMP'] - 32) * 5 / 9).round(1)
 print('되돌린 행', mask.sum(), '· 범위', df['건조_ZONE1_TEMP'].min(), '~', df['건조_ZONE1_TEMP'].max())"""),
 
-    code("""# 고착 구간은 결측으로 돌린다. 그대로 두면 평균과 표준편차가 끌려간다.
+    prep("""# 고착 구간은 결측으로 돌린다. 그대로 두면 평균과 표준편차가 끌려간다.
 same = df['프레스_1호기_압력'].diff() == 0
 df.loc[same, '프레스_1호기_압력'] = np.nan
 print('결측으로 돌린 행', same.sum())
@@ -419,18 +419,33 @@ RULE = {
 for src, (dst, how, p) in RULE.items():
     print('%-18s -> %-9s %s' % (src, dst, how))"""),
 
-    prep("""# 표대로 바꿔 주는 함수. 여기 코드는 안 고친다 — 위의 RULE 만 고친다.
+    md("### 숫자가 아닌 열은 다르게 다룬다"),
+    md("여기까지가 **연속형** 열이다. 표에는 다른 성격의 열도 있다.\n\n"
+       "| 성격 | 이 표에서는 | 처리 | 왜 |\n|---|---|---|---|\n"
+       "| 범주형 · 몇 개뿐 | 설비호기 · 교대조 | **원핫** | 1·2·3·4 로 두면 4호기가 2호기의 두 배가 된다 |\n"
+       "| 식별자 | 로트번호 | **재번호** | 순번에서 생산량이 역산된다 |\n"
+       "| 시각 | 시각 | **t0 기준 상대 시간** | 간격에서 tact time 이 샌다 |\n"
+       "| 목표 | 판정 | **0 / 1** | 맞혀야 할 칸이라 바꾸지 않는다 |"),
+
+    prep("""# 표대로 바꿔 주는 함수. 여기 코드는 안 고친다 — 위의 RULE 과 아래 목록만 고친다.
+ONEHOT = ['설비호기', '교대조']          # 종류가 적은 범주형
+IDCOL, TIMECOL, TARGET = '로트번호', '시각', '판정'
+
 def export(df, rule):
     out = pd.DataFrame(index=df.index)
-    for src, (dst, how, p) in rule.items():
+    for src, (dst, how, p) in rule.items():          # ① 연속형
         x = df[src].astype(float)
         if   how == 'spec': out[dst] = ((x - p[0]) / p[1]).round(3)
         elif how == 'z':    out[dst] = ((x - x.mean()) / x.std()).round(3)
         elif how == 'rank': out[dst] = x.rank(pct=True).round(3)
-    out['LOT'] = pd.factorize(df['로트번호'])[0]        # 순번을 지운다
-    out['MC']  = pd.factorize(df['설비호기'])[0]        # 호기 이름을 지운다
-    out['T']   = ((df['시각'] - df['시각'].min())
-                  .dt.total_seconds() / 3600).round(2)  # t0 기준 시간
+    for i, c in enumerate(ONEHOT):                   # ② 범주형 — 열을 가른다
+        d = pd.get_dummies(df[c], prefix='CAT%d' % (i + 1)).astype(int)
+        d.columns = ['CAT%d_%d' % (i + 1, k) for k in range(d.shape[1])]
+        out = pd.concat([out, d], axis=1)
+    out['LOT'] = pd.factorize(df[IDCOL])[0]          # ③ 식별자 — 순번을 지운다
+    out['T']   = ((df[TIMECOL] - df[TIMECOL].min())
+                  .dt.total_seconds() / 3600).round(2)   # ④ 시각 — t0 기준
+    out['OK']  = (df[TARGET] == '양품').astype(int)  # ⑤ 목표 — 그대로 둔다
     return out"""),
 
     prep("""# 반출본을 만들어 본다
@@ -494,6 +509,47 @@ print(mapping.to_string(index=False))"""),
 
     md("이 표가 **반출 스크립트 명세**다. 한 번 정해 두면 컬럼이 늘어도 매번 판단할 일이 없다."),
 
+    md("### 여기까지가 사람이 하는 일"),
+    md("가명처리 · 정규화 · 인코딩 · 재번호는 **손으로 먼저 끝낸다**. Codex 는 그 다음부터다.\n"
+       "넘길 것은 값이 아니라 **반출본의 스키마**다. 아래 셀이 그 스키마를 프롬프트로 만들어 준다."),
+
+    prep("""# 반출본을 보고 Codex 에 붙일 프롬프트를 만든다
+def make_prompt(out, goal, done, todo):
+    lines = []
+    for c in out.columns:
+        v = out[c]
+        lines.append('%-10s %-7s 결측%-4d 범위 %.2f~%.2f'
+                     % (c, v.dtype, v.isna().sum(), v.min(), v.max()))
+    return ('# 역할\\n너는 공정 데이터로 %s 코드를 쓰는 사람이다.\\n\\n'
+            '# 데이터 — 값은 못 준다. 반출본의 모양만 준다\\n행 %d · 열 %d\\n%s\\n\\n'
+            '# 이미 끝난 것 — 다시 하지 마라\\n%s\\n\\n'
+            '# 남은 것 — 이것만 해라\\n%s\\n\\n'
+            '# 형식\\n실행 가능한 파이썬 한 벌. 데이터를 출력하는 줄은 넣지 마라.'
+            % (goal, len(out), out.shape[1], '\\n'.join(lines), done, todo))"""),
+
+    code("""# 그대로 복사해 Codex 에 붙이면 된다
+PROMPT = make_prompt(
+    out, goal='OK 열(1 양품 · 0 불량)을 맞히는',
+    done='컬럼 가명처리 · 스펙 정규화와 z-score · 원핫 인코딩 · 로트 재번호 · 상대시간',
+    todo='결측 처리 · 학습과 검증 분할 · 모델 둘 비교 · 놓친 불량 세기')
+print(PROMPT)"""),
+
+    md("**「이미 끝난 것」을 안 적으면** 정규화와 인코딩을 한 번 더 하는 코드가 온다.\n"
+       "**「데이터를 출력하는 줄은 넣지 마라」를 안 적으면** `df.head()` 를 찍는 코드가 온다.\n"
+       "둘 다 한 줄이면 막힌다."),
+
+    Task(5, "`goal` · `done` · `todo` 세 줄을 **자기 일**로 바꿔 프롬프트를 다시 만든다.\n"
+            "> 회귀면 「맞히는」 대신 「예측하는」, 목표 열 이름도 자기 것으로 바꾼다.\n"
+            "> 만든 프롬프트를 실제로 Codex 에 붙여 넣고, 받은 코드가 값을 찍는지 확인한다.",
+         blank="""MY_PROMPT = make_prompt(out, goal='___', done='___', todo='___')
+print(MY_PROMPT)""",
+         answer="""MY_PROMPT = make_prompt(
+    out, goal='TEMP_D2 를 다른 열로 예측하는',
+    done='컬럼 가명처리 · 정규화 · 원핫 · 재번호 · 상대시간',
+    todo='결측 처리 · 분할 · 선형 회귀와 트리 비교 · MAE 로 재기')
+print(MY_PROMPT)""",
+         check="print('스키마만 나갔는지 다시 본다 — 값이 한 줄도 없어야 한다')"),
+
     Task(4, "`df` 를 **자기 업무 표**로 바꾸고, 컬럼마다 `RULE` 을 채운다.\n"
             "> ① 익명명은 「물리량_순번」 으로 짓는다 — 공정 이름·설비 이름은 넣지 않는다.\n"
             "> ② 스펙이 있으면 `spec`, 없으면 `z`, 순서만 보면 되면 `rank`.\n"
@@ -525,7 +581,7 @@ MODES = {
     ("ex", 1): "together", ("ex", 2): "together", ("ex", 3): "solo",
     ("ex", 4): "together",
     ("task", 1): "solo", ("task", 2): "solo", ("task", 3): "team",
-    ("task", 4): "solo",
+    ("task", 4): "solo", ("task", 5): "team",
 }
 
 SPEC = ("에이전트의 구조", "설비 일지를 대신 찾아 주는 비서를 만든다", CELLS, MODES)

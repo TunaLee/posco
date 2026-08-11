@@ -1037,6 +1037,45 @@ NMP_투입비          &rarr;  <span class="st">RATIO_M2</span>
 <div class="vlist"><div class="v"><span class="b">&#9733;</span><div>스펙 정규화를 쓰면 한계선이 <b>&plusmn;1 로 고정</b>돼 USL/LSL 문제가 같이 풀린다.</div></div></div>
 <div class="keymsg"><span class="k">경계</span><div>숫자를 다 가려도 <b>이 다섯이 남아 있으면</b> 가린 값이 되돌아온다.</div></div></div>
 </section>
+<section class="slide" data-title="열 성격별 처리">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>분류</div>
+  <h2 class="s-title sm">연속 · 순서 · 범주 · 식별자 · 시각</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="ctable"><table><thead><tr><th>열의 성격</th><th>이 표에서는</th><th>반출 전 처리</th><th>왜 그렇게</th></tr></thead><tbody>
+  <tr><td>연속형 · 스펙 있음</td><td>건조 ZONE2 온도</td><td>(x &minus; target) / tol</td><td>관리도 · Cpk 가 그대로 나온다</td></tr>
+  <tr><td>연속형 · 스펙 없음</td><td>프레스 압력</td><td>z-score</td><td>상관 · 회귀가 그대로 나온다</td></tr>
+  <tr><td>연속형 · 한쪽 꼬리</td><td>불순물 ppm</td><td>log 를 씌운 뒤 z-score</td><td>큰 값 몇 개에 평균이 끌려간다</td></tr>
+  <tr><td>순서형</td><td>등급 A &gt; B &gt; C</td><td>0 · 1 · 2 로 매긴다</td><td>순서 자체가 뜻이다</td></tr>
+  <tr><td class="hl">범주형 · 몇 개뿐</td><td class="hl">라인 A · B</td><td class="hl">원핫 인코딩</td><td class="hl">크기 관계가 없다</td></tr>
+  <tr><td>범주형 · 종류가 많음</td><td>설비 스물네 가지</td><td>재번호 + 빈도로 바꾸기</td><td>원핫으로 하면 열이 폭발한다</td></tr>
+  <tr><td>식별자</td><td>로트번호</td><td><code>factorize</code> 로 재번호</td><td>순번에서 생산량이 역산된다</td></tr>
+  <tr><td>시각</td><td>타임스탬프</td><td>t0 기준 상대 시간</td><td>간격에서 tact time 이 샌다</td></tr>
+</tbody></table></div>
+<div class="keymsg"><span class="k">첫 단계</span><div>규칙표를 짜기 전에 <b>열을 이 여덟 갈래로 먼저 나눈다</b>. 나누고 나면 처리는 정해진다.</div></div></div>
+</section>
+<section class="slide" data-title="범주형에 숫자를 매기면">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>함정</div>
+  <h2 class="s-title sm">1호기와 4호기 사이에 없는 관계</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w2"><div><div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>설비 이름을 <b>1 · 2 · 3 · 4</b> 로 두면 모델은 <b>4호기가 2호기의 두 배</b>라고 읽는다.</div></div>
+  <div class="v"><span class="b">&rarr;</span><div>없는 크기 관계가 생기고, 평균을 내면 <b>2.5호기</b> 같은 값이 나온다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>그래서 종류가 적으면 <b>열을 갈라 0과 1</b>로 둔다. 이것이 원핫 인코딩이다.</div></div>
+</div></div>
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">원핫</span></div><pre><code><span class="cm"># 이렇게 두면 크기 관계가 생긴다</span>
+설비 = [<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>]
+
+<span class="cm"># 열을 갈라 0과 1로 — 서로 대등해진다</span>
+pd.get_dummies(df[<span class="st">'설비호기'</span>], prefix=<span class="st">'MC'</span>)
+
+   MC_1  MC_2  MC_3  MC_4
+<span class="nm">0</span>     <span class="nm">1</span>     <span class="nm">0</span>     <span class="nm">0</span>     <span class="nm">0</span>
+<span class="nm">1</span>     <span class="nm">0</span>     <span class="nm">1</span>     <span class="nm">0</span>     <span class="nm">0</span></code></pre></div></div>
+<div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></div><div class="ct"><h4>종류가 많으면</h4><p>스물네 가지를 원핫으로 갈면 열이 스물네 개 늘어난다. 이때는 <b>재번호 + 빈도</b>로 바꾸거나 묶어서 줄인다.</p></div></div>
+<div class="keymsg"><span class="k">기준</span><div>숫자로 둘지 열을 가를지는 <b>크기 관계가 실제로 있느냐</b>로 정한다.</div></div></div>
+</section>
 <section class="slide" data-title="반출본 만들기">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>코드</div>
@@ -1052,6 +1091,34 @@ out = pd.DataFrame(index=df.index)          <span class="cm"># 원본 df 는 여
 <div class="code sm" style="margin-top:12px"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">id · 시간</span></div><pre><code>out[<span class="st">'LOT'</span>] = pd.factorize(df[<span class="st">'로트번호'</span>])[<span class="nm">0</span>]        <span class="cm"># 순번을 지운다</span>
 out[<span class="st">'T'</span>]   = (df[<span class="st">'시각'</span>] - df[<span class="st">'시각'</span>].min()).dt.total_seconds() / <span class="nm">3600</span></code></pre></div>
 <div class="keymsg"><span class="k">확인</span><div>반출본에 <b>원본 컬럼명 · 원본 값 · 원본 ID 가 하나도 없어야</b> 내보낸다.</div></div></div>
+</section>
+<section class="slide" data-title="처리까지 적어 주는 프롬프트">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>프롬프트</div>
+  <h2 class="s-title sm">끝난 처리와 남은 처리를 갈라 적은 프롬프트</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">반출본 스키마와 함께 붙인다</span></div><pre><code><span class="cm"># 역할</span>
+너는 공정 데이터로 불량을 예측하는 코드를 쓰는 사람이다.
+
+<span class="cm"># 데이터 — 값은 못 준다. 반출본의 모양만 준다</span>
+행 2385 · 열 9. 목표는 OK (1 양품 · 0 불량, 불량 311건)
+TEMP_D2 float 결측40 범위 -2.41~1.86   <span class="cm"># 스펙 정규화 끝남</span>
+PRES_B1 float 결측60 범위 -3.02~2.98   <span class="cm"># z-score 끝남</span>
+MC_1..MC_4 int 0/1                     <span class="cm"># 원핫 끝남</span>
+LOT int 0~59 / T float 0~119.9         <span class="cm"># 재번호 · 상대시간 끝남</span>
+
+<span class="cm"># 이미 끝난 것 — 다시 하지 마라</span>
+컬럼 가명처리 · 정규화 · 원핫 · 재번호 · 상대시간
+
+<span class="cm"># 남은 것 — 이것만 해라</span>
+결측 처리 · 분할 · 모델 둘 비교 · 놓친 불량 세기
+
+<span class="cm"># 형식</span>
+실행 가능한 파이썬 한 벌. 데이터를 출력하는 줄은 넣지 마라.</code></pre></div>
+<div class="vlist">
+  <div class="v"><span class="b">&#9733;</span><div><b>「이미 끝난 것」을 안 적으면</b> 정규화와 인코딩을 한 번 더 하는 코드가 온다.</div></div>
+</div>
+<div class="keymsg"><span class="k">요령</span><div>반출본의 <b>스키마를 그대로 붙인다</b>. 열 이름과 범위만 있으면 코드를 짜기에 충분하다.</div></div></div>
 </section>
 <section class="slide" data-title="어디까지 되나">
   <div class="coord"><b></b> / <span class="tot"></span></div>
@@ -1287,10 +1354,10 @@ df.isna().sum()</code></pre></div></div>
 <section class="slide" data-title="Codex 에 맡기는 흐름">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>흐름</div>
-  <h2 class="s-title sm">반출본 → 코드 → 사내 실행</h2>
+  <h2 class="s-title sm">손으로 넷, 맡기는 것은 하나</h2>
   <div class="rule"></div>
-  <div class="body"><div class="plot"><svg viewBox="0 0 1116 216"><rect x="30" y="40" width="246" height="104" rx="14" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.4"/><text x="52" y="76" font-size="16" font-weight="800" fill="#16142B">반출본</text><text x="52" y="102" font-size="12" fill="#3A1FC9">export.py 결과</text><text x="52" y="124" font-size="11.5" fill="#8E8AAC">익명 컬럼 · 정규화 값</text><rect x="300" y="40" width="246" height="104" rx="14" fill="#EFEAFF" stroke="#DCD6F0" stroke-width="1.4"/><text x="322" y="76" font-size="16" font-weight="800" fill="#16142B">Codex</text><text x="322" y="102" font-size="12" fill="#3A1FC9">코드를 받는다</text><text x="322" y="124" font-size="11.5" fill="#8E8AAC">모양과 목표만 준다</text><rect x="570" y="40" width="246" height="104" rx="14" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.4"/><text x="592" y="76" font-size="16" font-weight="800" fill="#16142B">코드</text><text x="592" y="102" font-size="12" fill="#3A1FC9">.py 한 벌</text><text x="592" y="124" font-size="11.5" fill="#8E8AAC">데이터는 안 들어 있다</text><rect x="840" y="40" width="246" height="104" rx="14" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.4"/><text x="862" y="76" font-size="16" font-weight="800" fill="#16142B">사내 실행</text><text x="862" y="102" font-size="12" fill="#3A1FC9">원본으로 돌린다</text><text x="862" y="124" font-size="11.5" fill="#8E8AAC">결과도 사내에 남는다</text><defs><marker id="fa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#3A1FC9"/></marker></defs><path d="M276 92 L296 92" stroke="#3A1FC9" stroke-width="1.8" marker-end="url(#fa)"/><path d="M546 92 L566 92" stroke="#3A1FC9" stroke-width="1.8" marker-end="url(#fa)"/><path d="M816 92 L836 92" stroke="#3A1FC9" stroke-width="1.8" marker-end="url(#fa)"/><rect x="30" y="166" width="516" height="40" rx="10" fill="#FDF1F5" stroke="#F3C6D6" stroke-width="1.2"/><text x="52" y="192" font-size="12.5" font-weight="700" fill="#B01A50">밖으로 나가는 것 — 컬럼 모양 · 정규화 값 · 목표</text><rect x="570" y="166" width="516" height="40" rx="10" fill="#EFF9F4" stroke="#BCE3D2" stroke-width="1.2"/><text x="592" y="192" font-size="12.5" font-weight="700" fill="#0B6B4F">사내에 남는 것 — 원본 값 · 매핑 표 · 학습된 모델 · 그림</text></svg></div><div class="vlist">
-  <div class="v"><span class="b">&rarr;</span><div>Codex 가 받는 것은 <b>표의 모양과 목표</b>뿐이다. 값은 한 줄도 안 간다.</div></div>
+  <div class="body"><div class="plot"><svg viewBox="0 0 1116 200"><rect x="14" y="34" width="168" height="96" rx="13" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.4"/><circle cx="40" cy="60" r="11" fill="#3A1FC9"/><text x="40" y="64" font-size="11.5" font-weight="800" fill="#fff" text-anchor="middle">1</text><text x="58" y="65" font-size="13.5" font-weight="800" fill="#16142B">열을 나눈다</text><text x="32" y="92" font-size="10.8" fill="#8E8AAC">연속 · 순서 · 범주 · ID · </text><text x="32" y="108" font-size="10.8" fill="#8E8AAC">시각</text><rect x="196" y="34" width="168" height="96" rx="13" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.4"/><circle cx="222" cy="60" r="11" fill="#3A1FC9"/><text x="222" y="64" font-size="11.5" font-weight="800" fill="#fff" text-anchor="middle">2</text><text x="240" y="65" font-size="13.5" font-weight="800" fill="#16142B">규칙표</text><text x="214" y="92" font-size="10.8" fill="#8E8AAC">열마다 익명명과 변환식</text><rect x="378" y="34" width="168" height="96" rx="13" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.4"/><circle cx="404" cy="60" r="11" fill="#3A1FC9"/><text x="404" y="64" font-size="11.5" font-weight="800" fill="#fff" text-anchor="middle">3</text><text x="422" y="65" font-size="13.5" font-weight="800" fill="#16142B">반출본</text><text x="396" y="92" font-size="10.8" fill="#8E8AAC">값을 옮기고 이름을 바꾼다</text><rect x="560" y="34" width="168" height="96" rx="13" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.4"/><circle cx="586" cy="60" r="11" fill="#3A1FC9"/><text x="586" y="64" font-size="11.5" font-weight="800" fill="#fff" text-anchor="middle">4</text><text x="604" y="65" font-size="13.5" font-weight="800" fill="#16142B">프롬프트</text><text x="578" y="92" font-size="10.8" fill="#8E8AAC">스키마 + 이미 끝난 것</text><rect x="742" y="34" width="168" height="96" rx="13" fill="#EFEAFF" stroke="#DCD6F0" stroke-width="1.4"/><circle cx="768" cy="60" r="11" fill="#3A1FC9"/><text x="768" y="64" font-size="11.5" font-weight="800" fill="#fff" text-anchor="middle">5</text><text x="786" y="65" font-size="13.5" font-weight="800" fill="#16142B">Codex</text><text x="760" y="92" font-size="10.8" fill="#8E8AAC">코드를 받는다</text><rect x="924" y="34" width="168" height="96" rx="13" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.4"/><circle cx="950" cy="60" r="11" fill="#3A1FC9"/><text x="950" y="64" font-size="11.5" font-weight="800" fill="#fff" text-anchor="middle">6</text><text x="968" y="65" font-size="13.5" font-weight="800" fill="#16142B">사내 실행</text><text x="942" y="92" font-size="10.8" fill="#8E8AAC">원본으로 돌린다</text><defs><marker id="f6" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#3A1FC9"/></marker></defs><path d="M184 82 L192 82" stroke="#3A1FC9" stroke-width="1.6" marker-end="url(#f6)"/><path d="M366 82 L374 82" stroke="#3A1FC9" stroke-width="1.6" marker-end="url(#f6)"/><path d="M548 82 L556 82" stroke="#3A1FC9" stroke-width="1.6" marker-end="url(#f6)"/><path d="M730 82 L738 82" stroke="#3A1FC9" stroke-width="1.6" marker-end="url(#f6)"/><path d="M912 82 L920 82" stroke="#3A1FC9" stroke-width="1.6" marker-end="url(#f6)"/><rect x="14" y="150" width="622" height="38" rx="10" fill="#FDF1F5" stroke="#F3C6D6" stroke-width="1.2"/><text x="34" y="174" font-size="12.5" font-weight="700" fill="#B01A50">사람이 손으로 &mdash; 1 부터 4 까지</text><rect x="650" y="150" width="436" height="38" rx="10" fill="#EFF9F4" stroke="#BCE3D2" stroke-width="1.2"/><text x="670" y="174" font-size="12.5" font-weight="700" fill="#0B6B4F">Codex 가 &mdash; 5 · 실행은 다시 사내에서</text></svg></div><div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>가명처리 · 정규화 · 인코딩은 <b>사람이 먼저 끝낸다</b>. Codex 는 그 다음부터다.</div></div>
   <div class="v"><span class="b">&#9733;</span><div>받은 코드는 <b>사내에서 원본으로</b> 돌린다. 학습된 모델도 그림도 밖으로 안 나간다.</div></div>
 </div>
 <div class="keymsg"><span class="k">한 줄</span><div>나가는 것은 <b>질문</b>이고, 돌아오는 것은 <b>코드</b>다. 데이터는 자리를 안 옮긴다.</div></div></div>
