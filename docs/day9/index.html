@@ -921,28 +921,108 @@ text = read(files[i])         <span class="cm"># 그때 로드</span></code></pr
 <section class="slide" data-title="부록에서 다루는 것">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>부록</div>
-  <h2 class="s-title">반출 통제 · 코드 받기 · 전처리 · 검증</h2>
+  <h2 class="s-title">원본 손보기 · 반출본 · 코드 받기 · 검증</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="cards c4">
-      <div class="card"><span class="n">CH5</span><h3>반출 통제</h3><p>값 자체가 기밀이다. 컬럼명과 값을 바꿔 내보내는 규칙을 먼저 정한다.</p></div>
-      <div class="card"><span class="n">CH6</span><h3>코드만 받기</h3><p>표를 통째로 올리면 유출이다. 모양만 보내고 코드를 받는다.</p></div>
-      <div class="card"><span class="n">CH7</span><h3>전처리</h3><p>결측 · 이상치 · 글자 열. 손대는 순서가 정해져 있다.</p></div>
+      <div class="card"><span class="n">CH5</span><h3>원본 손보기</h3><p>이상치 · 결측 · 단위 혼입을 먼저 잡는다. 오염된 값으로는 정규화가 어긋난다.</p></div>
+      <div class="card"><span class="n">CH6</span><h3>반출본 만들기</h3><p>값 자체가 기밀이다. 가명처리하고 정규화해 내보낼 판을 만든다.</p></div>
+      <div class="card"><span class="n">CH7</span><h3>코드만 받기</h3><p>표를 통째로 올리면 유출이다. 스키마만 보내고 코드를 받는다.</p></div>
       <div class="card"><span class="n">CH8</span><h3>모델링</h3><p>분류와 회귀를 가르고, 학습은 Codex 에 맡긴다. 성적만 직접 읽는다.</p></div>
     </div>
     <div class="keymsg"><span class="k">기준</span><div>부록의 모든 수치는 <b>공정 데이터 1,412건을 실제로 돌려</b> 뽑은 것이다.</div></div>
   </div>
 </section>
-<section class="slide section" data-title="[섹션] 반출 없이 데이터프레임 다루기">
+<section class="slide section" data-title="[섹션] 원본 표 손보기">
   <div class="ghost">05</div>
   <div class="seyebrow">CHAPTER 05</div>
+  <h2>원본 표 손보기</h2>
+  <div class="agenda"><span>이상치</span><span>결측</span><span>단위 혼입</span><span>누수</span></div>
+</section>
+<section class="slide" data-title="전처리 순서">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>순서</div>
+  <h2 class="s-title">읽기 → 이상치 → 결측 → 단위 → 중복</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="plot"><svg viewBox="0 0 1116 218"><rect x="14" y="30" width="200" height="116" rx="9" fill="#fff" stroke="#3A1FC9" stroke-width="1.6"/><rect x="14" y="30" width="200" height="26" rx="9" fill="#3A1FC9" stroke="none" stroke-width="1"/><rect x="14" y="44" width="200" height="12" rx="0" fill="#3A1FC9" stroke="none" stroke-width="1"/><text x="114" y="48" font-size="12" fill="#fff" font-weight="800" text-anchor="middle">읽기</text><text x="114" y="84" font-size="22" fill="#3A1FC9" font-weight="800" text-anchor="middle">1</text><text x="114" y="116" font-size="9.6" fill="#8E8AAC" text-anchor="middle">천 단위 쉼표</text><text x="114" y="132" font-size="9.6" fill="#8E8AAC" text-anchor="middle">N/A 를 제대로 읽는다</text><path d="M218 88 h6" stroke="#8E8AAC" stroke-width="2"/><path d="M232 88 l-7 -5 v10 z" fill="#8E8AAC"/><rect x="236" y="30" width="200" height="116" rx="9" fill="#fff" stroke="#E8722A" stroke-width="1.6"/><rect x="236" y="30" width="200" height="26" rx="9" fill="#E8722A" stroke="none" stroke-width="1"/><rect x="236" y="44" width="200" height="12" rx="0" fill="#E8722A" stroke="none" stroke-width="1"/><text x="336" y="48" font-size="12" fill="#fff" font-weight="800" text-anchor="middle">이상치</text><text x="336" y="84" font-size="22" fill="#E8722A" font-weight="800" text-anchor="middle">2</text><text x="336" y="116" font-size="9.6" fill="#8E8AAC" text-anchor="middle">999 같은 값을 결측으로 돌린다</text><text x="336" y="132" font-size="9.6" fill="#8E8AAC" text-anchor="middle"></text><path d="M440 88 h6" stroke="#8E8AAC" stroke-width="2"/><path d="M454 88 l-7 -5 v10 z" fill="#8E8AAC"/><rect x="458" y="30" width="200" height="116" rx="9" fill="#fff" stroke="#0E8C9E" stroke-width="1.6"/><rect x="458" y="30" width="200" height="26" rx="9" fill="#0E8C9E" stroke="none" stroke-width="1"/><rect x="458" y="44" width="200" height="12" rx="0" fill="#0E8C9E" stroke="none" stroke-width="1"/><text x="558" y="48" font-size="12" fill="#fff" font-weight="800" text-anchor="middle">결측</text><text x="558" y="84" font-size="22" fill="#0E8C9E" font-weight="800" text-anchor="middle">3</text><text x="558" y="116" font-size="9.6" fill="#8E8AAC" text-anchor="middle">중앙값으로 메우거나 행을 버린다</text><text x="558" y="132" font-size="9.6" fill="#8E8AAC" text-anchor="middle"></text><path d="M662 88 h6" stroke="#8E8AAC" stroke-width="2"/><path d="M676 88 l-7 -5 v10 z" fill="#8E8AAC"/><rect x="680" y="30" width="200" height="116" rx="9" fill="#fff" stroke="#1E9E6A" stroke-width="1.6"/><rect x="680" y="30" width="200" height="26" rx="9" fill="#1E9E6A" stroke="none" stroke-width="1"/><rect x="680" y="44" width="200" height="12" rx="0" fill="#1E9E6A" stroke="none" stroke-width="1"/><text x="780" y="48" font-size="12" fill="#fff" font-weight="800" text-anchor="middle">글자 열</text><text x="780" y="84" font-size="22" fill="#1E9E6A" font-weight="800" text-anchor="middle">4</text><text x="780" y="116" font-size="9.6" fill="#8E8AAC" text-anchor="middle">설비호기</text><text x="780" y="132" font-size="9.6" fill="#8E8AAC" text-anchor="middle">교대조를 숫자로 편다</text><path d="M884 88 h6" stroke="#8E8AAC" stroke-width="2"/><path d="M898 88 l-7 -5 v10 z" fill="#8E8AAC"/><rect x="902" y="30" width="200" height="116" rx="9" fill="#fff" stroke="#E8537A" stroke-width="1.6"/><rect x="902" y="30" width="200" height="26" rx="9" fill="#E8537A" stroke="none" stroke-width="1"/><rect x="902" y="44" width="200" height="12" rx="0" fill="#E8537A" stroke="none" stroke-width="1"/><text x="1002" y="48" font-size="12" fill="#fff" font-weight="800" text-anchor="middle">나누기</text><text x="1002" y="84" font-size="22" fill="#E8537A" font-weight="800" text-anchor="middle">5</text><text x="1002" y="116" font-size="9.6" fill="#8E8AAC" text-anchor="middle">학습과 검증을 먼저 가른다</text><text x="1002" y="132" font-size="9.6" fill="#8E8AAC" text-anchor="middle"></text><rect x="14" y="164" width="1088" height="46" rx="8" fill="#FDEFF3" stroke="#F6C7D5" stroke-width="1"/><text x="34" y="194" font-size="11" fill="#E8537A" font-weight="800">✕  여기까지가 <b>원본을 보면서</b> 하는 일이다. 가명처리와 정규화는 그다음이다</text></svg></div>
+    <div class="keymsg"><span class="k">순서</span><div>읽고 · 고치고 · 메우고 · 맞추고 · 지운다. <b>나누기를 마지막에 두면 검증 데이터가 섞인다</b>.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="이상치">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>실측</div>
+  <h2 class="s-title">성형압력 999 가 18건</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="shot"><div class="sbar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">성형압력 분포 · 배치 1,412건</span></div><img src="assets/outlier.png" alt="성형압력 이상치"></div>
+<div class="vlist"><div class="v"><span class="b">&rarr;</span><div>999 를 그대로 두면 <b>평균이 36.5</b> 로 잡힌다. 빼면 실제 최대가 <b>31.4</b> 다.</div></div><div class="v"><span class="b">&#9733;</span><div>센서가 못 읽었을 때 넣는 값이다. 숫자로 보이지만 <b>결측이다</b>.</div></div></div>
+    <div class="keymsg"><span class="k">함정</span><div>평균 · 표준편차가 이상하면 <b>먼저 히스토그램을 그린다</b>. 숫자만 보면 못 찾는다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="결측">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+
+    <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>결측</div>
+    <h2 class="s-title sm">비어 있는 칸 185 개 &mdash; 입도와 수분율</h2>
+    <div class="rule"></div>
+    <div class="body">
+    <div class="shot">
+      <div class="sbar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">batch_quality.csv &mdash; 1,412행</span></div>
+      <img style="max-height:236px" src="assets/missing-cases.png" alt="열별 결측 건수, 행을 버릴 때 빠지는 양, 결측이 흩어진 위치">
+    </div>
+    <div class="ctable" style="margin-top:10px"><table><thead><tr><th>방법</th><th>언제 쓰나</th><th>이 데이터에서는</th></tr></thead><tbody><tr><td>행을 버린다</td><td>결측이 적고 데이터가 많을 때</td><td>173행이 빠진다 &mdash; 12.3%</td></tr><tr><td>중앙값으로 메운다</td><td>값이 한쪽으로 쏠렸을 때</td><td>입도 12.0 &middot; 수분율 1.2</td></tr><tr><td>따로 표시한다</td><td>결측 자체가 뜻이 있을 때</td><td>「측정 안 함」 열을 하나 더</td></tr></tbody></table></div>
+    <div class="keymsg"><span class="k">기준</span><div>12.3%를 버릴 수 있으면 버리고, 아까우면 메운다. <b>메웠다는 사실을 기록에 남긴다</b>.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="정규화 전에 잡을 것">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>선행</div>
+  <h2 class="s-title sm">표준편차 19.4 와 1.9 — 화씨 48행의 값</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="shot">
+      <div class="sbar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">cell_process.csv &mdash; 2,400행</span></div>
+      <img style="max-height:238px" src="assets/anomaly-cases.png" alt="센서 단선 · 값 고착 · 단위 혼입 · 레벨 시프트 · 시각 역행 다섯 가지">
+    </div>
+    <div class="ctable" style="margin-top:10px"><table><thead><tr><th>건조 ZONE1 온도</th><th>평균</th><th>표준편차</th><th>z-score 를 씌우면</th></tr></thead><tbody>
+      <tr><td class="hl">화씨 48행을 그대로 두면</td><td class="hl">134.2</td><td class="hl">19.4</td><td class="hl">모든 값이 열 배로 눌린다</td></tr>
+      <tr><td>되돌리고 나면</td><td>131.4</td><td>1.9</td><td>제 폭으로 나온다</td></tr>
+    </tbody></table></div>
+    <div class="keymsg"><span class="k">순서</span><div>반출본은 <b>손본 표에서</b> 만든다. 오염된 값으로 평균과 표준편차를 구하면 <b>반출본 전체가 어긋난다</b>.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="분포와 산점도">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>실측</div>
+  <h2 class="s-title">소성온도 분포와 불순물 산점도</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="shot"><div class="sbar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">공정 데이터 1,412건</span></div><img src="assets/eda.png" alt="소성온도와 불량"></div>
+<div class="vlist"><div class="v"><span class="b">&rarr;</span><div>소성온도가 <b>낮거나 높으면</b> 불량이 는다. 가운데가 안전하다.</div></div><div class="v"><span class="b">&rarr;</span><div>두 값을 같이 놓으면 <b>불량이 몰린 자리</b>가 보인다. 한 열씩 보면 안 보인다.</div></div></div>
+    <div class="keymsg"><span class="k">순서</span><div>모델을 만들기 전에 그린다. <b>그림에서 안 보이는 것은 모델도 못 찾는다</b>.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="데이터 누수">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>함정</div>
+  <h2 class="s-title">정확도 1.000 이라는 경고</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="plot"><svg viewBox="0 0 1116 216"><text x="14" y="18" font-size="11" fill="#8E8AAC" font-weight="700">소성 한 배치에서 값이 나오는 순서</text><rect x="30" y="34" width="190" height="60" rx="8" fill="#fff" stroke="#1E9E6A" stroke-width="1.5"/><text x="125" y="58" font-size="12" fill="#1E9E6A" font-weight="800" text-anchor="middle">투입 전</text><text x="125" y="80" font-size="9.2" fill="#8E8AAC" text-anchor="middle">설비호기 · 교대조</text><rect x="288" y="34" width="250" height="60" rx="8" fill="#fff" stroke="#1E9E6A" stroke-width="1.5"/><text x="413" y="58" font-size="12" fill="#1E9E6A" font-weight="800" text-anchor="middle">소성 중</text><text x="413" y="80" font-size="9.2" fill="#8E8AAC" text-anchor="middle">소성온도 · 소성시간 · 입도 · 수분율 · 불순물 · 성형압력</text><rect x="700" y="34" width="190" height="60" rx="8" fill="#fff" stroke="#E8537A" stroke-width="1.5"/><text x="795" y="58" font-size="12" fill="#E8537A" font-weight="800" text-anchor="middle">소성 뒤</text><text x="795" y="80" font-size="9.2" fill="#8E8AAC" text-anchor="middle">방전용량</text><rect x="900" y="34" width="190" height="60" rx="8" fill="#fff" stroke="#3A1FC9" stroke-width="1.5"/><text x="995" y="58" font-size="12" fill="#3A1FC9" font-weight="800" text-anchor="middle">검사</text><text x="995" y="80" font-size="9.2" fill="#8E8AAC" text-anchor="middle">양품여부</text><path d="M14 110 h1088" stroke="#DCD6F0" stroke-width="1.6"/><text x="560" y="128" font-size="11" fill="#3A1FC9" font-weight="800" text-anchor="middle">예측하고 싶은 시점 — 소성이 끝나기 전</text><path d="M690 96 v24" stroke="#E8537A" stroke-width="2" stroke-dasharray="4 4"/><rect x="14" y="148" width="1088" height="60" rx="8" fill="#FDEFF3" stroke="#F6C7D5" stroke-width="1"/><text x="34" y="174" font-size="11.5" fill="#E8537A" font-weight="800">✕  방전용량을 넣으면 정확도가 1.000 이 나온다 — 소성이 끝나야 재는 값이다</text><text x="34" y="196" font-size="10" fill="#8E8AAC">양품여부 = 방전용량 ≥ 168 이라 답을 그대로 넣은 것이다. 조기 예측에는 쓸 수 없다</text></svg></div>
+    <div class="keymsg"><span class="k">함정</span><div><b>결과가 너무 좋으면 먼저 의심한다.</b> 예측 시점보다 뒤에 나오는 열이 섞였는지 본다.</div></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 반출 없이 데이터프레임 다루기">
+  <div class="ghost">06</div>
+  <div class="seyebrow">CHAPTER 06</div>
   <h2>반출 없이 데이터프레임 다루기</h2>
   <p>이차전지 공정 데이터는 값 자체가 레시피다. 가릴 식별자가 없다.</p>
   <div class="agenda"><span>무차원화</span><span>컬럼명</span><span>메타데이터</span><span>규칙표</span></div>
 </section>
 <section class="slide" data-title="가릴 식별자가 없다">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>전제</div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>전제</div>
   <h2 class="s-title sm">가릴 식별자가 없는 데이터</h2>
   <div class="rule"></div>
   <div class="body"><div class="twopane">
@@ -954,7 +1034,7 @@ text = read(files[i])         <span class="cm"># 그때 로드</span></code></pr
 </section>
 <section class="slide" data-title="무차원화">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>기법</div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>기법</div>
   <h2 class="s-title sm">(x &minus; target) / tol</h2>
   <div class="rule"></div>
   <div class="body"><div class="twocol w2"><div><div class="vlist">
@@ -974,7 +1054,7 @@ DRY_Z2_T = <span class="st">-0.32</span>          <span class="cm"># (x - target
 </section>
 <section class="slide" data-title="변환 세 가지">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>고르기</div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>고르기</div>
   <h2 class="s-title sm">스펙 정규화 · z-score · 분위 변환</h2>
   <div class="rule"></div>
   <div class="body"><div class="ctable"><table><thead><tr><th>방식</th><th>식</th><th>남는 것</th><th>주의</th></tr></thead><tbody>
@@ -987,7 +1067,7 @@ DRY_Z2_T = <span class="st">-0.32</span>          <span class="cm"># (x - target
 </section>
 <section class="slide" data-title="정규화하면 분포가 어떻게 바뀌나">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>모양</div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>모양</div>
   <h2 class="s-title sm">같은 데이터, 세 가지로 옮긴 모양</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1005,7 +1085,7 @@ DRY_Z2_T = <span class="st">-0.32</span>          <span class="cm"># (x - target
 </section>
 <section class="slide" data-title="컬럼명 가명처리">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>이름</div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>이름</div>
   <h2 class="s-title sm">컬럼명은 FEAT_01 부터 다시</h2>
   <div class="rule"></div>
   <div class="body"><div class="twocol w2"><div><div class="vlist">
@@ -1024,7 +1104,7 @@ NMP_투입비          &rarr;  <span class="st">FEAT_03</span>
 </section>
 <section class="slide" data-title="메타데이터 누출">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>더 큰 구멍</div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>더 큰 구멍</div>
   <h2 class="s-title sm">로트 번호와 타임스탬프가 흘리는 것</h2>
   <div class="rule"></div>
   <div class="body"><div class="ctable"><table><thead><tr><th>남아 있는 것</th><th>여기서 역산되는 것</th></tr></thead><tbody>
@@ -1039,7 +1119,7 @@ NMP_투입비          &rarr;  <span class="st">FEAT_03</span>
 </section>
 <section class="slide" data-title="열 성격별 처리">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>분류</div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>분류</div>
   <h2 class="s-title sm">연속 · 순서 · 범주 · 식별자 · 시각</h2>
   <div class="rule"></div>
   <div class="body"><div class="ctable"><table><thead><tr><th>열의 성격</th><th>이 표에서는</th><th>반출 전 처리</th><th>왜 그렇게</th></tr></thead><tbody>
@@ -1056,7 +1136,7 @@ NMP_투입비          &rarr;  <span class="st">FEAT_03</span>
 </section>
 <section class="slide" data-title="범주형에 숫자를 매기면">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>함정</div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>함정</div>
   <h2 class="s-title sm">1호기와 4호기 사이에 없는 관계</h2>
   <div class="rule"></div>
   <div class="body"><div class="twocol w2"><div><div class="vlist">
@@ -1078,7 +1158,7 @@ pd.get_dummies(df[<span class="st">'설비호기'</span>], prefix=<span class="s
 </section>
 <section class="slide" data-title="범주형 처리 전후">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>전후</div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>전후</div>
   <h2 class="s-title sm">설비호기를 열 넷으로 가른 결과</h2>
   <div class="rule"></div>
   <div class="body"><div class="shot">
@@ -1093,7 +1173,7 @@ pd.get_dummies(df[<span class="st">'설비호기'</span>], prefix=<span class="s
 </section>
 <section class="slide" data-title="식별자와 시각 처리 전후">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>전후</div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>전후</div>
   <h2 class="s-title sm">로트 번호와 시각을 지운 결과</h2>
   <div class="rule"></div>
   <div class="body"><div class="shot">
@@ -1108,7 +1188,7 @@ pd.get_dummies(df[<span class="st">'설비호기'</span>], prefix=<span class="s
 </section>
 <section class="slide" data-title="반출본 만들기">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>코드</div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>코드</div>
   <h2 class="s-title sm">반출용 데이터프레임 만들기</h2>
   <div class="rule"></div>
   <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">export.py</span></div><pre><code>RULE = {<span class="st">'건조_ZONE2_TEMP'</span>: (<span class="st">'DRY_Z2_T'</span>, <span class="st">'spec'</span>, (<span class="nm">120.0</span>, <span class="nm">5.0</span>)),
@@ -1124,7 +1204,7 @@ out[<span class="st">'T'</span>]   = (df[<span class="st">'시각'</span>] - df[
 </section>
 <section class="slide" data-title="어디까지 되나">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>범위</div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>범위</div>
   <h2 class="s-title sm">정규화 데이터가 감당하는 범위</h2>
   <div class="rule"></div>
   <div class="body"><div class="ctable"><table><thead><tr><th>하려는 일</th><th>정규화 데이터로</th><th>비고</th></tr></thead><tbody>
@@ -1137,26 +1217,9 @@ out[<span class="st">'T'</span>]   = (df[<span class="st">'시각'</span>] - df[
 </tbody></table></div>
 <div class="keymsg"><span class="k">경계선</span><div>코드와 방법은 <b>위쪽에서 다 끝난다</b>. 사내로 넘길 것은 <b>아래 두 줄</b>뿐이다.</div></div></div>
 </section>
-<section class="slide" data-title="정규화 전에 잡을 것">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>선행</div>
-  <h2 class="s-title sm">표준편차 19.4 와 1.9 — 화씨 48행의 값</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="shot">
-      <div class="sbar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">cell_process.csv &mdash; 2,400행</span></div>
-      <img style="max-height:238px" src="assets/anomaly-cases.png" alt="센서 단선 · 값 고착 · 단위 혼입 · 레벨 시프트 · 시각 역행 다섯 가지">
-    </div>
-    <div class="ctable" style="margin-top:10px"><table><thead><tr><th>건조 ZONE1 온도</th><th>평균</th><th>표준편차</th><th>z-score 를 씌우면</th></tr></thead><tbody>
-      <tr><td class="hl">화씨 48행을 그대로 두면</td><td class="hl">134.2</td><td class="hl">19.4</td><td class="hl">모든 값이 열 배로 눌린다</td></tr>
-      <tr><td>되돌리고 나면</td><td>131.4</td><td>1.9</td><td>제 폭으로 나온다</td></tr>
-    </tbody></table></div>
-    <div class="keymsg"><span class="k">순서</span><div>반출본은 <b>손본 표에서</b> 만든다. 오염된 값으로 평균과 표준편차를 구하면 <b>반출본 전체가 어긋난다</b>.</div></div>
-  </div>
-</section>
 <section class="slide" data-title="그림과 에러">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>샌다</div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>샌다</div>
   <h2 class="s-title sm">관리도 한 장에 찍히는 UCL 과 눈금</h2>
   <div class="rule"></div>
   <div class="body"><div class="twopane">
@@ -1171,7 +1234,7 @@ out[<span class="st">'T'</span>]   = (df[<span class="st">'시각'</span>] - df[
 </section>
 <section class="slide" data-title="변환 규칙표">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>시작점</div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>시작점</div>
   <h2 class="s-title sm">컬럼별 변환 규칙표</h2>
   <div class="rule"></div>
   <div class="body"><div class="ctable"><table><thead><tr><th>원본명</th><th>익명명</th><th>변환식</th><th>파라미터 보관</th></tr></thead><tbody>
@@ -1188,7 +1251,7 @@ out[<span class="st">'T'</span>]   = (df[<span class="st">'시각'</span>] - df[
 </section>
 <section class="slide" data-title="법으로 걸리는 자리">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>법</div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>법</div>
   <h2 class="s-title sm">국가핵심기술과 국외 유출</h2>
   <div class="rule"></div>
   <div class="body"><div class="vlist">
@@ -1201,14 +1264,14 @@ out[<span class="st">'T'</span>]   = (df[<span class="st">'시각'</span>] - df[
 <div class="keymsg"><span class="k">순서</span><div>기술로 막는 것이 먼저가 아니다. <b>무엇이 나가도 되는지부터</b> 확인받는다.</div></div></div>
 </section>
 <section class="slide section" data-title="[섹션] 원본 없이 코드 받기">
-  <div class="ghost">06</div>
-  <div class="seyebrow">CHAPTER 06</div>
+  <div class="ghost">07</div>
+  <div class="seyebrow">CHAPTER 07</div>
   <h2>원본 없이 코드 받기</h2>
   <div class="agenda"><span>유출</span><span>스키마</span><span>가짜 표본</span></div>
 </section>
 <section class="slide" data-title="부록이 푸는 문제">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>문제</div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>문제</div>
   <h2 class="s-title">엑셀 1,412건과 반출 금지</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1219,7 +1282,7 @@ out[<span class="st">'T'</span>]   = (df[<span class="st">'시각'</span>] - df[
 </section>
 <section class="slide" data-title="스키마와 값">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>기준</div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>기준</div>
   <h2 class="s-title">스키마와 값</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1229,7 +1292,7 @@ out[<span class="st">'T'</span>]   = (df[<span class="st">'시각'</span>] - df[
 </section>
 <section class="slide" data-title="info() 와 describe()">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>코드</div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>코드</div>
   <h2 class="s-title">info() · describe() 의 출력</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1250,116 +1313,30 @@ df.isna().sum()</code></pre></div></div>
 </section>
 <section class="slide" data-title="Codex 에 넣는 프롬프트">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>프롬프트</div>
-  <h2 class="s-title">역할 · 데이터 · 할 일 · 형식</h2>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>프롬프트</div>
+  <h2 class="s-title">끝난 처리와 남은 처리</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">네 칸으로 적는다</span></div><pre><code><span class='cm'># 역할</span>
 너는 공정 데이터로 불량을 예측하는 코드를 쓰는 사람이다.
 
-<span class='cm'># 데이터 (값은 못 준다. 모양만 준다)</span>
-행 1412 · 열 11. 목표는 양품여부 (1 양품 · 0 불량, 불량 265건)
-소성온도 float 결측0 / 입도 float 결측112 / 수분율 float 결측73
-성형압력 float 결측0 범위 15.9~999.0 / 설비호기 문자 A~D
+<span class='cm'># 데이터 — 값은 못 준다. 반출본의 모양만 준다</span>
+행 2385 · 열 12. 목표는 OK (1 양품 · 0 불량, 불량 311건)
+FEAT_01 float 결측40 범위 -2.41~1.86
+FEAT_02 float 결측60 범위 -3.02~2.98
+CAT1_0..3 · CAT2_0..1 int 0/1
 
-<span class='cm'># 할 일</span>
-전처리하고 모델을 학습해 불량을 잡는 코드를 쓴다.
+<span class='cm'># 이미 끝난 것 — 다시 하지 마라</span>
+이상치 · 결측 · 단위 혼입은 사내에서 잡았다.
+가명처리 · 정규화 · 원핫도 끝났다.
+
+<span class='cm'># 남은 것 — 이것만 해라</span>
+학습과 검증 분할 · 모델 둘 비교 · 놓친 불량 세기
 
 <span class='cm'># 형식</span>
 바로 돌아가는 파이썬 코드로 준다. 데이터를 출력하는 줄은 넣지 마라.</code></pre></div>
-<div class="vlist"><div class="v"><span class="b">&#9733;</span><div><b>「값은 못 준다」를 먼저 적는다.</b> 안 적으면 <code>df.head()</code> 를 찍는 코드를 준다.</div></div><div class="v"><span class="b">&rarr;</span><div>성형압력 범위에 <b>999</b> 가 있다고 알려 주면 이상치 처리를 먼저 넣어 준다.</div></div></div>
+<div class="vlist"><div class="v"><span class="b">&#9733;</span><div><b>「이미 끝난 것」을 안 적으면</b> 정규화와 인코딩을 <b>한 번 더</b> 하는 코드가 온다.</div></div><div class="v"><span class="b">&rarr;</span><div><b>「값은 못 준다」</b>도 적는다. 안 적으면 <code>df.head()</code> 를 찍는 코드를 준다.</div></div></div>
     <div class="keymsg"><span class="k">요령</span><div>데이터를 못 준다는 것을 <b>제약이 아니라 조건으로</b> 적는다. 그러면 그 조건에 맞는 코드가 온다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="처리까지 적어 주는 프롬프트">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>프롬프트</div>
-  <h2 class="s-title sm">끝난 처리와 남은 처리를 갈라 적은 프롬프트</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">반출본 스키마와 함께 붙인다</span></div><pre><code><span class="cm"># 역할</span>
-너는 공정 데이터로 불량을 예측하는 코드를 쓰는 사람이다.
-
-<span class="cm"># 데이터 — 값은 못 준다. 반출본의 모양만 준다</span>
-행 2385 · 열 9. 목표는 OK (1 양품 · 0 불량, 불량 311건)
-TEMP_D2 float 결측40 범위 -2.41~1.86   <span class="cm"># 스펙 정규화 끝남</span>
-PRES_B1 float 결측60 범위 -3.02~2.98   <span class="cm"># z-score 끝남</span>
-MC_1..MC_4 int 0/1                     <span class="cm"># 원핫 끝남</span>
-LOT int 0~59 / T float 0~119.9         <span class="cm"># 재번호 · 상대시간 끝남</span>
-
-<span class="cm"># 이미 끝난 것 — 다시 하지 마라</span>
-컬럼 가명처리 · 정규화 · 원핫 · 재번호 · 상대시간
-
-<span class="cm"># 남은 것 — 이것만 해라</span>
-결측 처리 · 분할 · 모델 둘 비교 · 놓친 불량 세기
-
-<span class="cm"># 형식</span>
-바로 돌아가는 파이썬 코드로 준다. 데이터를 출력하는 줄은 넣지 마라.</code></pre></div>
-<div class="vlist">
-  <div class="v"><span class="b">&#9733;</span><div><b>「이미 끝난 것」을 안 적으면</b> 정규화와 인코딩을 한 번 더 하는 코드가 온다.</div></div>
-</div>
-<div class="keymsg"><span class="k">요령</span><div>반출본의 <b>스키마를 그대로 붙인다</b>. 열 이름과 범위만 있으면 코드를 짜기에 충분하다.</div></div></div>
-</section>
-<section class="slide section" data-title="[섹션] 전처리">
-  <div class="ghost">07</div>
-  <div class="seyebrow">CHAPTER 07</div>
-  <h2>전처리</h2>
-  <div class="agenda"><span>결측</span><span>이상치</span><span>글자 열</span><span>누수</span></div>
-</section>
-<section class="slide" data-title="전처리 순서">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>순서</div>
-  <h2 class="s-title">읽기 → 이상치 → 결측 → 인코딩 → 분할</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="plot"><svg viewBox="0 0 1116 218"><rect x="14" y="30" width="200" height="116" rx="9" fill="#fff" stroke="#3A1FC9" stroke-width="1.6"/><rect x="14" y="30" width="200" height="26" rx="9" fill="#3A1FC9" stroke="none" stroke-width="1"/><rect x="14" y="44" width="200" height="12" rx="0" fill="#3A1FC9" stroke="none" stroke-width="1"/><text x="114" y="48" font-size="12" fill="#fff" font-weight="800" text-anchor="middle">읽기</text><text x="114" y="84" font-size="22" fill="#3A1FC9" font-weight="800" text-anchor="middle">1</text><text x="114" y="116" font-size="9.6" fill="#8E8AAC" text-anchor="middle">천 단위 쉼표</text><text x="114" y="132" font-size="9.6" fill="#8E8AAC" text-anchor="middle">N/A 를 제대로 읽는다</text><path d="M218 88 h6" stroke="#8E8AAC" stroke-width="2"/><path d="M232 88 l-7 -5 v10 z" fill="#8E8AAC"/><rect x="236" y="30" width="200" height="116" rx="9" fill="#fff" stroke="#E8722A" stroke-width="1.6"/><rect x="236" y="30" width="200" height="26" rx="9" fill="#E8722A" stroke="none" stroke-width="1"/><rect x="236" y="44" width="200" height="12" rx="0" fill="#E8722A" stroke="none" stroke-width="1"/><text x="336" y="48" font-size="12" fill="#fff" font-weight="800" text-anchor="middle">이상치</text><text x="336" y="84" font-size="22" fill="#E8722A" font-weight="800" text-anchor="middle">2</text><text x="336" y="116" font-size="9.6" fill="#8E8AAC" text-anchor="middle">999 같은 값을 결측으로 돌린다</text><text x="336" y="132" font-size="9.6" fill="#8E8AAC" text-anchor="middle"></text><path d="M440 88 h6" stroke="#8E8AAC" stroke-width="2"/><path d="M454 88 l-7 -5 v10 z" fill="#8E8AAC"/><rect x="458" y="30" width="200" height="116" rx="9" fill="#fff" stroke="#0E8C9E" stroke-width="1.6"/><rect x="458" y="30" width="200" height="26" rx="9" fill="#0E8C9E" stroke="none" stroke-width="1"/><rect x="458" y="44" width="200" height="12" rx="0" fill="#0E8C9E" stroke="none" stroke-width="1"/><text x="558" y="48" font-size="12" fill="#fff" font-weight="800" text-anchor="middle">결측</text><text x="558" y="84" font-size="22" fill="#0E8C9E" font-weight="800" text-anchor="middle">3</text><text x="558" y="116" font-size="9.6" fill="#8E8AAC" text-anchor="middle">중앙값으로 메우거나 행을 버린다</text><text x="558" y="132" font-size="9.6" fill="#8E8AAC" text-anchor="middle"></text><path d="M662 88 h6" stroke="#8E8AAC" stroke-width="2"/><path d="M676 88 l-7 -5 v10 z" fill="#8E8AAC"/><rect x="680" y="30" width="200" height="116" rx="9" fill="#fff" stroke="#1E9E6A" stroke-width="1.6"/><rect x="680" y="30" width="200" height="26" rx="9" fill="#1E9E6A" stroke="none" stroke-width="1"/><rect x="680" y="44" width="200" height="12" rx="0" fill="#1E9E6A" stroke="none" stroke-width="1"/><text x="780" y="48" font-size="12" fill="#fff" font-weight="800" text-anchor="middle">글자 열</text><text x="780" y="84" font-size="22" fill="#1E9E6A" font-weight="800" text-anchor="middle">4</text><text x="780" y="116" font-size="9.6" fill="#8E8AAC" text-anchor="middle">설비호기</text><text x="780" y="132" font-size="9.6" fill="#8E8AAC" text-anchor="middle">교대조를 숫자로 편다</text><path d="M884 88 h6" stroke="#8E8AAC" stroke-width="2"/><path d="M898 88 l-7 -5 v10 z" fill="#8E8AAC"/><rect x="902" y="30" width="200" height="116" rx="9" fill="#fff" stroke="#E8537A" stroke-width="1.6"/><rect x="902" y="30" width="200" height="26" rx="9" fill="#E8537A" stroke="none" stroke-width="1"/><rect x="902" y="44" width="200" height="12" rx="0" fill="#E8537A" stroke="none" stroke-width="1"/><text x="1002" y="48" font-size="12" fill="#fff" font-weight="800" text-anchor="middle">나누기</text><text x="1002" y="84" font-size="22" fill="#E8537A" font-weight="800" text-anchor="middle">5</text><text x="1002" y="116" font-size="9.6" fill="#8E8AAC" text-anchor="middle">학습과 검증을 먼저 가른다</text><text x="1002" y="132" font-size="9.6" fill="#8E8AAC" text-anchor="middle"></text><rect x="14" y="164" width="1088" height="46" rx="8" fill="#FDEFF3" stroke="#F6C7D5" stroke-width="1"/><text x="34" y="194" font-size="11" fill="#E8537A" font-weight="800">✕  나누기를 마지막에 하면 검증 데이터의 정보가 전처리에 섞인다 — 중앙값을 전체로 구하면 안 된다</text></svg></div>
-    <div class="keymsg"><span class="k">순서</span><div>읽고 · 고치고 · 메우고 · 펴고 · 나눈다. <b>나누기를 마지막에 두면 검증 데이터가 섞인다</b>.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="이상치">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>실측</div>
-  <h2 class="s-title">성형압력 999 가 18건</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="shot"><div class="sbar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">성형압력 분포 · 배치 1,412건</span></div><img src="assets/outlier.png" alt="성형압력 이상치"></div>
-<div class="vlist"><div class="v"><span class="b">&rarr;</span><div>999 를 그대로 두면 <b>평균이 36.5</b> 로 잡힌다. 빼면 실제 최대가 <b>31.4</b> 다.</div></div><div class="v"><span class="b">&#9733;</span><div>센서가 못 읽었을 때 넣는 값이다. 숫자로 보이지만 <b>결측이다</b>.</div></div></div>
-    <div class="keymsg"><span class="k">함정</span><div>평균 · 표준편차가 이상하면 <b>먼저 히스토그램을 그린다</b>. 숫자만 보면 못 찾는다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="결측">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-
-    <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>결측</div>
-    <h2 class="s-title sm">비어 있는 칸 185 개 &mdash; 입도와 수분율</h2>
-    <div class="rule"></div>
-    <div class="body">
-    <div class="shot">
-      <div class="sbar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">batch_quality.csv &mdash; 1,412행</span></div>
-      <img style="max-height:236px" src="assets/missing-cases.png" alt="열별 결측 건수, 행을 버릴 때 빠지는 양, 결측이 흩어진 위치">
-    </div>
-    <div class="ctable" style="margin-top:10px"><table><thead><tr><th>방법</th><th>언제 쓰나</th><th>이 데이터에서는</th></tr></thead><tbody><tr><td>행을 버린다</td><td>결측이 적고 데이터가 많을 때</td><td>173행이 빠진다 &mdash; 12.3%</td></tr><tr><td>중앙값으로 메운다</td><td>값이 한쪽으로 쏠렸을 때</td><td>입도 12.0 &middot; 수분율 1.2</td></tr><tr><td>따로 표시한다</td><td>결측 자체가 뜻이 있을 때</td><td>「측정 안 함」 열을 하나 더</td></tr></tbody></table></div>
-    <div class="keymsg"><span class="k">기준</span><div>12.3%를 버릴 수 있으면 버리고, 아까우면 메운다. <b>메웠다는 사실을 기록에 남긴다</b>.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="분포와 산점도">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>실측</div>
-  <h2 class="s-title">소성온도 분포와 불순물 산점도</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="shot"><div class="sbar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">공정 데이터 1,412건</span></div><img src="assets/eda.png" alt="소성온도와 불량"></div>
-<div class="vlist"><div class="v"><span class="b">&rarr;</span><div>소성온도가 <b>낮거나 높으면</b> 불량이 는다. 가운데가 안전하다.</div></div><div class="v"><span class="b">&rarr;</span><div>두 값을 같이 놓으면 <b>불량이 몰린 자리</b>가 보인다. 한 열씩 보면 안 보인다.</div></div></div>
-    <div class="keymsg"><span class="k">순서</span><div>모델을 만들기 전에 그린다. <b>그림에서 안 보이는 것은 모델도 못 찾는다</b>.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="데이터 누수">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>함정</div>
-  <h2 class="s-title">정확도 1.000 이라는 경고</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="plot"><svg viewBox="0 0 1116 216"><text x="14" y="18" font-size="11" fill="#8E8AAC" font-weight="700">소성 한 배치에서 값이 나오는 순서</text><rect x="30" y="34" width="190" height="60" rx="8" fill="#fff" stroke="#1E9E6A" stroke-width="1.5"/><text x="125" y="58" font-size="12" fill="#1E9E6A" font-weight="800" text-anchor="middle">투입 전</text><text x="125" y="80" font-size="9.2" fill="#8E8AAC" text-anchor="middle">설비호기 · 교대조</text><rect x="288" y="34" width="250" height="60" rx="8" fill="#fff" stroke="#1E9E6A" stroke-width="1.5"/><text x="413" y="58" font-size="12" fill="#1E9E6A" font-weight="800" text-anchor="middle">소성 중</text><text x="413" y="80" font-size="9.2" fill="#8E8AAC" text-anchor="middle">소성온도 · 소성시간 · 입도 · 수분율 · 불순물 · 성형압력</text><rect x="700" y="34" width="190" height="60" rx="8" fill="#fff" stroke="#E8537A" stroke-width="1.5"/><text x="795" y="58" font-size="12" fill="#E8537A" font-weight="800" text-anchor="middle">소성 뒤</text><text x="795" y="80" font-size="9.2" fill="#8E8AAC" text-anchor="middle">방전용량</text><rect x="900" y="34" width="190" height="60" rx="8" fill="#fff" stroke="#3A1FC9" stroke-width="1.5"/><text x="995" y="58" font-size="12" fill="#3A1FC9" font-weight="800" text-anchor="middle">검사</text><text x="995" y="80" font-size="9.2" fill="#8E8AAC" text-anchor="middle">양품여부</text><path d="M14 110 h1088" stroke="#DCD6F0" stroke-width="1.6"/><text x="560" y="128" font-size="11" fill="#3A1FC9" font-weight="800" text-anchor="middle">예측하고 싶은 시점 — 소성이 끝나기 전</text><path d="M690 96 v24" stroke="#E8537A" stroke-width="2" stroke-dasharray="4 4"/><rect x="14" y="148" width="1088" height="60" rx="8" fill="#FDEFF3" stroke="#F6C7D5" stroke-width="1"/><text x="34" y="174" font-size="11.5" fill="#E8537A" font-weight="800">✕  방전용량을 넣으면 정확도가 1.000 이 나온다 — 소성이 끝나야 재는 값이다</text><text x="34" y="196" font-size="10" fill="#8E8AAC">양품여부 = 방전용량 ≥ 168 이라 답을 그대로 넣은 것이다. 조기 예측에는 쓸 수 없다</text></svg></div>
-    <div class="keymsg"><span class="k">함정</span><div><b>결과가 너무 좋으면 먼저 의심한다.</b> 예측 시점보다 뒤에 나오는 열이 섞였는지 본다.</div></div>
   </div>
 </section>
 <section class="slide section" data-title="[섹션] 예측과 검증">
@@ -1387,10 +1364,10 @@ LOT int 0~59 / T float 0~119.9         <span class="cm"># 재번호 · 상대시
 <section class="slide" data-title="Codex 에 맡기는 흐름">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>흐름</div>
-  <h2 class="s-title sm">손으로 넷, 맡기는 것은 하나</h2>
+  <h2 class="s-title sm">손으로 다섯, 맡기는 것은 하나</h2>
   <div class="rule"></div>
-  <div class="body"><div class="plot"><svg viewBox="0 0 1116 200"><rect x="14" y="34" width="168" height="96" rx="13" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.4"/><circle cx="40" cy="60" r="11" fill="#3A1FC9"/><text x="40" y="64" font-size="11.5" font-weight="800" fill="#fff" text-anchor="middle">1</text><text x="58" y="65" font-size="13.5" font-weight="800" fill="#16142B">열을 나눈다</text><text x="32" y="92" font-size="10.8" fill="#8E8AAC">연속 · 순서 · 범주 · ID · </text><text x="32" y="108" font-size="10.8" fill="#8E8AAC">시각</text><rect x="196" y="34" width="168" height="96" rx="13" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.4"/><circle cx="222" cy="60" r="11" fill="#3A1FC9"/><text x="222" y="64" font-size="11.5" font-weight="800" fill="#fff" text-anchor="middle">2</text><text x="240" y="65" font-size="13.5" font-weight="800" fill="#16142B">규칙표</text><text x="214" y="92" font-size="10.8" fill="#8E8AAC">열마다 익명명과 변환식</text><rect x="378" y="34" width="168" height="96" rx="13" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.4"/><circle cx="404" cy="60" r="11" fill="#3A1FC9"/><text x="404" y="64" font-size="11.5" font-weight="800" fill="#fff" text-anchor="middle">3</text><text x="422" y="65" font-size="13.5" font-weight="800" fill="#16142B">반출본</text><text x="396" y="92" font-size="10.8" fill="#8E8AAC">값을 옮기고 이름을 바꾼다</text><rect x="560" y="34" width="168" height="96" rx="13" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.4"/><circle cx="586" cy="60" r="11" fill="#3A1FC9"/><text x="586" y="64" font-size="11.5" font-weight="800" fill="#fff" text-anchor="middle">4</text><text x="604" y="65" font-size="13.5" font-weight="800" fill="#16142B">프롬프트</text><text x="578" y="92" font-size="10.8" fill="#8E8AAC">스키마 + 이미 끝난 것</text><rect x="742" y="34" width="168" height="96" rx="13" fill="#EFEAFF" stroke="#DCD6F0" stroke-width="1.4"/><circle cx="768" cy="60" r="11" fill="#3A1FC9"/><text x="768" y="64" font-size="11.5" font-weight="800" fill="#fff" text-anchor="middle">5</text><text x="786" y="65" font-size="13.5" font-weight="800" fill="#16142B">Codex</text><text x="760" y="92" font-size="10.8" fill="#8E8AAC">코드를 받는다</text><rect x="924" y="34" width="168" height="96" rx="13" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.4"/><circle cx="950" cy="60" r="11" fill="#3A1FC9"/><text x="950" y="64" font-size="11.5" font-weight="800" fill="#fff" text-anchor="middle">6</text><text x="968" y="65" font-size="13.5" font-weight="800" fill="#16142B">사내 실행</text><text x="942" y="92" font-size="10.8" fill="#8E8AAC">원본으로 돌린다</text><defs><marker id="f6" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#3A1FC9"/></marker></defs><path d="M184 82 L192 82" stroke="#3A1FC9" stroke-width="1.6" marker-end="url(#f6)"/><path d="M366 82 L374 82" stroke="#3A1FC9" stroke-width="1.6" marker-end="url(#f6)"/><path d="M548 82 L556 82" stroke="#3A1FC9" stroke-width="1.6" marker-end="url(#f6)"/><path d="M730 82 L738 82" stroke="#3A1FC9" stroke-width="1.6" marker-end="url(#f6)"/><path d="M912 82 L920 82" stroke="#3A1FC9" stroke-width="1.6" marker-end="url(#f6)"/><rect x="14" y="150" width="622" height="38" rx="10" fill="#FDF1F5" stroke="#F3C6D6" stroke-width="1.2"/><text x="34" y="174" font-size="12.5" font-weight="700" fill="#B01A50">사람이 손으로 &mdash; 1 부터 4 까지</text><rect x="650" y="150" width="436" height="38" rx="10" fill="#EFF9F4" stroke="#BCE3D2" stroke-width="1.2"/><text x="670" y="174" font-size="12.5" font-weight="700" fill="#0B6B4F">Codex 가 &mdash; 5 · 실행은 다시 사내에서</text></svg></div><div class="vlist">
-  <div class="v"><span class="b">&rarr;</span><div>가명처리 · 정규화 · 인코딩은 <b>사람이 먼저 끝낸다</b>. Codex 는 그 다음부터다.</div></div>
+  <div class="body"><div class="plot"><svg viewBox="0 0 1116 200"><rect x="12" y="34" width="144" height="96" rx="12" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.4"/><circle cx="36" cy="60" r="10.5" fill="#3A1FC9"/><text x="36" y="64" font-size="11" font-weight="800" fill="#fff" text-anchor="middle">1</text><text x="53" y="65" font-size="12.5" font-weight="800" fill="#16142B">원본 손보기</text><text x="28" y="92" font-size="10.2" fill="#8E8AAC">이상치 · 결측</text><text x="28" y="107" font-size="10.2" fill="#8E8AAC">· 단위</text><rect x="167" y="34" width="144" height="96" rx="12" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.4"/><circle cx="191" cy="60" r="10.5" fill="#3A1FC9"/><text x="191" y="64" font-size="11" font-weight="800" fill="#fff" text-anchor="middle">2</text><text x="208" y="65" font-size="12.5" font-weight="800" fill="#16142B">열 나누기</text><text x="183" y="92" font-size="10.2" fill="#8E8AAC">연속 · 범주</text><text x="183" y="107" font-size="10.2" fill="#8E8AAC">· ID · 시각</text><rect x="322" y="34" width="144" height="96" rx="12" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.4"/><circle cx="346" cy="60" r="10.5" fill="#3A1FC9"/><text x="346" y="64" font-size="11" font-weight="800" fill="#fff" text-anchor="middle">3</text><text x="363" y="65" font-size="12.5" font-weight="800" fill="#16142B">규칙표</text><text x="338" y="92" font-size="10.2" fill="#8E8AAC">익명명과 변환식</text><rect x="477" y="34" width="144" height="96" rx="12" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.4"/><circle cx="501" cy="60" r="10.5" fill="#3A1FC9"/><text x="501" y="64" font-size="11" font-weight="800" fill="#fff" text-anchor="middle">4</text><text x="518" y="65" font-size="12.5" font-weight="800" fill="#16142B">반출본</text><text x="493" y="92" font-size="10.2" fill="#8E8AAC">값을 옮기고 이름을</text><text x="493" y="107" font-size="10.2" fill="#8E8AAC">바꾼다</text><rect x="632" y="34" width="144" height="96" rx="12" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.4"/><circle cx="656" cy="60" r="10.5" fill="#3A1FC9"/><text x="656" y="64" font-size="11" font-weight="800" fill="#fff" text-anchor="middle">5</text><text x="673" y="65" font-size="12.5" font-weight="800" fill="#16142B">프롬프트</text><text x="648" y="92" font-size="10.2" fill="#8E8AAC">스키마 + 끝난</text><text x="648" y="107" font-size="10.2" fill="#8E8AAC">처리</text><rect x="787" y="34" width="144" height="96" rx="12" fill="#EFEAFF" stroke="#DCD6F0" stroke-width="1.4"/><circle cx="811" cy="60" r="10.5" fill="#3A1FC9"/><text x="811" y="64" font-size="11" font-weight="800" fill="#fff" text-anchor="middle">6</text><text x="828" y="65" font-size="12.5" font-weight="800" fill="#16142B">Codex</text><text x="803" y="92" font-size="10.2" fill="#8E8AAC">코드를 받는다</text><rect x="942" y="34" width="144" height="96" rx="12" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.4"/><circle cx="966" cy="60" r="10.5" fill="#3A1FC9"/><text x="966" y="64" font-size="11" font-weight="800" fill="#fff" text-anchor="middle">7</text><text x="983" y="65" font-size="12.5" font-weight="800" fill="#16142B">사내 실행</text><text x="958" y="92" font-size="10.2" fill="#8E8AAC">원본으로 돌린다</text><defs><marker id="f7" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#3A1FC9"/></marker></defs><path d="M158 82 L163 82" stroke="#3A1FC9" stroke-width="1.5" marker-end="url(#f7)"/><path d="M313 82 L318 82" stroke="#3A1FC9" stroke-width="1.5" marker-end="url(#f7)"/><path d="M468 82 L473 82" stroke="#3A1FC9" stroke-width="1.5" marker-end="url(#f7)"/><path d="M623 82 L628 82" stroke="#3A1FC9" stroke-width="1.5" marker-end="url(#f7)"/><path d="M778 82 L783 82" stroke="#3A1FC9" stroke-width="1.5" marker-end="url(#f7)"/><path d="M933 82 L938 82" stroke="#3A1FC9" stroke-width="1.5" marker-end="url(#f7)"/><rect x="12" y="150" width="777" height="38" rx="10" fill="#FDF1F5" stroke="#F3C6D6" stroke-width="1.2"/><text x="32" y="174" font-size="12.5" font-weight="700" fill="#B01A50">사내에서 사람이 &mdash; 1 부터 5 까지</text><rect x="800" y="150" width="304" height="38" rx="10" fill="#EFF9F4" stroke="#BCE3D2" stroke-width="1.2"/><text x="820" y="174" font-size="12.5" font-weight="700" fill="#0B6B4F">Codex 는 6 · 실행은 다시 사내</text></svg></div><div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div><b>이상치와 결측을 먼저 잡고</b> 가명처리 · 정규화를 한다. Codex 는 그 다음이다.</div></div>
   <div class="v"><span class="b">&#9733;</span><div>받은 코드는 <b>사내에서 원본으로</b> 돌린다. 학습된 모델도 그림도 밖으로 안 나간다.</div></div>
 </div>
 <div class="keymsg"><span class="k">한 줄</span><div>나가는 것은 <b>질문</b>이고, 돌아오는 것은 <b>코드</b>다. 데이터는 자리를 안 옮긴다.</div></div></div>
