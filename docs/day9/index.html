@@ -1046,7 +1046,7 @@ NMP_투입비          &rarr;  <span class="st">RATIO_M2</span>
   <tr><td>연속형 · 스펙 있음</td><td>건조 ZONE2 온도</td><td>(x &minus; target) / tol</td><td>관리도 · Cpk 가 그대로 나온다</td></tr>
   <tr><td>연속형 · 스펙 없음</td><td>프레스 압력</td><td>z-score</td><td>상관 · 회귀가 그대로 나온다</td></tr>
   <tr><td>연속형 · 한쪽 꼬리</td><td>불순물 ppm</td><td>log 를 씌운 뒤 z-score</td><td>큰 값 몇 개에 평균이 끌려간다</td></tr>
-  <tr><td>순서형</td><td>등급 A &gt; B &gt; C</td><td>0 · 1 · 2 로 매긴다</td><td>순서 자체가 뜻이다</td></tr>
+  <tr><td>순서형</td><td>등급 A &gt; B &gt; C</td><td>0 · 1 · 2 로 매긴다</td><td>A 가 B 보다 낫다는 관계가 실제로 있다</td></tr>
   <tr><td class="hl">범주형 · 몇 개뿐</td><td class="hl">라인 A · B</td><td class="hl">원핫 인코딩</td><td class="hl">크기 관계가 없다</td></tr>
   <tr><td>범주형 · 종류가 많음</td><td>설비 스물네 가지</td><td>재번호 + 빈도로 바꾸기</td><td>원핫으로 하면 열이 폭발한다</td></tr>
   <tr><td>식별자</td><td>로트번호</td><td><code>factorize</code> 로 재번호</td><td>순번에서 생산량이 역산된다</td></tr>
