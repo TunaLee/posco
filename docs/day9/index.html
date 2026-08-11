@@ -611,10 +611,14 @@ messages = [{<span class="st">"role"</span>: <span class="st">"system"</span>, <
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>실전</div>
   <h2 class="s-title sm">도구를 두 번 부른 로그</h2>
   <div class="rule"></div>
-  <div class="body"><div class="twocol w2"><div><div class="vlist"><div class="v"><span class="b">→</span><div>검색하고 → 그 결과로 또 행동</div></div><div class="v"><span class="b">→</span><div>루프가 <b>여러 번</b> 돈다</div></div><div class="v"><span class="b">★</span><div>로그 <b>[LLM → 도구]</b>가 몇 번 찍히는지 보라</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">multistep.log</span></div><pre><code>Q: 보고서 할일 추가하고 목록 보여줘
-  [LLM → 도구] add_task(...)
-  [LLM → 도구] list_tasks(...)
-A: 추가했고, 현재 3건입니다.</code></pre></div></div></div>
+  <div class="body"><div class="twocol w2"><div><div class="vlist"><div class="v"><span class="b">→</span><div>검색하고 → 그 결과로 또 행동</div></div><div class="v"><span class="b">→</span><div>루프가 <b>여러 번</b> 돈다</div></div><div class="v"><span class="b">★</span><div>로그 <b>[LLM → 도구]</b>가 몇 번 찍히는지 보라</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">실제 로그</span></div><pre><code>Q: 3호기 어제 불량률은 몇 퍼센트야?
+
+  [도구] machine_info({<span class="st">'machine'</span>: <span class="st">'3호기'</span>})
+         &rarr; 3호기: B라인, 생산 1530개, 불량 28개
+  [도구] calc({<span class="st">'expr'</span>: <span class="st">'28/1530*100'</span>})
+         &rarr; 1.830065359477124
+
+A: 3호기 어제 불량률은 <span class="st">1.83</span> 퍼센트입니다.</code></pre></div></div></div>
 </section>
 <section class="slide" data-title="병렬 호출 vs 순차 의존">
   <div class="coord"><b></b> / <span class="tot"></span></div>
@@ -625,11 +629,11 @@ A: 추가했고, 현재 3건입니다.</code></pre></div></div></div>
     <div class="card"><span class="n">루프 1회</span><h3>병렬 호출</h3><p>“추가하고 목록 보여줘” — 도구 두 개를 <b>한 번에</b> 부르면 끝. 순차 판단이 <b>아니다</b>.</p></div>
     <div class="card" style="border-color:#CFEDE7;background:#F3FBF9"><span class="n">루프 2회 이상</span><h3>순차 의존</h3><p>“<b>마지막</b> 할 일의 우선순위를 높음으로” — <b>id를 알아낸 뒤</b>라야 다음 도구를 부를 수 있다.</p></div>
   </div>
-  <div class="code sm" style="margin-top:16px"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">trace</span></div><pre><code>  [루프 <span class="nm">1</span>] list_tasks({})              <span class="cm"># 여기서 id를 알아낸다</span>
-  [루프 <span class="nm">2</span>] set_priority({<span class="st">'task_id'</span>: <span class="nm">3</span>, ...})   <span class="cm"># ← 앞 결과가 있어야 가능</span>
+  <div class="code sm" style="margin-top:16px"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">trace</span></div><pre><code>  [루프 <span class="nm">1</span>] machine_info({<span class="st">'machine'</span>: <span class="st">'3호기'</span>})   <span class="cm"># 여기서 숫자를 얻는다</span>
+  [루프 <span class="nm">2</span>] calc({<span class="st">'expr'</span>: <span class="st">'28/1530*100'</span>})       <span class="cm"># &larr; 앞 결과가 있어야 가능</span>
 
-→ 도구를 부른 루프 <span class="nm">2</span>회
-<span class="st">✅ 진짜 멀티스텝 — 앞 결과를 보고 '다음' 도구를 정했다</span></code></pre></div>
+&rarr; 도구를 부른 루프 <span class="nm">2</span>회
+<span class="st">진짜 멀티스텝 &mdash; 앞 결과를 보고 '다음' 도구를 정했다</span></code></pre></div>
   <div class="keymsg" style="margin-top:14px"><span class="k">확인법</span><div>도구를 부른 루프가 <b>2회 이상</b>이면 멀티스텝이다. 로그를 세면 바로 나온다.</div></div></div>
 </section>
 <section class="slide" data-title="계획 먼저 (plan-and-execute)">
@@ -980,6 +984,24 @@ DRY_Z2_T = <span class="st">-0.32</span>          <span class="cm"># (x - target
 </tbody></table></div>
 <div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></div><div class="ct"><h4>안 되는 방법</h4><p>단위만 지우거나 임의 배수를 곱하는 것. 파라미터별 전형 범위가 문헌에 다 있어 <b>도메인 지식으로 역산된다</b> &mdash; 「밀도 3.5」면 양극 프레스 후 값인 것이 바로 보인다.</p></div></div>
 <div class="keymsg"><span class="k">기준</span><div>회귀까지 갈 것이면 <b>앞의 둘</b>, 순위만 보면 되면 <b>분위 변환</b>.</div></div></div>
+</section>
+<section class="slide" data-title="정규화하면 분포가 어떻게 바뀌나">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>모양</div>
+  <h2 class="s-title sm">같은 데이터, 세 가지로 옮긴 모양</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="shot">
+      <div class="sbar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">건조 ZONE2 온도 2,360행 · target 120 · tol ±5</span></div>
+      <img style="max-height:250px" src="assets/normalize-shapes.png" alt="원본과 스펙 정규화 · z-score · 분위 변환의 분포 비교">
+    </div>
+    <div class="ctable" style="margin-top:10px"><table><thead><tr><th>방식</th><th>중심 · 폭</th><th>모양</th><th>이럴 때 쓴다</th></tr></thead><tbody>
+      <tr><td>스펙 정규화</td><td>&minus;0.41 · 0.50</td><td>원본 그대로 · 위치만 이동</td><td>스펙이 있을 때. 관리도 · Cpk 를 그대로 본다</td></tr>
+      <tr><td>z-score</td><td>0.00 · 1.00</td><td>원본 그대로 · 폭까지 맞춤</td><td>스펙을 모를 때. 여러 열을 같이 볼 때</td></tr>
+      <tr><td class="hl">분위 변환</td><td class="hl">0.50 · 0.29</td><td class="hl">평평해진다 &mdash; 모양이 바뀐다</td><td class="hl">순위만 보면 될 때. 회귀에는 못 쓴다</td></tr>
+    </tbody></table></div>
+    <div class="keymsg"><span class="k">차이</span><div>앞의 둘은 <b>눈금만 갈아 끼운다</b>. 분위 변환만 <b>분포 자체를 바꾼다</b>.</div></div>
+  </div>
 </section>
 <section class="slide" data-title="컬럼명 가명처리">
   <div class="coord"><b></b> / <span class="tot"></span></div>
