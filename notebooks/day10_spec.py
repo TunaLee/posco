@@ -16,6 +16,8 @@ CELLS = [
        "| `privacy.txt` | 개인정보 보호법 | 수집 · 이용 · 파기 |\n\n"
        "> 법령은 저작권법 제7조에 따라 보호 대상이 아니라 그대로 쓸 수 있다. 출처는 위키문헌이다."),
 
+    md("어제 쓰던 `build.nvidia.com` 키를 그대로 쓴다. 답을 만들 때와 임베딩을 부를 때 둘 다 쓴다."),
+
     prep("""# 문서 네 개를 받아 온다. 사내에서는 이 자리가 공유 폴더나 문서함이 된다.
 import urllib.request, re, json
 
@@ -31,6 +33,27 @@ for name, fn in FILES.items():
 
     md("네 파일에 **14만 자**가 있다. 이걸 통째로 모델에 넣을 수는 없다.\n"
        "넣을 수 있다 해도, 답과 상관없는 13만 자가 같이 들어가면 **정확도가 떨어진다**."),
+
+    prep("""# 키는 화면에 안 찍히게 받는다
+import getpass
+KEY = getpass.getpass('nvapi- 로 시작하는 키: ')
+
+URL = 'https://integrate.api.nvidia.com/v1/chat/completions'
+MODEL = 'nvidia/llama-3.3-nemotron-super-49b-v1'
+
+def ask(prompt, n=500):
+    body = json.dumps({'model': MODEL, 'max_tokens': n, 'temperature': 0,
+                       'messages': [{'role': 'user', 'content': prompt}]}).encode()
+    req = urllib.request.Request(URL, data=body, headers={
+        'Authorization': 'Bearer ' + KEY,
+        'Content-Type': 'application/json', 'Accept': 'application/json'})
+    for _ in range(2):
+        try:
+            with urllib.request.urlopen(req, timeout=180) as f:
+                return json.load(f)['choices'][0]['message']['content'].strip()
+        except Exception as e:
+            err = str(e)[:80]
+    return '[실패] ' + err"""),
 
     md("## 2. 자르기"),
     md("문서를 찾을 수 있는 크기로 자른다. 법령은 **조문 단위**가 자연스럽다.\n"
@@ -235,7 +258,129 @@ show2('제60조')"""),
     md("**번호·코드·고유명사는 낱말 검색이 이긴다.** 의미로 바꾸는 순간 「제60조」의 60이 흐려진다.\n"
        "그래서 실무에서는 **둘을 같이 돌려 순위를 합친다**. 그것이 내일 다룰 하이브리드 검색이다."),
 
-    md("## 5. 메타데이터로 범위 좁히기"),
+    md("## 5. 더 좋은 모델로 바꿔 보기"),
+    md("여기까지는 **내 노트북 CPU** 에서 도는 작은 모델이었다.\n"
+       "더 큰 모델을 쓰는 길이 둘 있다. 하나는 **API 로 불러 쓰는 것**, 하나는 **GPU 를 켜는 것**이다."),
+
+    md("### 길 하나 — NVIDIA API 임베딩"),
+    md("모델을 안 받고 문장을 보내면 좌표를 돌려준다. 큰 모델을 그대로 쓸 수 있다.\n"
+       "**다만 문장을 보낸다는 것이 곧 문서를 보낸다는 뜻이다.** 이 점은 뒤에서 다시 본다."),
+
+    prep("""# 임베딩도 같은 키로 부른다. 주소만 다르다.
+EMB_URL = 'https://integrate.api.nvidia.com/v1/embeddings'
+
+def api_embed(model, texts, kind='passage'):
+    body = json.dumps({'model': model, 'input': texts, 'input_type': kind,
+                       'encoding_format': 'float', 'truncate': 'END'}).encode()
+    req = urllib.request.Request(EMB_URL, data=body, headers={
+        'Authorization': 'Bearer ' + KEY,
+        'Content-Type': 'application/json', 'Accept': 'application/json'})
+    with urllib.request.urlopen(req, timeout=180) as f:
+        return [d['embedding'] for d in json.load(f)['data']]
+
+def api_index(model):
+    out = []
+    for i in range(0, len(TEXTS), 32):          # 한 번에 서른두 개씩
+        out += api_embed(model, TEXTS[i:i+32])
+    v = np.array(out)
+    return v / np.linalg.norm(v, axis=1, keepdims=True)
+
+print(len(api_embed('nvidia/nv-embedqa-e5-v5', ['시험'], 'query')[0]), '차원')"""),
+
+    prep("""# 순위를 재는 자 — 모델을 바꿔 가며 같은 다섯 질문을 던진다
+def ranks(qvec_fn, mat):
+    out = []
+    for q, need in QS:
+        sim = mat @ qvec_fn(q)
+        out.append(next(r for r, i in enumerate(sim.argsort()[::-1], 1)
+                        if need in CHUNKS[i]['title']))
+    return out
+
+def api_ranks(model):
+    V2 = api_index(model)
+    return ranks(lambda q: np.array(api_embed(model, [q], 'query')[0]) /
+                 np.linalg.norm(api_embed(model, [q], 'query')[0]), V2)"""),
+
+    code("""# 영어 중심 모델 하나와 최신 다국어 모델 하나
+print('%-34s %s' % ('nv-embedqa-e5-v5', api_ranks('nvidia/nv-embedqa-e5-v5')))
+print('%-34s %s' % ('nemotron-3-embed-1b', api_ranks('nvidia/nemotron-3-embed-1b')))"""),
+
+    md("**API 라고 다 좋은 것이 아니다.**\n\n"
+       "| 모델 | 어디서 | 차원 | 다섯 질문의 정답 순위 |\n|---|---|---|---|\n"
+       "| 낱말 (TF-IDF) | 내 노트북 | — | 8 · 1 · 9 · 9 · 8 |\n"
+       "| MiniLM 다국어 | 내 노트북 CPU | 384 | 15 · 48 · 2 · 61 · 1 |\n"
+       "| ko-sroberta 한국어 | 내 노트북 CPU | 768 | **2 · 1 · 1 · 5 · 1** |\n"
+       "| nv-embedqa-e5-v5 | NVIDIA API | 1024 | 82 · 7 · 229 · 28 · 75 |\n"
+       "| nemotron-3-embed-1b | NVIDIA API | 2048 | **2 · 1 · 1 · 11 · 1** |\n\n"
+       "`nv-embedqa-e5-v5` 는 영어 문서에 맞춰진 모델이라 한국어 법령에서 229등까지 밀린다.\n"
+       "**크고 비싸다고 잘 찾는 것이 아니라, 그 언어를 배운 모델이 잘 찾는다.**"),
+
+    md("### 그런데 문서가 밖으로 나간다"),
+    md("API 로 인덱싱하면 **조각 354개가 전부 밖으로 나간다.** 문서 전체를 보낸 것과 같다.\n\n"
+       "| | 내 노트북 모델 | API 모델 |\n|---|---|---|\n"
+       "| 문서가 나가나 | 안 나간다 | **전부 나간다** |\n"
+       "| 처음 준비 | 모델을 받는다 (몇 분) | 없다 |\n"
+       "| 인덱싱 354조각 | 5초 | 25초 |\n"
+       "| 질문 한 번 | 즉시 | 왕복 한 번 |\n"
+       "| 비용 | 없다 | 토큰만큼 |\n\n"
+       "그래서 **사내 문서는 노트북 안에서 임베딩한다.** 공개 문서나 이미 밖에 있는 자료라면 API 가 편하다.\n"
+       "어느 쪽이든 **먼저 정할 것은 문서가 나가도 되느냐**다."),
+
+    Ex(4, "API 모델을 하나 더 골라 같은 다섯 질문을 던진다.\n"
+          "> `nvidia/llama-nemotron-embed-1b-v2` · `nvidia/nv-embed-v1` 중에 골라 본다.\n"
+          "> 위 표에 한 줄을 더 붙인다고 생각하면 된다.",
+       setup="# 모델 이름만 바꾸면 된다",
+       blank="API_MODEL = '___'",
+       answer="API_MODEL = 'nvidia/llama-nemotron-embed-1b-v2'",
+       check="print('%-34s %s' % (API_MODEL.split('/')[-1], api_ranks(API_MODEL)))"),
+
+    md("### 길 둘 — GPU 를 켜고 큰 모델"),
+    md("Colab 메뉴에서 **런타임 → 런타임 유형 변경 → T4 GPU** 로 바꾸면 큰 모델도 돌릴 만해진다.\n"
+       "문서는 여전히 **밖으로 안 나간다**. 사내 문서에 쓸 수 있는 쪽은 이쪽이다."),
+
+    prep("""# GPU 가 잡혔는지 먼저 본다
+import torch
+DEV = 'cuda' if torch.cuda.is_available() else 'cpu'
+print('장치', DEV, '·', torch.cuda.get_device_name(0) if DEV == 'cuda' else 'CPU 로 돌아간다')"""),
+
+    code("""# 5억 6천만 개짜리 다국어 모델. T4 면 몇 초, CPU 면 몇 분 걸린다.
+import time
+BIG = SentenceTransformer('intfloat/multilingual-e5-large', device=DEV)
+
+t0 = time.time()
+VB = BIG.encode(['passage: ' + t for t in TEXTS], batch_size=32,
+                normalize_embeddings=True, show_progress_bar=False)
+print('%d조각 × %d차원 · %.0f초' % (*VB.shape, time.time() - t0))
+print(ranks(lambda q: BIG.encode(['query: ' + q], normalize_embeddings=True)[0], VB))"""),
+
+    md("**5억 6천만 개짜리 모델의 성적은 `1 · 2 · 1 · 11 · 1`** 이다. 한국어 모델(`2 · 1 · 1 · 5 · 1`)과 비슷하다.\n"
+       "이 노트북 CPU 에서 354조각을 좌표로 바꾸는 데 **24초** 걸렸다. 조각이 만 개면 열 배가 넘는다.\n"
+       "T4 를 켜면 같은 일이 몇 초로 줄어든다. **코드에서 바뀌는 것은 `device` 한 줄뿐이다.**\n\n"
+       "인덱싱은 문서가 바뀔 때만 하니까 몇 분 걸려도 되지만, **질문마다 도는 부분은 빨라야 한다** &mdash;\n"
+       "질문 하나를 좌표로 바꾸는 데 걸리는 시간이 곧 사용자가 기다리는 시간이다."),
+
+    Task(5, "세 자리에서 **무엇을 고를지** 정해서 표로 적는다.\n"
+            "> ① 사내 규정 문서로 사내용 검색을 만든다\n"
+            "> ② 공개된 기술 문서로 사외 서비스를 만든다\n"
+            "> ③ 고객 문의 로그로 내부 분석을 한다\n"
+            "> 각각 **노트북 CPU · GPU · API** 중 무엇을 고르고 왜 그런지 한 줄씩.",
+         blank="""ANSWER = {
+    '사내 규정': '___ 를 쓴다. 왜냐하면 ___',
+    '공개 기술 문서': '___ 를 쓴다. 왜냐하면 ___',
+    '고객 문의 로그': '___ 를 쓴다. 왜냐하면 ___',
+}
+for k, v in ANSWER.items():
+    print('%-12s %s' % (k, v))""",
+         answer="""ANSWER = {
+    '사내 규정': 'GPU 로컬 모델. 문서가 밖으로 나가면 안 된다',
+    '공개 기술 문서': 'API 모델. 이미 공개된 자료라 나가도 되고 준비가 없다',
+    '고객 문의 로그': 'GPU 로컬 모델. 개인정보가 섞여 있어 밖으로 못 보낸다',
+}
+for k, v in ANSWER.items():
+    print('%-12s %s' % (k, v))""",
+         check="print('성능보다 먼저 정하는 것은 문서가 나가도 되느냐다')"),
+
+    md("## 6. 메타데이터로 범위 좁히기"),
     md("앞에서 「제60조」를 검색으로 못 찾았다. **검색으로 풀 문제가 아니었다.**\n"
        "조 번호는 이미 메타데이터에 있다. 찾는 게 아니라 **고르면** 된다."),
 
@@ -279,7 +424,7 @@ show3('비밀을 지킬 의무가 있나', where={'source': '산업기술보호�
        "필터가 하는 일은 순위를 올리는 것이 아니라 **엉뚱한 문서를 후보에서 빼는 것**이다.\n"
        "문서가 늘수록, 비슷한 이름의 조항이 많을수록 이 차이가 커진다."),
 
-    Ex(4, "**여러 문서에 다 있을 법한 질문**을 하나 만들어 전체와 좁힘을 견준다.\n"
+    Ex(6, "**여러 문서에 다 있을 법한 질문**을 하나 만들어 전체와 좁힘을 견준다.\n"
           "> 「벌금」 「교육」 「신고」 처럼 어느 법에나 나오는 말이 좋다.",
        setup="# where 에 문서 이름을 넣으면 그 문서 안에서만 찾는다",
        blank="Q4 = '___'\nSRC = '___'",
@@ -289,30 +434,8 @@ show3('비밀을 지킬 의무가 있나', where={'source': '산업기술보호�
     md("실무에서는 여기에 **버전**을 하나 더 붙인다. 「최신본만」으로 걸러야\n"
        "개정 전 규정으로 답하는 사고를 막는다. 구버전이 인덱스에 남아 있으면 그걸 가져온다."),
 
-    md("## 6. 근거로만 답하게 하기"),
-    md("찾은 조각을 프롬프트에 붙이고, **그 안에서만** 답하라고 못 박는다.\n"
-       "어제 쓰던 키를 그대로 쓴다."),
-
-    prep("""# 키는 화면에 안 찍히게 받는다
-import getpass
-KEY = getpass.getpass('nvapi- 로 시작하는 키: ')
-
-URL = 'https://integrate.api.nvidia.com/v1/chat/completions'
-MODEL = 'nvidia/llama-3.3-nemotron-super-49b-v1'
-
-def ask(prompt, n=500):
-    body = json.dumps({'model': MODEL, 'max_tokens': n, 'temperature': 0,
-                       'messages': [{'role': 'user', 'content': prompt}]}).encode()
-    req = urllib.request.Request(URL, data=body, headers={
-        'Authorization': 'Bearer ' + KEY,
-        'Content-Type': 'application/json', 'Accept': 'application/json'})
-    for _ in range(2):
-        try:
-            with urllib.request.urlopen(req, timeout=180) as f:
-                return json.load(f)['choices'][0]['message']['content'].strip()
-        except Exception as e:
-            err = str(e)[:80]
-    return '[실패] ' + err"""),
+    md("## 7. 근거로만 답하게 하기"),
+    md("찾은 조각을 프롬프트에 붙이고, **그 안에서만** 답하라고 못 박는다."),
 
     prep("""# 찾은 조각을 붙여 물어보는 함수. RAG 는 이 열 줄이 전부다.
 RULE = ('아래 「문서」에 있는 내용만 근거로 답하라.\\n'
@@ -336,7 +459,7 @@ print(rag('우리 회사 연차는 며칠 전에 신청해야 하나'))"""),
     md("**「문서에 없다」가 나와야 맞다.** 신청 기한은 법이 아니라 사규에 있는 내용이라,\n"
        "이 문서 묶음에는 없다. 없다고 말하게 만드는 것이 RAG 의 절반이다."),
 
-    Ex(5, "규칙에서 **「문서에 없으면 문서에 없다고만 답하라」 한 줄을 빼고** 같은 질문을 던진다.\n"
+    Ex(7, "규칙에서 **「문서에 없으면 문서에 없다고만 답하라」 한 줄을 빼고** 같은 질문을 던진다.\n"
           "> 한 줄 차이로 답이 어떻게 달라지는지 본다.",
        setup="# 근거 한정 지시를 뺀 약한 규칙",
        blank="WEAK = '아래 문서를 참고해서 답하라.\\n\\n'",
@@ -348,7 +471,7 @@ print(ask(WEAK + '# 문서\\n' + ctx + '\\n\\n# 질문\\n' + q))"""),
     md("규칙 한 줄이 빠지면 **문서 밖 지식으로 채운다**. 그럴듯해서 더 위험하다.\n"
        "프롬프트에서 가장 중요한 줄은 「없으면 없다고 하라」다."),
 
-    md("## 7. 조각 수를 바꿔 보기"),
+    md("## 8. 조각 수를 바꿔 보기"),
 
     code("""# k 를 바꾸면 답이 달라진다
 for k in (1, 3, 6):
@@ -359,7 +482,7 @@ for k in (1, 3, 6):
     md("**k 가 작으면 근거가 모자라고, 크면 상관없는 조문이 섞인다.**\n"
        "3~6 사이에서 시작해 답을 보며 조정한다. 정답은 문서마다 다르다."),
 
-    md("## 8. 내 문서로"),
+    md("## 9. 내 문서로"),
     md("여기서부터는 **자기 문서**로 바꾼다. 코드는 그대로 두고 파일만 갈아 끼운다."),
 
     Task(1, "자기 부서 문서를 `.txt` 로 만들어 올리고 같은 흐름을 돌린다.\n"
@@ -410,8 +533,8 @@ print(rag(BAD_Q))""",
 ]
 
 MODES = {
-    ("ex", 1): "together", ("ex", 2): "together", ("ex", 3): "together", ("ex", 4): "solo", ("ex", 5): "together",
-    ("task", 1): "solo", ("task", 2): "solo", ("task", 3): "team",
+    ("ex", 1): "together", ("ex", 2): "together", ("ex", 3): "together", ("ex", 4): "solo", ("ex", 6): "solo", ("ex", 7): "together",
+    ("task", 1): "solo", ("task", 2): "solo", ("task", 3): "team", ("task", 5): "team",
 }
 
 SPEC = ("RAG — 내 문서로 답하게 하기", "실제 법령 조문으로 찾아 읽고 근거로만 답한다", CELLS, MODES)
