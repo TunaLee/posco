@@ -16,6 +16,7 @@
 | 3주차 D1 · LLM 과 프롬프트 | [day8/index.html](day8/index.html) | 80 |
 | 3주차 D2 · 에이전트의 구조 (+ 부록 공정 데이터) | [day9/index.html](day9/index.html) | 97 |
 | 3주차 D3 · RAG — 내 문서로 답하게 하기 | [day10/index.html](day10/index.html) | 72 |
+| 3주차 D4 · RAG 심화 — 검색 품질 | [day11/index.html](day11/index.html) | 75 |
 
 부록 60장부터의 강의 노트 — [day9/NOTES.md](day9/NOTES.md)
 
@@ -229,7 +230,7 @@ pptx 기반 이전 덱은 [_archive-pptx/](_archive-pptx/)에 보관돼 있다.
 | 8/10 | LLM 의 원리와 프롬프팅 | [day8/index.html](day8/index.html) |
 | 8/11 | 에이전트의 구조 | [day9/index.html](day9/index.html) |
 | 8/12 | RAG — 내 문서로 답하게 하기 | [day10/index.html](day10/index.html) |
-| 8/13 | RAG 심화 — 검색 품질 | 기존 강의 D02 를 줄여 옮긴다 |
+| 8/13 | RAG 심화 — 검색 품질 | [day11/index.html](day11/index.html) |
 | 8/14 | MCP — 도구를 붙이는 규약 | 기존 강의 D04·D06 을 줄여 옮긴다 |
 | 8/18 | MCP 서버 만들기 · Docker | 새로 만든다 |
 | 8/19 | 멀티 에이전트와 하네스 | 기존 강의 D08 발췌 |

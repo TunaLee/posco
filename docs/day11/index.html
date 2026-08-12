@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RAG 심화 — 검색 품질</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#16142B; --ink-soft:#4A4766; --mut:#8E8AAC;
+    --violet:#5B3DF5; --violet-700:#3A1FC9; --violet-300:#B7A9FF;
+    --wash:#F4F1FF; --wash-2:#FAF9FF; --line:#E8E4F8;
+    --paper:#FFFFFF; --mint:#0FB5A1; --mint-soft:#E4F8F4;
+    --amber:#F4A93C; --rose:#E8537A;
+    --code-bg:#1C1933; --code-ink:#ECEAFF; --code-dim:#9C97D6;
+    --sw:1280px; --sh:720px;
+    --shadow:0 24px 60px -24px rgba(43,28,120,.45);
+    --serif: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:var(--serif); color:var(--ink);
+    background:
+      radial-gradient(1200px 600px at 15% -10%, #ECE7FF 0%, rgba(236,231,255,0) 60%),
+      radial-gradient(1000px 700px at 110% 10%, #F0EBFF 0%, rgba(240,235,255,0) 55%),
+      #EAE7F4;
+    min-height:100vh; -webkit-font-smoothing:antialiased;
+  }
+  .progress{position:fixed; top:0; left:0; right:0; height:3px; z-index:60; background:transparent;}
+  .progress .fill{height:100%; width:0; background:linear-gradient(90deg,var(--violet),#9B7BFF); transition:width .2s ease;}
+
+  .stage{
+    position:fixed; inset:0 0 0 0; z-index:10;
+    display:flex; justify-content:safe center; align-items:safe center;
+    overflow:auto; padding:30px 30px 96px;
+  }
+  .sizer{position:relative;}
+  .scaler{ width:var(--sw); height:var(--sh); transform-origin:top left; position:relative; }
+
+  .slide{
+    width:var(--sw); height:var(--sh);
+    background:var(--paper); border:1px solid var(--line);
+    border-radius:22px; box-shadow:var(--shadow);
+    overflow:hidden; display:none; flex-direction:column;
+    padding:50px 60px 46px; position:relative;
+  }
+  .slide.active{display:flex;}
+
+  .eyebrow{display:inline-flex; align-items:center; gap:10px; font-family:var(--mono); font-size:13px; font-weight:700; letter-spacing:.04em; color:var(--violet); text-transform:uppercase;}
+  .eyebrow .tag{color:#fff; background:var(--violet); border-radius:6px; padding:3px 8px; font-size:11px; letter-spacing:.05em;}
+  .eyebrow .tag.mint{background:var(--mint);}
+  .eyebrow .dot{width:5px;height:5px;border-radius:50%;background:var(--violet-300);}
+  .coord{position:absolute; top:30px; right:40px; font-family:var(--mono); font-size:12px; color:var(--mut); font-weight:600; letter-spacing:.05em;}
+  .coord b{color:var(--ink);}
+
+  .s-title{font-size:39px; line-height:1.12; letter-spacing:-.025em; font-weight:800; margin:14px 0 4px;}
+  .s-title.sm{font-size:32px;} .s-title.xs{font-size:28px;}
+  .s-sub{font-size:17px; color:var(--ink-soft); font-weight:500; line-height:1.5; max-width:64ch;}
+  .rule{height:4px; width:54px; border-radius:3px; background:var(--violet); margin:13px 0 6px;}
+  .body{flex:1; min-height:0; display:flex; flex-direction:column; justify-content:center;}
+  .body.top{justify-content:flex-start; padding-top:6px;}
+
+  .slide.cover{ padding:0; justify-content:center;
+    background:
+      radial-gradient(900px 520px at 100% 0%, #6B4BFF 0%, rgba(107,75,255,0) 58%),
+      radial-gradient(700px 600px at -5% 110%, #3A1FC9 0%, rgba(58,31,201,0) 55%),
+      linear-gradient(135deg,#2A1B8C 0%, #4226D6 48%, #5B3DF5 100%);
+    color:#fff; border:none; }
+  .cover .aperture{position:absolute; top:-120px; right:-120px; width:460px; height:460px; border-radius:50%; background:radial-gradient(circle at 35% 35%, rgba(255,255,255,.5), rgba(255,255,255,0) 62%); filter:blur(2px);}
+  .cover .ring{position:absolute; right:60px; top:60px; width:120px; height:120px; border-radius:50%; border:1.5px solid rgba(255,255,255,.4);}
+  .cover .ring::after{content:""; position:absolute; inset:18px; border-radius:50%; border:1.5px dashed rgba(255,255,255,.35);}
+  .cover .wrap{padding:60px 70px; position:relative; z-index:2; width:100%;}
+  .cover .kick{font-family:var(--mono); letter-spacing:.18em; font-size:13.5px; font-weight:600; color:rgba(255,255,255,.86); text-transform:uppercase; display:flex; align-items:center; gap:14px;}
+  .cover .kick .pill{border:1px solid rgba(255,255,255,.45); border-radius:999px; padding:4px 12px;}
+  .cover h1{font-size:58px; line-height:1.08; letter-spacing:-.03em; font-weight:800; margin:24px 0 16px; max-width:21ch;}
+  .cover .lead{font-size:18px; line-height:1.55; color:rgba(255,255,255,.9); max-width:56ch; font-weight:400;}
+  .cover .meta{margin-top:36px; display:flex; gap:24px; flex-wrap:wrap; font-size:14px;}
+  .cover .meta .it{display:flex; flex-direction:column; gap:3px;}
+  .cover .meta .it .k{font-family:var(--mono); font-size:11px; letter-spacing:.1em; color:rgba(255,255,255,.6); text-transform:uppercase;}
+  .cover .meta .it .v{font-size:15px; font-weight:700; color:#fff;}
+
+  .slide.section{ background:linear-gradient(140deg,#3A1FC9 0%, #5B3DF5 70%, #7A5BFF 100%); color:#fff; border:none; justify-content:center; padding:60px 70px; }
+  .slide.section.mintbg{ background:linear-gradient(140deg,#0A8A7A 0%, #0FB5A1 70%, #34D6C2 100%); }
+  .slide.section .ghost{position:absolute; right:34px; bottom:-66px; font-family:var(--mono); font-weight:700; font-size:330px; line-height:.8; color:rgba(255,255,255,.10); letter-spacing:-.04em;}
+  .slide.section .lab-flag{display:inline-flex; align-items:center; gap:9px; align-self:flex-start; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.4); padding:7px 14px; border-radius:999px; font-weight:700; font-size:13px; font-family:var(--mono); letter-spacing:.06em;}
+  .slide.section .lab-flag .sq{width:9px;height:9px;border-radius:3px;background:#fff;}
+  .slide.section .seyebrow{font-family:var(--mono); letter-spacing:.16em; font-size:14px; color:rgba(255,255,255,.85); text-transform:uppercase; margin-bottom:14px;}
+  .slide.section h2{font-size:48px; line-height:1.1; letter-spacing:-.025em; font-weight:800; margin:0 0 14px; max-width:24ch; position:relative; z-index:2;}
+  .slide.section p{font-size:18px; color:rgba(255,255,255,.92); max-width:54ch; line-height:1.55; position:relative; z-index:2;}
+  .slide.section .agenda{display:flex; gap:10px; flex-wrap:wrap; margin-top:22px; position:relative; z-index:2;}
+  .slide.section .agenda span{font-size:13px; font-weight:600; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3); padding:6px 12px; border-radius:999px;}
+
+  .cards{display:grid; gap:16px;}
+  .cards.c2{grid-template-columns:repeat(2,1fr);} .cards.c3{grid-template-columns:repeat(3,1fr);} .cards.c4{grid-template-columns:repeat(4,1fr);}
+  .card{background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:17px 19px; display:flex; flex-direction:column; gap:7px; position:relative;}
+  .card .ic{width:38px; height:38px; border-radius:4px; display:grid; place-items:center; background:transparent; border:1.5px solid var(--violet-300); color:var(--violet); margin-bottom:3px;}
+  .card .ic svg{width:20px;height:20px;}
+  .card h3{font-size:17px; font-weight:800; letter-spacing:-.01em; margin:0 0 1px; padding-bottom:8px; border-bottom:1px solid var(--line);}
+  .card p{font-size:14px; color:var(--ink-soft); line-height:1.5; margin:0;}
+  .card .n{font-family:var(--mono); font-size:11.5px; color:var(--violet); font-weight:700;}
+
+  .biglist{display:flex; flex-direction:column; gap:13px;}
+  .biglist .li{display:flex; gap:15px; align-items:flex-start;}
+  .biglist .li .num{flex:none; width:34px; height:34px; border-radius:10px; background:var(--violet); color:#fff; font-family:var(--mono); font-weight:700; display:grid; place-items:center; font-size:14px; margin-top:1px;}
+  .biglist .li .tx h4{margin:0 0 3px; font-size:17.5px; font-weight:800;}
+  .biglist .li .tx p{margin:0; font-size:14px; color:var(--ink-soft); line-height:1.5;}
+
+  .phase-label{font-family:var(--mono); font-size:12px; font-weight:700; letter-spacing:.08em; color:var(--violet); text-transform:uppercase; margin:0 0 10px; display:flex; align-items:center; gap:9px;}
+  .phase-label .ln{height:1px; flex:1; background:var(--line);}
+  .pipe{display:flex; align-items:stretch; gap:0; margin-bottom:20px;}
+  .pipe .step{flex:1; background:var(--paper); border:1px solid var(--line); border-top:3px solid var(--violet); border-radius:4px; padding:12px 10px; text-align:center; min-width:0;}
+  .pipe .step .si{font-family:var(--mono); font-size:11px; color:var(--violet); font-weight:700;}
+  .pipe .step .sn{font-size:14.5px; font-weight:800; margin-top:3px; letter-spacing:-.01em;}
+  .pipe .step .sd{font-size:11px; color:var(--mut); margin-top:2px; line-height:1.3;}
+  .pipe .arrow{display:flex; align-items:center; padding:0 5px; color:var(--violet-300);}
+  .pipe .arrow svg{width:17px;height:17px;}
+  .pipe.q .step{background:var(--paper); border-color:var(--line); border-top-color:var(--mint);} .pipe.q .step .si{color:var(--mint);} .pipe.q .arrow{color:#8AD7CC;}
+
+  .code{background:var(--code-bg); border-radius:14px; overflow:hidden; border:1px solid #2A2548; box-shadow:0 18px 40px -22px rgba(28,25,51,.7);}
+  .code .bar{display:flex; align-items:center; gap:7px; padding:10px 15px; border-bottom:1px solid #2A2548; background:#171430;}
+  .code .bar .dot{width:11px;height:11px;border-radius:50%;}
+  .code .bar .r{background:#FF6058;} .code .bar .y{background:#FFC130;} .code .bar .g{background:#28CA42;}
+  .code .bar .fn{margin-left:8px; font-family:var(--mono); font-size:12px; color:var(--code-dim);}
+  .code pre{margin:0; padding:16px 18px; overflow:auto;}
+  .code code{font-family:var(--mono); font-size:13px; line-height:1.6; color:var(--code-ink); white-space:pre;}
+  .code.sm code{font-size:12px; line-height:1.55;}
+  .cm{color:#7D78B8;} .kw{color:#C792FF;} .st{color:#9DE39A;} .fn2{color:#82D3FF;} .nm{color:#FFD479;}
+
+  .callout{border-radius:4px; padding:15px 18px; display:flex; gap:13px; align-items:flex-start; background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet);}
+  .callout .ci{flex:none; width:34px;height:34px;border-radius:4px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .callout .ci svg{width:18px;height:18px;}
+  .callout .ct h4{margin:0 0 3px; font-size:15.5px; font-weight:800;}
+  .callout .ct p{margin:0; font-size:13.5px; color:var(--ink-soft); line-height:1.5;}
+  .callout.mint{border-left-color:var(--mint);} .callout.mint .ci{background:var(--mint);}
+  .callout.amber{border-left-color:var(--amber);} .callout.amber .ci{background:var(--amber);}
+  .callout.rose{border-left-color:var(--rose);} .callout.rose .ci{background:var(--rose);}
+
+  .lab-badge{display:inline-flex; align-items:center; gap:9px; background:var(--mint-soft); color:#0A7F70; border:1px solid #BFE9E1; padding:7px 13px; border-radius:999px; font-weight:700; font-size:13px; font-family:var(--mono); letter-spacing:.04em;}
+  .lab-badge .sq{width:9px;height:9px;border-radius:3px;background:var(--mint);}
+
+  .twocol{display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start;}
+  .twocol.w{grid-template-columns:1.15fr .85fr;} .twocol.w2{grid-template-columns:.85fr 1.15fr;}
+
+  .chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{font-size:12.5px; font-weight:600; color:var(--ink-soft); background:#fff; border:1px solid var(--line); padding:6px 12px; border-radius:999px;}
+  .chip b{color:var(--violet);}
+
+  .deliv{background:var(--paper); border:1px dashed var(--violet-300); border-left:3px solid var(--violet); border-radius:4px; padding:15px 18px; display:flex; align-items:center; gap:13px;}
+  .deliv .di{flex:none;width:36px;height:36px;border-radius:4px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .deliv .di svg{width:19px;height:19px;}
+  .deliv .dt b{display:block;font-size:11px;font-family:var(--mono);letter-spacing:.08em;color:var(--violet);text-transform:uppercase;}
+  .deliv .dt span{font-size:15px;font-weight:700;}
+
+  .vlist{display:flex;flex-direction:column;gap:10px;}
+  .vlist .v{display:flex;gap:11px;align-items:flex-start;font-size:14.5px;color:var(--ink-soft);line-height:1.45;}
+  .vlist .v .b{flex:none;width:22px;height:22px;border-radius:7px;background:var(--wash);color:var(--violet);display:grid;place-items:center;font-family:var(--mono);font-size:12px;font-weight:700;margin-top:1px;}
+  .vlist .v b{color:var(--ink);font-weight:700;}
+
+  .keymsg{margin-top:auto; background:var(--ink); color:#fff; border-radius:4px; padding:15px 20px; display:flex; gap:13px; align-items:center; font-size:15px; line-height:1.5;}
+  .keymsg .k{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;color:var(--violet-300);text-transform:uppercase;flex:none;}
+  .keymsg b{color:#fff;}
+
+  .formula{display:flex; flex-direction:column; gap:10px; background:var(--code-bg); border-radius:13px; padding:20px; color:#fff; font-family:var(--mono);}
+  .formula .big{font-size:21px; text-align:center;}
+
+  .ctable{width:100%; border-collapse:separate; border-spacing:0; font-size:14px; border:1px solid var(--line); border-radius:13px; overflow:hidden;}
+  .ctable th,.ctable td{padding:13px 16px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top;}
+  .ctable thead th{background:var(--wash); color:var(--violet); font-family:var(--mono); font-size:12px; letter-spacing:.04em; text-transform:uppercase; font-weight:700;}
+  .ctable tbody tr:last-child td{border-bottom:none;}
+  .ctable td b{color:var(--ink);} .ctable .hl{color:var(--violet); font-weight:700;}
+  .ctable .yes{color:var(--mint); font-weight:700;} .ctable .no{color:var(--rose); font-weight:700;}
+
+  .timeline{display:flex; gap:0; align-items:stretch; margin-top:6px;}
+  .timeline .t{flex:1; position:relative; padding:0 6px;}
+  .timeline .t .yr{font-family:var(--mono); font-size:13px; font-weight:700; color:var(--violet);}
+  .timeline .t .ev{font-size:13px; font-weight:700; margin-top:30px; line-height:1.3;}
+  .timeline .t .ds{font-size:11.5px; color:var(--mut); margin-top:3px; line-height:1.35;}
+  .timeline .t::before{content:""; position:absolute; left:0; right:0; top:26px; height:2px; background:var(--line);}
+  .timeline .t::after{content:""; position:absolute; left:8px; top:21px; width:12px; height:12px; border-radius:50%; background:var(--violet); border:3px solid #fff; box-shadow:0 0 0 1px var(--violet-300);}
+
+  .quote{background:var(--wash-2); border-left:4px solid var(--violet); border-radius:0 13px 13px 0; padding:18px 22px;}
+  .quote p{margin:0; font-size:18px; line-height:1.5; font-weight:600; color:var(--ink);}
+  .quote .src{margin-top:10px; font-size:12.5px; color:var(--mut); font-family:var(--mono);}
+  .refbox{background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:14px 16px; display:flex; gap:12px; align-items:flex-start;}
+  .refbox .rk{font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; color:var(--violet); text-transform:uppercase; font-weight:700;}
+  .refbox h4{margin:2px 0 3px; font-size:14.5px; font-weight:800;}
+  .refbox p{margin:0; font-size:12.5px; color:var(--ink-soft); line-height:1.45;}
+  .refbox .ri{flex:none;width:30px;height:30px;border-radius:8px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .refbox .ri svg{width:16px;height:16px;}
+
+  .arch{display:flex; align-items:center; gap:18px; justify-content:center; margin:6px 0;}
+  .arch .box{border:1.5px solid var(--line); border-radius:14px; padding:18px 20px; text-align:center; background:var(--wash-2); min-width:160px;}
+  .arch .box .bt{font-size:15px; font-weight:800;} .arch .box .bs{font-size:12px; color:var(--mut); margin-top:3px; line-height:1.35;}
+  .arch .box.local{border-style:dashed; border-color:var(--violet-300); background:#fff;}
+  .arch .box.api{background:linear-gradient(135deg,#EFEAFF,#F8F5FF); border-color:var(--violet-300);}
+  .arch .conn{display:flex; flex-direction:column; align-items:center; gap:4px; color:var(--violet); font-family:var(--mono); font-size:11px; font-weight:700;}
+  .arch .conn svg{width:34px;height:18px;}
+
+  .stat-row{display:flex; gap:16px;}
+  .stat{flex:1; background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:16px 18px;}
+  .stat .num{font-size:30px; font-weight:800; letter-spacing:-.02em; color:var(--violet); font-family:var(--mono);}
+  .stat .lab{font-size:13px; color:var(--ink-soft); margin-top:4px; line-height:1.4;}
+
+  .twopane{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .pane{border:1px solid var(--line); border-radius:4px; padding:16px 18px; background:var(--paper);}
+  .pane.bad{border-left:3px solid var(--rose);} .pane.good{border-left:3px solid var(--mint);}
+  .pane h4{margin:0 0 9px; font-size:14px; font-weight:800; display:flex; align-items:center; gap:7px;}
+  .pane.bad h4{color:#C9405B;} .pane.good h4{color:#0E9E6E;}
+  .pane p{margin:0; font-size:13px; color:var(--ink-soft); line-height:1.5;}
+  .mini{font-family:var(--mono); font-size:13.5px; background:#16142B; border:1px solid #2A2545; border-radius:6px; padding:13px 15px; color:#E8E4F5; line-height:1.7; white-space:pre-wrap;}
+  .pane .mini{font-family:var(--mono); font-size:12px; background:var(--wash-2); border:1px solid var(--line); border-radius:3px; padding:8px 10px; color:var(--ink-soft); line-height:1.5; margin-top:8px;}
+
+  .controlbar{
+    position:fixed; left:50%; bottom:18px; transform:translateX(-50%); z-index:70;
+    display:flex; align-items:center; gap:4px;
+    background:#2B2B2E; border-radius:999px; padding:8px 10px;
+    box-shadow:0 16px 40px -12px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.04) inset;
+  }
+  .controlbar button{appearance:none; border:none; background:transparent; cursor:pointer; color:#C9C9D2; display:grid; place-items:center; border-radius:999px; transition:.12s ease; font-family:var(--serif);}
+  .controlbar .ico{width:38px; height:38px;}
+  .controlbar .ico svg{width:19px;height:19px;}
+  .controlbar .ico:hover{color:#fff; background:rgba(255,255,255,.1);}
+  .controlbar .ico:disabled{color:#5C5C66; cursor:not-allowed; background:transparent;}
+  .controlbar .sep{width:1px; height:24px; background:rgba(255,255,255,.16); margin:0 6px;}
+  .controlbar .count{ color:#EDEDF2; font-style:italic; font-family:Georgia,'Times New Roman',serif; font-size:17px; min-width:78px; text-align:center; letter-spacing:.02em; user-select:none;}
+  .controlbar .count b{font-style:italic; font-weight:600;}
+  .controlbar .zoom{width:32px;height:38px; color:#9A9AA6; font-size:18px;}
+  .controlbar .zoom:hover{color:#fff;}
+  .controlbar .zoom svg{width:17px;height:17px;}
+  .controlbar .pdf{
+    margin-left:6px; background:#7CB342; color:#fff; font-weight:800; font-size:14px; letter-spacing:.06em;
+    padding:0 22px; height:38px; border-radius:999px; display:flex; align-items:center;
+    box-shadow:0 6px 16px -6px rgba(124,179,66,.8);
+  }
+  .controlbar .pdf:hover{background:#86BD4B; color:#fff;}
+
+  .overview{position:fixed; inset:0; z-index:80; background:rgba(22,20,43,.55); backdrop-filter:blur(8px); display:none; padding:40px; overflow:auto;}
+  .overview.on{display:block;}
+  .overview .head{display:flex; align-items:center; justify-content:space-between; max-width:1100px; margin:0 auto 18px; color:#fff;}
+  .overview .head h3{margin:0; font-size:18px; font-weight:800;}
+  .overview .head button{appearance:none;border:1px solid rgba(255,255,255,.3); background:rgba(255,255,255,.1); color:#fff; border-radius:10px; padding:8px 14px; cursor:pointer; font-family:var(--serif); font-weight:700; font-size:13px;}
+  .ovgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; max-width:1100px; margin:0 auto;}
+  .ovcard{background:#fff; border:1px solid var(--line); border-radius:11px; padding:13px 15px; cursor:pointer; transition:.12s; text-align:left;}
+  .ovcard:hover{transform:translateY(-2px); box-shadow:0 12px 22px -12px rgba(0,0,0,.4); border-color:var(--violet);}
+  .ovcard .ovn{font-family:var(--mono); font-size:11px; color:var(--violet); font-weight:700;}
+  .ovcard .ovt{font-size:13.5px; font-weight:700; margin-top:4px; line-height:1.3; color:var(--ink);}
+
+  .hint{position:fixed; left:18px; bottom:24px; z-index:65; font-size:11px; color:var(--mut); font-family:var(--mono);}
+
+
+  /* ===== 이미지 / 도해 컴포넌트 (덱 하네스 추가분) ===== */
+  .figure{border:1px solid var(--line); border-radius:4px; background:var(--wash-2); overflow:hidden; display:flex; flex-direction:column; min-height:0;}
+  .figure img{display:block; width:100%; height:auto; object-fit:contain; min-height:0;}
+  .figure figcaption{font-family:var(--mono); font-size:11px; color:var(--mut); padding:7px 11px; border-top:1px solid var(--line); background:#fff;}
+  .figure.tight img{max-height:330px; object-fit:contain; background:#fff;}
+  /* 원본이 검은 여백을 달고 있는 캡처용 */
+  .figure.dark{background:#16142B; border-color:#2A2548;}
+  .figure.dark img{background:#16142B;}
+  .figure.dark figcaption{background:#1C1933; color:#9C97D6; border-top-color:#2A2548;}
+
+  /* 스크린샷: 창 프레임을 씌워 원본 캡처임을 드러낸다 */
+  .shot{border:1px solid var(--line); border-radius:9px; overflow:hidden; background:#fff; box-shadow:0 10px 26px -18px rgba(28,25,51,.6); display:flex; flex-direction:column; min-height:0;}
+  .shot .sbar{display:flex; align-items:center; gap:6px; padding:7px 11px; background:var(--wash); border-bottom:1px solid var(--line);}
+  .shot .sbar .d{width:9px;height:9px;border-radius:50%;background:var(--violet-300);}
+  .shot .sbar .t{margin-left:6px; font-family:var(--mono); font-size:11px; color:var(--mut);}
+  .shot img{display:block; width:100%; height:auto; max-height:400px; object-fit:contain; min-height:0;}
+
+  /* 도구 두 가지를 나란히 처음 보여줄 때 — 그림과 한 줄만 */
+  .duo{display:grid; grid-template-columns:1fr 1fr; gap:30px;}
+  .duo .side{border:1px solid var(--line); border-radius:18px; background:var(--wash-2);
+    padding:34px 30px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:20px; text-align:center;}
+  .duo .side img{max-height:92px; max-width:78%; width:auto; display:block;}
+  .duo .side .tagline{font-family:var(--mono); font-size:11.5px; letter-spacing:.12em;
+    color:var(--violet); text-transform:uppercase; font-weight:700;}
+  .duo .side h3{margin:0; font-size:23px; font-weight:800; letter-spacing:-.02em;}
+  .duo .side p{margin:0; font-size:15px; color:var(--ink-soft); line-height:1.55; max-width:30ch;}
+
+  /* 제품·도구 로고 — 작은 브랜드 마크 */
+  .brandmark{display:flex; align-items:center; gap:15px; margin-bottom:18px;}
+  .brandmark img{height:46px; width:auto; display:block;}
+  .brandmark .bt{font-size:13.5px; color:var(--ink-soft); line-height:1.45;}
+  .brandmark .bt b{color:var(--ink);}
+
+  /* 채워야 할 이미지 자리 — 인쇄에도 남으므로 발표 전 반드시 교체 */
+  .need-img{border:2px dashed var(--violet-300); border-radius:4px; background:repeating-linear-gradient(135deg,#FBFAFF,#FBFAFF 10px,#F4F1FF 10px,#F4F1FF 20px);
+    display:flex; flex-direction:column; justify-content:center; gap:6px; padding:20px 22px; min-height:150px;}
+  .need-img .nk{font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:.1em; color:var(--violet); text-transform:uppercase;}
+  .need-img .nd{font-size:14px; font-weight:700; color:var(--ink); line-height:1.4;}
+  .need-img .nm2{font-family:var(--mono); font-size:11.5px; color:var(--mut);}
+  .need-img.sm{min-height:92px; padding:14px 16px; align-items:center; text-align:center;}
+
+  /* 코드 실행 결과 */
+  .code .out{border-top:1px dashed #38325C; background:#141127; padding:11px 18px; font-family:var(--mono); font-size:12.5px; line-height:1.55; color:#9DE39A; white-space:pre; overflow:auto;}
+  .code .out .ol{color:#7D78B8;}
+  .code .err{color:#FF8E8E;}
+
+  /* 메모리 슬롯 도해 */
+  .slots{display:flex; gap:8px; flex-wrap:wrap; align-items:flex-start;}
+  .slot{border:1.5px solid var(--line); border-radius:8px; min-width:74px; padding:9px 11px; text-align:center; background:#fff;}
+  .slot .adr{font-family:var(--mono); font-size:10px; color:var(--mut); letter-spacing:.02em;}
+  .slot .val{font-family:var(--mono); font-size:15px; font-weight:700; color:var(--ink); margin-top:2px;}
+  .slot .nm{font-size:11px; color:var(--violet); font-weight:700; margin-top:3px;}
+  .slot.ref{border-style:dashed; border-color:var(--violet-300); background:var(--wash-2);}
+  .slot.dim{opacity:.45;}
+  .ptr{display:grid; place-items:center; color:var(--violet); font-family:var(--mono); font-size:18px; font-weight:700; padding:0 2px; align-self:center;}
+
+  /* 인라인 SVG 차트 */
+  .plot{background:var(--wash-2); border:1px solid var(--line); border-radius:4px; padding:14px; display:grid; place-items:center; min-height:0;}
+  .plot svg{width:100%; height:auto; display:block; max-height:300px;}
+  .plot .cap{font-family:var(--mono); font-size:11px; color:var(--mut); margin-top:8px; text-align:center;}
+  .formula .cap{font-family:var(--mono); font-size:11.5px; color:var(--code-dim); text-align:center;}
+
+  /* 수정·보강 표시 (원본 pptx에 없던 내용) */
+  .newmark{position:absolute; top:30px; right:112px; font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.08em;
+    color:var(--mint); border:1px solid #BFE9E1; background:var(--mint-soft); border-radius:999px; padding:3px 9px;}
+
+  @media print{
+    @page{ size:1280px 720px; margin:0; }
+    body{background:#fff !important;}
+    .controlbar,.progress,.hint,.overview{display:none !important;}
+    .stage{position:static; inset:auto; overflow:visible; display:block; padding:0;}
+    .sizer{width:auto !important; height:auto !important;}
+    .scaler{transform:none !important; width:auto !important; height:auto !important;}
+    .slide{ display:flex !important; width:1280px !important; height:720px !important;
+      border-radius:0 !important; border:none !important; box-shadow:none !important;
+      page-break-after:always; break-after:page;
+      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .slide:last-child{page-break-after:auto;}
+  }
+
+.bpipe .ar{display:flex; align-items:center; padding:0 5px; color:#B9B3E0;}
+.bpipe .ar svg{width:15px; height:15px;}
+.bpipe .ar.dim{opacity:.35;}
+.bstep .bic{width:46px; height:46px; border-radius:50%; margin:0 auto 8px; display:grid; place-items:center; font-size:21px; background:#fff; border:1.5px solid var(--bd,var(--line));}
+.bstep .bn{font-size:15px; font-weight:800; letter-spacing:-.01em;}
+.bstep .bd{font-size:11px; color:var(--ink-soft); margin-top:3px; line-height:1.3;}
+.bstep .chip2{position:absolute; top:-11px; left:50%; transform:translateX(-50%); white-space:nowrap; font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.04em; color:#fff; padding:3px 10px; border-radius:999px; background:var(--ck,#8E8AAC); box-shadow:0 4px 10px -4px rgba(22,20,43,.35);}
+.imgwrap{flex:1; min-height:0; display:flex; align-items:center; justify-content:center;}
+.imgwrap img{max-width:100%; max-height:100%; object-fit:contain; border:1px solid var(--line); border-radius:16px; background:#fff;}
+.pipe .step.new .si{color:var(--violet);}
+
+.bstep.new{box-shadow:0 0 0 3px rgba(91,61,245,.18), 0 14px 30px -18px rgba(91,61,245,.55);}
+
+.bpipe{display:flex; align-items:stretch; gap:0; margin:16px 0 20px;}
+.bstep{flex:1; position:relative; background:var(--bg,#fff); border:1.5px solid var(--bd,var(--line)); border-radius:16px; padding:24px 8px 14px; text-align:center; min-width:0; box-shadow:0 12px 26px -20px rgba(43,28,120,.4);}
+.bstep.dim{filter:grayscale(1); opacity:.45; border-style:dashed; box-shadow:none;}
+</style>
+</head>
+<body>
+
+<div class="progress"><div class="fill" id="pfill"></div></div>
+
+<main class="stage" id="stage">
+  <div class="sizer" id="sizer">
+    <div class="scaler" id="scaler">
+
+
+
+<!-- ============================================================
+     슬라이드는 여기부터. 규격: 1280x720 고정.
+     첫 장은 slide cover active, 나머지는 active 없이.
+     ============================================================ -->
+
+<section class="slide cover active" data-title="표지 · Day 11">
+  <div class="aperture"></div><div class="ring"></div>
+  <div class="wrap">
+    <div class="kick"><span class="pill">WEEK 3 · DAY 4</span><span>RAG 심화</span></div>
+    <h1>검색 품질을<br/>끌어올리기</h1>
+  </div>
+</section>
+<section class="slide" data-title="오늘의 일정">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">AGENDA</span><span class="dot"></span>일정</div>
+  <h2 class="s-title">오늘의 일정</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c4">
+      <div class="card"><span class="n">CH0~1</span><h3>하이브리드</h3><p>의미 검색이 놓치는 코드와 고유명사를 낱말 검색이 잡는다. 순위를 합친다.</p></div>
+      <div class="card"><span class="n">CH2~3</span><h3>리랭커와 질문 바꾸기</h3><p>넓게 찾고 정밀하게 고른다. 짧은 질문은 풀어서 던진다.</p></div>
+      <div class="card"><span class="n">CH4</span><h3>무엇을 넣나</h3><p>같은 얘기 다섯 개는 소용없다. 무엇을 어떤 순서로 넣을지 정한다.</p></div>
+      <div class="card"><span class="n">CH5</span><h3>GraphRAG</h3><p>흩어진 사실을 잇는다. 관계를 따라가야 풀리는 질문이 따로 있다.</p></div>
+    </div>
+    <div class="keymsg"><span class="k">어제와 이어</span><div>어제 만든 것은 <b>한 번 찾아 한 번 답하는</b> 구조였다. 여기서는 그 검색을 손본다.</div></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 벡터 검색이 새는 자리">
+  <div class="ghost">00</div>
+  <div class="seyebrow">CHAPTER 00</div>
+  <h2>벡터 검색이 새는 자리</h2>
+  <div class="agenda"><span>정확한 낱말</span><span>1등의 착각</span><span>모호한 질문</span></div>
+</section>
+<section class="slide" data-title="의미 검색이 잘하는 일">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>복습</div>
+  <h2 class="s-title sm">의미 검색이 잘하는 일</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="keymsg"><span class="k">강점</span><div>“노트북이 멈춰요” ↔ “시스템 행 발생” 처럼 <b>표현이 달라도 의미로</b> 매칭.</div></div><div class="callout mint" style="margin-top:16px"><div class="ci" style="font-size:18px"></div><div class="ct"><h4>의미의 지도</h4><p>모든 문장에 ‘뜻의 좌표’를 매겨 가까운 이웃을 찾는다. 그런데 이 지도가 약한 구역이 있다 — 다음 3가지.</p></div></div></div>
+</section>
+<section class="slide" data-title="약점 ① — 정확한 단어를 못 집는다">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>약점 1</div>
+  <h2 class="s-title sm">놓치는 고유명사와 코드</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">!</span><div>오류코드 <b>ERR-4021</b>, 제품명 <b>X-200</b>, 약어처럼 ‘희귀한 정확 토큰’</div></div><div class="v"><span class="b">!</span><div>의미상 ‘비슷한’ 게 없어서 벡터가 헤맨다</div></div></div><div class="callout mint" style="margin-top:16px"><div class="ci" style="font-size:18px"></div><div class="ct"><h4>이름표를 못 읽는 사서</h4><p>주제는 잘 아는 사서지만 ‘정확한 책 번호(청구기호)’로 찾는 건 서툴다. 그건 <b>색인(키워드) 검색</b>의 몫.</p></div></div></div>
+</section>
+<section class="slide" data-title="약점 ② — 1등이 진짜 1등이 아니다">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>약점 2</div>
+  <h2 class="s-title sm">1등의 착각</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">!</span><div>관련 문서는 데려오는데 <b>1등이 진짜 1등이 아님</b></div></div><div class="v"><span class="b">!</span><div>유사도 ≠ 실제 관련성일 때가 많다</div></div></div><div class="callout mint" style="margin-top:16px"><div class="ci" style="font-size:18px"></div><div class="ct"><h4>서류만 보고 줄 세우기</h4><p>이력서(유사도)만으로 등수를 매기면 부정확하다. ‘면접(reranker)’으로 다시 보면 진짜 1등이 보인다.</p></div></div></div>
+</section>
+<section class="slide" data-title="약점 ③ — 모호한 질문에 흔들린다">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>약점 3</div>
+  <h2 class="s-title sm">짧은 질문의 흔들림</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">!</span><div>너무 짧거나 막연한 질문 — “그거 어떻게 하나”</div></div><div class="v"><span class="b">!</span><div>방향이 불분명해 엉뚱한 이웃을 데려온다</div></div></div><div class="callout mint" style="margin-top:16px"><div class="ci" style="font-size:18px"></div><div class="ct"><h4>흐릿한 사진으로 찾기</h4><p>찾으려는 게 흐릿하면 닮은 걸 고르기 어렵다. 질문을 ‘더 또렷한 그림’으로 바꿔주면(HyDE·Multi-Query) 잘 잡힌다.</p></div></div></div>
+</section>
+<section class="slide" data-title="3가지 약점 = 3가지 무기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>오늘의 지도</div>
+  <h2 class="s-title sm">약점 셋이 곧 무기 셋</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="cards c3"><div class="card"><span class="n">약점 1</span><h3>정확 매칭</h3><p>→ <b>하이브리드</b>(BM25 더하기)</p></div><div class="card"><span class="n">약점 2</span><h3>부정확한 순서</h3><p>→ <b>Reranker</b></p></div><div class="card"><span class="n">약점 3</span><h3>모호한 질문</h3><p>→ <b>HyDE·Multi-Query</b></p></div></div><div class="keymsg"><span class="k">기억</span><div>약점마다 ‘맞는 무기’가 있다 — 배울 때마다 파이프라인에 블록을 하나씩 꽂아 조립한다.</div></div></div>
+</section>
+<section class="slide" data-title="현장 약어">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>넷째 약점</div>
+  <h2 class="s-title sm">쪼개져 흩어지는 현장 약어</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w2"><div><div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>모델은 배운 적 없는 말을 <b>글자 단위로 부순다</b>.</div></div>
+  <div class="v"><span class="b">&rarr;</span><div>부서진 조각의 좌표는 <b>원래 뜻과 상관이 없다</b>.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>사내 문서일수록 이런 말이 많다. <b>약점 셋에 하나가 더 붙는다</b>.</div></div>
+</div></div>
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">실제로 쪼갠 결과</span></div><pre><code>리튬         <span class="nm">1</span>조각  [리튬]
+화성공정       <span class="nm">2</span>조각  [화성, ##공정]
+애노드        <span class="nm">3</span>조각  [애, ##노, ##드]
+NCM811     <span class="st">4</span>조각  [NC, ##M, ##81, ##1]
+캘린더링       <span class="st">4</span>조각  [캘, ##린, ##더, ##링]</code></pre></div></div>
+<div class="keymsg"><span class="k">실측</span><div>「제60조」로 의미 검색하면 <b>201등</b>이다. 낱말 검색은 11등이다.</div></div></div>
+</section>
+<section class="slide" data-title="약어 처리 흐름">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>입구</div>
+  <h2 class="s-title sm">검색기가 아니라 입구</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="plot"><svg viewBox="0 0 1116 210">
+<rect x="14" y="24" width="196" height="62" rx="12" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.4"/>
+<text x="34" y="52" font-size="14" font-weight="800" fill="#16142B">1 약어 뽑기</text>
+<text x="34" y="72" font-size="11" fill="#8E8AAC">NCM811 · SEI층 · PP</text>
+<rect x="240" y="24" width="196" height="62" rx="12" fill="#EFEAFF" stroke="#3A1FC9" stroke-width="1.5"/>
+<text x="260" y="52" font-size="14" font-weight="800" fill="#16142B">2 사전 조회</text>
+<text x="260" y="72" font-size="11" fill="#3A1FC9">도구로 부른다</text>
+<rect x="500" y="6" width="300" height="52" rx="11" fill="#EFF9F4" stroke="#BCE3D2" stroke-width="1.3"/>
+<text x="520" y="28" font-size="12.5" font-weight="700" fill="#0B6B4F">하나로 정해지면 — 질문을 넓힌다</text>
+<text x="520" y="46" font-size="11" fill="#8E8AAC">NCM811 니켈 코발트 망간 양극재</text>
+<rect x="500" y="66" width="300" height="52" rx="11" fill="#FFF7E8" stroke="#F0D9A8" stroke-width="1.3"/>
+<text x="520" y="88" font-size="12.5" font-weight="700" fill="#9A6A00">뜻이 둘이면 — 되묻는다</text>
+<text x="520" y="106" font-size="11" fill="#8E8AAC">PP 는 폴리프로필렌인가 생산계획인가</text>
+<rect x="500" y="126" width="300" height="52" rx="11" fill="#FDF1F5" stroke="#F3C6D6" stroke-width="1.3"/>
+<text x="520" y="148" font-size="12.5" font-weight="700" fill="#B01A50">사전에 없으면 — 낱말 검색으로</text>
+<text x="520" y="166" font-size="11" fill="#8E8AAC">그리고 「모르는 말」로 기록에 남긴다</text>
+<rect x="840" y="66" width="262" height="62" rx="12" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.4"/>
+<text x="860" y="94" font-size="14" font-weight="800" fill="#16142B">3 검색 → 근거로 답</text>
+<text x="860" y="114" font-size="11" fill="#8E8AAC">답에 풀이를 같이 적는다</text>
+<defs><marker id="a11" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#3A1FC9"/></marker></defs>
+<path d="M212 55 L236 55" stroke="#3A1FC9" stroke-width="1.8" marker-end="url(#a11)"/>
+<path d="M438 55 L494 32" stroke="#3A1FC9" stroke-width="1.6" marker-end="url(#a11)"/>
+<path d="M438 58 L494 92" stroke="#3A1FC9" stroke-width="1.6" marker-end="url(#a11)"/>
+<path d="M438 62 L494 150" stroke="#3A1FC9" stroke-width="1.6" marker-end="url(#a11)"/>
+<path d="M804 32 L836 88" stroke="#3A1FC9" stroke-width="1.6" marker-end="url(#a11)"/>
+<path d="M804 152 L836 104" stroke="#3A1FC9" stroke-width="1.6" marker-end="url(#a11)"/>
+</svg></div>
+<div class="keymsg"><span class="k">자리</span><div>검색기를 고치는 것보다 <b>입구에서 한 마디 붙이는 편</b>이 싸고 확실하다.</div></div></div>
+</section>
+<section class="slide" data-title="약어 사전 운영">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>운영</div>
+  <h2 class="s-title sm">사전은 코드가 아니라 데이터</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="ctable"><table><thead><tr><th>챙길 것</th><th>왜</th></tr></thead><tbody>
+  <tr><td class="hl">부서로 범위를 나눈다</td><td class="hl">같은 약어가 부서마다 다른 뜻이다 &mdash; <b>PP</b> 는 폴리프로필렌이자 생산계획이다</td></tr>
+  <tr><td>되묻기는 아낀다</td><td>매번 물으면 아무도 안 쓴다. <b>뜻이 둘 이상일 때만</b> 묻는다</td></tr>
+  <tr><td>파일로 둔다</td><td>현업이 엑셀에서 고치면 <b>배포 없이</b> 반영되게 한다</td></tr>
+  <tr><td>모르는 말을 쌓는다</td><td>검색이 빗나간 질의의 미등록 약어가 <b>다음 달 사전 갱신 목록</b>이 된다</td></tr>
+  <tr><td>답에 풀이를 적는다</td><td>「NCM811(니켈 코발트 망간 양극재)」로 답해야 오해가 안 생긴다</td></tr>
+</tbody></table></div>
+<div class="keymsg"><span class="k">현실</span><div>사전을 처음부터 다 채울 수는 없다. <b>쓰면서 자라게</b> 만든다.</div></div></div>
+</section>
+<section class="slide section" data-title="[섹션] 하이브리드 검색">
+  <div class="ghost">01</div>
+  <div class="seyebrow">CHAPTER 01</div>
+  <h2>하이브리드 검색</h2>
+  <div class="agenda"><span>BM25</span><span>순위 합치기</span><span>RRF</span></div>
+</section>
+<section class="slide" data-title="BM25 — ‘정확한 단어’의 달인">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>키워드 검색</div>
+  <h2 class="s-title sm">BM25 — 정확한 낱말의 달인</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div>드문 단어가 문서에 있으면 강한 신호(코드·이름·약어)</div></div><div class="v"><span class="b">→</span><div>의미(패러프레이즈)는 모른다 — 글자 그대로 매칭</div></div></div><div class="callout mint" style="margin-top:16px"><div class="ci" style="font-size:18px"></div><div class="ct"><h4>책 뒤의 ‘색인’</h4><p>책 맨 뒤 색인에서 정확한 단어로 페이지를 찾는 것 — 또는 Ctrl+F. 정확 토큰엔 최고, 동의어엔 약하다.</p></div></div></div>
+</section>
+<section class="slide" data-title="BM25 해부 ② — TF">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>BM25 해부 ②</div>
+  <h2 class="s-title sm">TF — 자주 나온 낱말의 무게</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="imgwrap"><img src="assets/fig01.webp" alt="TF 예시 — 파이썬이 여러 번 등장한 문서 A는 점수 높음, 한 번 등장한 문서 B는 점수 낮음"/></div><div class="keymsg" style="margin-top:14px"><span class="k">TF</span><div>문서 안에서 <b>자주 등장할수록</b> 점수가 오른다. 단, 도배한다고 무한정 오르진 않는다 — 갈수록 완만해진다(포화).</div></div></div>
+</section>
+<section class="slide" data-title="BM25 해부 ③ — IDF">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>BM25 해부 ③</div>
+  <h2 class="s-title sm">IDF — 드문 낱말의 무게</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="imgwrap"><img src="assets/fig02.webp" alt="IDF 예시 — 전체 문서 집합에서 입문이라는 단어가 소수 문서에만 등장해 더 중요하게 취급됨"/></div><div class="keymsg" style="margin-top:14px"><span class="k">IDF</span><div>여러 문서에 <b>흔치 않은 단어일수록</b> 강한 신호 — ‘ERR-4021’ 같은 희귀 토큰이 BM25에서 강력한 이유가 바로 이것.</div></div></div>
+</section>
+<section class="slide" data-title="BM25 해부 ④ — 길이 보정">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>BM25 해부 ④</div>
+  <h2 class="s-title sm">길이 보정</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="imgwrap"><img src="assets/fig03.webp" alt="길이 보정 예시 — 관련성이 같아도 매우 긴 문서는 0.62, 중간 길이는 0.78, 짧은 문서는 0.45로 보정"/></div><div class="keymsg" style="margin-top:14px"><span class="k">길이 보정</span><div>단어가 많은 긴 문서는 우연히 걸릴 확률도 크다 — 그래서 <b>너무 긴 문서는 점수를 보정</b>해 공정하게 비교한다.</div></div></div>
+</section>
+<section class="slide" data-title="BM25 해부 ⑤ — 한눈에">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>BM25 해부 ⑤</div>
+  <h2 class="s-title sm">매칭 → 점수 → 순위</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="imgwrap"><img src="assets/fig04.webp" alt="BM25 전체 흐름 — 단어 매칭, 빈도와 희소성으로 점수 계산, 최종 점수로 순위를 매겨 검색 결과 반환"/></div><div class="keymsg" style="margin-top:14px"><span class="k">정리</span><div>① 단어 매칭 → ② 빈도(TF) × 희소성(IDF) + 길이 보정 → ③ 최종 점수로 순위. <b>이 세 재료가 곧 BM25</b>다.</div></div></div>
+</section>
+<section class="slide" data-title="하이브리드 — 둘을 같이 돌린다">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>합치기</div>
+  <h2 class="s-title sm">두 검색기를 같이</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twopane"><div class="pane"><h4 style="color:var(--violet)">BM25(키워드)</h4><p>정확 토큰에 강함.</p></div><div class="pane good"><h4>벡터(의미)</h4><p>패러프레이즈에 강함.</p></div></div><div class="callout mint" style="margin-top:16px"><div class="ci" style="font-size:18px"></div><div class="ct"><h4>두 사서에게 동시에 묻기</h4><p>한 명은 ‘키워드 달인’, 한 명은 ‘주제 달인’. 둘에게 동시에 묻고 <b>추천을 합치면</b> 빠지는 게 줄어든다.</p></div></div></div>
+</section>
+<section class="slide" data-title="문제 — 두 점수는 못 더한다">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>융합</div>
+  <h2 class="s-title sm">더할 수 없는 두 점수</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">!</span><div>BM25 점수와 코사인 점수는 <b>척도(단위)가 다르다</b></div></div><div class="v"><span class="b">!</span><div>그냥 더하면 한쪽이 다른 쪽을 압도</div></div></div><div class="callout mint" style="margin-top:16px"><div class="ci" style="font-size:18px"></div><div class="ct"><h4>서로 다른 시험의 점수</h4><p>국어 원점수와 수학 원점수는 못 더한다 — 대신 <b>‘석차(등수)’</b>로 합치면 공정하다. 그게 RRF의 발상.</p></div></div></div>
+</section>
+<section class="slide" data-title="RRF — 점수가 아니라 ‘순위’로 합친다">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>RRF</div>
+  <h2 class="s-title sm">RRF — 순위로 합치기</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w2"><div class="formula"><div class="big">score(d) = Σ 1 / (k + 순위<sub>i</sub>(d))</div><div style="color:var(--code-dim);font-size:12.5px;text-align:center;line-height:1.6">k=60 (대개 그대로)<br/>두 목록에서 ‘위에’ 오를수록 높은 점수</div></div><div><div class="vlist"><div class="v"><span class="b"></span><div>순위만 보므로 <b>척도 문제 없음</b></div></div><div class="v"><span class="b"></span><div>양쪽에서 고르게 높은 문서가 이긴다</div></div><div class="v"><span class="b"></span><div>단순하고 잘 안 깨져서 <b>실무 기본</b>으로 쓴다</div></div></div></div></div><div class="keymsg"><span class="k">기본값</span><div>k 는 <b>60</b> 을 그대로 쓴다. 손댈 일이 거의 없다.</div></div></div>
+</section>
+<section class="slide" data-title="RRF 규칙 — 위일수록 큰 점수">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>RRF · 규칙</div>
+  <h2 class="s-title sm">위에 있을수록 큰 점수</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="imgwrap"><img src="assets/fig05.webp" alt="RRF 핵심 규칙 — 각 목록에서 1위는 가장 큰 점수, 2위는 그보다 작은 점수를 받아 모든 목록의 점수를 합산"/></div><div class="keymsg" style="margin-top:14px"><span class="k">규칙</span><div>규칙은 하나 — <b>위에 있을수록 큰 점수</b>를 주고, 모든 목록의 점수를 더한다. 목록이 BM25·벡터·태그, 셋이어도 똑같이 작동한다.</div></div></div>
+</section>
+<section class="slide" data-title="RRF 예시 — 점수 합산표">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>RRF · 예시</div>
+  <h2 class="s-title sm">양쪽에서 높은 문서의 승리</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="imgwrap"><img src="assets/fig06.webp" alt="RRF 점수표 — 문서 A는 BM25와 벡터 검색 모두 상위라 합계가 가장 높아 1위가 됨"/></div><div class="keymsg" style="margin-top:14px"><span class="k">예시</span><div>문서 A는 <b>양쪽 모두 상위</b>라 합계가 가장 크다 — 한쪽에서만 높은 문서 B보다 안정적으로 위로 올라간다.</div></div></div>
+</section>
+<section class="slide" data-title="코드 미리보기 — 하이브리드 + RRF">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">CH1</span><span class="dot"></span>실습 코드 · 융합</div>
+  <h2 class="s-title sm">하이브리드 + RRF 코드</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">rrf.py</span></div><pre><code>def rrf(rank_lists, k=60):
+    score = {}
+    for ranks in rank_lists:
+        for r, i in enumerate(ranks):
+            score[i] = score.get(i, 0) + 1/(k + r + 1)   <span class="cm"># 위일수록 큰 점수</span>
+    return sorted(score, key=lambda i: -score[i])
+
+def hybrid(q, n=10):        <span class="cm"># 벡터(뜻) + BM25(정확 토큰)를 순위로 합친다</span>
+    return rrf([vector_search_idx(q, n), bm25_search(q, n)])[:n]</code></pre></div><div class="lab-badge" style="margin-top:12px"><span class="sq"></span>벡터만 / BM25만 / 하이브리드의 1위가 어떻게 다른가</div></div>
+</section>
+<section class="slide section" data-title="[섹션] 리랭커">
+  <div class="ghost">02</div>
+  <div class="seyebrow">CHAPTER 02</div>
+  <h2>리랭커</h2>
+  <div class="agenda"><span>2단계 검색</span><span>Cross-Encoder</span><span>N 에서 K 로</span></div>
+</section>
+<section class="slide" data-title="‘유사도 1등’이 진짜 1등이 아닐 때">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>문제</div>
+  <h2 class="s-title sm">유사도 1등과 진짜 1등</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">!</span><div>벡터/BM25는 <b>빠르지만 거칠게</b> 줄을 세운다</div></div><div class="v"><span class="b">→</span><div>관련 있는 후보는 모았으니, 이제 <b>정밀하게 다시</b> 줄세우자</div></div></div><div class="keymsg"><span class="k">아이디어</span><div>넓게 줍고(1차) → 꼼꼼히 고른다(2차). 그 2차가 <b>reranker</b>.</div></div></div>
+</section>
+<section class="slide" data-title="Reranker 개요">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>Reranker · 개요</div>
+  <h2 class="s-title sm">리랭커가 하는 일</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="imgwrap"><img src="assets/fig07.webp" alt="Reranker 개요 — 초기 검색 결과를 다시 평가해 더 관련 높은 순서로 재정렬하는 그림"/></div><div class="keymsg" style="margin-top:14px"><span class="k">핵심</span><div>1차 검색이 준 목록을 <b>다시 평가해서 줄을 다시 세운다</b> — 이 재채점 담당이 reranker다. 실제로 순위가 어떻게 바뀌는지 보자.</div></div></div>
+</section>
+<section class="slide" data-title="Bi vs Cross — 같은 질문, 다른 채점">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>구조 차이 · 예시</div>
+  <h2 class="s-title sm">따로 보기와 나란히 보기</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="phase-label">질문 — "스마트폰 충전할 때 맥북 충전기 써도 고장 안 나나요?" <span class="ln"></span></div>
+    <div class="twopane" style="margin-top:12px">
+      <div class="pane">
+        <h4 style="color:var(--violet)">Bi-Encoder — 따로 인코딩</h4>
+        <p>질문과 문서를 <b>각각 따로</b> 벡터로 만든 뒤, 벡터끼리 코사인 유사도로 빠르게 비교한다.</p>
+        <div class="mini" style="margin-top:8px">질문 &nbsp;→ [0.21, -0.41, 0.33, …]<br>문서3 → [0.65, -0.10, 0.80, …]<br>cos(질문, 문서3) = 0.89</div>
+        <div class="chips" style="margin-top:10px"><span class="chip">문서1 <b>0.12</b></span><span class="chip">문서2 <b>0.28</b></span><span class="chip">문서3 <b>0.89</b></span></div>
+        <p style="margin-top:9px;font-size:12px;color:var(--mut)">매우 빠름 · 대량 검색에 유리 · 단어 수준 유사도의 한계</p>
+      </div>
+      <div class="pane good">
+        <h4>Cross-Encoder — 함께 입력</h4>
+        <p>질문과 문서를 <b>함께</b> 모델에 넣어 문맥까지 이해한 뒤 관련도를 점수화한다.</p>
+        <div class="mini" style="margin-top:8px">(질문 + 문서1) → 0.12<br>(질문 + 문서2) → 0.28<br>(질문 + 문서3) → 0.98</div>
+        <div class="chips" style="margin-top:10px"><span class="chip">최종 순위 <b>문서3 &gt; 문서2 &gt; 문서1</b></span></div>
+        <p style="margin-top:9px;font-size:12px;color:var(--mut)">정확도 높음 · 문맥 이해 · 연산 비용↑(느림)</p>
+      </div>
+    </div>
+    <div class="keymsg"><span class="k">그래서</span><div>1차 검색은 빠른 <b>Bi-Encoder</b>로 넓게, 재정렬은 정확한 <b>Cross-Encoder</b>로 소수만 — 넓게 줍고 정밀하게 고른다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="Reranker = ‘면접’ 단계">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>핵심 비유</div>
+  <h2 class="s-title sm">면접 단계</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">1차</span><div><b>서류전형</b> — 많이·빠르게 추린다(검색, N개)</div></div><div class="v"><span class="b">2차</span><div><b>면접</b> — 소수를 꼼꼼히 다시 평가(reranker, K개)</div></div></div></div><div class="callout mint" style="flex-direction:column"><div class="ci" style="font-size:18px">‍</div><div class="ct"><h4>왜 둘 다</h4><p>모두를 면접할 순 없다(느림). 서류로 <b>좁힌 뒤</b> 면접한다 — 그래서 ‘2단계’.</p></div></div></div></div>
+</section>
+<section class="slide" data-title="2단계 검색 한눈에">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>Reranker · 2단계</div>
+  <h2 class="s-title sm">넓게 찾고 정밀하게 고르기</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="imgwrap"><img src="assets/fig08.webp" alt="2단계 검색 — 1차 검색으로 넓게 후보를 모으고 Top-k만 reranker가 정교하게 재평가해 최종 상위 결과를 만드는 그림"/></div><div class="keymsg" style="margin-top:14px"><span class="k">2단계</span><div>전부 정밀 채점하면 느리다 — <b>1차로 넓게 줍고, 상위 후보만 reranker가 다시</b> 본다. ‘서류 → 면접’ 그대로. 그럼 몇 명을 올릴까(다음 장).</div></div></div>
+</section>
+<section class="slide" data-title="코드 미리보기 — Cross-Encoder 재정렬">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">CH2</span><span class="dot"></span>실습 코드 · 재정렬</div>
+  <h2 class="s-title sm">Cross-Encoder 재정렬 코드</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">rerank.py</span></div><pre><code>from sentence_transformers import CrossEncoder
+rk = CrossEncoder(&quot;cross-encoder/mmarco-mMiniLMv2-L12-H384-v1&quot;)   <span class="cm"># 로컬·다국어</span>
+
+def rerank(q, cand, top_k=3):
+    sc = rk.predict([(q, texts[i]) for i in cand])   <span class="cm"># (질문, 문서)를 함께 읽음</span>
+    order = sorted(range(len(cand)), key=lambda j: -sc[j])
+    return [cand[j] for j in order[:top_k]]
+
+best = rerank(q, hybrid(q, 12), top_k=3)   <span class="cm"># 넓게 N → 정밀 K</span></code></pre></div><div class="lab-badge" style="margin-top:12px"><span class="sq"></span>rerank 전/후 Top-3 순서가 어떻게 바뀌는가</div></div>
+</section>
+<section class="slide" data-title="넓게 줍고(N) → 정밀하게 고른다(K)">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>파이프라인</div>
+  <h2 class="s-title sm">넓게 줍는 N 과 정밀하게 고르는 K</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="body top" style="padding:0"></div><div class="pipe"><div class="step"><div class="si">①</div><div class="sn">하이브리드</div><div class="sd">후보 N≈50</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">②</div><div class="sn">Reranker</div><div class="sd">관련성 재채점</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">③</div><div class="sn">Top-K</div><div class="sd">최종 K≈5</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">④</div><div class="sn">생성</div><div class="sd">근거로 답</div></div></div></div>
+</section>
+<section class="slide section" data-title="[섹션] 질문 바꾸기">
+  <div class="ghost">03</div>
+  <div class="seyebrow">CHAPTER 03</div>
+  <h2>질문 바꾸기</h2>
+  <div class="agenda"><span>HyDE</span><span>Multi-Query</span><span>검색 앞단</span></div>
+</section>
+<section class="slide" data-title="모호한 질문이 검색을 흔든다">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>문제 다시</div>
+  <h2 class="s-title sm">모호한 질문의 값</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">!</span><div>짧고 막연한 질문은 ‘방향’이 흐릿하다</div></div><div class="v"><span class="b">→</span><div>질문을 <b>더 또렷하게 다듬어</b> 검색하면 잘 맞는다</div></div></div><div class="keymsg"><span class="k">두 방법</span><div>‘가상 답으로 검색’(HyDE)과 ‘여러 표현으로 검색’(Multi-Query).</div></div></div>
+</section>
+<section class="slide" data-title="HyDE — 가상의 답으로 검색한다">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>HyDE</div>
+  <h2 class="s-title sm">HyDE — 가상의 답으로 검색</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">1</span><div>질문 → LLM이 ‘가상 답변’ 작성</div></div><div class="v"><span class="b">2</span><div>그 답변을 임베딩해 검색</div></div><div class="v"><span class="b">3</span><div>질문보다 ‘문서다운’ 표현이라 매칭↑</div></div><div class="callout mint" style="margin-top:16px"><div class="ci" style="font-size:18px"></div><div class="ct"><h4>찾을 그림을 먼저 스케치</h4><p>머릿속 그림이 흐릿하면, 먼저 대충 <b>스케치</b>를 그려서 그 그림과 닮은 자료를 찾는다. 스케치가 조금 틀려도 괜찮다 — ‘찾기용 미끼’일 뿐.</p></div></div></div></div></section>
+<section class="slide" data-title="HyDE 왜 통하나">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>HyDE · 왜</div>
+  <h2 class="s-title sm">짧은 질문을 풍부한 문서로</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="imgwrap"><img src="assets/fig09.webp" alt="HyDE 동기 — 초보용 파이썬 강의라는 짧은 질문을 직접 검색하면 약하지만, LLM이 만든 풍부한 가상 문서로 검색하면 관련도 0.92의 결과를 얻는 비교"/></div><div class="keymsg" style="margin-top:14px"><span class="k">의미 확장</span><div>“초보용 파이썬 강의” 같은 <b>짧은 질문은 그대로 검색하면 약하다</b> — LLM이 만든 ‘풍부한 가상 문서’로 검색하면 관련도가 확 오른다.</div></div></div>
+</section>
+<section class="slide" data-title="코드 미리보기 — HyDE">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">CH3</span><span class="dot"></span>실습 코드 · 질의 변환</div>
+  <h2 class="s-title sm">HyDE 코드</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">hyde.py</span></div><pre><code>def ask(prompt, temperature=0.3):        <span class="cm"># NVIDIA build(Qwen)로 생성</span>
+    out = llm.chat.completions.create(model=LLM_MODEL, temperature=temperature,
+        messages=[{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: prompt}]).choices[0].message.content
+    return out.split(&quot;&lt;/think&gt;&quot;)[-1].strip()
+
+def hyde_search(q, n=5):
+    hypo = ask(f&quot;다음 질문에 짧게 그럴듯한 답을 써줘:\n{q}&quot;)   <span class="cm"># 가상 답변 생성</span>
+    return vector_search_idx(hypo, n)                        <span class="cm"># 그 답으로 검색</span></code></pre></div><div class="lab-badge" style="margin-top:12px"><span class="sq"></span>&#x27;질문 그대로&#x27; vs &#x27;HyDE&#x27; 결과 차이를 비교</div></div>
+</section>
+<section class="slide" data-title="RAG 속 HyDE">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>HyDE · 위치</div>
+  <h2 class="s-title sm">검색 앞단의 변환기</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="imgwrap"><img src="assets/fig10.webp" alt="RAG 파이프라인 속 HyDE — 질문을 가상 답변으로 바꾼 뒤 벡터 검색과 생성 단계로 이어지는 그림"/></div><div class="keymsg" style="margin-top:14px"><span class="k">위치</span><div>HyDE는 <b>검색 앞단</b>에 꽂힌다 — 검색 전에 질문을 ‘검색 친화적인 문서’로 바꾸는 단계일 뿐, 뒤의 검색·생성은 그대로다.</div></div></div>
+</section>
+<section class="slide" data-title="여러 각도로 묻기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>Multi-Query · 분해</div>
+  <h2 class="s-title sm">여러 각도로 묻기</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="cards c2"><div class="card"><h3>Multi-Query</h3><p>같은 질문을 <b>여러 표현</b>으로 바꿔 각각 검색 → 합친다(RRF).</p></div><div class="card"><h3>질문 분해</h3><p>복합 질문을 <b>작은 하위 질문</b>으로 쪼개 각각 검색·종합.</p></div></div><div class="callout mint" style="margin-top:16px"><div class="ci" style="font-size:18px"></div><div class="ct"><h4>검색어를 바꿔 던지는 사람</h4><p>검색 잘하는 사람은 한 번에 안 나오면 <b>말을 바꿔</b> 다시 검색한다. 그걸 자동으로 — 여러 표현이 서로 다른 자료를 데려온다.</p></div></div></div>
+</section>
+<section class="slide" data-title="코드 미리보기 — Multi-Query">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">CH3</span><span class="dot"></span>실습 코드 · 질의 변환</div>
+  <h2 class="s-title sm">Multi-Query 코드</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">multiquery.py</span></div><pre><code>def multi_query(q, n=6):
+    raw = ask(f&quot;질문을 뜻은 같되 표현이 다른 3개로 바꿔줘:\n{q}&quot;, temperature=0.7)
+    variants = [q] + [l.strip() for l in raw.splitlines() if l.strip()][:3]
+    return rrf([vector_search_idx(v, n) for v in variants])[:n]   <span class="cm"># 합쳐 하나로</span></code></pre></div><div class="lab-badge" style="margin-top:12px"><span class="sq"></span>변형 질의들이 서로 다른 청크를 데려오는가</div></div>
+</section>
+<section class="slide section" data-title="[섹션] 무엇을 어떤 순서로">
+  <div class="ghost">04</div>
+  <div class="seyebrow">CHAPTER 04</div>
+  <h2>무엇을 어떤 순서로</h2>
+  <div class="agenda"><span>MMR</span><span>재배치</span><span>측정</span></div>
+</section>
+<section class="slide" data-title="좋은 후보를 모았어도…">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>문제</div>
+  <h2 class="s-title sm">좋은 후보를 모았어도</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist"><div class="v"><span class="b">!</span><div>비슷한 청크만 K개 담기면 <b>같은 얘기 반복</b></div></div><div class="v"><span class="b">!</span><div>중요한 근거가 <b>가운데 묻히면</b> 모델이 놓침</div></div></div><div class="keymsg"><span class="k">그래서</span><div>검색 ‘후’에도 컨텍스트를 다듬는다 — 다양성·순서·중복.</div></div></div>
+</section>
+<section class="slide" data-title="MMR — 서로 다른 관점을 담는다">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>다양성</div>
+  <h2 class="s-title sm">MMR — 서로 다른 관점을</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="callout amber" style="margin-top:16px"><div class="ci">?</div><div class="ct"><h4>MMR = Maximal Marginal Relevance (최대 한계 관련성)</h4><p>다음 후보를 고를 때 <b>질문과의 관련도</b>만 보지 않고, <b>이미 고른 것과 얼마나 겹치는지</b>를 함께 봐서 고른다.</p></div></div><div class="callout mint"><div class="ci" style="font-size:18px"></div><div class="ct"><h4>같은 책 5권 vs 다른 책 5권</h4><p>같은 내용 5권을 담으면 새 정보가 없다. <b>관련은 있되 서로 다른</b> 5권을 고르는 게 MMR — 중복 대신 폭을 준다.</p></div></div><div class="keymsg"><span class="k">점수</span><div><b>λ·(질문 관련도) − (1−λ)·(이미 뽑은 것과의 최대 중복)</b> · λ=1이면 관련도만, 낮출수록 다양성↑</div></div></div>
+</section>
+<section class="slide" data-title="MMR 한눈에">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>MMR · 그림</div>
+  <h2 class="s-title sm">같은 얘기 다섯과 다른 정보 다섯</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="imgwrap"><img src="assets/fig11.webp" alt="MMR 비교 — 유사도만으로 고르면 같은 내용의 문서만 반복되지만 MMR은 환불 기한, 신청 방법, 예외 품목, 처리 기간, 카드 취소처럼 서로 다른 정보를 담음"/></div><div class="keymsg" style="margin-top:14px"><span class="k">핵심</span><div>유사도만 보면 비슷한 문서 5개가 <b>같은 얘기만 반복</b> — MMR은 기한·방법·예외·기간·취소처럼 <b>서로 다른 정보</b>를 골라 담는다.</div></div></div>
+</section>
+<section class="slide" data-title="재배치 — 중요한 건 처음과 끝에">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>순서</div>
+  <h2 class="s-title sm">중요한 것은 처음과 끝에</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="callout mint" style="margin-top:16px"><div class="ci" style="font-size:18px"></div><div class="ct"><h4>발표의 처음과 끝</h4><p>발표에서 청중은 <b>처음과 끝</b>을 기억하고 가운데는 흐릿하다(‘lost in the middle’). 그래서 핵심 근거를 앞·뒤에 배치한다.</p></div></div><div class="callout"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h10M4 18h7"/></svg></div><div class="ct"><h4>중복 제거</h4><p>여러 검색 경로에서 온 <b>같은 청크</b>는 합쳐 토큰을 아낀다.</p></div></div></div>
+</section>
+<section class="slide" data-title="재배치 한눈에">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>재배치 · 그림</div>
+  <h2 class="s-title sm">핵심 근거를 앞뒤로</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="imgwrap"><img src="assets/fig12.webp" alt="재배치 — 모델의 주의력이 처음과 끝에서 강하고 가운데서 약한 U자 곡선에 맞춰 핵심 근거 A와 B를 맨 앞과 맨 뒤로 이동"/></div><div class="keymsg" style="margin-top:14px"><span class="k">U자 곡선</span><div>모델의 주의력은 <b>처음과 끝에서 강하고 가운데서 흐려진다</b>(lost in the middle) — 그래서 핵심 근거 A·B를 맨 앞과 맨 뒤로 옮긴다.</div></div></div>
+</section>
+<section class="slide" data-title="검색 품질을 무엇으로 판단하나">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>측정</div>
+  <h2 class="s-title sm">검색 품질을 무엇으로 재나</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable"><thead><tr><th style="width:44%">무엇을</th><th>어떻게</th></tr></thead><tbody>
+      <tr><td>검색이 정답을 가져왔는가</td><td class="hl">Recall@k · MRR — 오프라인 지표</td></tr>
+      <tr><td>생성이 근거대로 답했는가</td><td class="hl">근거 충실도 · 환각 여부 — 사람 또는 LLM 채점</td></tr>
+    </tbody></table>
+    <div class="keymsg"><span class="k">기억</span><div>측정할 수 있어야 개선할 수 있다. 먼저 작은 평가셋(질문과 정답)을 만들면 이후 실험을 모두 숫자로 비교할 수 있다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="Recall@k 와 MRR">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>측정</div>
+  <h2 class="s-title sm">Recall@k 와 MRR</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable"><thead><tr><th style="width:20%">지표</th><th>정의</th><th style="width:24%">의미</th></tr></thead><tbody>
+      <tr><td class="hl">Recall@k</td><td>상위 k개 안에 정답이 하나라도 있으면 성공 — 성공한 질문의 비율</td><td>정답을 놓치지 않았는가</td></tr>
+      <tr><td class="hl">MRR</td><td>정답이 처음 등장한 순위의 역수를 평균 (1위 1.0, 2위 0.5)</td><td>정답을 상위에 두었는가</td></tr>
+    </tbody></table>
+    <div class="keymsg"><span class="k">핵심</span><div>Recall이 같아도 정답을 1위에 둔 쪽이 MRR이 높다. 리랭커의 효과가 여기서 드러난다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="주요 파라미터 조정">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>튜닝</div>
+  <h2 class="s-title sm">chunk_size · top_k · N→K</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable"><thead><tr><th style="width:26%">파라미터</th><th>크게 하면</th><th>작게 하면</th></tr></thead><tbody>
+      <tr><td class="hl">chunk_size</td><td>문맥이 넉넉하지만 노이즈가 는다</td><td>정밀하지만 문맥이 잘린다</td></tr>
+      <tr><td class="hl">top_k (검색 개수)</td><td>놓칠 확률은 줄지만 노이즈가 는다</td><td>깔끔하지만 정답 누락 위험</td></tr>
+      <tr><td class="hl">N → K (리랭커)</td><td>N을 넓게 주울수록 기회는 늘고 느려진다</td><td>K를 좁힐수록 정밀해진다</td></tr>
+    </tbody></table>
+    <div class="keymsg"><span class="k">방법</span><div>몇 개 값을 바꿔 돌려보고(chunk_size 80·120·200 × top_k 1·3·5) Recall과 MRR이 가장 높은 조합을 고른다. 이것이 RAG 하이퍼파라미터 튜닝이다. <span style="color:var(--mut)">자동 탐색 도구를 쓰기도 한다</span></div></div>
+  </div>
+</section>
+<section class="slide" data-title="파이프라인 완성">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>파이프라인 완성</div>
+  <h2 class="s-title sm">오늘의 검색 파이프라인</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="bpipe"><div class="bstep" style="--bg:#E4F8F4;--bd:#9FDCD2;--ck:#0FB5A1"><span class="chip2">스케치·여러 말</span><div class="bic"></div><div class="bn">질문 다듬기</div><div class="bd">모호할 때만 ON</div></div><div class="ar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M9 18l6-6-6-6"/></svg></div><div class="bstep" style="--bg:#E7F0FE;--bd:#A9C9F8;--ck:#2F7FF0"><span class="chip2">두 사서</span><div class="bic"></div><div class="bn">두 사서 검색</div><div class="bd">BM25 + 벡터</div></div><div class="ar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M9 18l6-6-6-6"/></svg></div><div class="bstep" style="--bg:#E6F6EC;--bd:#A5DFC0;--ck:#22A45D"><span class="chip2">석차 합산</span><div class="bic"></div><div class="bn">등수로 합침</div><div class="bd">RRF</div></div><div class="ar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M9 18l6-6-6-6"/></svg></div><div class="bstep" style="--bg:#EFEAFF;--bd:#C4B6FB;--ck:#5B3DF5"><span class="chip2">서류→면접</span><div class="bic">‍</div><div class="bn">면접</div><div class="bd">Reranker · N→K</div></div><div class="ar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M9 18l6-6-6-6"/></svg></div><div class="bstep" style="--bg:#FEF3E0;--bd:#F8D9A4;--ck:#F4A93C"><span class="chip2">책 고르기</span><div class="bic"></div><div class="bn">골라 담기</div><div class="bd">MMR·재배치</div></div><div class="ar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M9 18l6-6-6-6"/></svg></div><div class="bstep" style="--bg:#FDEEF3;--bd:#F5BBCB;--ck:#E8537A"><span class="chip2">답안</span><div class="bic"></div><div class="bn">생성</div><div class="bd">근거로 답</div></div></div><div class="callout mint" style="margin-top:6px"><div class="ci" style="font-size:18px"></div><div class="ct"><h4>이제 전부 연결됐다</h4><p>마지막 블록까지 끼웠다 — 겹치는 후보 대신 <b>서로 다른 근거</b>를 담고(MMR), 핵심은 <b>처음과 끝</b>에 배치한다. 블록 ①은 모호한 질문에만 켠다.</p></div></div><div class="keymsg"><span class="k">기억</span><div>랩에서 이 지도를 <b>블록당 함수 하나</b>로 그대로 조립한다 — 왼쪽부터 순서대로.</div></div></div>
+</section>
+<section class="slide section" data-title="[섹션] GraphRAG">
+  <div class="ghost">05</div>
+  <div class="seyebrow">CHAPTER 05</div>
+  <h2>GraphRAG</h2>
+  <div class="agenda"><span>노드와 엣지</span><span>멀티홉</span><span>Local · Global</span></div>
+</section>
+<section class="slide" data-title="벡터 RAG가 약한 또 다른 질문">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>또 다른 약점</div>
+  <h2 class="s-title sm">이어지지 않는 흩어진 사실</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c2">
+      <div class="card"><span class="n">멀티홉</span><h3>여러 문서에 걸친 답</h3><p>“A의 제조사 대표는?” — 한 청크에 다 없고 <b>연결</b>해야 풀린다.</p></div>
+      <div class="card"><span class="n">전체 주제</span><h3>큰 그림·요약</h3><p>“이 보고서들의 공통 주제는?” — <b>전체</b>를 봐야 답할 수 있다.</p></div>
+    </div>
+    <div class="callout mint" style="margin-top:16px"><div class="ci" style="font-size:18px"></div><div class="ct"><h4>흩어진 메모 더미</h4><p>벡터 RAG는 ‘비슷한 메모’를 꺼내올 뿐, 메모끼리의 <b>연결</b>은 보지 못한다. 그래서 ‘연결·전체’ 질문에 약하다.</p></div></div>
+  </div>
+</section>
+<section class="slide" data-title="노드 — 그래프의 점">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>지식그래프 ① 노드</div>
+  <h2 class="s-title sm">노드 — 그래프의 점</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="imgwrap"><img src="assets/fig13.webp" alt="노드 예시 — 이순신(인물), 조선(국가), 한산도(장소), 한산도 대첩(사건), 1592년(연도), 류성룡(인물)"/></div><div class="keymsg" style="margin-top:14px"><span class="k">핵심</span><div>사람 · 나라 · 장소 · 사건 · 연도… <b>정보의 대상 하나하나가 노드</b>다. ‘이순신’도 ‘1592년’도 각각 하나의 점.</div></div></div>
+</section>
+<section class="slide" data-title="엣지 — 관계의 선">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>지식그래프 ② 엣지</div>
+  <h2 class="s-title sm">엣지 — 관계의 선</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="imgwrap"><img src="assets/fig14.webp" alt="엣지 예시 — 이순신이 조선에 소속, 한산도 대첩을 주도, 1592년에 활동, 한산도에서 전투, 류성룡에게 조언을 받음"/></div><div class="keymsg" style="margin-top:14px"><span class="k">핵심</span><div>‘이순신 ―소속→ 조선’, ‘이순신 ―주도→ 한산도 대첩’처럼 <b>의미 있는 연결</b>이 엣지 — 선에 붙은 말이 관계의 이름이다.</div></div></div>
+</section>
+<section class="slide" data-title="지식그래프 — 점과 선을 이으면">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>지식그래프 ③ 완성</div>
+  <h2 class="s-title sm">점과 선을 이으면 관계도</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="imgwrap"><img src="assets/fig15.webp" alt="문서 더미에서 노드와 엣지를 추출해 이순신 중심의 지식그래프를 만드는 그림"/></div><div class="keymsg" style="margin-top:14px"><span class="k">핵심</span><div>문서 더미에서 노드와 엣지를 뽑아 이으면 <b>지식그래프</b> — 드라마 인물관계도를 문서로부터 자동으로 그리는 셈이다.</div></div></div>
+</section>
+<section class="slide" data-title="어떻게 만드나 — LLM이 관계를 뽑는다">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>인덱싱</div>
+  <h2 class="s-title sm">LLM 이 뽑아내는 관계</h2>
+  <div class="rule"></div>
+  <div class="body top">
+    <div class="pipe">
+      <div class="step"><div class="si">①</div><div class="sn">문서</div><div class="sd">원문</div></div>
+      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="step"><div class="si">②</div><div class="sn">LLM 추출</div><div class="sd">엔티티·관계</div></div>
+      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="step"><div class="si">③</div><div class="sn">지식 그래프</div><div class="sd">점·선</div></div>
+      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="step"><div class="si">④</div><div class="sn">커뮤니티</div><div class="sd">그룹화</div></div>
+    </div>
+    <div class="callout amber" style="margin-top:20px"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>대가 — 인덱싱이 무겁다</h4><p>문서마다 LLM이 관계를 뽑으므로 <b>비용·시간↑</b>. 그래서 ‘한 번 잘’ 만들어 두고 재사용한다.</p></div></div>
+  </div>
+</section>
+<section class="slide" data-title="코드 미리보기 — 지식그래프 만들기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag mint">CH5</span><span class="dot"></span>실습 코드 · 인덱싱</div>
+  <h2 class="s-title sm">지식그래프 만들기 코드</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">graph.py</span></div><pre><code>import json, networkx as nx
+
+def extract_triples(docs):                 <span class="cm"># LLM으로 (주체, 관계, 대상) 추출</span>
+    raw = ask(&quot;각 문장에서 (주체,관계,대상)을 JSON 배열로:\n&quot; + &quot;\n&quot;.join(docs))
+    return [tuple(t) for t in json.loads(raw)]
+
+G = nx.DiGraph()
+for s, r, o in extract_triples(graph_docs):
+    G.add_edge(s, o, rel=r)                <span class="cm"># 노드=엔티티, 엣지=관계</span>
+<span class="cm"># 질문 속 엔티티에서 2-hop 경로를 따라 답변한다 (멀티홉)</span></code></pre></div><div class="lab-badge" style="margin-top:12px"><span class="sq"></span>트리플 추출 → 그래프 → 2-hop 경로로 멀티홉 답변</div></div>
+</section>
+<section class="slide" data-title="커뮤니티 & 요약">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>커뮤니티</div>
+  <h2 class="s-title sm">비슷한 점들을 묶어 요약</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="vlist">
+      <div class="v"><span class="b">묶기</span><div>가까이 연결된 엔티티들을 <b>커뮤니티(그룹)</b>로</div></div>
+      <div class="v"><span class="b">요약</span><div>각 커뮤니티를 한 편의 <b>요약 리포트</b>로</div></div>
+      <div class="v"><span class="b">지도</span><div>전체 데이터의 <b>‘큰 그림 지도’</b>가 생긴다</div></div>
+    </div>
+    <div class="callout mint" style="margin-top:16px"><div class="ci" style="font-size:18px"></div><div class="ct"><h4>동아리별 소개글</h4><p>비슷한 사람들을 동아리로 묶고 ‘이 동아리는 무엇’ 한 줄 요약 — 전체를 빠르게 파악하는 방식과 같다.</p></div></div>
+  </div>
+</section>
+<section class="slide" data-title="멀티홉 — 관계를 따라간다">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>멀티홉 추론</div>
+  <h2 class="s-title sm">멀티홉 — 관계를 따라가면</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="imgwrap"><img src="assets/fig16.webp" alt="멀티홉 예시 — 이순신이 주도한 한산도 대첩의 전투 장소를 따라가 한산도라는 답에 도달"/></div><div class="keymsg" style="margin-top:14px"><span class="k">2-HOP</span><div>“이순신이 활동한 전투 지역은?” — 한 문장에 답이 없어도 <b>주도 → 전투 장소</b> 두 걸음이면 ‘한산도’에 닿는다. 친구의 친구 찾기 — 랩에선 X-200 → 제조사 → 대표로 직접 해본다.</div></div></div>
+</section>
+<section class="slide" data-title="GraphRAG — 경로가 곧 근거">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>GraphRAG 원리</div>
+  <h2 class="s-title sm">지나온 경로가 곧 근거</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="imgwrap"><img src="assets/fig17.webp" alt="GraphRAG 원리 — 질문 속 엔티티 이순신에서 출발해 그래프를 탐색하고 연결 경로를 근거로 함께 제시"/></div><div class="keymsg" style="margin-top:14px"><span class="k">원리</span><div>질문 속 엔티티(이순신)에서 출발해 그래프를 탐색하고, <b>연결 경로를 근거로 함께</b> 내놓는다 — 답이 ‘어떻게’ 나왔는지 길이 보인다.</div></div></div>
+</section>
+<section class="slide" data-title="Local vs Global 검색">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>두 가지 검색</div>
+  <h2 class="s-title sm">Local 과 Global</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="twopane">
+      <div class="pane"><h4 style="color:var(--violet)">Local 검색</h4><p>특정 엔티티 질문 → 그 <b>점의 이웃</b>을 따라가며 답. “X와 Y는 무슨 관계?”</p></div>
+      <div class="pane good"><h4>Global 검색</h4><p>전체 주제 질문 → <b>커뮤니티 요약들</b>을 종합. “이 문서 전체의 핵심 주제는?”</p></div>
+    </div>
+    <div class="keymsg"><span class="k">고르기</span><div>‘콕 집은 관계’는 Local, ‘전체 큰 그림’은 Global.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="벡터 RAG vs GraphRAG — 언제?">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>선택 기준</div>
+  <h2 class="s-title sm">질문 종류별 선택</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <table class="ctable">
+      <thead><tr><th>질문 유형</th><th>벡터 RAG</th><th>GraphRAG</th></tr></thead>
+      <tbody>
+        <tr><td>단순 사실 (“환불 며칠?”)</td><td class="yes">빠르고 충분</td><td>과함</td></tr>
+        <tr><td>멀티홉 (“부품의 제조사 대표”)</td><td class="no">자주 놓침</td><td class="yes">연결로 해결</td></tr>
+        <tr><td>전체 주제·요약</td><td class="no">한 청크론 불가</td><td class="yes">커뮤니티 요약</td></tr>
+        <tr><td>인덱싱 비용</td><td class="yes">낮음</td><td class="no">높음(LLM 추출)</td></tr>
+      </tbody>
+    </table>
+    <div class="keymsg" style="margin-top:14px"><span class="k">결론</span><div>경쟁이 아니라 <b>질문 종류로 고른다</b> — 또는 둘을 함께 쓴다(하이브리드).</div></div>
+  </div>
+</section>
+<section class="slide" data-title="언제 그래프인가">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>판단</div>
+  <h2 class="s-title sm">그래프감이 있는 데이터</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twopane">
+  <div class="pane good"><h4>그래프가 맞는 것</h4><p>사람 · 설비 · 규정처럼 <b>서로를 가리키는</b> 것이 많고, 답이 <b>여러 문서에 흩어져</b> 있다.</p><div class="mini">조직도 · 설비 계통도 · 규정 상호참조</div></div>
+  <div class="pane bad"><h4>그래프가 과한 것</h4><p>문서 하나에 답이 다 있고, 질문이 <b>사실 하나</b>를 묻는다.</p><div class="mini">규정 조회 · FAQ · 매뉴얼</div></div>
+</div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>네 가지 신호 &mdash; <b>고유명사가 많다 · 관계를 묻는다 · 답이 흩어져 있다 · 「왜」를 묻는다</b>.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>넷 중 <b>둘 이상</b>이 아니면 벡터 검색으로 충분하다.</div></div>
+</div>
+<div class="keymsg"><span class="k">기준</span><div>어제 만든 것으로 <b>안 풀리는 질문이 실제로 쌓였을 때</b> 그때 붙인다.</div></div></div>
+</section>
+<section class="slide" data-title="스키마를 먼저">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>설계</div>
+  <h2 class="s-title sm">미리 정해 두는 노드와 관계</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w2"><div><div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>「관계를 뽑아라」만 시키면 <b>제각각으로 뽑는다</b>. 같은 관계가 열 가지 이름을 갖는다.</div></div>
+  <div class="v"><span class="b">&rarr;</span><div>노드 종류와 관계 종류를 <b>목록으로 못 박고</b> 그 안에서만 뽑게 한다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>목록에 없는 관계는 <b>버리게</b> 한다. 그래야 이어 붙일 수 있다.</div></div>
+</div></div>
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">스키마</span></div><pre><code>노드: 설비 · 공정 · 자재 · 규정 · 부서
+관계: 사용한다 · 다음공정 · 담당한다
+      적용된다 · 대체한다
+
+<span class="cm"># 이 밖은 뽑지 마라</span>
+<span class="cm"># 같은 뜻이면 위 이름으로 통일하라</span></code></pre></div></div>
+<div class="keymsg"><span class="k">먼저</span><div>스키마 없이 뽑은 그래프는 <b>이어지지 않는다</b>. 점만 많고 선이 안 맞는다.</div></div></div>
+</section>
+<section class="slide" data-title="같은 것을 하나로">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>병합</div>
+  <h2 class="s-title sm">「3호기」와 「제3호기」와 「#3」</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w"><div><div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>문서마다 부르는 이름이 다르면 <b>점이 여러 개로 갈라진다</b>.</div></div>
+  <div class="v"><span class="b">&rarr;</span><div>갈라진 점은 <b>서로 이어지지 않아</b> 멀티홉이 끊긴다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>앞에서 만든 <b>약어 사전이 여기서 다시 쓰인다</b>.</div></div>
+</div></div>
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">병합 규칙</span></div><pre><code>3호기 · 제3호기 · #3 · No.3
+        &rarr; <span class="st">설비:3호기</span>
+
+NCM811 · NCM 811 · 니켈811
+        &rarr; <span class="st">자재:NCM811</span></code></pre></div></div>
+<div class="keymsg"><span class="k">순서</span><div>관계를 뽑기 <b>전에</b> 이름부터 통일한다. 뽑고 나서 합치는 것은 훨씬 어렵다.</div></div></div>
+</section>
+<section class="slide" data-title="값이 드는 자리">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>비용</div>
+  <h2 class="s-title sm">조각마다 한 번씩 부르는 LLM</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="ctable"><table><thead><tr><th>단계</th><th>무엇이 드나</th><th>얼마나</th></tr></thead><tbody>
+  <tr><td>관계 뽑기</td><td>문서 조각마다 LLM 호출</td><td class="hl">조각 수만큼 &mdash; 벡터 인덱싱의 수십 배</td></tr>
+  <tr><td>이름 통일</td><td>사람 손질 + 규칙</td><td>처음 한 번이 무겁다</td></tr>
+  <tr><td>묶어 요약</td><td>묶음마다 LLM 호출</td><td>묶음 수만큼</td></tr>
+  <tr><td>질문할 때</td><td>그래프 탐색 + 생성</td><td>벡터 검색보다 느리다</td></tr>
+</tbody></table></div>
+<div class="vlist">
+  <div class="v"><span class="b">&#9733;</span><div>문서가 바뀌면 <b>그 부분만 다시</b> 뽑는다. 전체를 다시 돌리면 감당이 안 된다.</div></div>
+</div>
+<div class="keymsg"><span class="k">현실</span><div>GraphRAG 는 <b>비싼 도구</b>다. 벡터로 안 되는 것이 확인된 뒤에 꺼낸다.</div></div></div>
+</section>
+<section class="slide" data-title="섞어 쓰기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>실전</div>
+  <h2 class="s-title sm">벡터로 찾고 그래프로 잇기</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist">
+  <div class="v"><span class="b">1</span><div>질문을 <b>벡터로 검색</b>해 출발점이 될 조각을 찾는다.</div></div>
+  <div class="v"><span class="b">2</span><div>그 조각에 붙은 <b>노드에서 관계를 한두 칸 따라간다</b>.</div></div>
+  <div class="v"><span class="b">3</span><div>따라가며 만난 문서를 <b>근거에 보탠다</b>.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>그래프만으로 답하지 않는다. <b>원문 조각이 근거</b>고 그래프는 길잡이다.</div></div>
+</div>
+<div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></div><div class="ct"><h4>몇 칸까지 가나</h4><p>보통 <b>두 칸</b>이면 충분하다. 세 칸을 넘으면 상관없는 문서가 딸려 오고 근거가 흐려진다.</p></div></div>
+<div class="keymsg"><span class="k">권한</span><div>관계를 따라갈 때도 <b>등급 필터는 그대로</b> 건다. 이어졌다고 볼 수 있는 것은 아니다.</div></div></div>
+</section>
+<section class="slide" data-title="사내에서 그래프감">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>적용</div>
+  <h2 class="s-title sm">조직도 · 계통도 · 상호참조</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="ctable"><table><thead><tr><th>자료</th><th>노드</th><th>관계</th><th>풀리는 질문</th></tr></thead><tbody>
+  <tr><td>설비 계통도</td><td>설비 · 공정</td><td>다음공정 · 사용한다</td><td>「3호기가 멈추면 어디까지 영향인가」</td></tr>
+  <tr><td>규정 상호참조</td><td>조문</td><td>적용된다 · 대체한다</td><td>「이 조항이 바뀌면 어느 규정을 손봐야 하나」</td></tr>
+  <tr><td>조직도 · 담당</td><td>부서 · 사람 · 문서</td><td>담당한다</td><td>「이 설비 규정은 누구에게 물어야 하나」</td></tr>
+  <tr><td class="hl">자재 이력</td><td class="hl">자재 · 배치 · 설비</td><td class="hl">투입된다</td><td class="hl">「이 자재가 들어간 배치를 다 찾아라」</td></tr>
+</tbody></table></div>
+<div class="keymsg"><span class="k">공통</span><div>넷 다 <b>한 문서에 답이 없는</b> 질문이다. 그래서 이어야 풀린다.</div></div></div>
+</section>
+<section class="slide section" data-title="[섹션] 스스로 점검하는 RAG">
+  <div class="ghost">06</div>
+  <div class="seyebrow">CHAPTER 06</div>
+  <h2>스스로 점검하는 RAG</h2>
+  <div class="agenda"><span>한 번 찾고 끝</span><span>되돌아가는 루프</span><span>도구로서의 검색</span></div>
+</section>
+<section class="slide" data-title="‘한 번 찾고 한 번 답’의 한계">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>문제</div>
+  <h2 class="s-title sm">한 번 찾고 한 번 답의 한계</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="biglist"><div class="li"><div class="num" style="background:var(--rose)">!</div><div class="tx"><h4>검색이 비었는데 그냥 답한다</h4><p>근거가 부실해도 멈추지 않음 → 환각.</p></div></div><div class="li"><div class="num" style="background:var(--rose)">!</div><div class="tx"><h4>한 번 검색으로 부족한 질문</h4><p>복합·다단계 질문은 한 방에 안 풀린다.</p></div></div></div><div class="callout mint" style="margin-top:16px"><div class="ci" style="font-size:18px"></div><div class="ct"><h4>대충 찾고 제출하는 사람 vs 끈질긴 연구원</h4><p>자료가 부실하면 <b>다시 찾아오는</b> 연구원처럼, RAG도 ‘스스로 점검하고 재검색’하게 만든다.</p></div></div></div>
+</section>
+<section class="slide" data-title="스스로 점검하는 RAG — 평가하고 다시 찾는다">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>자기 점검</div>
+  <h2 class="s-title sm">평가하고 다시 찾는 루프</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="body top" style="padding:0"></div><div class="pipe q"><div class="step"><div class="si">검색</div><div class="sn">Retrieve</div><div class="sd">후보 수집</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">평가</div><div class="sn">Grade</div><div class="sd">관련 있나?</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">부족</div><div class="sn">Re-query</div><div class="sd">재검색</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">충분</div><div class="sn">Generate</div><div class="sd">근거로 답</div></div></div><div class="keymsg"><span class="k">핵심</span><div>검색 결과를 ‘점수 매기고’, 부족하면 ‘다시 찾는’ 루프 — ReAct의 ‘점검하고 다시 행동’ 아이디어를 RAG에 옮긴 셈. 논문에선 <b>Self-RAG·CRAG</b>라 부른다.</div></div></div></section>
+<section class="slide" data-title="자기 점검 RAG 한눈에">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>자기 점검 · 그림</div>
+  <h2 class="s-title sm">부족하면 되돌아가는 루프</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="imgwrap"><img src="assets/fig18.webp" alt="자기 점검 RAG — 검색 후 관련성을 평가해 부족하면 질문을 다듬어 재검색하고 충분하면 근거로 답변을 생성하는 루프"/></div><div class="keymsg" style="margin-top:14px"><span class="k">루프</span><div>평가에서 <b>부족하면 질문을 다듬어 재검색</b>, 충분하면 근거로 생성 — ‘찾기 → 점검하기 → 답하기’가 하나의 루프가 된다.</div></div></div>
+</section>
+<section class="slide" data-title="에이전트가 RAG를 ‘검색 도구’로 품는다">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>결합 구조</div>
+  <h2 class="s-title sm">연장통 속의 검색</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="body top" style="padding:0"></div><div class="pipe q"><div class="step"><div class="si">①</div><div class="sn">추론</div><div class="sd">뭘 할까</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">②</div><div class="sn">행동</div><div class="sd">RAG 검색 호출</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">③</div><div class="sn">관찰</div><div class="sd">근거 충분?</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">④</div><div class="sn">분기</div><div class="sd">답 / 재검색</div></div></div><div class="chips" style="margin-top:16px"><span class="chip" style="border-color:var(--violet-300);background:#F8F5FF"><b>RAG.search()</b> 내부 지식</span><span class="chip">웹 검색</span><span class="chip">계산·API</span></div><div class="keymsg"><span class="k">핵심</span><div>오늘 만든 <b>하이브리드+reranker 검색</b>이 그대로 에이전트의 ‘retriever 도구’가 된다.</div></div></div></section>
+<section class="slide section" data-title="[섹션] 정리">
+  <div class="ghost">07</div>
+  <div class="seyebrow">CHAPTER 07</div>
+  <h2>정리</h2>
+  <div class="agenda"><span>가져갈 것</span><span>헷갈리는 지점</span></div>
+</section>
+<section class="slide" data-title="오늘 꼭 가져갈 8가지">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>핵심 정리</div>
+  <h2 class="s-title sm">오늘 가져갈 여덟 가지</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="cards c4"><div class="card"><span class="n">1</span><h3>벡터의 빈틈 3가지</h3><p>정확 토큰 · 부정확한 순서 · 모호한 질문.</p></div><div class="card"><span class="n">2</span><h3>하이브리드+RRF</h3><p>두 사서에게 묻고 ‘등수’로 합친다.</p></div><div class="card"><span class="n">3</span><h3>Reranker = 면접</h3><p>넓게 줍고(N) → 꼼꼼히 고른다(K).</p></div><div class="card"><span class="n">4</span><h3>질의 변환</h3><p>HyDE(스케치) · Multi-Query(여러 말).</p></div><div class="card"><span class="n">5</span><h3>컨텍스트 다듬기</h3><p>MMR(다른 책 5권) · 처음과 끝 배치.</p></div><div class="card"><span class="n">6</span><h3>GraphRAG = 관계도</h3><p>점·선으로 잇고 ‘길’을 따라 멀티홉.</p></div><div class="card"><span class="n">7</span><h3>에이전트 = 도구+반복</h3><p>스스로 계획 · 행동 · 관찰.</p></div><div class="card"><span class="n">8</span><h3>Agentic RAG</h3><p>스스로 점검하고 다시 찾는 RAG.</p></div></div></div>
+</section>
+<section class="slide" data-title="헷갈리기 쉬운 지점">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>오개념</div>
+  <h2 class="s-title sm">헷갈리기 쉬운 지점</h2>
+  <div class="rule"></div>
+  <div class="body"><table class="ctable"><thead><tr><th>오해</th><th>사실</th></tr></thead><tbody><tr><td>“더 좋은 임베딩이면 다 해결”</td><td class="hl">정확 토큰은 BM25가 필요</td></tr><tr><td>“RRF는 점수를 더한다”</td><td class="hl">점수가 아니라 ‘순위’로 합친다</td></tr><tr><td>“reranker를 전체에”</td><td class="hl">느려서 후보 N개에만(2단계)</td></tr><tr><td>“에이전트=똑똑한 챗봇”</td><td class="hl">도구를 쓰고 스스로 반복해야 에이전트</td></tr><tr><td>“GraphRAG는 벡터 RAG의 상위호환”</td><td class="hl">질문 유형·비용으로 고른다 — 단순 조회엔 벡터가 낫다</td></tr></tbody></table></div>
+</section>
+
+
+    </div>
+  </div>
+</main>
+<div class="overview" id="overview">
+  <div class="head"><h3>슬라이드 목차</h3><button id="ovClose">닫기 </button></div>
+  <div class="ovgrid" id="ovgrid"></div>
+</div>
+
+<div class="controlbar">
+  <button class="ico" id="btnMenu" title="목차"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+  <span class="sep"></span>
+  <button class="ico" id="btnPrev" title="이전"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <span class="count"><b id="cur">1</b> / <span id="tot2">75</span></span>
+  <button class="ico" id="btnNext" title="다음"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 18l6-6-6-6"/></svg></button>
+  <span class="sep"></span>
+  <button class="zoom" id="btnOut" title="축소"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14"/></svg></button>
+  <button class="zoom" id="btnIn" title="확대"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></button>
+  <button class="zoom" id="btnFit" title="화면 맞춤"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 4H5a1 1 0 0 0-1 1v4M15 4h4a1 1 0 0 1 1 1v4M9 20H5a1 1 0 0 1-1-1v-4M15 20h4a1 1 0 0 0 1-1v-4"/></svg></button>
+  <button class="pdf" id="btnPdf" title="PDF로 저장 (인쇄 → PDF로 저장)">PDF</button>
+</div>
+
+<div class="hint">← → 또는 Space · 목차(≡) · 줌(−/+) · 숫자 입력 후 Enter로 이동</div>
+<div id="jumpHint"></div>
+<style>
+  #jumpHint{position:fixed; left:50%; bottom:74px; transform:translateX(-50%) translateY(6px); z-index:75;
+    background:#2B2B2E; color:#fff; font-family:Georgia,'Times New Roman',serif; font-style:italic;
+    font-size:20px; letter-spacing:.04em; padding:8px 20px; border-radius:999px;
+    box-shadow:0 12px 28px -10px rgba(0,0,0,.55); opacity:0; pointer-events:none;
+    transition:opacity .12s ease, transform .12s ease;}
+  #jumpHint.on{opacity:1; transform:translateX(-50%) translateY(0);}
+  @media print{ #jumpHint{display:none !important;} }
+</style>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const scaler = document.getElementById('scaler');
+  const sizer  = document.getElementById('sizer');
+  const stage  = document.getElementById('stage');
+  const total  = slides.length;
+  let idx = 0, userZoom = 1;
+  const BW = 1280, BH = 720;
+
+  document.getElementById('tot2').textContent = total;
+  slides.forEach((s, i) => {
+    const c = s.querySelector('.coord b');     if (c) c.textContent = String(i + 1).padStart(2, '0');
+    const t = s.querySelector('.coord .tot');  if (t) t.textContent = total;
+  });
+
+  const ovgrid = document.getElementById('ovgrid');
+  slides.forEach((s, i) => {
+    const b = document.createElement('button');
+    b.className = 'ovcard';
+    b.innerHTML = '<div class="ovn">' + String(i + 1).padStart(2, '0') + '</div><div class="ovt">' + (s.dataset.title || '') + '</div>';
+    b.addEventListener('click', () => { go(i); closeOverview(); });
+    ovgrid.appendChild(b);
+  });
+  const overview = document.getElementById('overview');
+  function openOverview(){ overview.classList.add('on'); }
+  function closeOverview(){ overview.classList.remove('on'); }
+  document.getElementById('btnMenu').addEventListener('click', openOverview);
+  document.getElementById('ovClose').addEventListener('click', closeOverview);
+  overview.addEventListener('click', (e) => { if (e.target === overview) closeOverview(); });
+
+  function fitScale(){
+    const availW = stage.clientWidth  - 60;
+    const availH = stage.clientHeight - 60;
+    return Math.min(availW / BW, availH / BH);
+  }
+  function applyScale(){
+    const eff = fitScale() * userZoom;
+    scaler.style.transform = 'scale(' + eff + ')';
+    sizer.style.width  = (BW * eff) + 'px';
+    sizer.style.height = (BH * eff) + 'px';
+  }
+  window.addEventListener('resize', applyScale);
+
+  function go(n){
+    idx = Math.max(0, Math.min(total - 1, n));
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    document.getElementById('cur').textContent = idx + 1;
+    document.getElementById('btnPrev').disabled = idx === 0;
+    document.getElementById('btnNext').disabled = idx === total - 1;
+    document.getElementById('pfill').style.width = (idx / (total - 1) * 100) + '%';
+    applyScale();
+    stage.scrollTop = 0; stage.scrollLeft = 0;
+  }
+  document.getElementById('btnPrev').addEventListener('click', () => go(idx - 1));
+  document.getElementById('btnNext').addEventListener('click', () => go(idx + 1));
+  document.getElementById('btnIn').addEventListener('click',  () => { userZoom = Math.min(2.4, userZoom + 0.15); applyScale(); });
+  document.getElementById('btnOut').addEventListener('click', () => { userZoom = Math.max(0.5, userZoom - 0.15); applyScale(); });
+  document.getElementById('btnFit').addEventListener('click', () => { userZoom = 1; applyScale(); });
+  document.getElementById('btnPdf').addEventListener('click', () => window.print());
+
+  // ---- 슬라이드 번호 입력 → Enter 로 점프 ----
+  let jumpBuf = '', jumpTimer = null;
+  const jumpHint = document.getElementById('jumpHint');
+  function showJump(){
+    if (!jumpHint) return;
+    if (jumpBuf){ jumpHint.textContent = '→ ' + jumpBuf; jumpHint.classList.add('on'); }
+    else { jumpHint.classList.remove('on'); }
+  }
+  function clearJump(){ jumpBuf = ''; if (jumpTimer) clearTimeout(jumpTimer); showJump(); }
+  function commitJump(){
+    if (jumpBuf){ const n = parseInt(jumpBuf, 10); if (!isNaN(n)) go(n - 1); }
+    clearJump();
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (overview.classList.contains('on')) { if (e.key === 'Escape') closeOverview(); return; }
+    if (/^[0-9]$/.test(e.key)){
+      e.preventDefault();
+      jumpBuf = (jumpBuf + e.key).slice(0, 3);
+      showJump();
+      if (jumpTimer) clearTimeout(jumpTimer);
+      jumpTimer = setTimeout(clearJump, 1600);
+      return;
+    }
+    if (e.key === 'Enter'){ e.preventDefault(); commitJump(); return; }
+    if (e.key === 'Escape'){ clearJump(); }
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown'){ e.preventDefault(); clearJump(); go(idx + 1); }
+    if (e.key === 'ArrowLeft'  || e.key === 'PageUp'){ e.preventDefault(); clearJump(); go(idx - 1); }
+    if (e.key === 'Home'){ clearJump(); go(0); } if (e.key === 'End'){ clearJump(); go(total - 1); }
+    if (e.key === '+' || e.key === '='){ userZoom = Math.min(2.4, userZoom + 0.15); applyScale(); }
+    if (e.key === '-'){ userZoom = Math.max(0.5, userZoom - 0.15); applyScale(); }
+  });
+
+  applyScale(); go(0);
+</script>
+</body>
+</html>
