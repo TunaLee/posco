@@ -383,17 +383,17 @@
   <div class="body">
     <div class="cards c4">
       <div class="card"><span class="n">CH0~1</span><h3>하이브리드</h3><p>의미 검색이 놓치는 코드와 고유명사를 낱말 검색이 잡는다. 순위를 합친다.</p></div>
-      <div class="card"><span class="n">CH2~4</span><h3>리랭커와 질문 바꾸기</h3><p>넓게 찾고 정밀하게 고른다. 무엇을 어떤 순서로 넣을지 정한다.</p></div>
+      <div class="card"><span class="n">CH2~4</span><h3>리랭커 · HyDE</h3><p>넓게 찾고 정밀하게 고른다. MMR 로 겹치는 것을 빼고 순서를 잡는다.</p></div>
       <div class="card"><span class="n">CH5~6</span><h3>GraphRAG</h3><p>흩어진 사실을 잇는다. 관계를 따라가야 풀리는 질문이 따로 있다.</p></div>
       <div class="card"><span class="n">CH7</span><h3>읽기만 하는 도구</h3><p>검색 옆에 사내 DB 를 붙인다. 어디까지 열지 먼저 정한다.</p></div>
     </div>
     <div class="keymsg"><span class="k">어제와 이어</span><div>어제 만든 것은 <b>한 번 찾아 한 번 답하는</b> 구조였다. 여기서는 그 검색을 손본다.</div></div>
   </div>
 </section>
-<section class="slide section" data-title="[섹션] 벡터 검색이 새는 자리">
+<section class="slide section" data-title="[섹션] 벡터 검색의 약점 넷">
   <div class="ghost">00</div>
   <div class="seyebrow">CHAPTER 00</div>
-  <h2>벡터 검색이 새는 자리</h2>
+  <h2>벡터 검색의 약점 넷</h2>
   <div class="agenda"><span>정확한 낱말</span><span>빗나간 1등</span><span>흐린 방향</span><span>현장 약어</span></div>
 </section>
 <section class="slide" data-title="의미 검색이 잘하는 일">
@@ -468,7 +468,7 @@ Q  <span class="s">급박한 위험이 있을 때 작업중지 근거</span>    
 <span class="cm">묻는 내용은 같다. 등수는 183등에서 1등까지 벌어진다</span></code></pre></div>
 <div class="vlist">
   <div class="v"><span class="b">&rarr;</span><div>현장에서 오는 질문은 대개 <b>짧다</b>. 「그거」 · 「저번 그 건」 같은 말이 섞인다.</div></div>
-  <div class="v"><span class="b">&#9733;</span><div>흐릿한 사진으로는 닮은 것을 못 고른다. <b>질문을 다듬는 것</b>이 CH3 이다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>흐릿한 사진으로는 닮은 것을 못 고른다. <b>질문을 다듬는 것</b>이 HyDE 와 Multi-Query 다.</div></div>
 </div>
 <div class="keymsg"><span class="k">약점 ③</span><div>짧은 질문은 <b>방향이 흐리다</b>. 엉뚱한 이웃이 딸려 온다.</div></div>
 </div>
@@ -806,12 +806,19 @@ best = rerank(q, hybrid(q, 12), top_k=3)   <span class="cm"># 넓게 N → 정�
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>파이프라인</div>
   <h2 class="s-title sm">넓게 줍는 N 과 정밀하게 고르는 K</h2>
   <div class="rule"></div>
-  <div class="body"><div class="body top" style="padding:0"></div><div class="pipe"><div class="step"><div class="si">①</div><div class="sn">하이브리드</div><div class="sd">후보 N≈50</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">②</div><div class="sn">Reranker</div><div class="sd">관련성 재채점</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">③</div><div class="sn">Top-K</div><div class="sd">최종 K≈5</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">④</div><div class="sn">생성</div><div class="sd">근거로 답</div></div></div></div>
+  <div class="body">
+<div class="pipe"><div class="step"><div class="si">①</div><div class="sn">하이브리드</div><div class="sd">후보 N≈50</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">②</div><div class="sn">리랭커</div><div class="sd">관련성 재채점</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">③</div><div class="sn">Top-K</div><div class="sd">최종 K≈5</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">④</div><div class="sn">생성</div><div class="sd">근거로 답</div></div></div>
+<div class="ctable"><table><thead><tr><th></th><th>작으면</th><th>크면</th><th>흔히 쓰는 값</th></tr></thead><tbody>
+  <tr><td class="hl">N &mdash; 1차 후보</td><td class="hl">답이 후보에 아예 없다</td><td class="hl">리랭커가 그만큼 느려진다</td><td class="hl">30~100</td></tr>
+  <tr><td>K &mdash; 최종</td><td>근거가 모자라 「모른다」가 는다</td><td>엉뚱한 조각이 컨텍스트를 차지한다</td><td>3~8</td></tr>
+</tbody></table></div>
+<div class="keymsg"><span class="k">앞의 예시로</span><div>「일하다 위험하면 멈춰도 되나」의 답은 <b>4등</b>이었다. K 가 3이면 놓치고 <b>5면 잡는다</b>.</div></div>
+</div>
 </section>
-<section class="slide section" data-title="[섹션] 질문 바꾸기">
+<section class="slide section" data-title="[섹션] HyDE 와 Multi-Query">
   <div class="ghost">03</div>
   <div class="seyebrow">CHAPTER 03</div>
-  <h2>질문 바꾸기</h2>
+  <h2>HyDE 와 Multi-Query</h2>
   <div class="agenda"><span>HyDE</span><span>Multi-Query</span><span>검색 앞단</span></div>
 </section>
 <section class="slide" data-title="모호한 질문이 검색을 흔든다">
@@ -883,10 +890,10 @@ def hyde_search(q, n=5):
     variants = [q] + [l.strip() for l in raw.splitlines() if l.strip()][:3]
     return rrf([vector_search_idx(v, n) for v in variants])[:n]   <span class="cm"># 합쳐 하나로</span></code></pre></div><div class="lab-badge" style="margin-top:12px"><span class="sq"></span>변형 질의들이 서로 다른 청크를 데려오는가</div></div>
 </section>
-<section class="slide section" data-title="[섹션] 무엇을 어떤 순서로">
+<section class="slide section" data-title="[섹션] MMR 과 재배치">
   <div class="ghost">04</div>
   <div class="seyebrow">CHAPTER 04</div>
-  <h2>무엇을 어떤 순서로</h2>
+  <h2>MMR 과 재배치</h2>
   <div class="agenda"><span>MMR</span><span>재배치</span><span>측정</span></div>
 </section>
 <section class="slide" data-title="좋은 후보를 모았어도…">
@@ -922,6 +929,36 @@ def hyde_search(q, n=5):
   <div class="rule"></div>
   <div class="body"><div class="imgwrap"><img src="assets/fig11.webp" alt="MMR 비교 — 유사도만으로 고르면 같은 내용의 문서만 반복되지만 MMR은 환불 기한, 신청 방법, 예외 품목, 처리 기간, 카드 취소처럼 서로 다른 정보를 담음"/></div><div class="keymsg" style="margin-top:14px"><span class="k">핵심</span><div>유사도만 보면 비슷한 문서 5개가 <b>같은 얘기만 반복</b> — MMR은 기한·방법·예외·기간·취소처럼 <b>서로 다른 정보</b>를 골라 담는다.</div></div></div>
 </section>
+<section class="slide" data-title="MMR 적용 후">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>적용 후</div>
+  <h2 class="s-title sm">MMR 을 걸면 달라지는 다섯</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="twopane">
+  <div class="pane bad"><h4>그냥 상위 5</h4>
+    <p>1 산업기술보호법 제34조(비밀유지의무)<br/>
+       <b>2 산업안전보건법 제63조(비밀 유지)</b><br/>
+       <b>3 개인정보보호법 제60조(비밀유지 등)</b><br/>
+       4 근로기준법 제103조(근로감독관의 의무)<br/>
+       5 산업안전보건법 제6조(근로자의 의무)</p>
+    <div class="mini">위 셋이 사실상 같은 말이다</div></div>
+  <div class="pane good"><h4>MMR &lambda;=0.5</h4>
+    <p>1 산업기술보호법 제34조(비밀유지의무)<br/>
+       2 산업안전보건법 제6조(근로자의 의무) <span style="color:var(--mut)">←5등</span><br/>
+       3 산업안전보건법 제63조(비밀 유지)<br/>
+       4 근로기준법 제103조(근로감독관의 의무)<br/>
+       5 개인정보보호법 제60조(비밀유지 등) <span style="color:var(--mut)">←3등</span></p>
+    <div class="mini">같은 말끼리 붙지 않게 흩어진다</div></div>
+</div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>위에서 <b>셋만 쓴다면</b> 전에는 전부 비밀유지 조문이었다. 이제는 하나가 다른 얘기다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>&lambda; 가 작을수록 다양성을 챙긴다. <b>0.5~0.7</b> 사이에서 고른다.</div></div>
+</div>
+<div class="keymsg"><span class="k">주의</span><div>버리는 것이 아니라 <b>순서를 미룬다</b>. 관련도가 낮은 것이 위로 오면 &lambda; 를 올린다.</div></div>
+</div>
+</section>
+
 <section class="slide" data-title="재배치 — 중요한 건 처음과 끝에">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>순서</div>
@@ -936,6 +973,26 @@ def hyde_search(q, n=5):
   <div class="rule"></div>
   <div class="body"><div class="imgwrap"><img src="assets/fig12.webp" alt="재배치 — 모델의 주의력이 처음과 끝에서 강하고 가운데서 약한 U자 곡선에 맞춰 핵심 근거 A와 B를 맨 앞과 맨 뒤로 이동"/></div><div class="keymsg" style="margin-top:14px"><span class="k">U자 곡선</span><div>모델의 주의력은 <b>처음과 끝에서 강하고 가운데서 흐려진다</b>(lost in the middle) — 그래서 핵심 근거 A·B를 맨 앞과 맨 뒤로 옮긴다.</div></div></div>
 </section>
+<section class="slide" data-title="재배치 예시">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>적용 후</div>
+  <h2 class="s-title sm">앞뒤로 옮겨 담은 다섯</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">Q 일하다 위험하면 멈춰도 되나 &mdash; 리랭커까지 거친 순서</span></div><pre><code>       순서대로 넣으면              재배치해서 넣으면
+앞  1  <span class="st">제26조(작업중지 등)</span>  ← 답   1  <span class="st">제26조(작업중지 등)</span>  ← 답
+    2  제23조(안전조치)             3  제46조(근로시간 연장)
+    3  제46조(근로시간 연장)          5  제28조(유해작업 도급)
+    4  제33조(방호조치)             4  제33조(방호조치)
+뒤  5  제28조(유해작업 도급)          2  제23조(안전조치)</code></pre></div>
+<div class="vlist">
+  <div class="v"><span class="b">규칙</span><div>1위는 <b>맨 앞</b>, 2위는 <b>맨 뒤</b>, 3위는 두 번째, 4위는 뒤에서 두 번째 &mdash; 번갈아 채운다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>가운데에는 <b>가장 약한 것</b>이 남는다. 흐려져도 손해가 적은 자리다.</div></div>
+</div>
+<div class="keymsg"><span class="k">전제</span><div>순서가 <b>이미 맞을 때</b> 듣는다. 리랭커로 바로잡은 뒤에 재배치한다.</div></div>
+</div>
+</section>
+
 <section class="slide" data-title="검색 품질을 무엇으로 판단하나">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>측정</div>
@@ -1270,10 +1327,10 @@ NCM811 · NCM 811 · 니켈811
 </tbody></table></div>
 <div class="keymsg"><span class="k">공통</span><div>넷 다 <b>한 문서에 답이 없는</b> 질문이다. 그래서 이어야 풀린다.</div></div></div>
 </section>
-<section class="slide section" data-title="[섹션] 스스로 점검하는 RAG">
+<section class="slide section" data-title="[섹션] Self-RAG">
   <div class="ghost">06</div>
   <div class="seyebrow">CHAPTER 06</div>
-  <h2>스스로 점검하는 RAG</h2>
+  <h2>Self-RAG</h2>
   <div class="agenda"><span>한 번 찾고 끝</span><span>되돌아가는 루프</span><span>도구로서의 검색</span></div>
 </section>
 <section class="slide" data-title="‘한 번 찾고 한 번 답’의 한계">
