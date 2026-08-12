@@ -507,19 +507,21 @@ NCM811     <span class="st">4</span>조각  [NC, ##M, ##81, ##1]
 <section class="slide" data-title="약어 뽑기">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>앞단</div>
-  <h2 class="s-title sm">질문에서 약어를 뽑는 세 가지</h2>
+  <h2 class="s-title sm">뽑아내는 대신 없애는 쪽</h2>
   <div class="rule"></div>
-  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">① 글자 모양으로 거른다</span></div><pre><code>import re
-re.findall(r<span class="s">'[A-Z]{2,}[0-9]*|[A-Z]+-\d{4}-\d+'</span>, q)
-
-<span class="cm">"NCM811 캘린더링 후 SEI 층 두께" &rarr; ['NCM811', 'SEI']</span></code></pre></div>
-<div class="ctable"><table><thead><tr><th>방법</th><th>잡는 것</th><th>못 잡는 것</th></tr></thead><tbody>
-  <tr><td class="hl">① 글자 모양</td><td class="hl">NCM811 · SEI · LOT-2026-1259</td><td class="hl">캘린더링 · 화성 &mdash; <b>한글 약어</b></td></tr>
-  <tr><td>② 사전과 대조</td><td>사전에 올라 있는 말 전부</td><td>사전에 없는 말은 영원히</td></tr>
-  <tr><td>③ 모델에 시키기</td><td>처음 보는 말도 후보로 올린다</td><td>없는 말을 지어낸다 · 호출이 는다</td></tr>
+  <div class="body"><div class="ctable"><table><thead><tr><th>손대는 자리</th><th>어떻게</th><th>드는 비용</th></tr></thead><tbody>
+  <tr><td class="hl">사전을 통째로</td><td class="hl">그 부서 사전을 시스템 프롬프트에 얹는다. <b>뽑는 단계가 없어진다</b></td><td class="hl">200개면 4천 토큰쯤</td></tr>
+  <tr><td>문서 쪽을</td><td>조각에 풀이를 심는다 &mdash; <b>「캘린더링(전극 압연)」</b>으로 저장</td><td>인덱싱 때 한 번</td></tr>
+  <tr><td>안 손댄다</td><td>하이브리드의 낱말 검색이 <b>NCM811 을 글자 그대로</b> 잡는다</td><td>없다</td></tr>
+  <tr><td>못 찾았을 때만</td><td>상위 점수가 낮을 때만 사전을 뒤지거나 되묻는다</td><td>평소에는 0</td></tr>
 </tbody></table></div>
-<div class="keymsg"><span class="k">실무</span><div>①과 ②를 먼저 돌리고, <b>둘 다 빈손일 때만</b> ③ 을 부른다.</div></div></div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>질문은 <b>매번 새로 온다</b>. 문서는 한 번만 손대면 된다. 고칠 곳은 문서 쪽이다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>굳이 뽑아야 하면 <b>사전 목록에서 고르게</b> 한다. 지어낼 수가 없다.</div></div>
+</div>
+<div class="keymsg"><span class="k">순서</span><div>「어떻게 뽑을까」보다 <b>「안 뽑고 되게 할 수 있나」</b>를 먼저 본다.</div></div></div>
 </section>
+
 <section class="slide" data-title="사전 조회 뒤">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>앞단</div>
@@ -527,11 +529,11 @@ re.findall(r<span class="s">'[A-Z]{2,}[0-9]*|[A-Z]+-\d{4}-\d+'</span>, q)
   <div class="rule"></div>
   <div class="body"><div class="plot"><svg viewBox="0 0 1116 210">
 <rect x="14" y="24" width="196" height="62" rx="12" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.4"/>
-<text x="34" y="52" font-size="14" font-weight="800" fill="#16142B">1 약어 뽑기</text>
-<text x="34" y="72" font-size="11" fill="#8E8AAC">NCM811 · SEI층 · PP</text>
+<text x="34" y="52" font-size="14" font-weight="800" fill="#16142B">1 사전과 맞춰 보기</text>
+<text x="34" y="72" font-size="11" fill="#8E8AAC">질문 속 말을 목록과 대조한다</text>
 <rect x="240" y="24" width="196" height="62" rx="12" fill="#EFEAFF" stroke="#3A1FC9" stroke-width="1.5"/>
-<text x="260" y="52" font-size="14" font-weight="800" fill="#16142B">2 사전 조회</text>
-<text x="260" y="72" font-size="11" fill="#3A1FC9">도구로 부른다</text>
+<text x="260" y="52" font-size="14" font-weight="800" fill="#16142B">2 걸린 개수</text>
+<text x="260" y="72" font-size="11" fill="#3A1FC9">0 · 1 · 2 이상</text>
 <rect x="500" y="6" width="300" height="52" rx="11" fill="#EFF9F4" stroke="#BCE3D2" stroke-width="1.3"/>
 <text x="520" y="28" font-size="12.5" font-weight="700" fill="#0B6B4F">하나로 정해지면 — 질문을 넓힌다</text>
 <text x="520" y="46" font-size="11" fill="#8E8AAC">NCM811 니켈 코발트 망간 양극재</text>
@@ -552,7 +554,7 @@ re.findall(r<span class="s">'[A-Z]{2,}[0-9]*|[A-Z]+-\d{4}-\d+'</span>, q)
 <path d="M804 32 L836 88" stroke="#3A1FC9" stroke-width="1.6" marker-end="url(#a11)"/>
 <path d="M804 152 L836 104" stroke="#3A1FC9" stroke-width="1.6" marker-end="url(#a11)"/>
 </svg></div>
-<div class="keymsg"><span class="k">되묻는 자리</span><div>뜻이 <b>둘 이상일 때만</b> 되묻는다. 매번 물으면 아무도 안 쓴다.</div></div></div>
+<div class="keymsg"><span class="k">되묻는 자리</span><div>사전이 <b>작으면 이 단계도 없다</b> — 통째로 얹으면 된다. 커졌을 때 이 갈래가 필요해진다.</div></div></div>
 </section>
 
 <section class="slide" data-title="사전 운영">
