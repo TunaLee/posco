@@ -1104,23 +1104,60 @@ WI-0412     <span class="st">―적용→</span>   캘린더링</code></pre></di
 <div class="keymsg"><span class="k">이어 붙이면</span><div>세 문서에 <b>한 조각씩</b> 있던 것이 하나의 길로 이어진다.</div></div>
 </div>
 </section>
-<section class="slide" data-title="어떻게 만드나 — LLM이 관계를 뽑는다">
+<section class="slide" data-title="실습 그래프">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>실습 데이터</div>
+  <h2 class="s-title sm">조문 사이의 인용 관계</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="plot"><svg viewBox="0 0 1116 210">
+<rect x="392" y="82" width="230" height="52" rx="11" fill="#EFEAFF" stroke="#3A1FC9" stroke-width="1.8"/>
+<text x="507" y="104" font-size="13.5" font-weight="800" fill="#16142B" text-anchor="middle">제42조(작업환경측정)</text>
+<text x="507" y="122" font-size="10.5" fill="#8E8AAC" text-anchor="middle">이 조문에는 벌칙이 없다</text>
+<rect x="14" y="10" width="250" height="42" rx="10" fill="#FDF1F5" stroke="#F3C6D6" stroke-width="1.3"/>
+<text x="139" y="36" font-size="12" font-weight="700" fill="#B01A50" text-anchor="middle">제69조(벌칙) 1천만원 이하</text>
+<rect x="14" y="62" width="250" height="42" rx="10" fill="#FDF1F5" stroke="#F3C6D6" stroke-width="1.3"/>
+<text x="139" y="88" font-size="12" font-weight="700" fill="#B01A50" text-anchor="middle">제72조(과태료) 5천만원 이하</text>
+<rect x="14" y="114" width="250" height="42" rx="10" fill="#FFF7E8" stroke="#F0D9A8" stroke-width="1.3"/>
+<text x="139" y="140" font-size="12" font-weight="700" fill="#9A6A00" text-anchor="middle">제64조(서류의 보존) 3년</text>
+<rect x="14" y="166" width="250" height="42" rx="10" fill="#FFF7E8" stroke="#F0D9A8" stroke-width="1.3"/>
+<text x="139" y="192" font-size="12" font-weight="700" fill="#9A6A00" text-anchor="middle">제51조(감독상의 조치)</text>
+<path d="M268 32h108l14 54" stroke="#3A1FC9" stroke-width="1.6" fill="none"/>
+<path d="M268 84h116" stroke="#3A1FC9" stroke-width="1.6" fill="none"/>
+<path d="M268 136h116" stroke="#3A1FC9" stroke-width="1.6" fill="none"/>
+<path d="M268 188h108l14 -54" stroke="#3A1FC9" stroke-width="1.6" fill="none"/>
+<path d="M380 80l14 6-14 6z" fill="#3A1FC9"/><path d="M380 130l14 6-14 6z" fill="#3A1FC9"/>
+<text x="330" y="76" font-size="10.5" font-weight="700" fill="#3A1FC9" text-anchor="middle">인용</text>
+<rect x="700" y="36" width="250" height="42" rx="10" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.3"/>
+<text x="825" y="62" font-size="12" fill="#8E8AAC" text-anchor="middle">제42조의2(측정 신뢰성평가)</text>
+<rect x="700" y="88" width="250" height="42" rx="10" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.3"/>
+<text x="825" y="114" font-size="12" fill="#8E8AAC" text-anchor="middle">제28조(유해작업 도급 금지)</text>
+<rect x="700" y="140" width="250" height="42" rx="10" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.3"/>
+<text x="825" y="166" font-size="12" fill="#8E8AAC" text-anchor="middle">제38조의5(석면농도기준)</text>
+<text x="825" y="22" font-size="11" font-weight="700" fill="#8E8AAC" text-anchor="middle">벡터 검색이 데려온 이웃 — 주제는 비슷하나 벌칙이 없다</text>
+</svg></div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>어제 쓰던 법령 네 개에서 <b>노드 354개 · 엣지 594개</b>가 나온다. 조문의 83%가 이어진다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>엣지는 <b>「제N조」를 찾는 규칙</b>으로 뽑았다. 모델을 안 불렀고 원문과 대조된다.</div></div>
+</div>
+<div class="keymsg"><span class="k">허브</span><div>제72조(과태료)가 <b>44개 조문을 인용</b>한다. 제15조의2는 <b>14회 인용된다</b>.</div></div>
+</div>
+</section>
+
+<section class="slide" data-title="어떻게 만드나 — 관계를 뽑는다">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>인덱싱</div>
-  <h2 class="s-title sm">LLM 이 뽑아내는 관계</h2>
+  <h2 class="s-title sm">관계를 뽑는 세 가지 길</h2>
   <div class="rule"></div>
-  <div class="body top">
-    <div class="pipe">
-      <div class="step"><div class="si">①</div><div class="sn">문서</div><div class="sd">원문</div></div>
-      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
-      <div class="step"><div class="si">②</div><div class="sn">LLM 추출</div><div class="sd">엔티티·관계</div></div>
-      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
-      <div class="step"><div class="si">③</div><div class="sn">지식 그래프</div><div class="sd">점·선</div></div>
-      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
-      <div class="step"><div class="si">④</div><div class="sn">커뮤니티</div><div class="sd">그룹화</div></div>
-    </div>
-    <div class="callout amber" style="margin-top:20px"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>대가 — 인덱싱이 무겁다</h4><p>문서마다 LLM이 관계를 뽑으므로 <b>비용·시간↑</b>. 그래서 ‘한 번 잘’ 만들어 두고 재사용한다.</p></div></div>
-  </div>
+  <div class="body">
+<div class="pipe"><div class="step"><div class="si">&#9312;</div><div class="sn">문서</div><div class="sd">원문</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">&#9313;</div><div class="sn">뽑기</div><div class="sd">엔티티·관계</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">&#9314;</div><div class="sn">이름 통일</div><div class="sd">같은 것 합치기</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">&#9315;</div><div class="sn">그래프</div><div class="sd">노드·엣지</div></div></div>
+<div class="ctable"><table><thead><tr><th>무엇으로 뽑나</th><th>어디에 쓰나</th><th>믿을 수 있나</th></tr></thead><tbody>
+  <tr><td class="hl">규칙 &mdash; 「제N조」 찾기</td><td class="hl">조문 사이의 <b>인용</b> 594개</td><td class="hl">원문과 그대로 대조된다</td></tr>
+  <tr><td class="hl">표의 외래키</td><td class="hl">설비 대장 · BOM · 로트 계보</td><td class="hl">이미 사내 시스템에 있다</td></tr>
+  <tr><td>모델</td><td>글에만 있는 관계 &mdash; 일지 · 회의록</td><td>지어낼 수 있어 <b>표본을 봐야</b> 한다</td></tr>
+</tbody></table></div>
+<div class="keymsg"><span class="k">순서</span><div>모델로 뽑는 것은 <b>구조가 없을 때</b> 쓰는 수단이다. <b>뼈대는 규칙과 표에서</b> 가져오고 살만 모델로 붙인다.</div></div>
+</div>
 </section>
 <section class="slide" data-title="코드 미리보기 — 지식그래프 만들기">
   <div class="coord"><b></b> / <span class="tot"></span></div>
@@ -1182,6 +1219,30 @@ for s, r, o in extract_triples(graph_docs):
 <div class="keymsg"><span class="k">3홉</span><div>「3호기에 들어가는 바인더를 납품하는 곳의 담당 부서」 &mdash; <b>한 문서에는 답이 없다</b>. 세 걸음이면 닿는다.</div></div>
 </div>
 </section>
+<section class="slide" data-title="벡터와 그래프">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>대비</div>
+  <h2 class="s-title sm">주제가 비슷한 것과 실제로 이어진 것</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="twopane">
+  <div class="pane bad"><h4>벡터 검색 상위 5</h4>
+    <p>제42조(작업환경측정)<br/>제42조의2(측정 신뢰성평가)<br/>제29조(도급사업 시의 조치)<br/>
+       제28조(유해작업 도급 금지)<br/>제38조의5(석면농도기준)</p>
+    <div class="mini">다섯 다 「측정·도급」 주제다. <b>벌칙이 하나도 없다</b></div></div>
+  <div class="pane good"><h4>제42조를 인용하는 조문 (10개 중)</h4>
+    <p><b>제69조(벌칙) 1천만원 이하</b><br/><b>제72조(과태료) 5천만원 이하</b><br/>
+       제64조(서류의 보존) 3년<br/>제51조(감독상의 조치)<br/>제13조(안전보건관리책임자)</p>
+    <div class="mini">답이 여기 있다. <b>한 홉</b>이면 닿는다</div></div>
+</div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>벌칙 조문에서 「작업환경측정」은 <b>목록 한 줄</b>이다. 그래서 유사도가 낮다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>벡터는 <b>주제가 비슷한 것</b>을, 그래프는 <b>실제로 이어진 것</b>을 가져온다.</div></div>
+</div>
+<div class="keymsg"><span class="k">Q 작업환경측정을 안 하면 어떻게 되나</span><div>제42조 본문에는 답이 없다. <b>인용을 거슬러 올라가야</b> 나온다.</div></div>
+</div>
+</section>
+
 <section class="slide" data-title="GraphRAG — 경로가 곧 근거">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>GraphRAG 원리</div>

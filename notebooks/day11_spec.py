@@ -7,7 +7,7 @@ CELLS = [
     md("## 1. 준비"),
     md("어제 만든 것은 **찾아서 답하는 것**까지였다. 오늘은 거기에 **사내 데이터 조회**를 붙인다.\n\n"
        "「3호기 이번 주 불량률이 어때? 그리고 작업중지 기준은 뭐야?」\n"
-       "이 한 문장에 답하려면 **DB 한 번, 규정 한 번**을 봐야 한다. 도구 두 개짜리 비서다."),
+       "이 한 문장에 답하려면 **DB 한 번, 규정 한 번**을 봐야 한다. 도구를 셋 붙인 비서를 만든다."),
     md("붙이기 전에 정할 것이 하나 있다. **어디까지 열어 줄 것인가.**\n\n"
        "조회만 되게 할 것인지, 원본 값을 그대로 줄 것인지, 몇 줄까지 줄 것인지.\n"
        "이걸 안 정하고 만들면 **도구가 정하는 대로** 열린다."),
@@ -270,7 +270,7 @@ for name, con in [('보통 연결', sqlite3.connect('plant.db')),
     md("> SQLite 는 파일이라 `mode=ro` 로 끝나지만, 사내 DB 는 계정이 본판이다.\n"
        "> `GRANT SELECT ON ... TO 조회계정` 만 주고 그 계정으로 붙는다. 코드는 셋째 겹이다."),
 
-    md("## 6. 도구 두 개를 만든다"),
+    md("## 6. 조회 도구와 규정 검색"),
     md("경계대로 도구를 짠다. **집계만 돌려주고, 원본 공정 조건은 SELECT 하지 않는다.**"),
 
     prep("""# 도구 하나 — 읽기 전용 조회
@@ -372,11 +372,88 @@ print(find_rule('일하다 위험하면 멈춰도 되나')[:300])"""),
 
     md("도구가 둘 다 준비됐다. 둘 다 **읽기만 하고, 부른 기록을 `CALLS` 에 남긴다.**"),
 
-    md("## 7. 에이전트에 붙이기"),
+    md("## 7. 인용을 따라가는 도구"),
+    md("규정에는 **벡터 검색으로 안 되는 질문**이 있다.\n\n"
+       "「작업환경측정을 안 하면 어떻게 되나」 &mdash; 제42조(작업환경측정) 본문에는 **벌칙이 없다.**\n"
+       "벌칙은 제69조와 제72조에 있고, 그 조문들이 **제42조를 인용한다.**"),
+    md("조문이 조문을 인용하는 것은 **글에 그대로 적혀 있다.** 모델을 부를 일이 아니다."),
+
+    prep("""# 「제N조」를 찾는 규칙 하나로 인용 관계를 뽑는다
+from collections import defaultdict
+
+ARTS = [(c['source'], re.match(r'제\\d+조(의\\d+)?', c['title']).group(0))
+       for c in CHUNKS]
+BY = {k: i for i, k in enumerate(ARTS)}
+
+OUT, IN = defaultdict(set), defaultdict(set)
+for i, c in enumerate(CHUNKS):
+    law, art = ARTS[i]
+    for m in re.finditer(r'제\\d+조(의\\d+)?', c['text'][len(art):]):
+        j = BY.get((law, m.group(0)))
+        if j is not None and j != i:
+            OUT[i].add(j); IN[j].add(i)
+
+print('노드 %d개 · 엣지 %d개' % (len(CHUNKS), sum(len(v) for v in OUT.values())))
+print('아무와도 안 이어진 조문 %d개'
+      % len([i for i in range(len(CHUNKS)) if not OUT[i] and not IN[i]]))"""),
+
+    md("**모델을 한 번도 안 불렀다.** 정규식 한 줄이 594개 엣지를 만들었고, 원문과 그대로 대조된다.\n"
+       "사내에서는 이 자리가 **설비 대장의 외래키**나 **로트 계보 테이블**이다."),
+
+    code("""# 가장 많이 인용되는 조문 — 이 그래프의 허브
+from collections import Counter
+deg = Counter({i: len(v) for i, v in IN.items()})
+for i, n in deg.most_common(5):
+    print('%2d회 인용됨  %s %s' % (n, CHUNKS[i]['source'], CHUNKS[i]['title'][:34]))"""),
+
+    md("### 벡터가 가져오는 것과 그래프가 가져오는 것"),
+
+    prep("""# 어떤 조문을 인용하는 조문들을 돌려준다 — 역참조
+def cited_by(law, article):
+    i = BY.get((law, article))
+    if i is None:
+        return '그런 조문이 없다'
+    if not IN[i]:
+        return '%s %s 를 인용하는 조문이 없다' % (law, article)
+    return '\\n'.join('%s %s' % (CHUNKS[j]['source'], CHUNKS[j]['title'])
+                      for j in sorted(IN[i]))"""),
+
+    code("""# 같은 질문을 두 가지 방식으로
+q = '작업환경측정을 안 하면 어떻게 되나'
+print('[벡터 검색 상위 5]')
+for c in hybrid(q, 5):
+    print('  %s %s' % (c['source'], c['title'][:40]))
+print()
+print('[제42조를 인용하는 조문]')
+print(cited_by('산업안전보건법', '제42조'))"""),
+
+    md("**벡터 상위 다섯에는 벌칙이 하나도 없다.** 「측정 · 기준」이라는 주제로 몰렸을 뿐이다.\n"
+       "벌칙 조문에서 「작업환경측정」은 **목록 한 줄**이라 유사도가 낮다.\n\n"
+       "인용을 거슬러 올라가면 **제69조(벌칙)와 제72조(과태료)가 바로 나온다.**\n"
+       "벡터는 **주제가 비슷한 것**을, 그래프는 **실제로 이어진 것**을 가져온다."),
+
+    Ex(5, "다른 조문으로도 되는지 본다. **제43조(건강진단)** 을 넣어 본다.\n"
+          "> 벡터 상위 다섯과 견줘서, 인용 쪽에만 있는 조문이 무엇인지 본다.",
+       setup="# 역참조로 벌칙을 찾아 본다",
+       blank="ART = '___'",
+       answer="ART = '제43조'",
+       check="""print('[벡터]')
+for c in hybrid('건강진단을 안 하면 어떻게 되나', 5):
+    print('  %s' % c['title'][:40])
+print()
+print('[%s 를 인용하는 조문]' % ART)
+print(cited_by('산업안전보건법', ART))"""),
+
+    md("## 8. 에이전트에 붙이기"),
     md("모델에는 **함수가 아니라 설명서**를 준다. 언제 부를지는 설명서를 보고 모델이 정한다."),
 
     prep("""# 도구 설명서 — 이름 · 하는 일 · 인자
-FUNCS = {'defect_rate': defect_rate, 'recent_lots': recent_lots, 'find_rule': find_rule}
+def trace_rule(article):
+    CALLS.append(('trace_rule', article, None))
+    return cited_by('산업안전보건법', article)
+
+FUNCS = {'defect_rate': defect_rate, 'recent_lots': recent_lots,
+         'find_rule': find_rule, 'trace_rule': trace_rule}
 
 TOOLS = [
  {'type': 'function', 'function': {
@@ -396,6 +473,12 @@ TOOLS = [
    'description': '사내 규정과 법령에서 관련 조문을 찾아 돌려준다.',
    'parameters': {'type': 'object', 'required': ['question'], 'properties': {
      'question': {'type': 'string', 'description': '찾고 싶은 내용'}}}}},
+ {'type': 'function', 'function': {
+   'name': 'trace_rule',
+   'description': ('산업안전보건법의 어떤 조문을 인용하는 다른 조문들을 돌려준다. '
+                   '벌칙이나 과태료를 물을 때 쓴다.'),
+   'parameters': {'type': 'object', 'required': ['article'], 'properties': {
+     'article': {'type': 'string', 'description': '조문 번호. 예 제42조'}}}}},
 ]"""),
 
     prep("""# 시스템 프롬프트 — 무엇을 하는 비서이고 무엇은 안 하는지
@@ -451,6 +534,12 @@ print(run('3호기 야간조 불량률이 얼마야'))"""),
     code("""# 두 도구를 다 써야 하는 질문
 print(run('3호기 불량률이 어떤지 보고, 위험할 때 작업을 멈출 수 있는 근거 조문도 알려줘'))"""),
 
+    code("""# 인용까지 따라가야 하는 질문
+print(run('작업환경측정을 안 하면 어떤 벌칙이 있나'))"""),
+
+    md("**find_rule 로 제42조를 찾고, trace_rule 로 그 조문을 인용하는 벌칙까지 따라간다.**\n"
+       "찾기만 해서는 안 나오는 답이다. 도구 하나가 늘어난 만큼 답의 범위가 늘었다."),
+
     md("**한 문장에 도구 두 개가 순서대로 불린다.** 사람이 「이건 DB, 이건 규정」이라고 나눠 주지 않았다.\n"
        "설명서를 읽고 모델이 정했다. 도구가 좁게 정의돼 있어서 헷갈릴 여지가 적었다."),
 
@@ -463,7 +552,7 @@ print(run('3호기 불량률이 어떤지 보고, 위험할 때 작업을 멈출
 print()
 print('도구 호출 %d번' % (len(CALLS) - before))"""),
 
-    md("## 8. 일부러 시켜 보기"),
+    md("## 9. 일부러 시켜 보기"),
     md("되는 것만 보고 끝내면 경계가 있는지 알 수 없다. **막히는 것을 눈으로 본다.**\n"
        "`probe` 는 답과 함께 **무엇을 불렀는지**도 찍는다. 막힌 자리는 여기서 드러난다."),
 
@@ -529,7 +618,7 @@ probe('3호기 건조 ZONE1 평균 온도가 몇 도야')       # 줄 도구가 
     md("사정을 아무리 붙여도 **도구가 안 돌려주는 값은 안 나온다.**\n"
        "이게 프롬프트로 막는 것과 도구로 막는 것의 차이다."),
 
-    md("## 9. 남긴 기록 보기"),
+    md("## 10. 남긴 기록 보기"),
     md("`CALLS` 에 지금까지 부른 것이 다 쌓여 있다. 운영에서는 이게 **사고 났을 때 볼 유일한 것**이다."),
 
     code("""# 무엇을 몇 번 불렀는지 센다
@@ -578,7 +667,7 @@ print('이 네 칸을 3절 프롬프트 형식으로 옮기면 Codex 에 그대�
 ]
 
 MODES = {
-    ("ex", 1): "together", ("ex", 2): "solo", ("ex", 3): "solo", ("ex", 4): "solo",
+    ("ex", 1): "together", ("ex", 2): "solo", ("ex", 3): "solo", ("ex", 4): "solo", ("ex", 5): "together",
     ("task", 1): "together", ("task", 2): "team",
 }
 
