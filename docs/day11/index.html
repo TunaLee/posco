@@ -394,42 +394,98 @@
   <div class="ghost">00</div>
   <div class="seyebrow">CHAPTER 00</div>
   <h2>벡터 검색이 새는 자리</h2>
-  <div class="agenda"><span>정확한 낱말</span><span>1등의 착각</span><span>모호한 질문</span></div>
+  <div class="agenda"><span>정확한 낱말</span><span>빗나간 1등</span><span>흐린 방향</span><span>현장 약어</span></div>
 </section>
 <section class="slide" data-title="의미 검색이 잘하는 일">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>복습</div>
   <h2 class="s-title sm">의미 검색이 잘하는 일</h2>
   <div class="rule"></div>
-  <div class="body"><div class="keymsg"><span class="k">강점</span><div>“노트북이 멈춰요” ↔ “시스템 행 발생” 처럼 <b>표현이 달라도 의미로</b> 매칭.</div></div><div class="callout mint" style="margin-top:16px"><div class="ci" style="font-size:18px"></div><div class="ct"><h4>의미의 지도</h4><p>모든 문장에 ‘뜻의 좌표’를 매겨 가까운 이웃을 찾는다. 그런데 이 지도가 약한 구역이 있다 — 다음 3가지.</p></div></div></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">어제 실습에서 실제로</span></div><pre><code>Q  <span class="s">일하다 위험하면 멈춰도 되나</span>
+&rarr; 산업안전보건법 <span class="st">제26조(작업중지 등)</span>    <span class="nm">1등</span>
+   <span class="cm">조문에 「위험」은 있지만 「멈춰도」·「되나」는 없다</span>
+
+Q  <span class="s">쉬는 날은 일 년에 며칠인가</span>
+&rarr; 근로기준법 <span class="st">제60조(연차 유급휴가)</span>      <span class="nm">4등</span>
+   <span class="cm">「쉬는 날」과 「연차」는 글자가 하나도 안 겹친다</span></code></pre></div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>문장마다 <b>뜻의 좌표</b>를 매겨 가까운 이웃을 찾는다. 표현이 달라도 걸린다.</div></div>
+  <div class="v"><span class="b">&rarr;</span><div>같은 뜻을 <b>다르게 적은 문서</b>도 걸린다. 사내 문서마다 용어가 다를 때 쓸모가 있다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>그런데 이 좌표가 <b>약한 구역</b>이 있다. 다음 세 장이 그 구역이다.</div></div>
+</div>
+<div class="keymsg"><span class="k">강점</span><div>같은 뜻을 <b>다른 말로 물어도</b> 걸린다. 낱말 검색은 못 하는 일이다.</div></div>
+</div>
 </section>
 <section class="slide" data-title="약점 ① — 정확한 단어를 못 집는다">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>약점 1</div>
   <h2 class="s-title sm">놓치는 고유명사와 코드</h2>
   <div class="rule"></div>
-  <div class="body"><div class="vlist"><div class="v"><span class="b">!</span><div>오류코드 <b>ERR-4021</b>, 제품명 <b>X-200</b>, 약어처럼 ‘희귀한 정확 토큰’</div></div><div class="v"><span class="b">!</span><div>의미상 ‘비슷한’ 게 없어서 벡터가 헤맨다</div></div></div><div class="callout mint" style="margin-top:16px"><div class="ci" style="font-size:18px"></div><div class="ct"><h4>이름표를 못 읽는 사서</h4><p>주제는 잘 아는 사서지만 ‘정확한 책 번호(청구기호)’로 찾는 건 서툴다. 그건 <b>색인(키워드) 검색</b>의 몫.</p></div></div></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">같은 조문을 세 가지로 물어보면</span></div><pre><code>Q  <span class="s">제60조</span>                          <span class="nm">201등</span>
+Q  <span class="s">제60조 연차 유급휴가</span>              <span class="nm">13등</span>
+Q  <span class="s">근로기준법 제60조 연차 유급휴가 며칠</span>  <span class="nm">1등</span>
+
+<span class="cm">토크나이저가 쪼개는 모양</span>
+제60조  &rarr; 제 / ##60 / ##조      NCM811 &rarr; 네 조각</code></pre></div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div><b>ERR-4021 · LOT-2026-1259 · NCM811</b> 처럼 뜻이 아니라 <b>글자가 곧 정보</b>인 것이 걸린다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>쪼개진 조각에는 <b>비슷한 이웃이 없다</b>. 좌표를 매길 재료가 없는 것이다.</div></div>
+</div>
+<div class="keymsg"><span class="k">약점 ①</span><div>주제는 잘 아는 사서지만 <b>청구기호로 찾는 것</b>은 서툴다.</div></div>
+</div>
 </section>
 <section class="slide" data-title="약점 ② — 1등이 진짜 1등이 아니다">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>약점 2</div>
-  <h2 class="s-title sm">1등의 착각</h2>
+  <h2 class="s-title sm">비슷한 것과 답이 되는 것</h2>
   <div class="rule"></div>
-  <div class="body"><div class="vlist"><div class="v"><span class="b">!</span><div>관련 문서는 데려오는데 <b>1등이 진짜 1등이 아님</b></div></div><div class="v"><span class="b">!</span><div>유사도 ≠ 실제 관련성일 때가 많다</div></div></div><div class="callout mint" style="margin-top:16px"><div class="ci" style="font-size:18px"></div><div class="ct"><h4>서류만 보고 줄 세우기</h4><p>이력서(유사도)만으로 등수를 매기면 부정확하다. ‘면접(reranker)’으로 다시 보면 진짜 1등이 보인다.</p></div></div></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">검색이 데려온 다섯 개</span></div><pre><code><span class="cm">Q 일하다 위험하면 멈춰도 되나  &mdash; 다섯 다 산업안전보건법이다</span>
+1  제23조(안전조치)
+2  제33조(방호조치)
+3  제46조(근로시간 연장의 제한)
+4  <span class="st">제26조(작업중지 등)</span>          <span class="cm">← 실제로 답이 되는 조문</span>
+5  제28조(유해작업 도급 금지)</code></pre></div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>다섯 다 <b>「위험」을 말하는 조문</b>이다. 데려오기는 제대로 데려왔다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>틀린 것은 <b>순서</b>다. 위에서 세 개만 쓰면 답이 안 들어간다.</div></div>
+</div>
+<div class="keymsg"><span class="k">약점 ②</span><div>유사도가 높은 것과 <b>답이 되는 것</b>은 다르다.</div></div>
+</div>
 </section>
 <section class="slide" data-title="약점 ③ — 모호한 질문에 흔들린다">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>약점 3</div>
-  <h2 class="s-title sm">짧은 질문의 흔들림</h2>
+  <h2 class="s-title sm">방향이 흐린 질문</h2>
   <div class="rule"></div>
-  <div class="body"><div class="vlist"><div class="v"><span class="b">!</span><div>너무 짧거나 막연한 질문 — “그거 어떻게 하나”</div></div><div class="v"><span class="b">!</span><div>방향이 불분명해 엉뚱한 이웃을 데려온다</div></div></div><div class="callout mint" style="margin-top:16px"><div class="ci" style="font-size:18px"></div><div class="ct"><h4>흐릿한 사진으로 찾기</h4><p>찾으려는 게 흐릿하면 닮은 걸 고르기 어렵다. 질문을 ‘더 또렷한 그림’으로 바꿔주면(HyDE·Multi-Query) 잘 잡힌다.</p></div></div></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">제26조(작업중지)를 찾는 세 가지 방식</span></div><pre><code>Q  <span class="s">그거 어떻게 하나</span>                  <span class="nm">183등</span>
+Q  <span class="s">작업 멈춰도 되나</span>                   <span class="nm">67등</span>
+Q  <span class="s">급박한 위험이 있을 때 작업중지 근거</span>    <span class="nm">1등</span>
+
+<span class="cm">묻는 내용은 같다. 등수는 183등에서 1등까지 벌어진다</span></code></pre></div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>현장에서 오는 질문은 대개 <b>짧다</b>. 「그거」 · 「저번 그 건」 같은 말이 섞인다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>흐릿한 사진으로는 닮은 것을 못 고른다. <b>질문을 다듬는 것</b>이 CH3 이다.</div></div>
+</div>
+<div class="keymsg"><span class="k">약점 ③</span><div>짧은 질문은 <b>방향이 흐리다</b>. 엉뚱한 이웃이 딸려 온다.</div></div>
+</div>
 </section>
 <section class="slide" data-title="3가지 약점 = 3가지 무기">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>오늘의 지도</div>
-  <h2 class="s-title sm">약점 셋이 곧 무기 셋</h2>
+  <h2 class="s-title sm">약점마다 붙는 무기</h2>
   <div class="rule"></div>
-  <div class="body"><div class="cards c3"><div class="card"><span class="n">약점 1</span><h3>정확 매칭</h3><p>→ <b>하이브리드</b>(BM25 더하기)</p></div><div class="card"><span class="n">약점 2</span><h3>부정확한 순서</h3><p>→ <b>Reranker</b></p></div><div class="card"><span class="n">약점 3</span><h3>모호한 질문</h3><p>→ <b>HyDE·Multi-Query</b></p></div></div><div class="keymsg"><span class="k">기억</span><div>약점마다 ‘맞는 무기’가 있다 — 배울 때마다 파이프라인에 블록을 하나씩 꽂아 조립한다.</div></div></div>
+  <div class="body">
+<div class="cards c3">
+  <div class="card"><span class="n">약점 ①</span><h3>정확한 낱말</h3><p>「제60조」가 <b>201등</b>으로 밀린다<br/>&rarr; <b>하이브리드</b> — BM25 를 같이</p></div>
+  <div class="card"><span class="n">약점 ②</span><h3>어긋난 순서</h3><p>답이 되는 조문이 <b>4등</b>에 있다<br/>&rarr; <b>리랭커</b> — 다시 줄 세우기</p></div>
+  <div class="card"><span class="n">약점 ③</span><h3>흐린 방향</h3><p>「그거 어떻게 하나」가 <b>183등</b><br/>&rarr; <b>HyDE · Multi-Query</b> — 질문 다듬기</p></div>
+</div>
+<div class="keymsg"><span class="k">오늘의 짜임</span><div>약점 하나에 무기 하나다. 배울 때마다 <b>파이프라인에 블록을 하나씩</b> 꽂는다.</div></div>
+</div>
 </section>
 <section class="slide" data-title="현장 약어">
   <div class="coord"><b></b> / <span class="tot"></span></div>
@@ -446,12 +502,28 @@
 애노드        <span class="nm">3</span>조각  [애, ##노, ##드]
 NCM811     <span class="st">4</span>조각  [NC, ##M, ##81, ##1]
 캘린더링       <span class="st">4</span>조각  [캘, ##린, ##더, ##링]</code></pre></div></div>
-<div class="keymsg"><span class="k">실측</span><div>「제60조」로 의미 검색하면 <b>201등</b>이다. 낱말 검색은 11등이다.</div></div></div>
+<div class="keymsg"><span class="k">실측</span><div>「제60조」로 의미 검색하면 <b>201등</b>이다. 낱말 검색은 <b>7등</b>이다.</div></div></div>
 </section>
-<section class="slide" data-title="약어 처리 흐름">
+<section class="slide" data-title="약어 뽑기">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>입구</div>
-  <h2 class="s-title sm">검색기가 아니라 입구</h2>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>앞단</div>
+  <h2 class="s-title sm">질문에서 약어를 뽑는 세 가지</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">① 글자 모양으로 거른다</span></div><pre><code>import re
+re.findall(r<span class="s">'[A-Z]{2,}[0-9]*|[A-Z]+-\d{4}-\d+'</span>, q)
+
+<span class="cm">"NCM811 캘린더링 후 SEI 층 두께" &rarr; ['NCM811', 'SEI']</span></code></pre></div>
+<div class="ctable"><table><thead><tr><th>방법</th><th>잡는 것</th><th>못 잡는 것</th></tr></thead><tbody>
+  <tr><td class="hl">① 글자 모양</td><td class="hl">NCM811 · SEI · LOT-2026-1259</td><td class="hl">캘린더링 · 화성 &mdash; <b>한글 약어</b></td></tr>
+  <tr><td>② 사전과 대조</td><td>사전에 올라 있는 말 전부</td><td>사전에 없는 말은 영원히</td></tr>
+  <tr><td>③ 모델에 시키기</td><td>처음 보는 말도 후보로 올린다</td><td>없는 말을 지어낸다 · 호출이 는다</td></tr>
+</tbody></table></div>
+<div class="keymsg"><span class="k">실무</span><div>①과 ②를 먼저 돌리고, <b>둘 다 빈손일 때만</b> ③ 을 부른다.</div></div></div>
+</section>
+<section class="slide" data-title="사전 조회 뒤">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>앞단</div>
+  <h2 class="s-title sm">사전을 찾은 뒤의 세 갈래 처리</h2>
   <div class="rule"></div>
   <div class="body"><div class="plot"><svg viewBox="0 0 1116 210">
 <rect x="14" y="24" width="196" height="62" rx="12" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.4"/>
@@ -480,22 +552,28 @@ NCM811     <span class="st">4</span>조각  [NC, ##M, ##81, ##1]
 <path d="M804 32 L836 88" stroke="#3A1FC9" stroke-width="1.6" marker-end="url(#a11)"/>
 <path d="M804 152 L836 104" stroke="#3A1FC9" stroke-width="1.6" marker-end="url(#a11)"/>
 </svg></div>
-<div class="keymsg"><span class="k">자리</span><div>검색기를 고치는 것보다 <b>입구에서 한 마디 붙이는 편</b>이 싸고 확실하다.</div></div></div>
+<div class="keymsg"><span class="k">되묻는 자리</span><div>뜻이 <b>둘 이상일 때만</b> 되묻는다. 매번 물으면 아무도 안 쓴다.</div></div></div>
 </section>
-<section class="slide" data-title="약어 사전 운영">
+
+<section class="slide" data-title="사전 운영">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>운영</div>
-  <h2 class="s-title sm">사전은 코드가 아니라 데이터</h2>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>앞단</div>
+  <h2 class="s-title sm">사전을 굴릴 때 챙길 네 가지</h2>
   <div class="rule"></div>
-  <div class="body"><div class="ctable"><table><thead><tr><th>챙길 것</th><th>왜</th></tr></thead><tbody>
-  <tr><td class="hl">부서로 범위를 나눈다</td><td class="hl">같은 약어가 부서마다 다른 뜻이다 &mdash; <b>PP</b> 는 폴리프로필렌이자 생산계획이다</td></tr>
-  <tr><td>되묻기는 아낀다</td><td>매번 물으면 아무도 안 쓴다. <b>뜻이 둘 이상일 때만</b> 묻는다</td></tr>
-  <tr><td>파일로 둔다</td><td>현업이 엑셀에서 고치면 <b>배포 없이</b> 반영되게 한다</td></tr>
-  <tr><td>모르는 말을 쌓는다</td><td>검색이 빗나간 질의의 미등록 약어가 <b>다음 달 사전 갱신 목록</b>이 된다</td></tr>
-  <tr><td>답에 풀이를 적는다</td><td>「NCM811(니켈 코발트 망간 양극재)」로 답해야 오해가 안 생긴다</td></tr>
+  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">사전 — 엑셀 한 장이면 된다</span></div><pre><code>표제어      뜻                          부서       갱신일
+NCM811    니켈 코발트 망간 양극재 (8:1:1)     소재기술   2026-06-02
+캘린더링    전극을 롤로 눌러 밀도를 올리는 공정   극판       2026-06-02
+<span class="st">PP</span>        폴리프로필렌                  소재기술   2026-05-11
+<span class="st">PP</span>        생산계획                     생산관리   2026-05-11</code></pre></div>
+<div class="ctable"><table><thead><tr><th>챙길 것</th><th>구체적으로</th></tr></thead><tbody>
+  <tr><td class="hl">부서마다 따로</td><td class="hl"><b>PP</b> 는 소재팀에서 폴리프로필렌, 생산관리팀에서 생산계획이다 &mdash; 부서를 같이 저장한다</td></tr>
+  <tr><td>엑셀 한 장으로</td><td>표제어 · 뜻 · 부서 · 갱신일 네 칸이면 된다. 현업이 고치면 <b>배포 없이</b> 반영된다</td></tr>
+  <tr><td>못 찾은 말을 쌓는다</td><td>사전에 없던 약어를 로그에 남긴다. 이 목록이 <b>다음 달 갱신 대상</b>이다</td></tr>
+  <tr><td>답에 풀이를 붙인다</td><td>「NCM811(니켈 코발트 망간 양극재)」로 답해야 <b>읽는 사람이 확인</b>할 수 있다</td></tr>
 </tbody></table></div>
 <div class="keymsg"><span class="k">현실</span><div>사전을 처음부터 다 채울 수는 없다. <b>쓰면서 자라게</b> 만든다.</div></div></div>
 </section>
+
 <section class="slide section" data-title="[섹션] 하이브리드 검색">
   <div class="ghost">01</div>
   <div class="seyebrow">CHAPTER 01</div>
@@ -507,7 +585,17 @@ NCM811     <span class="st">4</span>조각  [NC, ##M, ##81, ##1]
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>키워드 검색</div>
   <h2 class="s-title sm">BM25 — 정확한 낱말의 달인</h2>
   <div class="rule"></div>
-  <div class="body"><div class="vlist"><div class="v"><span class="b">→</span><div>드문 단어가 문서에 있으면 강한 신호(코드·이름·약어)</div></div><div class="v"><span class="b">→</span><div>의미(패러프레이즈)는 모른다 — 글자 그대로 매칭</div></div></div><div class="callout mint" style="margin-top:16px"><div class="ci" style="font-size:18px"></div><div class="ct"><h4>책 뒤의 ‘색인’</h4><p>책 맨 뒤 색인에서 정확한 단어로 페이지를 찾는 것 — 또는 Ctrl+F. 정확 토큰엔 최고, 동의어엔 약하다.</p></div></div></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">같은 문서 묶음, 같은 두 질문</span></div><pre><code><span class="cm">찾는 조문이 몇 등에 오는가</span>
+                        낱말      의미
+<span class="s">제60조</span>                    <span class="nm">7등</span>    <span class="nm">201등</span>   <span class="cm">← 낱말이 낫다</span>
+<span class="s">쉬는 날은 일 년에 며칠</span>       <span class="nm">7등</span>      <span class="nm">4등</span>   <span class="cm">← 의미가 낫다</span></code></pre></div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>드문 낱말이 문서에 있으면 <b>강한 신호</b>다. 코드 · 이름 · 약어가 여기 해당한다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>바꿔 말한 것은 모른다. 「쉬는 날」과 「연차」는 <b>글자가 안 겹친다</b>.</div></div>
+</div>
+<div class="keymsg"><span class="k">책 뒤의 색인</span><div>정확한 낱말로 페이지를 찾는 것이다. <b>동의어에는 약하다.</b></div></div>
+</div>
 </section>
 <section class="slide" data-title="BM25 해부 ② — TF">
   <div class="coord"><b></b> / <span class="tot"></span></div>
@@ -542,14 +630,35 @@ NCM811     <span class="st">4</span>조각  [NC, ##M, ##81, ##1]
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>합치기</div>
   <h2 class="s-title sm">두 검색기를 같이</h2>
   <div class="rule"></div>
-  <div class="body"><div class="twopane"><div class="pane"><h4 style="color:var(--violet)">BM25(키워드)</h4><p>정확 토큰에 강함.</p></div><div class="pane good"><h4>벡터(의미)</h4><p>패러프레이즈에 강함.</p></div></div><div class="callout mint" style="margin-top:16px"><div class="ci" style="font-size:18px"></div><div class="ct"><h4>두 사서에게 동시에 묻기</h4><p>한 명은 ‘키워드 달인’, 한 명은 ‘주제 달인’. 둘에게 동시에 묻고 <b>추천을 합치면</b> 빠지는 게 줄어든다.</p></div></div></div>
+  <div class="body">
+<div class="twopane">
+  <div class="pane"><h4 style="color:var(--violet)">BM25 — 낱말</h4><p>제60조 <b>7등</b> · 쉬는 날 <b>7등</b></p><div class="mini">글자가 겹쳐야 걸린다</div></div>
+  <div class="pane good"><h4>벡터 — 의미</h4><p>제60조 <b>201등</b> · 쉬는 날 <b>4등</b></p><div class="mini">뜻이 가까우면 걸린다</div></div>
+</div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>같은 문서 묶음에 같은 질문인데 <b>한쪽은 7등, 한쪽은 201등</b>이다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>한쪽이 놓치는 자리를 <b>다른 쪽이 잡는다</b>. 그래서 둘 다 돌린다.</div></div>
+</div>
+<div class="keymsg"><span class="k">두 사서에게</span><div>한 명은 낱말 달인, 한 명은 주제 달인이다. <b>추천을 합치면</b> 빠지는 것이 줄어든다.</div></div>
+</div>
 </section>
 <section class="slide" data-title="문제 — 두 점수는 못 더한다">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>융합</div>
   <h2 class="s-title sm">더할 수 없는 두 점수</h2>
   <div class="rule"></div>
-  <div class="body"><div class="vlist"><div class="v"><span class="b">!</span><div>BM25 점수와 코사인 점수는 <b>척도(단위)가 다르다</b></div></div><div class="v"><span class="b">!</span><div>그냥 더하면 한쪽이 다른 쪽을 압도</div></div></div><div class="callout mint" style="margin-top:16px"><div class="ci" style="font-size:18px"></div><div class="ct"><h4>서로 다른 시험의 점수</h4><p>국어 원점수와 수학 원점수는 못 더한다 — 대신 <b>‘석차(등수)’</b>로 합치면 공정하다. 그게 RRF의 발상.</p></div></div></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">두 점수를 그냥 더하면</span></div><pre><code><span class="cm">같은 문서 하나에 매겨진 두 점수</span>
+BM25   <span class="nm">18.42</span>   <span class="cm">상한이 없다. 문서마다 몇십까지 간다</span>
+코사인  <span class="nm">0.71</span>    <span class="cm">항상 -1 에서 1 사이다</span>
+
+더하면  <span class="nm">19.13</span>  <span class="st">← 사실상 BM25 점수다</span></code></pre></div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>척도가 다르니 <b>한쪽이 다른 쪽을 덮는다</b>. 벡터 검색을 껐을 때와 결과가 같아진다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>국어 원점수와 수학 원점수를 더하는 것과 같다. <b>등수로 바꿔야</b> 견줄 수 있다.</div></div>
+</div>
+<div class="keymsg"><span class="k">그래서</span><div>점수를 버리고 <b>순위만 쓴다</b>. 그것이 RRF 다.</div></div>
+</div>
 </section>
 <section class="slide" data-title="RRF — 점수가 아니라 ‘순위’로 합친다">
   <div class="coord"><b></b> / <span class="tot"></span></div>
@@ -568,7 +677,7 @@ NCM811     <span class="st">4</span>조각  [NC, ##M, ##81, ##1]
 <section class="slide" data-title="RRF 예시 — 점수 합산표">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>RRF · 예시</div>
-  <h2 class="s-title sm">양쪽에서 높은 문서의 승리</h2>
+  <h2 class="s-title sm">양쪽에서 높은 문서</h2>
   <div class="rule"></div>
   <div class="body"><div class="imgwrap"><img src="assets/fig06.webp" alt="RRF 점수표 — 문서 A는 BM25와 벡터 검색 모두 상위라 합계가 가장 높아 1위가 됨"/></div><div class="keymsg" style="margin-top:14px"><span class="k">예시</span><div>문서 A는 <b>양쪽 모두 상위</b>라 합계가 가장 크다 — 한쪽에서만 높은 문서 B보다 안정적으로 위로 올라간다.</div></div></div>
 </section>
@@ -598,7 +707,20 @@ def hybrid(q, n=10):        <span class="cm"># 벡터(뜻) + BM25(정확 토큰)
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>문제</div>
   <h2 class="s-title sm">유사도 1등과 진짜 1등</h2>
   <div class="rule"></div>
-  <div class="body"><div class="vlist"><div class="v"><span class="b">!</span><div>벡터/BM25는 <b>빠르지만 거칠게</b> 줄을 세운다</div></div><div class="v"><span class="b">→</span><div>관련 있는 후보는 모았으니, 이제 <b>정밀하게 다시</b> 줄세우자</div></div></div><div class="keymsg"><span class="k">아이디어</span><div>넓게 줍고(1차) → 꼼꼼히 고른다(2차). 그 2차가 <b>reranker</b>.</div></div></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">1차 검색이 세운 순서</span></div><pre><code><span class="cm">Q 일하다 위험하면 멈춰도 되나</span>
+1  제23조(안전조치)          <span class="cm">「위험」 「예방」 「조치」가 다 있다</span>
+2  제33조(방호조치)
+3  제46조(근로시간 연장의 제한)
+4  <span class="st">제26조(작업중지 등)</span>       <span class="cm">← 답</span>
+
+<span class="cm">1차 검색은 질문과 문서를 따로 재서 점수를 매긴다</span></code></pre></div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>후보를 모으는 일은 <b>제대로 했다</b>. 다섯 안에 답이 들어 있다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>질문과 문서를 <b>나란히 놓고</b> 다시 재면 순서가 바뀐다.</div></div>
+</div>
+<div class="keymsg"><span class="k">발상</span><div>넓게 줍고 <b>꼼꼼히 다시 고른다</b>. 그 두 번째가 리랭커다.</div></div>
+</div>
 </section>
 <section class="slide" data-title="Reranker 개요">
   <div class="coord"><b></b> / <span class="tot"></span></div>
@@ -678,9 +800,20 @@ best = rerank(q, hybrid(q, 12), top_k=3)   <span class="cm"># 넓게 N → 정�
 <section class="slide" data-title="모호한 질문이 검색을 흔든다">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>문제 다시</div>
-  <h2 class="s-title sm">모호한 질문의 값</h2>
+  <h2 class="s-title sm">다듬지 않은 질문</h2>
   <div class="rule"></div>
-  <div class="body"><div class="vlist"><div class="v"><span class="b">!</span><div>짧고 막연한 질문은 ‘방향’이 흐릿하다</div></div><div class="v"><span class="b">→</span><div>질문을 <b>더 또렷하게 다듬어</b> 검색하면 잘 맞는다</div></div></div><div class="keymsg"><span class="k">두 방법</span><div>‘가상 답으로 검색’(HyDE)과 ‘여러 표현으로 검색’(Multi-Query).</div></div></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">현장에서 실제로 오는 질문</span></div><pre><code><span class="s">"저번에 그거 어떻게 처리했지"</span>
+<span class="s">"이거 해도 되나"</span>
+<span class="s">"3호기 그 문제"</span>
+
+<span class="cm">셋 다 무엇을 찾아야 할지 정해지지 않는다</span></code></pre></div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>사람끼리는 통한다. 앞뒤 사정을 <b>서로 알고 있기</b> 때문이다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>검색에는 그 사정이 없다. 질문을 <b>검색이 읽을 수 있는 모양</b>으로 바꿔 준다.</div></div>
+</div>
+<div class="keymsg"><span class="k">두 가지 길</span><div>가상의 답을 지어 검색하거나(HyDE), <b>여러 표현으로 나눠</b> 검색한다(Multi-Query).</div></div>
+</div>
 </section>
 <section class="slide" data-title="HyDE — 가상의 답으로 검색한다">
   <div class="coord"><b></b> / <span class="tot"></span></div>
@@ -742,9 +875,21 @@ def hyde_search(q, n=5):
 <section class="slide" data-title="좋은 후보를 모았어도…">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>문제</div>
-  <h2 class="s-title sm">좋은 후보를 모았어도</h2>
+  <h2 class="s-title sm">후보를 모은 뒤의 문제</h2>
   <div class="rule"></div>
-  <div class="body"><div class="vlist"><div class="v"><span class="b">!</span><div>비슷한 청크만 K개 담기면 <b>같은 얘기 반복</b></div></div><div class="v"><span class="b">!</span><div>중요한 근거가 <b>가운데 묻히면</b> 모델이 놓침</div></div></div><div class="keymsg"><span class="k">그래서</span><div>검색 ‘후’에도 컨텍스트를 다듬는다 — 다양성·순서·중복.</div></div></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">검색이 데려온 다섯 개</span></div><pre><code><span class="cm">Q 비밀을 지킬 의무</span>
+1  산업기술보호법 제34조(비밀유지의무)
+2  산업안전보건법 제63조(비밀 유지)          <span class="cm">← 같은 얘기</span>
+3  개인정보보호법 제60조(비밀유지 등)         <span class="cm">← 또 같은 얘기</span>
+4  근로기준법  제103조(근로감독관의 의무)      <span class="cm">← 또</span>
+5  산업안전보건법 제6조(근로자의 의무)</code></pre></div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>다섯 자리 중 <b>넷이 같은 말</b>이다. 「직무상 알게 된 비밀을 누설하지 마라」.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>점수만 보고 고르면 이렇게 된다. 중요한 근거가 <b>가운데 묻히면</b> 모델이 지나친다.</div></div>
+</div>
+<div class="keymsg"><span class="k">그래서</span><div>찾은 <b>뒤에도</b> 손질한다 &mdash; 겹치는 것 빼기 · 순서 바꾸기.</div></div>
+</div>
 </section>
 <section class="slide" data-title="MMR — 서로 다른 관점을 담는다">
   <div class="coord"><b></b> / <span class="tot"></span></div>
@@ -830,15 +975,18 @@ def hyde_search(q, n=5):
 <section class="slide" data-title="벡터 RAG가 약한 또 다른 질문">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>또 다른 약점</div>
-  <h2 class="s-title sm">이어지지 않는 흩어진 사실</h2>
+  <h2 class="s-title sm">흩어져서 이어지지 않는 사실</h2>
   <div class="rule"></div>
   <div class="body">
-    <div class="cards c2">
-      <div class="card"><span class="n">멀티홉</span><h3>여러 문서에 걸친 답</h3><p>“A의 제조사 대표는?” — 한 청크에 다 없고 <b>연결</b>해야 풀린다.</p></div>
-      <div class="card"><span class="n">전체 주제</span><h3>큰 그림·요약</h3><p>“이 보고서들의 공통 주제는?” — <b>전체</b>를 봐야 답할 수 있다.</p></div>
-    </div>
-    <div class="callout mint" style="margin-top:16px"><div class="ci" style="font-size:18px"></div><div class="ct"><h4>흩어진 메모 더미</h4><p>벡터 RAG는 ‘비슷한 메모’를 꺼내올 뿐, 메모끼리의 <b>연결</b>은 보지 못한다. 그래서 ‘연결·전체’ 질문에 약하다.</p></div></div>
-  </div>
+<div class="cards c2">
+  <div class="card"><span class="n">멀티홉</span><h3>여러 문서를 이어야 풀리는 질문</h3><p>「3호기에 들어가는 바인더를 납품하는 곳의 품질 담당은 누구인가」<br/>&mdash; 설비 대장 · 발주서 · 담당자 명부에 <b>한 조각씩</b> 있다.</p></div>
+  <div class="card"><span class="n">전체 주제</span><h3>묶어 봐야 보이는 질문</h3><p>「올해 안전 지적사항에서 반복되는 것은 무엇인가」<br/>&mdash; 한 문서에는 답이 없다. <b>전부를 봐야</b> 나온다.</p></div>
+</div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>벡터 검색은 <b>비슷한 조각</b>을 꺼내 온다. 조각끼리의 <b>연결</b>은 보지 못한다.</div></div>
+</div>
+<div class="keymsg"><span class="k">한계</span><div>가장 비슷한 다섯 개를 모아도 <b>이어 붙이는 일</b>은 아무도 안 했다.</div></div>
+</div>
 </section>
 <section class="slide" data-title="노드 — 그래프의 점">
   <div class="coord"><b></b> / <span class="tot"></span></div>
@@ -957,7 +1105,7 @@ for s, r, o in extract_triples(graph_docs):
 <section class="slide" data-title="언제 그래프인가">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>판단</div>
-  <h2 class="s-title sm">그래프감이 있는 데이터</h2>
+  <h2 class="s-title sm">그래프로 풀리는 데이터</h2>
   <div class="rule"></div>
   <div class="body"><div class="twopane">
   <div class="pane good"><h4>그래프가 맞는 것</h4><p>사람 · 설비 · 규정처럼 <b>서로를 가리키는</b> 것이 많고, 답이 <b>여러 문서에 흩어져</b> 있다.</p><div class="mini">조직도 · 설비 계통도 · 규정 상호참조</div></div>
