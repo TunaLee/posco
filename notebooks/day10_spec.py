@@ -210,30 +210,30 @@ show2('일하다 위험하면 멈춰도 되나')"""),
 
     md("질문 다섯 개로 두 방법을 나란히 세워 본다."),
 
-    prep("""# 질문마다 정답 조문을 미리 정해 둔다. 오른쪽이 그 조문의 제목에 들어 있는 말이다.
-QS = [('쉬는 날은 일 년에 며칠 받나', '제60조'),
-      ('휴가를 며칠이나 쓸 수 있나', '제60조'),
-      ('일하다 위험하면 멈춰도 되나', '작업중지'),
-      ('직원 정보를 다 쓴 뒤에는', '제21조'),
-      ('회사 기술을 외국에 팔면', '제11조')]
+    prep("""# 질문마다 정답 조문을 못 박아 둔다. (문서, 조 번호) 로 적어야 인용만 한 조문이 안 걸린다.
+QS = [('쉬는 날은 일 년에 며칠 받나', '근로기준법', '제60조'),
+      ('휴가를 며칠이나 쓸 수 있나', '근로기준법', '제60조'),
+      ('일하다 위험하면 멈춰도 되나', '산업안전보건법', '제26조'),
+      ('직원 정보를 다 쓴 뒤에는', '개인정보보호법', '제21조'),
+      ('회사 기술을 외국에 팔면', '산업기술보호법', '제11조')]
 
-def rank_of(sim, needle):
+def rank_of(sim, src, art):
     # 점수 높은 순으로 줄을 세우고, 정답 조문이 몇 번째인지 센다
     for r, i in enumerate(sim.argsort()[::-1], 1):
-        if needle in CHUNKS[i]['title']:
+        if CHUNKS[i]['source'] == src and CHUNKS[i]['title'].startswith(art):
             return r
     return None
 
 def compare(mat, model):
-    print('%-24s %6s %6s' % ('질문', '낱말', '의미'))
-    for q, need in QS:
-        t = rank_of(cosine_similarity(vec.transform([q]), M)[0], need)
-        e = rank_of(mat @ model.encode([q], normalize_embeddings=True)[0], need)
-        print('%-24s %6s %6s' % (q, t, e))"""),
+    print('%-22s %-9s %8s %8s' % ('질문', '정답 조문', '낱말', '의미'))
+    for q, src, art in QS:
+        t = rank_of(cosine_similarity(vec.transform([q]), M)[0], src, art)
+        e = rank_of(mat @ model.encode([q], normalize_embeddings=True)[0], src, art)
+        print('%-22s %-9s %7s등 %7s등' % (q, art, t, e))"""),
 
     code("""compare(V, EMB)"""),
 
-    md("**다섯 중 둘만 이긴다.** 「휴가를 며칠이나 쓸 수 있나」는 낱말 검색이 1등인데 의미 검색은 48등이다.\n"
+    md("**다섯 중 둘만 이긴다.** 「휴가를 며칠이나 쓸 수 있나」는 낱말 검색이 1등인데 의미 검색은 101등이다.\n"
        "이 모델이 한국어 법령 문장을 잘 못 잡는다는 뜻이다."),
 
     md("## 5. 모델을 바꾸면"),
@@ -247,7 +247,7 @@ print('조각 %d개 × %d차원' % VK.shape)"""),
 
     code("""compare(VK, KO)"""),
 
-    md("**다섯 개 전부 좋아진다.** 48등이던 것이 1등으로, 61등이던 것이 5등으로 올라온다.\n"
+    md("**다섯 개 전부 좋아진다.** 101등이던 것이 1등으로, 61등이던 것이 5등으로 올라온다.\n"
        "코드는 한 줄도 안 고쳤다. **모델 이름만 바꿨다.**"),
 
     Ex(3, "위 표에서 **가장 크게 달라진 질문**을 골라 두 모델의 1등을 직접 본다.",
@@ -301,32 +301,36 @@ def api_index(model):
 print(len(api_embed('nvidia/nv-embedqa-e5-v5', ['시험'], 'query')[0]), '차원')"""),
 
     prep("""# 순위를 재는 자 — 모델을 바꿔 가며 같은 다섯 질문을 던진다
-def ranks(qvec_fn, mat):
-    out = []
-    for q, need in QS:
-        sim = mat @ qvec_fn(q)
-        out.append(next(r for r, i in enumerate(sim.argsort()[::-1], 1)
-                        if need in CHUNKS[i]['title']))
-    return out
+def ranks(qvec_fn, mat, name):
+    print('%-22s %-9s %8s' % ('질문', '정답 조문', name))
+    for q, src, art in QS:
+        r = rank_of(mat @ qvec_fn(q), src, art)
+        print('%-22s %-9s %7s등' % (q, art, r))
 
 def api_ranks(model):
     V2 = api_index(model)
-    return ranks(lambda q: np.array(api_embed(model, [q], 'query')[0]) /
-                 np.linalg.norm(api_embed(model, [q], 'query')[0]), V2)"""),
+    qv = lambda q: (lambda v: np.array(v) / np.linalg.norm(v))(
+        api_embed(model, [q], 'query')[0])
+    ranks(qv, V2, model.split('/')[-1][:8])"""),
 
     code("""# 영어 중심 모델 하나와 최신 다국어 모델 하나
-print('%-34s %s' % ('nv-embedqa-e5-v5', api_ranks('nvidia/nv-embedqa-e5-v5')))
-print('%-34s %s' % ('nemotron-3-embed-1b', api_ranks('nvidia/nemotron-3-embed-1b')))"""),
+api_ranks('nvidia/nv-embedqa-e5-v5')
+print()
+api_ranks('nvidia/nemotron-3-embed-1b')"""),
 
     md("**API 라고 다 좋은 것이 아니다.**\n\n"
-       "| 모델 | 어디서 | 차원 | 다섯 질문의 정답 순위 |\n|---|---|---|---|\n"
-       "| 낱말 (TF-IDF) | 내 노트북 | — | 8 · 1 · 9 · 9 · 8 |\n"
-       "| MiniLM 다국어 | 내 노트북 CPU | 384 | 15 · 48 · 2 · 61 · 1 |\n"
-       "| ko-sroberta 한국어 | 내 노트북 CPU | 768 | **2 · 1 · 1 · 5 · 1** |\n"
-       "| nv-embedqa-e5-v5 | NVIDIA API | 1024 | 82 · 7 · 229 · 28 · 75 |\n"
-       "| nemotron-3-embed-1b | NVIDIA API | 2048 | **2 · 1 · 1 · 11 · 1** |\n\n"
-       "`nv-embedqa-e5-v5` 는 영어 문서에 맞춰진 모델이라 한국어 법령에서 229등까지 밀린다.\n"
-       "**크고 비싸다고 잘 찾는 것이 아니라, 그 언어를 배운 모델이 잘 찾는다.**"),
+       "정답 조문이 **몇 등에 오는지**를 다섯 문항 모두 적었다. 낮을수록 좋고, **1등이면 맨 위**다.\n\n"
+       "| 방법 | 어디서 | 쉬는 날 | 휴가 며칠 | 작업중지 | 정보 파기 | 기술 수출 |\n"
+       "|---|---|---|---|---|---|---|\n"
+       "| 낱말 (TF-IDF) | 노트북 | 8등 | 1등 | 9등 | 9등 | 8등 |\n"
+       "| MiniLM 다국어 384 | CPU | 15등 | **101등** | 2등 | 61등 | 1등 |\n"
+       "| ko-sroberta 한국어 768 | CPU | **2등** | **1등** | **1등** | **5등** | **1등** |\n"
+       "| e5-large 1024 | CPU · GPU | 1등 | 3등 | 1등 | 11등 | 1등 |\n"
+       "| nv-embedqa-e5-v5 1024 | API | 82등 | 7등 | **229등** | **244등** | 75등 |\n"
+       "| nemotron-3-embed-1b 2048 | API | 2등 | 3등 | 1등 | 11등 | 1등 |\n\n"
+       "`nv-embedqa-e5-v5` 는 영어 문서에 맞춰진 모델이라 244등까지 밀린다. **k=3 이면 근처도 못 간다.**\n"
+       "**크고 비싸다고 잘 찾는 것이 아니라, 그 언어를 배운 모델이 잘 찾는다.**\n"
+       "노트북 CPU 에서 도는 768차원 한국어 모델이 2048차원 API 모델과 비긴다."),
 
     md("### 그런데 문서가 밖으로 나간다"),
     md("API 로 인덱싱하면 **조각 354개가 전부 밖으로 나간다.** 문서 전체를 보낸 것과 같다.\n\n"
@@ -345,7 +349,7 @@ print('%-34s %s' % ('nemotron-3-embed-1b', api_ranks('nvidia/nemotron-3-embed-1b
        setup="# 모델 이름만 바꾸면 된다",
        blank="API_MODEL = '___'",
        answer="API_MODEL = 'nvidia/llama-nemotron-embed-1b-v2'",
-       check="print('%-34s %s' % (API_MODEL.split('/')[-1], api_ranks(API_MODEL)))"),
+       check="api_ranks(API_MODEL)"),
 
     md("### 길 둘 — GPU 를 켜고 큰 모델"),
     md("Colab 메뉴에서 **런타임 → 런타임 유형 변경 → T4 GPU** 로 바꾸면 큰 모델도 돌릴 만해진다.\n"
@@ -364,9 +368,9 @@ t0 = time.time()
 VB = BIG.encode(['passage: ' + t for t in TEXTS], batch_size=32,
                 normalize_embeddings=True, show_progress_bar=False)
 print('%d조각 × %d차원 · %.0f초' % (*VB.shape, time.time() - t0))
-print(ranks(lambda q: BIG.encode(['query: ' + q], normalize_embeddings=True)[0], VB))"""),
+ranks(lambda q: BIG.encode(['query: ' + q], normalize_embeddings=True)[0], VB, 'e5-large')"""),
 
-    md("**5억 6천만 개짜리 모델의 성적은 `1 · 2 · 1 · 11 · 1`** 이다. 한국어 모델(`2 · 1 · 1 · 5 · 1`)과 비슷하다.\n"
+    md("**5억 6천만 개짜리 모델도 한국어 모델과 비슷한 성적**이다. 표에서 두 줄을 나란히 보면 된다.\n"
        "이 노트북 CPU 에서 354조각을 좌표로 바꾸는 데 **24초** 걸렸다. 조각이 만 개면 열 배가 넘는다.\n"
        "T4 를 켜면 같은 일이 몇 초로 줄어든다. **코드에서 바뀌는 것은 `device` 한 줄뿐이다.**\n\n"
        "인덱싱은 문서가 바뀔 때만 하니까 몇 분 걸려도 되지만, **질문마다 도는 부분은 빨라야 한다** &mdash;\n"
@@ -405,11 +409,11 @@ print(hit[0]['text'][:80])"""),
     md("### 메타데이터를 임베딩에 섞으면 되나"),
     md("출처와 장을 본문 앞에 붙여서 같이 좌표로 바꾸면 나아질 것 같다. **재 보면 아니다.**\n\n"
        "| 질문 | 제목만 | 출처+장+제목 |\n|---|---|---|\n"
-       "| 쉬는 날은 일 년에 며칠 받나 | 2 | 4 |\n"
-       "| 휴가를 며칠이나 쓸 수 있나 | 1 | 2 |\n"
-       "| 일하다 위험하면 멈춰도 되나 | 1 | 1 |\n"
-       "| 직원 정보를 다 쓴 뒤에는 | 5 | 4 |\n"
-       "| 회사 기술을 외국에 팔면 | 1 | 1 |\n\n"
+       "| 쉬는 날은 일 년에 며칠 받나 | 2등 | 4등 |\n"
+       "| 휴가를 며칠이나 쓸 수 있나 | 1등 | 2등 |\n"
+       "| 일하다 위험하면 멈춰도 되나 | 1등 | 1등 |\n"
+       "| 직원 정보를 다 쓴 뒤에는 | 5등 | 4등 |\n"
+       "| 회사 기술을 외국에 팔면 | 1등 | 1등 |\n\n"
        "다섯 중 둘이 나빠지고 하나만 좋아졌다. **문서명·장은 질문과 상관없는 글자**라\n"
        "좌표를 흐리기만 한다. 메타데이터는 섞는 것이 아니라 **거르는 데** 쓴다."),
 
