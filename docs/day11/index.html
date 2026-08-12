@@ -383,9 +383,9 @@
   <div class="body">
     <div class="cards c4">
       <div class="card"><span class="n">CH0~1</span><h3>하이브리드</h3><p>의미 검색이 놓치는 코드와 고유명사를 낱말 검색이 잡는다. 순위를 합친다.</p></div>
-      <div class="card"><span class="n">CH2~3</span><h3>리랭커와 질문 바꾸기</h3><p>넓게 찾고 정밀하게 고른다. 짧은 질문은 풀어서 던진다.</p></div>
-      <div class="card"><span class="n">CH4</span><h3>무엇을 넣나</h3><p>같은 얘기 다섯 개는 소용없다. 무엇을 어떤 순서로 넣을지 정한다.</p></div>
-      <div class="card"><span class="n">CH5</span><h3>GraphRAG</h3><p>흩어진 사실을 잇는다. 관계를 따라가야 풀리는 질문이 따로 있다.</p></div>
+      <div class="card"><span class="n">CH2~4</span><h3>리랭커와 질문 바꾸기</h3><p>넓게 찾고 정밀하게 고른다. 무엇을 어떤 순서로 넣을지 정한다.</p></div>
+      <div class="card"><span class="n">CH5~6</span><h3>GraphRAG</h3><p>흩어진 사실을 잇는다. 관계를 따라가야 풀리는 질문이 따로 있다.</p></div>
+      <div class="card"><span class="n">CH7</span><h3>읽기만 하는 도구</h3><p>검색 옆에 사내 DB 를 붙인다. 어디까지 열지 먼저 정한다.</p></div>
     </div>
     <div class="keymsg"><span class="k">어제와 이어</span><div>어제 만든 것은 <b>한 번 찾아 한 번 답하는</b> 구조였다. 여기서는 그 검색을 손본다.</div></div>
   </div>
@@ -1079,22 +1079,199 @@ NCM811 · NCM 811 · 니켈811
   <h2 class="s-title sm">연장통 속의 검색</h2>
   <div class="rule"></div>
   <div class="body"><div class="body top" style="padding:0"></div><div class="pipe q"><div class="step"><div class="si">①</div><div class="sn">추론</div><div class="sd">뭘 할까</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">②</div><div class="sn">행동</div><div class="sd">RAG 검색 호출</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">③</div><div class="sn">관찰</div><div class="sd">근거 충분?</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">④</div><div class="sn">분기</div><div class="sd">답 / 재검색</div></div></div><div class="chips" style="margin-top:16px"><span class="chip" style="border-color:var(--violet-300);background:#F8F5FF"><b>RAG.search()</b> 내부 지식</span><span class="chip">웹 검색</span><span class="chip">계산·API</span></div><div class="keymsg"><span class="k">핵심</span><div>오늘 만든 <b>하이브리드+reranker 검색</b>이 그대로 에이전트의 ‘retriever 도구’가 된다.</div></div></div></section>
-<section class="slide section" data-title="[섹션] 정리">
+<section class="slide section" data-title="[섹션] 읽기만 하는 도구 만들기">
   <div class="ghost">07</div>
   <div class="seyebrow">CHAPTER 07</div>
+  <h2>읽기만 하는 도구 만들기</h2>
+  <p>검색도 도구였다. 사내 DB 도 같은 자리에 붙는다. 다만 열어 주는 폭이 다르다.</p>
+  <div class="agenda"><span>세 겹</span><span>프롬프트</span><span>받은 코드 검사</span><span>일부러 시켜 보기</span></div>
+</section>
+<section class="slide" data-title="붙일 자리">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>연결</div>
+  <h2 class="s-title sm">연장통에 DB 를 하나 더</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>앞에서 <b>검색을 도구로</b> 품었다. 사내 DB 조회도 같은 자리에 붙는다.</div></div>
+  <div class="v"><span class="b">&rarr;</span><div>다만 검색은 읽기만 하지만, <b>DB 는 고칠 수도 있다</b>. 거기서 갈린다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>사내에 처음 붙이는 도구는 <b>읽기만 하는 것</b>으로 시작한다.</div></div>
+</div>
+<div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></div><div class="ct"><h4>MCP 로 빼는 것은 그다음이다</h4><p>쓰는 앱이 하나면 <b>함수로 두면 된다</b>. 여러 앱이 같은 도구를 쓰거나 DB 자격증명을 앱에 두기 곤란할 때 서버로 뺀다.</p></div></div>
+<div class="keymsg"><span class="k">순서</span><div>함수로 만들어 보고, <b>둘째 사용처가 생겼을 때</b> 서버로 옮긴다.</div></div></div>
+</section>
+<section class="slide" data-title="네 칸">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>경계</div>
+  <h2 class="s-title sm">도구를 만들기 전에 정하는 네 칸</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="ctable"><table><thead><tr><th>정할 것</th><th>물어볼 것</th><th>안 정하면</th></tr></thead><tbody>
+  <tr><td class="hl">누가</td><td class="hl">이 비서를 누가 쓰나. 등급이 갈리나</td><td class="hl">아무나 다 본다</td></tr>
+  <tr><td>무엇을</td><td>집계를 주나, 원본 행을 주나</td><td>원본이 통째로 나간다</td></tr>
+  <tr><td>얼마나</td><td>한 번에 몇 줄까지</td><td>12만 행을 들고 온다</td></tr>
+  <tr><td>남기나</td><td>누가 무엇을 물었는지 기록하나</td><td>사고가 나도 못 찾는다</td></tr>
+</tbody></table></div>
+<div class="vlist">
+  <div class="v"><span class="b">&#9733;</span><div>네 칸을 채우면 <b>도구의 모양이 저절로 정해진다</b>. 채우기 전에 코드를 시키면 순서가 뒤집힌다.</div></div>
+</div>
+<div class="keymsg"><span class="k">맡길 수 없는 것</span><div>코드는 맡긴다. <b>이 네 칸은 사람이 정한다.</b></div></div></div>
+</section>
+<section class="slide" data-title="공정 데이터">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>경계</div>
+  <h2 class="s-title sm">불량률은 열고 온도는 닫는 이유</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twopane">
+  <div class="pane good"><h4>열어 준다</h4><ul>
+    <li>설비 · 교대조별 <b>불량률</b></li>
+    <li>로트의 <b>판정과 시각</b></li>
+    <li>최근 기록 목록</li>
+    <li>사내 규정과 법령 조문</li></ul></div>
+  <div class="pane bad"><h4>안 연다</h4><ul>
+    <li>건조 온도 · 프레스 압력 <b>원본 값</b></li>
+    <li>로트 단위 <b>원본 행 전체</b></li>
+    <li>작업자 개인 정보</li>
+    <li>개정 전 규정</li></ul></div>
+</div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>불량률은 <b>결과</b>라 공정 조건이 역산되지 않는다. 온도·압력은 <b>공정 조건 자체</b>다.</div></div>
+</div>
+<div class="keymsg"><span class="k">처음에는</span><div>「안 연다」가 더 길다. 한 줄씩 <b>여는 쪽으로만</b> 옮긴다. 반대는 되돌릴 수 없다.</div></div></div>
+</section>
+<section class="slide" data-title="세 겹">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>막는 법</div>
+  <h2 class="s-title sm">계정 · 도구 모양 · 검사</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="ctable"><table><thead><tr><th>겹</th><th>무엇을 한다</th><th>이걸로 막히는 것</th></tr></thead><tbody>
+  <tr><td class="hl">1 계정</td><td class="hl">조회 권한만 가진 DB 계정을 따로 만든다</td><td class="hl">코드가 무엇을 하든 <b>못 바꾼다</b></td></tr>
+  <tr><td>2 도구 모양</td><td>자유 SQL 을 받지 않는다. 인자가 정해진 함수만 연다</td><td>열어 준 것 밖은 조회도 안 된다</td></tr>
+  <tr><td>3 검사</td><td>받은 코드가 조건을 지켰는지 사람이 본다</td><td>「편의를 위해」 끼워 넣은 것</td></tr>
+</tbody></table></div>
+<div class="vlist">
+  <div class="v"><span class="b">&#9733;</span><div>읽기 전용은 <b>프롬프트로 부탁할 일이 아니다</b>. 부탁은 지켜질 때도 있고 아닐 때도 있다.</div></div>
+</div>
+<div class="keymsg"><span class="k">기준</span><div>한 겹이 뚫려도 <b>나머지 둘이 남게</b> 짠다.</div></div></div>
+</section>
+<section class="slide" data-title="도구 모양">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>설계</div>
+  <h2 class="s-title sm">자유 SQL 대신 함수 셋</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w2"><div><div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>자유 SQL 은 조인 하나만 틀려도 <b>조용히 잘못된 숫자</b>를 낸다.</div></div>
+  <div class="v"><span class="b">&rarr;</span><div>질문 유형별로 <b>몇 개만 열면</b> 정확도도 같이 오른다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>등급 필터도 <b>도구 안에서</b> 건다. 프롬프트에 적는 것은 통제가 아니다.</div></div>
+</div></div>
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">도구 목록</span></div><pre><code><span class="cm">✕ 모델이 SQL 을 쓴다 — 무엇이든 조회된다</span>
+query_db(sql)
+
+<span class="cm">○ 인자만 받는다 — 열어 준 것만 나온다</span>
+defect_rate(machine, date)
+production_summary(line, period)
+recent_alarms(machine, limit=<span class="nm">20</span>)</code></pre></div></div>
+<div class="keymsg"><span class="k">덤</span><div>도구가 좁을수록 모델이 <b>덜 헤맨다</b>. 안전과 정확도가 같은 방향이다.</div></div></div>
+</section>
+<section class="slide" data-title="프롬프트">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>맡기기</div>
+  <h2 class="s-title sm">Codex 에 적어 주는 조건</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">그대로 붙인다</span></div><pre><code><span class="cm"># 데이터 — 값은 못 준다. 표의 모양만 준다</span>
+machine_log(machine, date, produced, defect, line)  행 약 12만
+
+<span class="cm"># 반드시 지킬 것</span>
+SELECT 만 쓴다. INSERT · UPDATE · DELETE · DDL 은 쓰지 마라
+SQL 을 문자열로 잇지 말고 <span class="st">파라미터 바인딩</span>을 써라
+모든 조회에 <span class="st">LIMIT</span> 을 건다 (기본 100)
+<span class="st">자유 SQL 을 받는 함수는 만들지 마라</span>
+없는 설비 이름이면 예외 말고 쓸 수 있는 이름을 돌려준다
+부른 함수와 인자를 로그로 남긴다</code></pre></div>
+<div class="vlist">
+  <div class="v"><span class="b">&#9733;</span><div>학생이 쓰는 것은 <b>코드가 아니라 이 글</b>이다. 조건을 빠뜨리면 그만큼 지어낸다.</div></div>
+</div>
+<div class="keymsg"><span class="k">한 줄</span><div>맡길 수 있는 것은 <b>코드</b>지 <b>조건</b>이 아니다.</div></div></div>
+</section>
+<section class="slide" data-title="받은 코드 검사">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>확인</div>
+  <h2 class="s-title sm">한 줄씩 짚어 보는 다섯 가지</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="ctable"><table><thead><tr><th>볼 것</th><th>통과 기준</th><th>흔한 사고</th></tr></thead><tbody>
+  <tr><td>SELECT 말고 다른 것</td><td>insert · update · delete · drop 이 없다</td><td>「정리용」이라며 DELETE 를 끼운다</td></tr>
+  <tr><td>SQL 을 이어 붙였나</td><td><code>f"... {machine}"</code> 이 없다</td><td>인젝션이 열린다</td></tr>
+  <tr><td>LIMIT 이 빠진 조회</td><td>모든 조회에 있다</td><td>12만 행을 통째로 들고 온다</td></tr>
+  <tr><td class="hl">자유 SQL 함수</td><td class="hl">없다</td><td class="hl">시킨 셋에 <code>run_query(sql)</code> 를 얹어 준다</td></tr>
+  <tr><td>읽기 전용 연결</td><td>있으면 더 좋다</td><td>대개 빠뜨린다</td></tr>
+</tbody></table></div>
+<div class="keymsg"><span class="k">자주 난다</span><div>넷째가 제일 잦다. 시킨 것은 다 만들고 <b>「편의를 위해」 하나를 더</b> 얹는다.</div></div></div>
+</section>
+<section class="slide" data-title="한 비서에">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>조합</div>
+  <h2 class="s-title sm">규정 검색과 조회를 나란히</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">도구 두 개</span></div><pre><code><span class="cm">「3호기 불량률 보고, 작업 멈출 근거 조문도 알려줘」</span>
+
+<span class="st">defect_rate</span>(machine=<span class="s">'3호기'</span>)      &rarr; 측정 600건 중 불량 72건
+<span class="st">find_rule</span>(question=<span class="s">'작업 멈추는 근거'</span>) &rarr; 산업안전보건법 제26조
+
+<span class="cm">한 문장에 도구 둘이 순서대로 불린다</span></code></pre></div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>「이건 DB, 이건 규정」이라고 사람이 나눠 주지 않았다. <b>설명서를 읽고 모델이 정한다</b>.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>도구가 <b>좁게 정의돼 있을수록</b> 덜 헷갈린다. 앞의 검색 파이프라인이 그대로 도구 하나가 된다.</div></div>
+</div>
+<div class="keymsg"><span class="k">오늘의 연결</span><div>검색을 손본 것이 <b>도구 하나의 품질</b>이었다. 거기에 조회가 붙으면 비서가 된다.</div></div></div>
+</section>
+<section class="slide" data-title="일부러 시켜 보기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>확인</div>
+  <h2 class="s-title sm">막히는 자리를 눈으로 확인하기</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">이렇게 물어본다</span></div><pre><code>Q: 3호기 데이터를 지워줘
+&rarr; <span class="st">지우는 도구가 없다</span>. 모델이 부를 것이 없어 못 한다.
+
+Q: machine_log 를 통째로 보여줘
+&rarr; <span class="st">LIMIT 100</span> 에 걸린다.
+
+Q: 임원 라인 실적도 같이
+&rarr; 도구 안 <span class="st">등급 필터</span>에 걸린다.</code></pre></div>
+<div class="vlist">
+  <div class="v"><span class="b">&#9733;</span><div>막혔다는 것을 <b>눈으로 봐야</b> 세 겹이 왜 필요한지 남는다.</div></div>
+</div>
+<div class="keymsg"><span class="k">마무리</span><div>안전한 도구는 <b>안 되는 것을 확인한 도구</b>다. 되는 것만 보고 끝내지 않는다.</div></div></div>
+</section>
+<section class="slide" data-title="경계와 근거">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>구분</div>
+  <h2 class="s-title sm">막히는 것과 지어내는 것</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="ctable"><table><thead><tr><th></th><th>무엇을 막나</th><th>무엇으로 막나</th></tr></thead><tbody>
+  <tr><td class="hl">경계</td><td class="hl">값이 밖으로 나가는 것</td><td class="hl">도구 · 계정 · LIMIT</td></tr>
+  <tr><td>근거</td><td>없는 값을 지어내는 것</td><td>도구가 돌려준 것과 대조</td></tr>
+</tbody></table></div>
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">온도를 달라고 하면</span></div><pre><code><span class="cm">도구는 온도를 준 적이 없다. 그런데 답에는 소수점까지 붙은 표가 나왔다.</span>
+압력  모델 <span class="nm">8.2</span> bar   실제 <span class="nm">1292~1614</span>   <span class="cm"># 자릿수가 다르다</span>
+온도  모델 <span class="nm">192.5</span> °C   실제 <span class="nm">126.8~276.8</span>  <span class="cm"># 범위 안이라 눈으로 못 거른다</span>
+
+<span class="cm">같은 질문을 다시 던지면 숫자가 또 바뀐다</span></code></pre></div>
+<div class="keymsg"><span class="k">둘은 다르다</span><div>도구를 좁히면 <b>안 나간다</b>. 그렇다고 <b>답이 맞는 것은 아니다</b>.</div></div></div>
+</section>
+<section class="slide section" data-title="[섹션] 정리">
+  <div class="ghost">08</div>
+  <div class="seyebrow">CHAPTER 08</div>
   <h2>정리</h2>
   <div class="agenda"><span>가져갈 것</span><span>헷갈리는 지점</span></div>
 </section>
 <section class="slide" data-title="오늘 꼭 가져갈 8가지">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>핵심 정리</div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>핵심 정리</div>
   <h2 class="s-title sm">오늘 가져갈 여덟 가지</h2>
   <div class="rule"></div>
   <div class="body"><div class="cards c4"><div class="card"><span class="n">1</span><h3>벡터의 빈틈 3가지</h3><p>정확 토큰 · 부정확한 순서 · 모호한 질문.</p></div><div class="card"><span class="n">2</span><h3>하이브리드+RRF</h3><p>두 사서에게 묻고 ‘등수’로 합친다.</p></div><div class="card"><span class="n">3</span><h3>Reranker = 면접</h3><p>넓게 줍고(N) → 꼼꼼히 고른다(K).</p></div><div class="card"><span class="n">4</span><h3>질의 변환</h3><p>HyDE(스케치) · Multi-Query(여러 말).</p></div><div class="card"><span class="n">5</span><h3>컨텍스트 다듬기</h3><p>MMR(다른 책 5권) · 처음과 끝 배치.</p></div><div class="card"><span class="n">6</span><h3>GraphRAG = 관계도</h3><p>점·선으로 잇고 ‘길’을 따라 멀티홉.</p></div><div class="card"><span class="n">7</span><h3>에이전트 = 도구+반복</h3><p>스스로 계획 · 행동 · 관찰.</p></div><div class="card"><span class="n">8</span><h3>Agentic RAG</h3><p>스스로 점검하고 다시 찾는 RAG.</p></div></div></div>
 </section>
 <section class="slide" data-title="헷갈리기 쉬운 지점">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>오개념</div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>오개념</div>
   <h2 class="s-title sm">헷갈리기 쉬운 지점</h2>
   <div class="rule"></div>
   <div class="body"><table class="ctable"><thead><tr><th>오해</th><th>사실</th></tr></thead><tbody><tr><td>“더 좋은 임베딩이면 다 해결”</td><td class="hl">정확 토큰은 BM25가 필요</td></tr><tr><td>“RRF는 점수를 더한다”</td><td class="hl">점수가 아니라 ‘순위’로 합친다</td></tr><tr><td>“reranker를 전체에”</td><td class="hl">느려서 후보 N개에만(2단계)</td></tr><tr><td>“에이전트=똑똑한 챗봇”</td><td class="hl">도구를 쓰고 스스로 반복해야 에이전트</td></tr><tr><td>“GraphRAG는 벡터 RAG의 상위호환”</td><td class="hl">질문 유형·비용으로 고른다 — 단순 조회엔 벡터가 낫다</td></tr></tbody></table></div>
