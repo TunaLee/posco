@@ -434,17 +434,106 @@ show3('비밀을 지킬 의무가 있나', where={'source': '산업기술보호�
     md("실무에서는 여기에 **버전**을 하나 더 붙인다. 「최신본만」으로 걸러야\n"
        "개정 전 규정으로 답하는 사고를 막는다. 구버전이 인덱스에 남아 있으면 그걸 가져온다."),
 
-    md("## 8. 근거로만 답하게 하기"),
+    md("## 8. 등급과 버전으로 거르기"),
+    md("사내 문서는 **아무나 다 봐도 되는 것이 아니다.** 열람 등급이 다르고, 개정본과 구버전이 섞인다.\n"
+       "여기서 나는 사고는 밖으로 새는 것이 아니라 **안에서 새는 것**이다."),
+    md("> 아래 등급과 시행일은 **연습을 위해 붙인 가상의 값**이다. 법령 자체에는 이런 등급이 없다.\n"
+       "> 사내 문서라면 문서함의 실제 권한과 개정 이력을 그대로 옮겨 적는다."),
+
+    prep("""# 조각마다 등급과 시행일을 붙인다. 사내에서는 문서함의 값을 그대로 옮긴다.
+GRADE = {'근로기준법': 'general', '산업안전보건법': 'general',
+         '개인정보보호법': 'manager', '산업기술보호법': 'restricted'}
+ORDER = {'general': 0, 'manager': 1, 'restricted': 2}       # 낮을수록 널리 열람
+
+for c in CHUNKS:
+    c['clearance'] = GRADE[c['source']]
+    c['effective_from'] = '2024-01-01'
+    c['superseded'] = False
+
+print({g: sum(1 for c in CHUNKS if c['clearance'] == g) for g in ORDER})"""),
+
+    prep("""# 개정 전 조항이 인덱스에 남아 있는 상황을 만든다 (내용은 연습용으로 지어낸 것)
+OLD = dict(source='근로기준법', chapter='제4장 근로시간과 휴식', article=60,
+           title='제60조(연차 유급휴가) [2019년 판]',
+           text='제60조(연차 유급휴가) [2019년 판] ① 사용자는 1년간 80퍼센트 이상 출근한 '
+                '근로자에게 10일의 유급휴가를 주어야 한다.',
+           clearance='general', effective_from='2019-01-01', superseded=True)
+CHUNKS.append(OLD)
+V = np.vstack([V, EMB.encode([OLD['title'] + ' ' + OLD['text']],
+                             normalize_embeddings=True)])
+print('조각 %d개 — 구버전 하나가 섞였다' % len(CHUNKS))"""),
+
+    md("### 거르지 않으면"),
+
+    code("""# 등급도 버전도 안 보고 찾는다
+show3('연차 유급휴가는 며칠 받나')
+show3('기술을 해외로 넘기면 어떻게 되나')"""),
+
+    md("두 가지가 한꺼번에 드러난다.\n\n"
+       "**하나** &mdash; 연차 질문의 **2등이 2019년 판**이다. 15일이 맞는데 10일짜리가 바로 밑에 붙는다.\n"
+       "조각 하나만 더 가져오면 틀린 답이 섞인다.\n"
+       "**둘** &mdash; 일반 직원이 물어도 **restricted 등급 조문**이 그대로 나온다."),
+
+    prep("""# 찾기 전에 거른다. 등급과 시행일을 후보 단계에서 잘라 낸다.
+def find4(question, k=3, grade='general', include_old=False):
+    q = EMB.encode([question], normalize_embeddings=True)[0]
+    sim = V @ q
+    idx = [i for i, c in enumerate(CHUNKS)
+           if ORDER[c['clearance']] <= ORDER[grade]                 # 등급
+           and (include_old or not c['superseded'])]                # 버전
+    idx.sort(key=lambda i: -sim[i])
+    return [(sim[i], CHUNKS[i]) for i in idx[:k]]
+
+def show4(question, k=3, grade='general'):
+    print('Q %s   등급 %s' % (question, grade))
+    for s, c in find4(question, k, grade):
+        print('  %.3f [%-8s %s] %s' % (s, c['clearance'], c['source'], c['title']))
+    print()"""),
+
+    code("""# 같은 질문을 등급별로
+show4('연차 유급휴가는 며칠 받나')
+show4('기술을 해외로 넘기면 어떻게 되나', grade='general')
+show4('기술을 해외로 넘기면 어떻게 되나', grade='restricted')"""),
+
+    md("**일반 등급으로는 산업기술보호법 조문이 아예 후보에 안 든다.** 구버전도 사라졌다.\n"
+       "코드에서 바뀐 것은 후보 목록을 만드는 `idx` 한 줄뿐이다."),
+
+    md("### 왜 찾은 뒤에 거르면 안 되나"),
+
+    code("""# 찾고 나서 거르면 몇 개가 남는지 센다
+q = '기술을 해외로 넘기면 어떻게 되나'
+after = [c for _, c in find4(q, 5, grade='restricted')
+         if ORDER[c['clearance']] <= ORDER['general']]
+print('먼저 거르면 %d개' % len(find4(q, 5, grade='general')))
+print('찾고 나서 거르면 %d개' % len(after))"""),
+
+    md("**뒤에서 거르면 손에 남는 것이 줄어든다.** 다섯 개를 찾아 놓고 등급으로 빼면 한두 개만 남는다.\n"
+       "볼 수 있는 문서 중에서 다섯 개를 찾았어야 했다.\n\n"
+       "게다가 **답이 늦게 오는 것만으로도** 「무언가 있긴 하다」가 새어 나간다.\n"
+       "그래서 등급은 **검색 전에** 건다."),
+
+    Ex(8, "`grade` 를 **manager** 로 두고 개인정보 질문을 던진다.\n"
+          "> 일반 등급으로 물었을 때와 무엇이 달라지는지 본다.",
+       setup="# 개인정보보호법은 manager 등급으로 붙여 두었다",
+       blank="GRADE_TEST = '___'",
+       answer="GRADE_TEST = 'manager'",
+       check="""show4('개인정보를 다 쓰고 나면 어떻게 하나', grade='general')
+show4('개인정보를 다 쓰고 나면 어떻게 하나', grade=GRADE_TEST)"""),
+
+    md("## 9. 근거로만 답하게 하기"),
     md("찾은 조각을 프롬프트에 붙이고, **그 안에서만** 답하라고 못 박는다."),
 
     prep("""# 찾은 조각을 붙여 물어보는 함수. RAG 는 이 열 줄이 전부다.
 RULE = ('아래 「문서」에 있는 내용만 근거로 답하라.\\n'
         '문서에 없으면 "문서에 없다"고만 답하라. 아는 것으로 채우지 마라.\\n'
-        '답 끝에 근거로 쓴 조문 제목을 적어라.\\n\\n')
+        '답 끝에 근거로 쓴 조문 제목과 시행일을 적어라.\\n'
+        '근거를 못 대면 답하지 마라.\\n\\n')
 
-def rag(question, k=3, log=True):
-    hits = find2(question, k)
-    ctx = '\\n\\n'.join('[%s] %s' % (c['source'], c['text'][:700]) for _, c in hits)
+def rag(question, k=3, grade='general', log=True):
+    hits = find4(question, k, grade)          # 등급·버전을 먼저 거른 뒤 찾는다
+    ctx = '\\n\\n'.join('[%s %s | 시행 %s] %s'
+                       % (c['source'], c['title'][:24], c['effective_from'], c['text'][:700])
+                       for _, c in hits)
     if log:
         for s, c in hits:
             print('  [찾음 %.3f] %s' % (s, c['title']))
@@ -471,7 +560,7 @@ print(ask(WEAK + '# 문서\\n' + ctx + '\\n\\n# 질문\\n' + q))"""),
     md("규칙 한 줄이 빠지면 **문서 밖 지식으로 채운다**. 그럴듯해서 더 위험하다.\n"
        "프롬프트에서 가장 중요한 줄은 「없으면 없다고 하라」다."),
 
-    md("## 9. 조각 수를 바꿔 보기"),
+    md("## 10. 조각 수를 바꿔 보기"),
 
     code("""# k 를 바꾸면 답이 달라진다
 for k in (1, 3, 6):
@@ -482,7 +571,7 @@ for k in (1, 3, 6):
     md("**k 가 작으면 근거가 모자라고, 크면 상관없는 조문이 섞인다.**\n"
        "3~6 사이에서 시작해 답을 보며 조정한다. 정답은 문서마다 다르다."),
 
-    md("## 10. 내 문서로"),
+    md("## 11. 내 문서로"),
     md("여기서부터는 **자기 문서**로 바꾼다. 코드는 그대로 두고 파일만 갈아 끼운다."),
 
     Task(1, "자기 부서 문서를 `.txt` 로 만들어 올리고 같은 흐름을 돌린다.\n"
@@ -521,6 +610,32 @@ print(rag(BAD_Q))""",
 print(rag(BAD_Q))""",
          check="print('찾은 조각 제목을 먼저 본다. 거기서 원인이 갈린다')"),
 
+    Task(6, "**Codex 에 시킬 프롬프트**를 쓴다. 코드가 아니라 **조건**을 적는 연습이다.\n"
+            "> 아래 네 가지는 사람이 정해서 적어 줘야 한다. 안 적으면 지어낸다.\n"
+            "> ① 인덱싱에서 뺄 문서 ② 등급 규칙 ③ 자르는 단위 ④ 임베딩·저장·생성이 각각 어디서\n"
+            "> 특히 **「등급 필터는 검색 전에 건다」**를 안 적으면 검색 뒤에 거르는 코드가 온다.",
+         blank="""MY_PROMPT = '\\n'.join([
+    '# 역할', '너는 사내 규정 검색 코드를 쓰는 사람이다.', '',
+    '# 넣지 않을 문서', '___', '',
+    '# 등급 규칙', '___', '',
+    '# 자르는 단위', '___', '',
+    '# 어디서 도나', '임베딩 ___ · 벡터 저장 ___ · 생성 ___', '',
+    '# 형식', '바로 돌아가는 파이썬 코드로 준다. 문서 내용을 출력하는 줄은 넣지 마라.'])
+print(MY_PROMPT)""",
+         answer="""MY_PROMPT = '\\n'.join([
+    '# 역할', '너는 사내 규정 검색 코드를 쓰는 사람이다.', '',
+    '# 넣지 않을 문서',
+    '개인별 인사기록 · 급여 테이블 · 징계 개별 건 · 미확정 초안 · 서식 작성례', '',
+    '# 등급 규칙',
+    '조각마다 general / manager / restricted 를 붙인다.',
+    '등급 필터는 반드시 검색 전에 건다. 찾은 뒤에 거르지 마라.', '',
+    '# 자르는 단위',
+    '조 단위로 자르고, 항으로 쪼갤 때는 조 헤더를 물려준다. 표는 쪼개지 않는다.', '',
+    '# 어디서 도나', '임베딩 로컬 · 벡터 저장 사내 · 생성은 보안팀 확인 전까지 보류', '',
+    '# 형식', '바로 돌아가는 파이썬 코드로 준다. 문서 내용을 출력하는 줄은 넣지 마라.'])
+print(MY_PROMPT)""",
+         check="print('코드는 맡기고 기준은 맡기지 않는다')"),
+
     md("### 오늘 손에 남는 것\n\n"
        "| 한 일 | 코드 |\n|---|---|\n"
        "| 문서를 읽는다 | `urlopen` · `open` |\n"
@@ -533,8 +648,9 @@ print(rag(BAD_Q))""",
 ]
 
 MODES = {
-    ("ex", 1): "together", ("ex", 2): "together", ("ex", 3): "together", ("ex", 4): "solo", ("ex", 6): "solo", ("ex", 7): "together",
-    ("task", 1): "solo", ("task", 2): "solo", ("task", 3): "team", ("task", 5): "team",
+    ("ex", 1): "together", ("ex", 2): "together", ("ex", 3): "together", ("ex", 4): "solo", ("ex", 6): "solo",
+    ("ex", 7): "together", ("ex", 8): "solo",
+    ("task", 1): "solo", ("task", 2): "solo", ("task", 3): "team", ("task", 5): "team", ("task", 6): "team",
 }
 
 SPEC = ("RAG — 내 문서로 답하게 하기", "실제 법령 조문으로 찾아 읽고 근거로만 답한다", CELLS, MODES)
