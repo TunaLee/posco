@@ -1331,66 +1331,6 @@ Q  올해 안전 지적에서 반복되는 것은 무엇인가
 <span class="cm"># 같은 뜻이면 위 이름으로 통일하라</span></code></pre></div></div>
 <div class="keymsg"><span class="k">먼저</span><div>스키마 없이 뽑은 그래프는 <b>이어지지 않는다</b>. 점만 많고 선이 안 맞는다.</div></div></div>
 </section>
-<section class="slide" data-title="같은 것을 하나로">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>병합</div>
-  <h2 class="s-title sm">「3호기」와 「제3호기」와 「#3」</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="vlist">
-  <div class="v"><span class="b">&rarr;</span><div>문서마다 부르는 이름이 다르면 <b>점이 여러 개로 갈라진다</b>.</div></div>
-  <div class="v"><span class="b">&rarr;</span><div>갈라진 점은 <b>서로 이어지지 않아</b> 멀티홉이 끊긴다.</div></div>
-  <div class="v"><span class="b">&#9733;</span><div>앞에서 만든 <b>약어 사전이 여기서 다시 쓰인다</b>.</div></div>
-</div></div>
-<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">병합 규칙</span></div><pre><code>3호기 · 제3호기 · #3 · No.3
-        &rarr; <span class="st">설비:3호기</span>
-
-NCM811 · NCM 811 · 니켈811
-        &rarr; <span class="st">자재:NCM811</span></code></pre></div></div>
-<div class="keymsg"><span class="k">순서</span><div>관계를 뽑기 <b>전에</b> 이름부터 통일한다. 뽑고 나서 합치는 것은 훨씬 어렵다.</div></div></div>
-</section>
-<section class="slide" data-title="값이 드는 자리">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>비용</div>
-  <h2 class="s-title sm">조각마다 한 번씩 부르는 LLM</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="ctable"><table><thead><tr><th>단계</th><th>무엇이 드나</th><th>얼마나</th></tr></thead><tbody>
-  <tr><td>관계 뽑기</td><td>문서 조각마다 LLM 호출</td><td class="hl">조각 수만큼 &mdash; 벡터 인덱싱의 수십 배</td></tr>
-  <tr><td>이름 통일</td><td>사람 손질 + 규칙</td><td>처음 한 번이 무겁다</td></tr>
-  <tr><td>묶어 요약</td><td>묶음마다 LLM 호출</td><td>묶음 수만큼</td></tr>
-  <tr><td>질문할 때</td><td>그래프 탐색 + 생성</td><td>벡터 검색보다 느리다</td></tr>
-</tbody></table></div>
-<div class="vlist">
-  <div class="v"><span class="b">&#9733;</span><div>문서가 바뀌면 <b>그 부분만 다시</b> 뽑는다. 전체를 다시 돌리면 감당이 안 된다.</div></div>
-</div>
-<div class="keymsg"><span class="k">현실</span><div>GraphRAG 는 <b>비싼 도구</b>다. 벡터로 안 되는 것이 확인된 뒤에 꺼낸다.</div></div></div>
-</section>
-<section class="slide" data-title="섞어 쓰기">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>실전</div>
-  <h2 class="s-title sm">벡터로 찾고 그래프로 잇기</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="vlist">
-  <div class="v"><span class="b">1</span><div>질문을 <b>벡터로 검색</b>해 출발점이 될 조각을 찾는다.</div></div>
-  <div class="v"><span class="b">2</span><div>그 조각에 붙은 <b>노드에서 관계를 한두 칸 따라간다</b>.</div></div>
-  <div class="v"><span class="b">3</span><div>따라가며 만난 문서를 <b>근거에 보탠다</b>.</div></div>
-  <div class="v"><span class="b">&#9733;</span><div>그래프만으로 답하지 않는다. <b>원문 조각이 근거</b>고 그래프는 길잡이다.</div></div>
-</div>
-<div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></div><div class="ct"><h4>몇 칸까지 가나</h4><p>보통 <b>두 칸</b>이면 충분하다. 세 칸을 넘으면 상관없는 문서가 딸려 오고 근거가 흐려진다.</p></div></div>
-<div class="keymsg"><span class="k">권한</span><div>관계를 따라갈 때도 <b>등급 필터는 그대로</b> 건다. 이어졌다고 볼 수 있는 것은 아니다.</div></div></div>
-</section>
-<section class="slide" data-title="사내에서 그래프감">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>적용</div>
-  <h2 class="s-title sm">조직도 · 계통도 · 상호참조</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="ctable"><table><thead><tr><th>자료</th><th>노드</th><th>관계</th><th>풀리는 질문</th></tr></thead><tbody>
-  <tr><td>설비 계통도</td><td>설비 · 공정</td><td>다음공정 · 사용한다</td><td>「3호기가 멈추면 어디까지 영향인가」</td></tr>
-  <tr><td>규정 상호참조</td><td>조문</td><td>적용된다 · 대체한다</td><td>「이 조항이 바뀌면 어느 규정을 손봐야 하나」</td></tr>
-  <tr><td>조직도 · 담당</td><td>부서 · 사람 · 문서</td><td>담당한다</td><td>「이 설비 규정은 누구에게 물어야 하나」</td></tr>
-  <tr><td class="hl">자재 이력</td><td class="hl">자재 · 배치 · 설비</td><td class="hl">투입된다</td><td class="hl">「이 자재가 들어간 배치를 다 찾아라」</td></tr>
-</tbody></table></div>
-<div class="keymsg"><span class="k">공통</span><div>넷 다 <b>한 문서에 답이 없는</b> 질문이다. 그래서 이어야 풀린다.</div></div></div>
-</section>
 <section class="slide section" data-title="[섹션] Self-RAG">
   <div class="ghost">06</div>
   <div class="seyebrow">CHAPTER 06</div>
