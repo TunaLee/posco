@@ -1067,12 +1067,9 @@ def hyde_search(q, n=5):
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>지식그래프 ① 노드</div>
   <h2 class="s-title sm">노드 — 그래프의 점</h2>
   <div class="rule"></div>
-  <div class="body"><div class="imgwrap"><img src="assets/fig13.webp" alt="노드 예시 — 이순신(인물), 조선(국가), 한산도(장소), 한산도 대첩(사건), 1592년(연도), 류성룡(인물)"/></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">사내 문서에서 뽑으면 이런 점들이 된다</span></div><pre><code><span class="cm">설비</span>   3호기 · 코터 2호
-<span class="cm">자재</span>   NCM811 양극재 · PVDF 바인더
-<span class="cm">공정</span>   캘린더링 · 화성
-<span class="cm">문서</span>   작업표준 WI-0412 · 안전지적 2026-031
-<span class="cm">조직</span>   소재기술팀 · 협력사 A</code></pre></div>
-<div class="keymsg"><span class="k">바꿔 읽기</span><div>그림은 인물관계도다. 사내에서는 그 자리에 <b>설비 · 자재 · 문서 · 부서</b>가 들어간다.</div></div>
+  <div class="body">
+<div class="imgwrap"><img src="assets/node_process.png" alt="노드 예시 — 설비 3호기·코터 2호, 자재 NCM811·PVDF, 공정 캘린더링·화성, 문서 WI-0412·안전지적, 조직 소재기술팀·협력사 A"/></div>
+<div class="keymsg"><span class="k">다섯 종류</span><div>설비 · 자재 · 공정 · 문서 · 조직으로 <b>못 박았다</b>. 종류를 안 정하면 같은 것이 <b>열 가지 이름</b>으로 들어온다.</div></div>
 </div>
 </section>
 <section class="slide" data-title="엣지 — 관계의 선">
@@ -1080,12 +1077,9 @@ def hyde_search(q, n=5):
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>지식그래프 ② 엣지</div>
   <h2 class="s-title sm">엣지 — 관계의 선</h2>
   <div class="rule"></div>
-  <div class="body"><div class="imgwrap"><img src="assets/fig14.webp" alt="엣지 예시 — 이순신이 조선에 소속, 한산도 대첩을 주도, 1592년에 활동, 한산도에서 전투, 류성룡에게 조언을 받음"/></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">선에 붙은 말이 관계의 이름이다</span></div><pre><code>3호기        <span class="st">―투입→</span>   PVDF 바인더
-3호기        <span class="st">―수행→</span>   캘린더링
-PVDF 바인더   <span class="st">―납품→</span>   협력사 A
-협력사 A      <span class="st">―담당→</span>   소재기술팀
-WI-0412     <span class="st">―적용→</span>   캘린더링</code></pre></div>
-<div class="keymsg"><span class="k">바꿔 읽기</span><div>「이순신 ―소속→ 조선」 자리에 <b>「3호기 ―투입→ PVDF 바인더」</b>가 들어간다.</div></div>
+  <div class="body">
+<div class="imgwrap"><img src="assets/edge_process.png" alt="엣지 예시 — 3호기가 PVDF 바인더를 투입하고 캘린더링을 수행하며, WI-0412가 캘린더링에 적용되고, 협력사 A가 납품하고 소재기술팀이 담당"/></div>
+<div class="keymsg"><span class="k">방향이 있다</span><div>선에 붙은 말이 <b>관계의 이름</b>이다. 「3호기 <b>―투입→</b> PVDF 바인더」는 되지만 반대는 안 된다.</div></div>
 </div>
 </section>
 <section class="slide" data-title="지식그래프 — 점과 선을 이으면">
@@ -1093,15 +1087,9 @@ WI-0412     <span class="st">―적용→</span>   캘린더링</code></pre></di
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>지식그래프 ③ 완성</div>
   <h2 class="s-title sm">점과 선을 이으면 관계도</h2>
   <div class="rule"></div>
-  <div class="body"><div class="imgwrap"><img src="assets/fig15.webp" alt="문서 더미에서 노드와 엣지를 추출해 이순신 중심의 지식그래프를 만드는 그림"/></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">문서 세 줄에서 뽑은 삼중항</span></div><pre><code><span class="cm">설비 대장</span>   "3호기 캘린더링 라인, 바인더는 PVDF 계열을 쓴다"
-      &rarr; (3호기, 투입, PVDF 바인더) · (3호기, 수행, 캘린더링)
-
-<span class="cm">발주서</span>     "PVDF 바인더 — 공급처 협력사 A"
-      &rarr; (PVDF 바인더, 납품, 협력사 A)
-
-<span class="cm">협력사 명부</span> "협력사 A — 소재기술팀 관리"
-      &rarr; (협력사 A, 담당, 소재기술팀)</code></pre></div>
-<div class="keymsg"><span class="k">이어 붙이면</span><div>세 문서에 <b>한 조각씩</b> 있던 것이 하나의 길로 이어진다.</div></div>
+  <div class="body">
+<div class="imgwrap"><img src="assets/graph_process.png" alt="지식그래프 만들기 — 설비 대장·발주서·협력사 명부 세 문서에서 노드와 엣지를 뽑아 3호기 중심의 관계도로 잇는다"/></div>
+<div class="keymsg"><span class="k">이어 붙이면</span><div>세 문서에 <b>한 조각씩</b> 있던 것이 하나의 길이 된다. 어느 문서에도 없던 답이 여기서 나온다.</div></div>
 </div>
 </section>
 <section class="slide" data-title="실습 그래프">
