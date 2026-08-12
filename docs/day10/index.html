@@ -1120,15 +1120,206 @@ text = open(<span class="st">"sample.txt"</span>).<span class="fn2">read</span>(
     <div class="callout amber" style="margin-top:18px"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg></div><div class="ct"><h4>여기선 가볍게</h4><p>정밀한 자동평가는 추후. <b>같은 질문 세트로 눈으로 비교</b>하는 감각을 기릅니다.</p></div></div>
   </div>
 </section>
-<section class="slide section" data-title="[섹션] 검색 품질과 정리">
+<section class="slide section" data-title="[섹션] 사내 문서에서 걸리는 것들">
   <div class="ghost">06</div>
   <div class="seyebrow">CHAPTER 06</div>
+  <h2>사내 문서에서 걸리는 것들</h2>
+  <p>공개 문서로 되던 것이 사내 문서에서는 그대로 안 된다. 걸리는 자리가 따로 있다.</p>
+  <div class="agenda"><span>세 지점</span><span>권한 경계</span><span>메타데이터</span><span>맡길 것</span></div>
+</section>
+<section class="slide" data-title="유출을 정하는 세 지점">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>구조</div>
+  <h2 class="s-title sm">임베딩 · 저장 · 생성이 각각 어디서</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="ctable"><table><thead><tr><th>구성</th><th>임베딩</th><th>벡터 저장</th><th>생성</th><th>밖으로 나가는 것</th></tr></thead><tbody>
+  <tr><td>완전 로컬</td><td>로컬 모델</td><td>사내</td><td>로컬 LLM</td><td>없다</td></tr>
+  <tr><td class="hl">하이브리드</td><td class="hl">로컬 모델</td><td class="hl">사내</td><td class="hl">호스팅</td><td class="hl">검색된 조각만 &mdash; <b>질문할 때마다</b></td></tr>
+  <tr><td>전부 호스팅</td><td>API</td><td>외부</td><td>호스팅</td><td>문서 전량</td></tr>
+</tbody></table></div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>조각을 잘게 자르든 크게 자르든 <b>API 로 보내는 순간 전량이 나간다</b>. 나눠 보낼 뿐이다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>유출을 정하는 것은 <b>청크 크기가 아니라 세 지점의 위치</b>다.</div></div>
+</div>
+<div class="keymsg"><span class="k">먼저</span><div>이 표에서 <b>어느 줄로 갈지</b>부터 정한다. 그다음이 품질이다.</div></div></div>
+</section>
+<section class="slide" data-title="벡터만 저장하면 안전한가">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>오해</div>
+  <h2 class="s-title sm">벡터에서 되살아나는 원문</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twopane">
+  <div class="pane bad"><h4>흔한 생각</h4><p>“원문은 안 두고 <b>숫자만</b> 저장하니 새어도 알아볼 수 없다.”</p><div class="mini">그래서 외부 DB 도 괜찮다</div></div>
+  <div class="pane good"><h4>실제</h4><p>짧은 텍스트는 벡터에서 <b>상당 부분 복원된다</b>(embedding inversion).</p><div class="mini">연구로 확인된 공격이다</div></div>
+</div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>게다가 검색 결과를 <b>사람에게 보여 줘야</b> 하니, 대부분의 벡터 DB 에 원문 조각이 메타데이터로 같이 들어간다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>사실상 <b>평문 저장</b>이다. 「벡터라서 안전하다」는 근거가 되지 못한다.</div></div>
+</div>
+<div class="keymsg"><span class="k">기준</span><div>벡터 DB 는 <b>문서를 담은 것</b>으로 보고 자리를 정한다.</div></div></div>
+</section>
+<section class="slide" data-title="현실적인 착지점">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>선택</div>
+  <h2 class="s-title sm">가벼운 임베딩과 무거운 생성</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>임베딩 모델은 <b>5억~10억 개</b>면 충분하다. CPU 나 작은 GPU 로 돈다.</div></div>
+  <div class="v"><span class="b">&rarr;</span><div>인덱싱은 <b>문서가 바뀔 때만</b> 하니 비용도 얼마 안 든다.</div></div>
+  <div class="v"><span class="b">&rarr;</span><div>무거운 쪽은 <b>생성</b>이다. 그래서 대개 하이브리드로 내려앉는다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>하이브리드는 <b>질문할 때마다 검색된 조각이 나간다</b>. 이걸 알고 고른다.</div></div>
+</div>
+<div class="callout amber"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></div><div class="ct"><h4>내규 문답은 예외다</h4><p>찾은 조문을 정리해 옮기는 <b>발췌형</b>이라 생성 부담이 낮다. 중형 로컬 모델로도 된다. <b>완전 로컬이 현실적인 몇 안 되는 쓰임</b>이다.</p></div></div>
+<div class="keymsg"><span class="k">순서</span><div>임베딩부터 로컬로 못 박고, <b>생성 위치는 따로 결정</b>한다.</div></div></div>
+</section>
+<section class="slide" data-title="청크 경계와 권한 경계">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>내부</div>
+  <h2 class="s-title sm">두 등급을 넘나드는 조각</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w2"><div><div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>한 조각에 <b>일반 조항과 대외비 별표</b>가 같이 들어가면 통제가 안 된다.</div></div>
+  <div class="v"><span class="b">&rarr;</span><div>일반 직원 질문에 <b>대외비가 딸려 나온다</b>.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>사내 RAG 사고의 대부분은 외부 유출이 아니라 <b>내부 권한 누수</b>다.</div></div>
+</div></div>
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">실제로 나는 사고</span></div><pre><code><span class="cm"># 인사 규정을 물었는데</span>
+Q: 휴직 절차가 어떻게 되나
+&rarr; <span class="st">징계 이력 조항</span>이 같이 나온다
+
+<span class="cm"># 일반 직원이 물었는데</span>
+Q: 출장비 기준이 얼마인가
+&rarr; <span class="st">임원 처우 기준</span>이 같이 나온다</code></pre></div></div>
+<div class="keymsg"><span class="k">규칙</span><div><b>청크 경계는 권한 경계와 같아야 한다.</b> 등급이 다르면 조각을 나눈다.</div></div></div>
+</section>
+<section class="slide" data-title="내규 청킹">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>단위</div>
+  <h2 class="s-title sm">조 단위 자르기와 헤더 상속</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w2"><div><div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>내규는 구조가 뚜렷하다. <b>고정 길이로 미끄러뜨리는 것이 최악</b>이다.</div></div>
+  <div class="v"><span class="b">&rarr;</span><div>문서 &rarr; 장 &rarr; 절 &rarr; <b>조</b> &rarr; 항 &rarr; 호. <b>조가 기본 단위이자 인용 단위</b>다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>조가 너무 길면 항으로 쪼개되 <b>조 헤더를 물려준다</b>.</div></div>
+</div></div>
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">헤더 상속</span></div><pre><code><span class="cm"># 이러면 검색도 답변도 안 된다</span>
+<span class="st">"① 연 15일로 한다."</span>
+
+<span class="cm"># 조 헤더를 물려주면 살아난다</span>
+<span class="st">"[취업규칙 &gt; 제3장 근로시간 &gt; 제18조(연차휴가)]
+ ① 연 15일로 한다."</span></code></pre></div></div>
+<div class="keymsg"><span class="k">검색은 작게, 전달은 크게</span><div>항 단위로 <b>찾고</b>, LLM 에는 <b>조 전체</b>를 넘긴다. 항끼리 맥락이 이어져 한 항만 보면 틀린다.</div></div></div>
+</section>
+<section class="slide" data-title="표와 상호참조">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>함정</div>
+  <h2 class="s-title sm">표는 통째로, 참조는 메타데이터로</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twopane">
+  <div class="pane bad"><h4>표를 쪼개면</h4><p>여비 기준표 · 직급별 한도표를 행 단위로 흩으면 <b>어느 직급 값인지</b>가 사라진다.</p><div class="mini">캡션과 참조 조문을 함께 묶는다</div></div>
+  <div class="pane good"><h4>표는 한 조각으로</h4><p>마크다운으로 바꿔 <b>통째로</b> 둔다. 쪼개지 않는다.</p><div class="mini">길어도 그대로</div></div>
+</div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>「<b>제12조에 따라</b>」가 나오면 그 조각에 <code>refs: [제12조]</code> 를 달고, 검색할 때 <b>참조 조문을 같이</b> 끌어온다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>안 하면 <b>조건절이 빠진 답</b>이 나온다. 「다만 …인 경우는 제외한다」가 사라진다.</div></div>
+</div>
+<div class="keymsg"><span class="k">한 줄</span><div>끊어서 안 되는 것이 둘 &mdash; <b>표</b>와 <b>서로 가리키는 조문</b>이다.</div></div></div>
+</section>
+<section class="slide" data-title="메타데이터가 본체">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>핵심</div>
+  <h2 class="s-title sm">조각 옆에 붙는 아홉 칸</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w2"><div><div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div><code>clearance</code> 로 <b>검색하기 전에</b> 거른다.</div></div>
+  <div class="v"><span class="b">&rarr;</span><div>검색한 뒤에 거르면 <b>가져올 것을 못 가져온다</b>.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>응답 시간 차이로 <b>「뭔가 있긴 하다」</b>가 새기도 한다.</div></div>
+</div></div>
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">조각 하나에 붙는 것</span></div><pre><code>doc_id: HR-001
+title: 취업규칙
+version: 2024-03
+effective_from: 2024-04-01
+superseded: <span class="kw">false</span>
+article: 제18조
+path: 제3장 &gt; 제2절 &gt; 제18조
+clearance: general      <span class="cm"># general / manager / restricted</span>
+refs: [제12조, 별표2]</code></pre></div></div>
+<div class="keymsg"><span class="k">순서</span><div>거르고 나서 찾는다. <b>pre-filter</b> 다.</div></div></div>
+</section>
+<section class="slide" data-title="폐지 조항">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>최대 위험</div>
+  <h2 class="s-title sm">개정 전 조항으로 답하는 사고</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>내규는 개정이 잦고, <b>옛 파일이 공유 드라이브에 그대로</b> 남아 있다.</div></div>
+  <div class="v"><span class="b">&rarr;</span><div>같이 인덱싱하면 모델은 <b>어느 것이 유효한지 모른다</b>.</div></div>
+</div>
+<div class="ctable" style="margin-top:12px"><table><thead><tr><th>대응</th><th>어떻게</th></tr></thead><tbody>
+  <tr><td>구버전을 지우지 않는다</td><td><code>superseded: true</code> 로 두고 <b>기본 검색에서 제외</b>한다</td></tr>
+  <tr><td>시행일로 거른다</td><td><code>effective_from</code> 기준 필터를 기본으로 건다</td></tr>
+  <tr><td class="hl">답에 근거를 박는다</td><td class="hl">조항 번호와 시행일을 반드시 적어 <b>사람이 원문으로 확인</b>하게 한다</td></tr>
+</tbody></table></div>
+<div class="keymsg"><span class="k">설계</span><div>내규 문답은 <b>답을 주는 도구</b>가 아니라 <b>조항을 찾아 주는 도구</b>로 만든다. 그래야 틀려도 피해가 작다.</div></div></div>
+</section>
+<section class="slide" data-title="인덱싱 제외 목록">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>첫 관문</div>
+  <h2 class="s-title sm">애초에 넣지 말아야 할 것</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twocol w2"><div><div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>인덱싱 대상을 고르는 것이 <b>첫 관문</b>이다. 넣고 나면 빼기 어렵다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div><b>서식 작성례가 함정</b>이다. 실제 직원 이름 · 주민번호 · 연락처가 예시로 박혀 있다.</div></div>
+</div></div>
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">제외</span></div><pre><code>개인별 인사기록 · 급여 테이블 · 징계 개별 건
+계약 조건 · 단가표 · 투자 검토 문서
+미확정 초안 · 회의록
+개인정보가 섞인 별첨 · <span class="st">서식 작성례</span></code></pre></div></div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div><b>질의 로그</b>도 민감해진다. 「징계 절차」를 반복 검색하면 그 자체가 정보다.</div></div>
+  <div class="v"><span class="b">&rarr;</span><div>인덱싱한 <b>원문 파일은 격리</b>하고, <b>근거를 못 대면 답하지 않게</b> 한다.</div></div>
+</div>
+<div class="keymsg"><span class="k">먼저</span><div>무엇을 넣을지가 아니라 <b>무엇을 빼는지</b>부터 적는다.</div></div></div>
+</section>
+<section class="slide" data-title="코드 에이전트에게 맡길 자리">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>경계</div>
+  <h2 class="s-title sm">사람이 정할 것과 맡길 것</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="twopane">
+  <div class="pane bad"><h4>사람이 먼저 정한다</h4><p>인덱싱 제외 목록 · 등급 규칙 · 청크 경계 · <b>세 지점의 위치</b>.</p><div class="mini">틀리면 되돌릴 수 없는 것들</div></div>
+  <div class="pane good"><h4>맡겨도 되는 것</h4><p>파서 · 헤더 상속 코드 · 배치 처리 · 인덱스 만들기 · 검사 코드.</p><div class="mini">고쳐 쓰면 되는 것들</div></div>
+</div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>프롬프트에 <b>「이 문서는 못 준다」</b>와 <b>「등급 필터를 검색 전에 건다」</b>를 조건으로 적는다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>안 적으면 <b>검색 뒤에 거르는 코드</b>가 온다. 돌아가긴 하는데 새는 구조다.</div></div>
+</div>
+<div class="keymsg"><span class="k">한 줄</span><div>맡길 수 있는 것은 <b>코드</b>지 <b>기준</b>이 아니다. 기준을 안 적으면 기준까지 지어낸다.</div></div></div>
+</section>
+<section class="slide" data-title="사내 적용 순서">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>정리</div>
+  <h2 class="s-title sm">일곱 단계</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="ctable"><table><thead><tr><th>#</th><th>할 일</th><th>왜 여기서</th></tr></thead><tbody>
+  <tr><td>1</td><td>인덱싱 제외 목록 확정</td><td>넣고 나면 빼기 어렵다</td></tr>
+  <tr><td>2</td><td>임베딩은 로컬 모델로 고정</td><td>로컬화가 가장 쉬운 자리다</td></tr>
+  <tr><td>3</td><td>조 단위 청킹 · 헤더 상속 · 검색은 작게 전달은 크게</td><td>인용 단위와 맞춘다</td></tr>
+  <tr><td>4</td><td>등급 메타데이터로 pre-filter</td><td>내부 누수를 여기서 막는다</td></tr>
+  <tr><td>5</td><td>시행일 필터 · 폐지 조항 제외</td><td>실제 피해가 가장 큰 자리다</td></tr>
+  <tr><td>6</td><td>답에 조항 인용 강제</td><td>사람이 원문으로 확인하게</td></tr>
+  <tr><td class="hl">7</td><td class="hl">생성 LLM 을 어디에 둘지 결정</td><td class="hl">여기가 유일하게 남는 유출면이다</td></tr>
+</tbody></table></div>
+<div class="keymsg"><span class="k">확인</span><div>7번은 <b>보안 정책에 걸리는 사안</b>이다. 산업기술 건과 마찬가지로 <b>사내 보안팀 확인</b>을 먼저 받는다.</div></div></div>
+</section>
+<section class="slide section" data-title="[섹션] 검색 품질과 정리">
+  <div class="ghost">07</div>
+  <div class="seyebrow">CHAPTER 07</div>
   <h2>검색 품질과 정리</h2>
   <div class="agenda"><span>네 요소</span><span>손대는 순서</span><span>오해</span></div>
 </section>
 <section class="slide" data-title="검색 품질 4요소">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>종합</div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>종합</div>
   <h2 class="s-title sm">청킹 · 임베딩 · 검색 · 컨텍스트</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1142,7 +1333,7 @@ text = open(<span class="st">"sample.txt"</span>).<span class="fn2">read</span>(
 </section>
 <section class="slide" data-title="어디를 먼저 손볼까">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>개선 우선순위</div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>개선 우선순위</div>
   <h2 class="s-title sm">손대는 순서</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1156,7 +1347,7 @@ text = open(<span class="st">"sample.txt"</span>).<span class="fn2">read</span>(
 </section>
 <section class="slide" data-title="오늘의 핵심 정리">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>핵심 정리</div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>핵심 정리</div>
   <h2 class="s-title sm">한 줄로 남길 것</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1171,7 +1362,7 @@ text = open(<span class="st">"sample.txt"</span>).<span class="fn2">read</span>(
 </section>
 <section class="slide" data-title="자주 묻는 질문 / 오개념">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>오개념 정리</div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>오개념 정리</div>
   <h2 class="s-title sm">흔한 오해와 사실</h2>
   <div class="rule"></div>
   <div class="body">

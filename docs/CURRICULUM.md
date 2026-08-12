@@ -15,7 +15,7 @@
 | 2주차 D3 · 이미지 처리 모듈 개발 | [day7/index.html](day7/index.html) | 40 |
 | 3주차 D1 · LLM 과 프롬프트 | [day8/index.html](day8/index.html) | 80 |
 | 3주차 D2 · 에이전트의 구조 (+ 부록 공정 데이터) | [day9/index.html](day9/index.html) | 97 |
-| 3주차 D3 · RAG — 내 문서로 답하게 하기 | [day10/index.html](day10/index.html) | 60 |
+| 3주차 D3 · RAG — 내 문서로 답하게 하기 | [day10/index.html](day10/index.html) | 72 |
 
 부록 60장부터의 강의 노트 — [day9/NOTES.md](day9/NOTES.md)
 
