@@ -509,18 +509,21 @@ NCM811     <span class="st">4</span>조각  [NC, ##M, ##81, ##1]
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>앞단</div>
   <h2 class="s-title sm">뽑아내는 대신 없애는 쪽</h2>
   <div class="rule"></div>
-  <div class="body"><div class="ctable"><table><thead><tr><th>손대는 자리</th><th>어떻게</th><th>드는 비용</th></tr></thead><tbody>
-  <tr><td class="hl">사전을 통째로</td><td class="hl">그 부서 사전을 시스템 프롬프트에 얹는다. <b>뽑는 단계가 없어진다</b></td><td class="hl">200개면 4천 토큰쯤</td></tr>
-  <tr><td>문서 쪽을</td><td>조각에 풀이를 심는다 &mdash; <b>「캘린더링(전극 압연)」</b>으로 저장</td><td>인덱싱 때 한 번</td></tr>
-  <tr><td>안 손댄다</td><td>하이브리드의 낱말 검색이 <b>NCM811 을 글자 그대로</b> 잡는다</td><td>없다</td></tr>
-  <tr><td>못 찾았을 때만</td><td>상위 점수가 낮을 때만 사전을 뒤지거나 되묻는다</td><td>평소에는 0</td></tr>
-</tbody></table></div>
-<div class="vlist">
-  <div class="v"><span class="b">&rarr;</span><div>질문은 <b>매번 새로 온다</b>. 문서는 한 번만 손대면 된다. 고칠 곳은 문서 쪽이다.</div></div>
-  <div class="v"><span class="b">&#9733;</span><div>굳이 뽑아야 하면 <b>사전 목록에서 고르게</b> 한다. 지어낼 수가 없다.</div></div>
-</div>
-<div class="keymsg"><span class="k">순서</span><div>「어떻게 뽑을까」보다 <b>「안 뽑고 되게 할 수 있나」</b>를 먼저 본다.</div></div></div>
+  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">① 사전을 통째로 얹는다 — 뽑는 단계가 사라진다</span></div><pre><code><span class="cm">[시스템 프롬프트 끝에 붙인다]</span>
+아래는 소재기술팀 약어다. 질문에 나오면 이 뜻으로 읽어라.
+  <span class="st">NCM811</span>   니켈 코발트 망간 양극재 (8:1:1)
+  <span class="st">캘린더링</span>   전극을 롤로 눌러 밀도를 올리는 공정
+  <span class="st">PP</span>       폴리프로필렌
+  <span class="cm">... 200줄 · 4천 토큰쯤. 요즘 컨텍스트에서는 부담이 아니다</span></code></pre></div>
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">② 문서 쪽에 풀이를 심는다 — 질문은 안 건드린다</span></div><pre><code><span class="cm">인덱싱할 때 한 번</span>
+저장 전  "<span class="s">캘린더링</span> 후 전극 밀도를 측정한다"
+저장 후  "<span class="s">캘린더링(전극 압연)</span> 후 전극 밀도를 측정한다"
+
+Q <span class="s">전극 압연 뒤에 뭘 보나</span>
+저장 전 <span class="cm">✕ 안 걸린다</span>      저장 후 <span class="nm">○ 걸린다</span></code></pre></div>
+<div class="keymsg"><span class="k">남는 몫</span><div>「NCM811」처럼 <b>글자가 그대로 겹치는 말</b>은 이미 낱말 검색이 잡는다. 손댈 것은 <b>다르게 부르는 말</b>뿐이다.</div></div></div>
 </section>
+
 
 <section class="slide" data-title="사전 조회 뒤">
   <div class="coord"><b></b> / <span class="tot"></span></div>
