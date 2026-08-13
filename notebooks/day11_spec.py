@@ -352,7 +352,7 @@ M = vec.fit_transform(TEXTS)
 print('벡터 %d개 · 낱말 자질 %d개' % (len(V), M.shape[1]))"""),
 
     prep("""# 두 순위를 합친다. 양쪽에서 위에 있을수록 이긴다.
-def hybrid(question, k=3):
+def hybrid_scored(question, k=20):
     dense = np.argsort(-(V @ EMB.encode([question], normalize_embeddings=True)[0]))
     sparse = np.argsort(-(M @ vec.transform([question]).T).toarray().ravel())
     score = {}
@@ -360,7 +360,12 @@ def hybrid(question, k=3):
         score[i] = score.get(i, 0) + 1.0 / (60 + rank)
     for rank, i in enumerate(sparse[:50]):
         score[i] = score.get(i, 0) + 1.0 / (60 + rank)
-    return [CHUNKS[i] for i in sorted(score, key=lambda i: -score[i])[:k]]
+    order = sorted(score, key=lambda i: -score[i])[:k]
+    return order, score
+
+def hybrid(question, k=3):
+    order, _ = hybrid_scored(question, k)
+    return [CHUNKS[i] for i in order]
 
 def find_rule(question):
     CALLS.append(('find_rule', question, None))
@@ -372,7 +377,160 @@ print(find_rule('일하다 위험하면 멈춰도 되나')[:300])"""),
 
     md("도구가 둘 다 준비됐다. 둘 다 **읽기만 하고, 부른 기록을 `CALLS` 에 남긴다.**"),
 
-    md("## 7. 인용을 따라가는 도구"),
+    md("## 7. 같은 얘기 빼기"),
+    md("점수 순서대로 다섯 개를 담으면 **같은 말이 여러 번** 들어간다.\n"
+       "넣을 수 있는 자리는 정해져 있는데, 그 자리를 겹치는 것이 차지한다."),
+
+    code("""# 점수 순서대로 다섯 개
+for r, c in enumerate(hybrid('비밀을 지킬 의무', 5), 1):
+    print('%d %s %s' % (r, c['source'], c['title'][:34]))"""),
+
+    md("**다섯 중 넷이 같은 말이다** &mdash; 「직무상 알게 된 비밀을 누설하지 마라」.\n"
+       "법만 다를 뿐 내용이 같다. 위에서 셋만 쓴다면 **셋 다 같은 얘기**를 읽게 된다."),
+
+    prep("""# MMR — 다음 것을 고를 때 이미 고른 것과 얼마나 겹치는지도 본다
+def mmr(question, k=5, lam=0.5, pool=20):
+    cand, score = hybrid_scored(question, pool)
+    lo, hi = min(score[i] for i in cand), max(score[i] for i in cand)
+    rel = {i: (score[i] - lo) / (hi - lo + 1e-9) for i in cand}   # 관련도 0~1
+    picked = []
+    while len(picked) < k:
+        best, best_v = None, -9
+        for i in cand:
+            if i in picked:
+                continue
+            dup = max([float(V[i] @ V[j]) for j in picked], default=0.0)
+            v = lam * rel[i] - (1 - lam) * dup       # 관련도는 더하고 겹침은 뺀다
+            if v > best_v:
+                best_v, best = v, i
+        picked.append(best)
+    return picked, cand"""),
+
+    code("""# 그냥 상위 다섯과 MMR 다섯을 나란히
+q = '비밀을 지킬 의무'
+picked, cand = mmr(q, 5, lam=0.5)
+print('%-42s %s' % ('그냥 상위 5', 'MMR λ=0.5'))
+for r in range(5):
+    a, b = CHUNKS[cand[r]], CHUNKS[picked[r]]
+    print('%-42s %s  (원래 %d등)'
+          % ('%s %s' % (a['source'], a['title'][:26]),
+             '%s %s' % (b['source'], b['title'][:26]), cand.index(picked[r]) + 1))"""),
+
+    md("**5등이던 「근로자의 의무」가 2등으로 오고, 3등이던 「비밀유지 등」이 5등으로 밀린다.**\n\n"
+       "밀린 것은 2등 「비밀 유지」와 거의 같은 말이기 때문이다.\n"
+       "위에서 셋만 쓸 때 전에는 전부 비밀유지 조문이었는데, 이제 하나는 다른 얘기다."),
+
+    md("> 버리는 것이 아니라 **순서를 미루는 것**이다. 다섯 개를 다 쓰면 결국 같은 다섯 개다.\n"
+       "> 자리가 모자랄 때 무엇을 먼저 넣을지가 달라진다."),
+
+    Ex(5, "&lambda; 를 **0.9** 로 올려 본다. 관련도만 보게 하는 값이다.\n"
+          "> 순서가 그냥 상위 다섯과 같아지는지 본다. &lambda;=1 이면 MMR 이 없는 것과 같다.",
+       setup="# 0 에 가까울수록 다양성, 1 에 가까울수록 관련도만 본다",
+       blank="LAM = ___",
+       answer="LAM = 0.9",
+       check="""picked, cand = mmr('비밀을 지킬 의무', 5, lam=LAM)
+same = sum(1 for r in range(5) if picked[r] == cand[r])
+for r in range(5):
+    print('%d %s' % (r + 1, CHUNKS[picked[r]]['title'][:34]))
+print()
+print('그냥 상위 5 와 자리가 같은 것 %d개 / 5개' % same)"""),
+
+    md("## 8. 현장말 사전"),
+    md("현장에서 오는 질문은 **규정에 적힌 말로 오지 않는다.**\n\n"
+       "「짤리면 얼마나 미리 알려주나」라고 묻지 「해고의 예고」라고 묻지 않는다.\n"
+       "이 어긋남을 메우는 것이 **사전**이고, 사전은 코드가 아니라 **현업이 채우는 표**다."),
+
+    prep("""# 현장에서 쓰는 말 → 규정에 적힌 말. 엑셀 한 장이면 된다.
+GLOSSARY = {
+    '쉬는 날':   '연차 유급휴가',
+    '짤리':     '해고',            # 어간으로 둔다. 짤리면·짤린다 를 다 잡으려고
+    '산재':     '업무상 재해',
+    '작업 멈춤': '작업중지',
+    '몸 검사':   '건강진단',
+}
+
+QS = [('쉬는 날은 일 년에 며칠인가',   '근로기준법', '제60조'),
+      ('짤리면 얼마나 미리 알려주나',   '근로기준법', '제26조'),
+      ('산재 나면 회사가 뭘 해야 하나', '근로기준법', '제78조'),
+      ('몸 검사 안 하면 어떻게 되나',   '산업안전보건법', '제43조')]
+
+# 그 조문이 몇 등에 오는지 — 의미 검색과 낱말 검색 각각
+def rank_of(question, source, article):
+    d = np.argsort(-(V @ EMB.encode([question], normalize_embeddings=True)[0]))
+    p = np.argsort(-(M @ vec.transform([question]).T).toarray().ravel())
+    def find(order):
+        for r, i in enumerate(order):
+            if CHUNKS[i]['source'] == source and CHUNKS[i]['title'].startswith(article):
+                return r + 1
+        return -1
+    return find(d), find(p)"""),
+
+    code("""# 사전 없이 물어보면
+for q, src, art in QS:
+    print('%-26s 의미 %4d등  낱말 %4d등' % ((q,) + rank_of(q, src, art)))"""),
+
+    md("**낱말 검색이 무너진다.** 117등 · 120등 · 145등.\n"
+       "「몸 검사」와 「건강진단」은 **글자가 하나도 안 겹치기** 때문이다.\n"
+       "의미 검색은 그래도 버티지만 1등은 아니다."),
+
+    prep("""# 질문 뒤에 규정 용어를 덧붙인다
+def expand(question):
+    for word, term in GLOSSARY.items():
+        if word in question:
+            return question + ' ' + term
+    return question
+
+print(expand('몸 검사 안 하면 어떻게 되나'))"""),
+
+    code("""# 덧붙이고 다시 물어본다
+for q, src, art in QS:
+    e = expand(q)
+    print('%-32s 의미 %4d등  낱말 %4d등' % ((e[:32],) + rank_of(e, src, art)))"""),
+
+    md("**한 마디 붙였을 뿐인데 낱말 검색이 117등에서 1등이 된다.**\n\n"
+       "사전이 하는 일은 번역이 아니다. **찾을 수 있는 말을 하나 더 얹는 것**이다.\n"
+       "원래 질문은 그대로 두므로 잃는 것이 없다."),
+
+    md("### 사전이 안 걸리는 자리"),
+    md("사전은 **키가 질문에 그대로 있어야** 걸린다. 한 글자만 달라도 지나친다."),
+
+    code("""# 키를 '짤리다' 로 두면 '짤리면' 을 못 잡는다
+BAD = {'짤리다': '해고'}
+def expand_bad(question):
+    for w, t in BAD.items():
+        if w in question:
+            return question + ' ' + t
+    return question
+
+q = '짤리면 얼마나 미리 알려주나'
+print('%-30s 의미 %4d등  낱말 %4d등' % (('키가 짤리다',) + rank_of(expand_bad(q), '근로기준법', '제26조')))
+print('%-30s 의미 %4d등  낱말 %4d등' % (('키가 짤리',) + rank_of(expand(q), '근로기준법', '제26조')))"""),
+
+    md("**145등과 5등**이다. 「짤리다」로 두면 「짤리면」에 안 걸린다.\n"
+       "그래서 사전 키는 **어간으로 짧게** 둔다 &mdash; 「짤리」 · 「몸 검사」.\n\n"
+       "> 문서 쪽에 풀이를 심는 방법도 있다. 어형 변화에는 강하지만(145등 → 48등)\n"
+       "> 질문에 붙이는 것만큼 크게 오르지는 않는다. 둘을 같이 써도 된다."),
+
+    Ex(6, "사전에 **두 줄을 더** 넣는다. 현장에서 쓰는 말과 규정 용어를 짝지어 적는다.\n"
+          "> 「잔업」 · 「월차」 · 「안전화」처럼 실제로 쓰는 말을 떠올려 본다.\n"
+          "> 코드는 안 고친다. **값만 채운다.**",
+       setup="# 현업이 채우는 자리다",
+       blank="""MY_WORDS = {
+    '___': '___',
+    '___': '___',
+}""",
+       answer="""MY_WORDS = {
+    '잔업': '연장근로',
+    '월차': '유급휴가',
+}""",
+       check="""GLOSSARY.update(MY_WORDS)
+for w, t in MY_WORDS.items():
+    print('%-8s → %-12s  %s' % (w, t, expand(w + ' 관련 규정')))
+assert '___' not in ''.join(MY_WORDS), '두 줄을 채운다'
+print()
+print('통과 — 사전은 이렇게 한 줄씩 자란다')"""),
+
+    md("## 9. 인용을 따라가는 도구"),
     md("규정에는 **벡터 검색으로 안 되는 질문**이 있다.\n\n"
        "「작업환경측정을 안 하면 어떻게 되나」 &mdash; 제42조(작업환경측정) 본문에는 **벌칙이 없다.**\n"
        "벌칙은 제69조와 제72조에 있고, 그 조문들이 **제42조를 인용한다.**"),
@@ -432,7 +590,7 @@ print(cited_by('산업안전보건법', '제42조'))"""),
        "인용을 거슬러 올라가면 **제69조(벌칙)와 제72조(과태료)가 바로 나온다.**\n"
        "벡터는 **주제가 비슷한 것**을, 그래프는 **실제로 이어진 것**을 가져온다."),
 
-    Ex(5, "다른 조문으로도 되는지 본다. **제43조(건강진단)** 을 넣어 본다.\n"
+    Ex(7, "다른 조문으로도 되는지 본다. **제43조(건강진단)** 을 넣어 본다.\n"
           "> 벡터 상위 다섯과 견줘서, 인용 쪽에만 있는 조문이 무엇인지 본다.",
        setup="# 역참조로 벌칙을 찾아 본다",
        blank="ART = '___'",
@@ -444,7 +602,7 @@ print()
 print('[%s 를 인용하는 조문]' % ART)
 print(cited_by('산업안전보건법', ART))"""),
 
-    md("## 8. 에이전트에 붙이기"),
+    md("## 10. 에이전트에 붙이기"),
     md("모델에는 **함수가 아니라 설명서**를 준다. 언제 부를지는 설명서를 보고 모델이 정한다."),
 
     prep("""# 도구 설명서 — 이름 · 하는 일 · 인자
@@ -552,7 +710,7 @@ print(run('작업환경측정을 안 하면 어떤 벌칙이 있나'))"""),
 print()
 print('도구 호출 %d번' % (len(CALLS) - before))"""),
 
-    md("## 9. 일부러 시켜 보기"),
+    md("## 11. 일부러 시켜 보기"),
     md("되는 것만 보고 끝내면 경계가 있는지 알 수 없다. **막히는 것을 눈으로 본다.**\n"
        "`probe` 는 답과 함께 **무엇을 불렀는지**도 찍는다. 막힌 자리는 여기서 드러난다."),
 
@@ -618,7 +776,7 @@ probe('3호기 건조 ZONE1 평균 온도가 몇 도야')       # 줄 도구가 
     md("사정을 아무리 붙여도 **도구가 안 돌려주는 값은 안 나온다.**\n"
        "이게 프롬프트로 막는 것과 도구로 막는 것의 차이다."),
 
-    md("## 10. 남긴 기록 보기"),
+    md("## 12. 남긴 기록 보기"),
     md("`CALLS` 에 지금까지 부른 것이 다 쌓여 있다. 운영에서는 이게 **사고 났을 때 볼 유일한 것**이다."),
 
     code("""# 무엇을 몇 번 불렀는지 센다
@@ -667,7 +825,7 @@ print('이 네 칸을 3절 프롬프트 형식으로 옮기면 Codex 에 그대�
 ]
 
 MODES = {
-    ("ex", 1): "together", ("ex", 2): "solo", ("ex", 3): "solo", ("ex", 4): "solo", ("ex", 5): "together",
+    ("ex", 1): "together", ("ex", 2): "solo", ("ex", 3): "solo", ("ex", 4): "solo", ("ex", 5): "together", ("ex", 6): "solo", ("ex", 7): "together",
     ("task", 1): "together", ("task", 2): "team",
 }
 

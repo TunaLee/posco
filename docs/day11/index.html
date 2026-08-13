@@ -528,20 +528,18 @@ NCM811     <span class="st">4</span>조각  [NC, ##M, ##81, ##1]
 <section class="slide" data-title="약어 뽑기">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>앞단</div>
-  <h2 class="s-title sm">뽑아내는 대신 없애는 쪽</h2>
+  <h2 class="s-title sm">사전으로 메우는 어긋남</h2>
   <div class="rule"></div>
-  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">① 사전을 통째로 얹는다 — 뽑는 단계가 사라진다</span></div><pre><code><span class="cm">[시스템 프롬프트 끝에 붙인다]</span>
-아래는 소재기술팀 약어다. 질문에 나오면 이 뜻으로 읽어라.
-  <span class="st">NCM811</span>   니켈 코발트 망간 양극재 (8:1:1)
-  <span class="st">캘린더링</span>   전극을 롤로 눌러 밀도를 올리는 공정
-  <span class="st">PP</span>       폴리프로필렌
-  <span class="cm">... 200줄 · 4천 토큰쯤. 요즘 컨텍스트에서는 부담이 아니다</span></code></pre></div>
-<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">② 문서 쪽에 풀이를 심는다 — 인덱싱 때 한 번, 질문은 안 건드린다</span></div><pre><code>저장 전  "<span class="s">캘린더링</span> 후 전극 밀도를 측정한다"
-저장 후  "<span class="s">캘린더링(전극 압연)</span> 후 전극 밀도를 측정한다"
-
-Q <span class="s">전극 압연 뒤에 뭘 보나</span>
-저장 전 <span class="cm">✕ 안 걸린다</span>      저장 후 <span class="nm">○ 걸린다</span></code></pre></div>
-<div class="keymsg"><span class="k">남는 몫</span><div>「NCM811」처럼 <b>글자가 그대로 겹치는 말</b>은 이미 낱말 검색이 잡는다. 손댈 것은 <b>다르게 부르는 말</b>뿐이다.</div></div></div>
+  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">질문 뒤에 규정 용어를 한 마디 붙인다</span></div><pre><code><span class="cm">현장에서 오는 말        규정에 적힌 말</span>
+  몸 검사       &rarr;     건강진단
+  짤리         &rarr;     해고          <span class="cm">어간으로 둔다. 짤리면·짤린다를 다 잡으려고</span>
+  산재         &rarr;     업무상 재해</code></pre></div>
+<div class="ctable"><table><thead><tr><th>Q 몸 검사 안 하면 어떻게 되나</th><th>의미</th><th>낱말</th></tr></thead><tbody>
+  <tr><td>그냥 물으면</td><td>6등</td><td>117등</td></tr>
+  <tr><td class="hl">「건강진단」을 붙이면</td><td class="hl"><b>1등</b></td><td class="hl"><b>1등</b></td></tr>
+</tbody></table></div>
+<div class="keymsg"><span class="k">사전이 하는 일</span><div>번역이 아니라 <b>찾을 수 있는 말을 하나 더 얹는 것</b>이다. 원래 질문은 그대로 둔다.</div></div>
+</div>
 </section>
 
 
@@ -583,7 +581,7 @@ Q <span class="s">전극 압연 뒤에 뭘 보나</span>
 <section class="slide" data-title="사전 운영">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>앞단</div>
-  <h2 class="s-title sm">사전을 굴릴 때 챙길 네 가지</h2>
+  <h2 class="s-title sm">사전을 굴릴 때 챙길 다섯 가지</h2>
   <div class="rule"></div>
   <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">사전 — 엑셀 한 장이면 된다</span></div><pre><code>표제어      뜻                          부서       갱신일
 NCM811    니켈 코발트 망간 양극재 (8:1:1)     소재기술   2026-06-02
@@ -592,6 +590,7 @@ NCM811    니켈 코발트 망간 양극재 (8:1:1)     소재기술   2026-06-0
 <span class="st">PP</span>        생산계획                     생산관리   2026-05-11</code></pre></div>
 <div class="ctable"><table><thead><tr><th>챙길 것</th><th>구체적으로</th></tr></thead><tbody>
   <tr><td class="hl">부서마다 따로</td><td class="hl"><b>PP</b> 는 소재팀에서 폴리프로필렌, 생산관리팀에서 생산계획이다 &mdash; 부서를 같이 저장한다</td></tr>
+  <tr><td class="hl">키는 어간으로</td><td class="hl">「짤리다」로 두면 <b>「짤리면」에 안 걸린다</b> &mdash; 145등. 「짤리」로 줄이면 5등</td></tr>
   <tr><td>엑셀 한 장으로</td><td>표제어 · 뜻 · 부서 · 갱신일 네 칸이면 된다. 현업이 고치면 <b>배포 없이</b> 반영된다</td></tr>
   <tr><td>못 찾은 말을 쌓는다</td><td>사전에 없던 약어를 로그에 남긴다. 이 목록이 <b>다음 달 갱신 대상</b>이다</td></tr>
   <tr><td>답에 풀이를 붙인다</td><td>「NCM811(니켈 코발트 망간 양극재)」로 답해야 <b>읽는 사람이 확인</b>할 수 있다</td></tr>
