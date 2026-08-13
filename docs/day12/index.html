@@ -547,6 +547,16 @@ TOOLS = [{'name': 'defect_rate',
   <div class="rule"></div>
   <div class="body"><img src="assets/host_client_server.png" alt="MCP 구성 — 호스트 안에 앱과 모델과 클라이언트 셋이 있고, 각 클라이언트가 Tools·Resources·Prompts 를 내주는 서버 셋에 붙는다" style="display:block;max-width:100%;max-height:100%;margin:0 auto;object-fit:contain"/></div>
 </section>
+<section class="slide" data-title="주고받는 순서">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>순서</div>
+  <h2 class="s-title sm">발견 · 검증 · 실행</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="figwrap"><img src="assets/client_server_flow.png" alt="MCP 클라이언트와 서버가 주고받는 여섯 단계 — 초기 연결, tools/list 요청, 도구 목록과 스키마 반환, 클라이언트가 이름·스키마·호출 가능 여부를 검증, 고른 도구 호출, 실행 결과 반환"/></div>
+<div class="keymsg"><span class="k">미리 모른다</span><div>앱은 서버에 무엇이 있는지 <b>모른 채로 붙는다</b>. 붙고 나서 <code>tools/list</code> 로 물어본다.</div></div>
+  </div>
+</section>
 <section class="slide" data-title="JSON-RPC 위에서">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>통신</div>
