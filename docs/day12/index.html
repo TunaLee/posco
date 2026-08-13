@@ -421,7 +421,7 @@
 <section class="slide" data-title="tool calling 이 푼 것">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>앞선 것</div>
-  <h2 class="s-title sm">tool calling 이 이미 푼 것</h2>
+  <h2 class="s-title sm">tool calling 이 하는 일</h2>
   <div class="rule"></div>
   <div class="body">
 <div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">어제 노트북에서 한 것</span></div><pre><code><span class="cm"># 설명서를 넘겨주면</span>
@@ -441,7 +441,7 @@ TOOLS = [{'name': 'defect_rate',
 <section class="slide" data-title="안 풀린 다섯">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>한계</div>
-  <h2 class="s-title sm">tool calling 이 남긴 다섯 가지</h2>
+  <h2 class="s-title sm">tool calling 이 못 하는 일</h2>
   <div class="rule"></div>
   <div class="body">
 <div class="ctable"><table><thead><tr><th>안 풀린 것</th><th>어제 노트북에서 어땠나</th></tr></thead><tbody>
@@ -464,7 +464,7 @@ TOOLS = [{'name': 'defect_rate',
 <section class="slide" data-title="한계마다 생긴 자리">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>대응</div>
-  <h2 class="s-title sm">다섯 가지에 각각 답한 것</h2>
+  <h2 class="s-title sm">Resource 와 Prompt 가 생긴 까닭</h2>
   <div class="rule"></div>
   <div class="body">
 <div class="ctable"><table><thead><tr><th>안 풀린 것</th><th>MCP 가 만든 것</th></tr></thead><tbody>
@@ -531,7 +531,7 @@ Codex         「3호기 야간 불량률」  &rarr; <span class="st">같은 함
 <section class="slide" data-title="메시지">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>메시지</div>
-  <h2 class="s-title sm">오가는 메시지 네 가지</h2>
+  <h2 class="s-title sm">Request · Response · Notification</h2>
   <div class="rule"></div>
   <div class="body"><div class="cards c3"><div class="card"><span class="n">Request</span><h3>요청</h3><p>id가 붙고 응답을 기대한다. 예: 도구 목록·도구 호출.</p></div><div class="card"><span class="n">Response</span><h3>응답</h3><p>결과(result) 또는 오류(error)를 돌려준다.</p></div><div class="card"><span class="n">Notification</span><h3>알림</h3><p>id 없이 한 방향 통지. 응답이 없다. 예: 진행 상황.</p></div></div><div class="callout "><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></div><div class="ct"><h4>오류도 규격이 있다</h4><p>오류는 코드+메시지로 표준화된다. 참고로 2025-06 스펙에서 여러 요청을 묶는 배치(batching)는 제거됐다.</p></div></div></div>
 </section>
@@ -558,7 +558,7 @@ Codex         「3호기 야간 불량률」  &rarr; <span class="st">같은 함
 <section class="slide" data-title="세 프리미티브 — 호출하면 이렇게 나온다">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>호출과 결과</div>
-  <h2 class="s-title sm">불렀을 때 돌아오는 것</h2>
+  <h2 class="s-title sm">셋을 불러 본 결과</h2>
   <div class="rule"></div>
   <div class="body">
   <table class="ctable"><thead><tr><th style="width:19%">종류</th><th>클라이언트 호출</th><th style="width:33%">결과</th></tr></thead><tbody>
@@ -571,7 +571,7 @@ Codex         「3호기 야간 불량률」  &rarr; <span class="st">같은 함
 <section class="slide" data-title="구분 규칙">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>Tool vs Resource</div>
-  <h2 class="s-title sm">읽기와 행동</h2>
+  <h2 class="s-title sm">부작용으로 가르기</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="twopane">
@@ -584,14 +584,14 @@ Codex         「3호기 야간 불량률」  &rarr; <span class="st">같은 함
 <section class="slide" data-title="제어 주체">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>제어 주체</div>
-  <h2 class="s-title sm">셋을 가르는 기준</h2>
+  <h2 class="s-title sm">모델 · 앱 · 사용자</h2>
   <div class="rule"></div>
   <div class="body"><div class="cards c3"><div class="card"><span class="n" style="color:var(--violet)">모델이 결정</span><h3>Tools</h3><p>모델이 필요할 때 스스로 호출한다. 행동·부작용.</p></div><div class="card"><span class="n" style="color:var(--mint)">앱이 결정</span><h3>Resources</h3><p>호스트 앱이 맥락으로 골라 넣는 읽기 전용 데이터.</p></div><div class="card"><span class="n" style="color:var(--amber)">사용자가 선택</span><h3>Prompts</h3><p>사용자가 슬래시 명령처럼 고르는 템플릿.</p></div></div><div class="keymsg"><span class="k">핵심</span><div>같은 서버가 노출해도 <b>제어 주체가 다르다</b>. 이 구분이 설계·보안의 출발점.</div></div></div>
 </section>
 <section class="slide" data-title=" 미니실습 · Tool인가 Resource인가">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>미니 실습</div>
-  <h2 class="s-title sm">Tool 과 Resource 가르기</h2>
+  <h2 class="s-title sm">환율 · 일정 · 정책 문서 · 덧셈</h2>
   <div class="rule"></div>
   <div class="body">
     <p class="phase-label">과제 — 각 기능을 Tool / Resource로 분류 <span class="ln"></span></p>
@@ -628,7 +628,7 @@ Codex         「3호기 야간 불량률」  &rarr; <span class="st">같은 함
 <section class="slide" data-title="3가지 전송 방식">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>transport</div>
-  <h2 class="s-title sm">세 가지 전송 방식</h2>
+  <h2 class="s-title sm">stdio · SSE · Streamable HTTP</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="cards c3">
@@ -642,7 +642,7 @@ Codex         「3호기 야간 불량률」  &rarr; <span class="st">같은 함
 <section class="slide" data-title="전송 선택">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>선택 기준</div>
-  <h2 class="s-title sm">무엇으로 붙일지 고르기</h2>
+  <h2 class="s-title sm">stdio 와 Streamable HTTP 견주기</h2>
   <div class="rule"></div>
   <div class="body"><table class="ctable"><thead><tr><th>기준</th><th>stdio</th><th>Streamable HTTP</th></tr></thead><tbody><tr><td>어디서 실행</td><td>같은 머신의 하위 프로세스</td><td class="hl">원격 서비스</td></tr><tr><td>주 용도</td><td>로컬 개발·데스크톱 도구</td><td class="hl">프로덕션·다중 사용자</td></tr><tr><td>인증</td><td>보통 불필요</td><td class="hl">OAuth 필요</td></tr><tr><td>전환</td><td colspan="2">코드 한 줄: mcp.run(transport="streamable-http")</td></tr></tbody></table><div class="callout "><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></div><div class="ct"><h4>SSE는 어떻게 됐나</h4><p>예전 원격 방식(HTTP+SSE)은 Streamable HTTP로 대체됐다. 새로 만들면 Streamable HTTP를 쓴다.</p></div></div></div>
 </section>
@@ -790,7 +790,7 @@ fastmcp dev inspector server.py
 <section class="slide" data-title="static vs dynamic">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>두 종류</div>
-  <h2 class="s-title sm">미리 있는 것과 그때 만드는 것</h2>
+  <h2 class="s-title sm">고정 리소스와 템플릿 리소스</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="cards c2">
@@ -803,7 +803,7 @@ fastmcp dev inspector server.py
 <section class="slide" data-title="다시, 읽기 vs 행동">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>경계 정리</div>
-  <h2 class="s-title sm">Resource 와 Tool 의 경계</h2>
+  <h2 class="s-title sm">읽기 · 저장 · 조회 · 검색</h2>
   <div class="rule"></div>
   <div class="body">
     <table class="ctable">
@@ -821,7 +821,7 @@ fastmcp dev inspector server.py
 <section class="slide" data-title="결정 흐름">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>결정 흐름</div>
-  <h2 class="s-title sm">무엇으로 낼지 정하는 흐름</h2>
+  <h2 class="s-title sm">부작용 · 매개변수로 갈라 보기</h2>
   <div class="rule"></div>
   <div class="body"><div class="pipe q"><div class="step"><div class="si">① 부작용?</div><div class="sn">상태를 바꾸나</div><div class="sd">예 → Tool</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">② 매개변수?</div><div class="sn">값을 받아 달라지나</div><div class="sd">예 → 템플릿 리소스</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">③ 그 외</div><div class="sn">항상 같은 데이터</div><div class="sd">고정 리소스</div></div></div><div class="keymsg"><span class="k">한 문장</span><div><b>바꾸면 Tool</b>, 읽기인데 <b>매개변수가 있으면 템플릿</b>, 없으면 <b>고정 리소스</b>.</div></div></div>
 </section>
@@ -854,7 +854,7 @@ fastmcp dev inspector server.py
 <section class="slide" data-title="보안·설계 주의">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>주의점</div>
-  <h2 class="s-title sm">붙이기 전에 볼 것</h2>
+  <h2 class="s-title sm">최소 권한 · 입력 검증 · 비밀 보호</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="cards c3">
@@ -908,7 +908,7 @@ fastmcp dev inspector server.py
 <section class="slide" data-title="핵심 정리">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>핵심 정리</div>
-  <h2 class="s-title sm">오늘 가져갈 것</h2>
+  <h2 class="s-title sm">MCP 의 요점</h2>
   <div class="rule"></div>
   <div class="body">
     <div class="biglist">
