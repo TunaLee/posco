@@ -734,6 +734,26 @@ fastmcp dev inspector server.py
   </div>
   <div class="keymsg"><span class="k">연결</span><div>이 루프가 <b>Agentic RAG의 씨앗</b> — 여기서 한 걸음 더 나가면 스스로 점검하는 구조가 된다.</div></div></div>
 </section>
+<section class="slide" data-title="RAG 와의 갈림">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>RAG 와의 갈림</div>
+  <h2 class="s-title sm">무조건 찾기와 필요할 때 찾기</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="ctable"><table><thead><tr><th></th><th>지난 이틀에 만든 RAG</th><th>검색을 도구로 감싸면</th></tr></thead><tbody>
+  <tr><td class="hl">언제 찾나</td><td class="hl">질문마다 <b>무조건</b></td><td class="hl">모델이 <b>필요하다고 볼 때만</b></td></tr>
+  <tr><td>몇 번 찾나</td><td>한 번</td><td><b>0번에서 여러 번</b></td></tr>
+  <tr><td>누가 정하나</td><td>파이프라인 &mdash; 사람이 짠 순서</td><td><b>모델</b></td></tr>
+  <tr><td>안 찾는 선택</td><td>없다</td><td>있다</td></tr>
+</tbody></table></div>
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">도구 넷을 붙이고 다섯 가지를 물어본 결과</span></div><pre><code>3호기 야간조 불량률          &rarr; defect_rate
+하루 8473개를 2951일        &rarr; calc
+작업환경측정 의무가 어느 조문   &rarr; <span class="st">find_rule</span>
+작업환경측정을 안 하면 벌칙은  &rarr; <span class="st">find_rule</span> &rarr; trace_rule   <span class="cm">두 번 연달아</span>
+오늘 점심 뭐 먹을까          &rarr; <span class="cm">아무것도 안 부른다</span></code></pre></div>
+<div class="keymsg"><span class="k">껍데기만 바뀐다</span><div>MCP 는 RAG 를 <b>대신하지 않는다</b>. 청킹 · 임베딩 · 하이브리드는 <b>서버 안쪽</b>에 그대로 있다.</div></div>
+  </div>
+</section>
 <section class="slide section" data-title="[섹션] Resource 와 Tool 가려 쓰기">
   <div class="ghost">04</div>
   <div class="seyebrow">CHAPTER 04</div>
