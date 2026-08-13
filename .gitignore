@@ -34,3 +34,7 @@ yolo*.pt
 # 로컬 키 — 절대 커밋 금지
 .env
 .env.*
+
+# 남의 영상 — 공개 저장소에 올리지 않는다. 강사 컴퓨터에만 둔다
+docs/**/*.mp4
+docs/**/mcp_demo_poster.png
