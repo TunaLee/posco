@@ -1274,6 +1274,25 @@ for s, r, o in extract_triples(graph_docs):
 <div class="keymsg"><span class="k">그래서</span><div>「비슷한 것 찾기」로는 <b>원리적으로</b> 못 푼다. 중간 고리를 <b>모른 채로 지나가야</b> 하기 때문이다.</div></div>
 </div>
 </section>
+<section class="slide" data-title="홉 폭발">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>멀티홉</div>
+  <h2 class="s-title sm">홉마다 불어나는 후보</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">산업안전보건법 조문 112개 · 제42조에서 출발</span></div><pre><code>1홉   새로 <span class="nm">12</span>개   누적  13개
+2홉   새로 <span class="nm">66</span>개   누적  79개
+3홉   새로 <span class="nm">20</span>개   누적 <span class="st">99개  &mdash; 법 전체의 88%</span>
+
+<span class="cm">3홉이면 사실상 전부다. 근거가 99개면 근거가 아니다</span></code></pre></div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>홉을 늘리는 것은 <b>관련 있는 것을 넓히는 일</b>이 아니다. 그냥 전부를 가져오는 데 가까워진다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>대신 홉마다 <b>따라갈 관계를 정한다</b> &mdash; 인용은 따라가고 권한위임은 안 따라간다.</div></div>
+</div>
+<div class="keymsg"><span class="k">기준</span><div><b>2홉, 많아야 3홉</b>에서 끊는다. 더 가면 답이 아니라 목록이 된다.</div></div>
+</div>
+</section>
+
 
 <section class="slide" data-title="벡터와 그래프">
   <div class="coord"><b></b> / <span class="tot"></span></div>
@@ -1609,6 +1628,24 @@ Q: 임원 라인 실적도 같이
   <h2>정리</h2>
   <div class="agenda"><span>가져갈 것</span><span>헷갈리는 지점</span></div>
 </section>
+<section class="slide" data-title="요즘 기법">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>지금</div>
+  <h2 class="s-title sm">오늘 다룬 것과 그 바깥</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="ctable"><table><thead><tr><th></th><th>기법</th><th>지금 어떤가</th></tr></thead><tbody>
+  <tr><td class="hl">오늘 다뤘다</td><td class="hl">하이브리드 + RRF</td><td class="hl">여전히 기본기다. 벡터만 쓰는 것은 시제품 취급</td></tr>
+  <tr><td>오늘 다뤘다</td><td>리랭커</td><td>표준이지만 <b>항상 이기지는 않는다</b>. 문서 묶음에 따라 갈린다</td></tr>
+  <tr><td>오늘 다뤘다</td><td>HyDE · Multi-Query</td><td>쓴다. 다만 <b>숫자·정밀 질의에는 안 듣고</b> 호출이 한 번 더 는다</td></tr>
+  <tr><td class="hl">안 다뤘다</td><td class="hl">Late interaction (ColBERT)</td><td class="hl">토큰마다 벡터를 두고 나중에 맞춘다 &mdash; <b>빠르면서 정밀하다</b></td></tr>
+  <tr><td>안 다뤘다</td><td>Semantic chunking</td><td>길이 대신 <b>뜻의 경계</b>에서 자른다. 조문 단위가 이미 그 정신이다</td></tr>
+  <tr><td>안 다뤘다</td><td>Faithfulness 지표</td><td>답이 <b>근거에 충실한가</b>를 잰다. 오늘 쓴 ungrounded 가 그 자리다</td></tr>
+</tbody></table></div>
+<div class="keymsg"><span class="k">롱컨텍스트</span><div>문서가 <b>백 개 미만</b>이면 그냥 다 넣는 편이 낫다. 그 위로는 비용이 늘고 가운데가 흐려진다.</div></div>
+</div>
+</section>
+
 <section class="slide" data-title="오늘 꼭 가져갈 8가지">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>핵심 정리</div>
