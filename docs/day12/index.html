@@ -435,7 +435,7 @@ TOOLS = [{'name': 'defect_rate',
   <div class="v"><span class="b">&rarr;</span><div>모델이 <b>무엇을 어떤 인자로</b> 부를지 스스로 말할 수 있게 됐다. 2023년에 열린 길이다.</div></div>
   <div class="v"><span class="b">&#9733;</span><div>MCP 는 이것을 <b>대신하지 않는다</b>. 지금도 모델은 이 방식으로 부른다.</div></div>
 </div>
-<div class="keymsg"><span class="k">여기까지는 됐다</span><div>모델이 <b>말하는 법</b>은 풀렸다. 남은 것은 <b>그 도구를 어떻게 붙이느냐</b>다.</div></div>
+<div class="keymsg"><span class="k">여기까지가 tool calling</span><div><b>무엇을 부를지 모델이 말하는 것</b>까지다. 그 도구를 붙이는 일은 남아 있다.</div></div>
 </div>
 </section>
 <section class="slide" data-title="안 풀린 다섯">
@@ -451,7 +451,7 @@ TOOLS = [{'name': 'defect_rate',
   <tr><td class="hl">읽기와 행동이 안 갈린다</td><td class="hl">규정을 읽는 것도 불량률을 세는 것도 <b>똑같은 함수</b>다</td></tr>
   <tr><td>사람이 고를 자리가 없다</td><td>「점검 일지 초안」 같은 지시문은 <b>넣을 데가 없다</b></td></tr>
 </tbody></table></div>
-<div class="keymsg"><span class="k">공통점</span><div>다섯 다 <b>모델의 문제가 아니다</b>. 도구를 <b>붙이는 쪽</b>의 문제다.</div></div>
+<div class="keymsg"><span class="k">모델을 바꿔도</span><div>더 좋은 모델로 바꿔도 <b>다섯 가지가 그대로 남는다</b>.</div></div>
 </div>
 </section>
 <section class="slide" data-title="모델마다 다른 형식">
@@ -471,7 +471,7 @@ TOOLS = [{'name': 'defect_rate',
   <div class="rule"></div>
   <div class="body">
 <div class="figwrap"><img src="assets/limit_inapp.png" alt="defect_rate 함수가 노트북 안에만 있어 외부 웹 앱·대시보드·모바일 앱에서 가져다 쓸 수 없는 그림"/></div>
-<div class="keymsg"><span class="k">MCP 는</span><div>도구를 <b>따로 도는 서버</b>로 떼어 낸다. 앱 경계 밖에 두는 것이다.</div></div>
+<div class="keymsg"><span class="k">MCP 는</span><div>도구를 <b>따로 도는 서버</b>로 떼어 낸다. 그러면 어느 앱에서나 부른다.</div></div>
 </div>
 </section>
 <section class="slide" data-title="코드에 박힌 도구 목록">
@@ -980,7 +980,7 @@ fastmcp dev inspector server.py
   <div class="v"><span class="b">&rarr;</span><div>모델이 <b>먼저 화면을 보고</b> 무엇이 있는지 확인한 뒤 코드를 짜서 실행한다. 순서를 사람이 안 정했다.</div></div>
   <div class="v"><span class="b">&#9733;</span><div>중간에 <b>스스로 고친다</b> &mdash; 「5.1 에서는 이게 안 되니 다른 방법으로」.</div></div>
 </div>
-<div class="keymsg"><span class="k">여기까지 온다</span><div>도구를 <b>좁게 여러 개</b> 열어 두면, 무엇을 어떤 순서로 부를지는 <b>모델이 짠다</b>.</div></div>
+<div class="keymsg"><span class="k">도구만 열어 줬다</span><div>화면 보기와 코드 실행 둘뿐이다. <b>무엇을 어떤 순서로 부를지는 모델이 짰다</b>.</div></div>
   </div>
 </section>
 <section class="slide" data-title="주제 다섯">
@@ -1016,9 +1016,9 @@ fastmcp dev inspector server.py
 답  3호기 불량률 12.0%. 근거는 제26조다.</code></pre></div>
 <div class="vlist">
   <div class="v"><span class="b">&rarr;</span><div>한 문장에 <b>DB 와 문서</b>를 같이 봐야 한다. 사람이 나눠 주지 않았다.</div></div>
-  <div class="v"><span class="b">&#9733;</span><div>정답을 <b>CSV 와 원문으로 대조</b>할 수 있어 잘 됐는지 확인이 된다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>답이 맞았는지 <b>CSV 와 원문으로 대조</b>할 수 있다.</div></div>
 </div>
-<div class="keymsg"><span class="k">이미 절반</span><div>어제 만든 함수 넷에 <b>데코레이터만 얹으면</b> 서버가 된다.</div></div>
+<div class="keymsg"><span class="k">시작점</span><div>어제 만든 함수 넷에 <b>데코레이터만 얹으면</b> 서버가 된다.</div></div>
 </div>
 </section>
 <section class="slide" data-title="규정 문답">
@@ -1038,7 +1038,7 @@ fastmcp dev inspector server.py
   <div class="v"><span class="b">&rarr;</span><div>Resource 와 Tool 을 <b>둘 다 쓰는</b> 주제다 &mdash; 조문은 주소로, 검색은 도구로.</div></div>
   <div class="v"><span class="b">&#9733;</span><div>찾기만 해서는 안 나오는 답이다. <b>인용을 거슬러</b> 올라가야 벌칙이 나온다.</div></div>
 </div>
-<div class="keymsg"><span class="k">배운 것이 다 나온다</span><div>검색 · 그래프 · 도구 조합이 <b>한 질문에</b> 들어 있다.</div></div>
+<div class="keymsg"><span class="k">한 질문에</span><div>검색과 인용 추적과 도구 조합이 <b>한 질문에 다</b> 들어 있다.</div></div>
 </div>
 </section>
 <section class="slide" data-title="바깥 자료 요약">
@@ -1054,10 +1054,10 @@ fastmcp dev inspector server.py
 
 답  세 줄 요약</code></pre></div>
 <div class="vlist">
-  <div class="v"><span class="b">&rarr;</span><div>제일 쉬운 주제다. <b>사내 데이터를 안 쓰니</b> 보안 절차가 앞을 막지 않는다.</div></div>
+  <div class="v"><span class="b">&rarr;</span><div>제일 쉬운 주제다. <b>사내 데이터를 안 쓴다</b>.</div></div>
   <div class="v"><span class="b">&#9733;</span><div>대신 <b>두 가지를 반드시</b> 넣는다 &mdash; 사내망 주소 차단, 가져온 글의 지시 무시.</div></div>
 </div>
-<div class="keymsg"><span class="k">막지 않으면</span><div>아무나 쓰는 자리에 붙이면 누군가 <b>사내망 주소</b>를 넣어 대신 긁게 한다.</div></div>
+<div class="keymsg"><span class="k">안 막으면</span><div>누군가 <b>사내망 주소</b>를 넣으면 봇이 대신 사내망을 긁는다.</div></div>
 </div>
 </section>
 <section class="slide section" data-title="[섹션] 정리">
