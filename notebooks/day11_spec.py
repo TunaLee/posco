@@ -564,6 +564,74 @@ deg = Counter({i: len(v) for i, v in IN.items()})
 for i, n in deg.most_common(5):
     print('%2d회 인용됨  %s %s' % (n, CHUNKS[i]['source'], CHUNKS[i]['title'][:34]))"""),
 
+    md("### 그려 보기"),
+    md("354개를 한 화면에 그리면 아무것도 안 보인다.\n"
+       "**한 조문 둘레만 떼어** 그린다. 이것을 ego graph 라고 한다."),
+
+    prep("""# 한글 폰트를 준비한다. Colab 은 기본으로 한글이 깨진다.
+!apt-get install -y fonts-nanum > /dev/null 2>&1
+
+import matplotlib.pyplot as plt, matplotlib.font_manager as fm, networkx as nx
+
+FONT = 'sans-serif'
+for path in ['/usr/share/fonts/truetype/nanum/NanumGothic.ttf']:
+    try:
+        fm.fontManager.addfont(path)
+    except Exception:
+        pass
+for name in ['NanumGothic', 'AppleGothic', 'Malgun Gothic']:
+    if any(f.name == name for f in fm.fontManager.ttflist):
+        FONT = name; plt.rc('font', family=name); break
+plt.rc('axes', unicode_minus=False)
+print('폰트:', FONT)"""),
+
+    prep("""# 조문 하나를 가운데 두고 이웃만 그린다
+def label(i):
+    m = re.match(r'(제\\d+조(?:의\\d+)?)\\(([^)]*)\\)', CHUNKS[i]['title'])
+    return '%s\\n%s' % (m.group(1), m.group(2)[:10]) if m else CHUNKS[i]['title'][:12]
+
+def draw(law, article):
+    c = BY.get((law, article))
+    if c is None:
+        print('그런 조문이 없다'); return
+    G = nx.DiGraph()
+    G.add_node(c)
+    for j in IN[c]:
+        G.add_edge(j, c)                      # 나를 인용하는 조문 → 나
+    for j in OUT[c]:
+        G.add_edge(c, j)                      # 나 → 내가 인용하는 조문
+    pos = nx.spring_layout(G, k=1.6, seed=7)
+    face = ['#EFEAFF' if n == c else
+            ('#FDF1F5' if ('벌칙' in CHUNKS[n]['title'] or '과태료' in CHUNKS[n]['title'])
+             else '#F7F6FB') for n in G.nodes()]
+    plt.figure(figsize=(11, 7))
+    nx.draw_networkx_nodes(G, pos, node_color=face, node_size=3600,
+                           edgecolors='#8E8AAC', linewidths=1.2)
+    nx.draw_networkx_edges(G, pos, width=1.6, arrowsize=16, node_size=3600,
+                           edge_color=['#3A1FC9' if v == c else '#BBBBBB'
+                                       for u, v in G.edges()])
+    nx.draw_networkx_labels(G, pos, {n: label(n) for n in G.nodes()},
+                            font_size=8, font_family=FONT)
+    plt.title('%s %s — 들어오는 화살표 %d개 · 나가는 화살표 %d개'
+              % (law, article, len(IN[c]), len(OUT[c])), fontsize=11, fontfamily=FONT)
+    plt.axis('off'); plt.tight_layout(); plt.show()"""),
+
+    code("""# 제42조 둘레
+draw('산업안전보건법', '제42조')"""),
+
+    md("**분홍이 벌칙과 과태료다.** 파란 화살표는 「나를 인용한다」, 회색은 「내가 인용한다」.\n\n"
+       "가운데 조문에는 벌칙이 없는데 **분홍 둘이 나를 가리키고 있다.**\n"
+       "질문이 「안 하면 어떻게 되나」였으니 답은 저 분홍 쪽에 있다.\n\n"
+       "> 그림은 **찾는 도구가 아니라 확인하는 도구**다. 관계가 제대로 뽑혔는지,\n"
+       "> 엉뚱한 데로 이어지지 않았는지 눈으로 본다."),
+
+    Ex(7, "다른 조문 둘레를 그려 본다. **제34조(안전인증)** 을 넣어 본다.\n"
+          "> 인용이 많은 조문일수록 별 모양이 커진다. 분홍이 몇 개인지 세어 본다.",
+       setup="# 조문 번호만 바꾼다",
+       blank="CENTER = '___'",
+       answer="CENTER = '제34조'",
+       check="draw('산업안전보건법', CENTER)"),
+
     md("### 벡터가 가져오는 것과 그래프가 가져오는 것"),
 
     prep("""# 어떤 조문을 인용하는 조문들을 돌려준다 — 역참조
@@ -590,7 +658,7 @@ print(cited_by('산업안전보건법', '제42조'))"""),
        "인용을 거슬러 올라가면 **제69조(벌칙)와 제72조(과태료)가 바로 나온다.**\n"
        "벡터는 **주제가 비슷한 것**을, 그래프는 **실제로 이어진 것**을 가져온다."),
 
-    Ex(7, "다른 조문으로도 되는지 본다. **제43조(건강진단)** 을 넣어 본다.\n"
+    Ex(8, "다른 조문으로도 되는지 본다. **제43조(건강진단)** 을 넣어 본다.\n"
           "> 벡터 상위 다섯과 견줘서, 인용 쪽에만 있는 조문이 무엇인지 본다.",
        setup="# 역참조로 벌칙을 찾아 본다",
        blank="ART = '___'",
@@ -825,7 +893,7 @@ print('이 네 칸을 3절 프롬프트 형식으로 옮기면 Codex 에 그대�
 ]
 
 MODES = {
-    ("ex", 1): "together", ("ex", 2): "solo", ("ex", 3): "solo", ("ex", 4): "solo", ("ex", 5): "together", ("ex", 6): "solo", ("ex", 7): "together",
+    ("ex", 1): "together", ("ex", 2): "solo", ("ex", 3): "solo", ("ex", 4): "solo", ("ex", 5): "together", ("ex", 6): "solo", ("ex", 7): "solo", ("ex", 8): "together",
     ("task", 1): "together", ("task", 2): "team",
 }
 
