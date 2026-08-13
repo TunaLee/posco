@@ -153,7 +153,7 @@ print('넘길 도구 %d개' % len(TOOLS))"""),
     md("**이 한 함수가 MCP 와 모델을 잇는 전부다.** 이름·설명·스키마를 옮겨 담을 뿐이다."),
 
     prep("""# 판단은 모델이, 실행은 MCP 가 한다
-async def run(question):
+async def run(question, log=True):
     messages = [{'role': 'system', 'content':
                  '너는 공정 데이터를 보는 비서다. 한국어로만 답한다. '
                  '숫자는 도구로 조회한 값만 쓴다.'},
@@ -166,7 +166,10 @@ async def run(question):
             return (m.get('content') or '').strip() or '[답 없음]'
         for c in calls:
             args = json.loads(c['function']['arguments'] or '{}')
-            print('  [MCP] %s(%s)' % (c['function']['name'], args))
+            if log:
+                print('  [MCP] %s(%s)' % (c['function']['name'], args))
+            if 'CALLED' in globals():
+                CALLED.append(c['function']['name'])
             out = await call(c['function']['name'], args)
             messages.append({'role': 'tool', 'tool_call_id': c['id'], 'content': out})
     return '[한도]'"""),
@@ -191,7 +194,153 @@ def machine_list() -> str:""",
 print('도구 %d개' % len(TOOLS))
 print(await run('어떤 설비가 있는지 알려줘'))"""),
 
-    md("## 5. 파일로 떼어 내기"),
+    md("## 5. 모델이 못 하는 계산"),
+    md("모델은 **큰 수 곱셈을 못 한다.** 다음 토큰을 고르는 방식이라 자릿수가 어긋난다.\n"
+       "먼저 도구 없이 물어본다."),
+
+    code("""# 도구를 안 주고 물어본다
+q = '하루 8473개를 2951일 만들면 모두 몇 개인가. 숫자만 답하라.'
+print('모델 :', chat([{'role': 'user', 'content': q}], n=60)['content'].strip())
+print('정답 :', 8473 * 2951)"""),
+
+    md("**틀린다.** 자릿수가 그럴듯해서 눈으로는 잘 안 걸린다.\n"
+       "곱셈 같은 것은 모델에게 시킬 일이 아니라 **도구에 맡길 일**이다."),
+
+    prep("""# 계산기를 도구로 붙인다
+@mcp.tool()
+def calc(expression: str) -> str:
+    '''사칙연산 식을 계산한다. 곱셈·나눗셈처럼 자릿수가 큰 계산에 쓴다.
+
+    expression: 파이썬 식. 보기 8473 * 2951
+    '''
+    if not set(expression) <= set('0123456789+-*/(). '):
+        return '숫자와 + - * / ( ) 만 쓸 수 있다'
+    try:
+        return '%s = %s' % (expression, eval(expression))
+    except Exception as e:
+        return '계산할 수 없다: %s' % e"""),
+
+    prep("""# 도구가 늘었으니 목록을 다시 받는다
+TOOLS = await as_tools()
+print('도구 %d개 —' % len(TOOLS), [t['function']['name'] for t in TOOLS])"""),
+
+    code("""# 같은 질문을 도구와 함께
+print(await run('하루 8473개를 2951일 만들면 모두 몇 개인가'))"""),
+
+    md("**모델이 스스로 `calc` 를 골랐다.** 「이건 내가 못 한다」를 판단한 것이다.\n\n"
+       "설명에 **「자릿수가 큰 계산에 쓴다」**를 적어 둔 것이 그 판단을 이끈다.\n"
+       "설명을 「계산한다」로만 적으면 그냥 자기가 답해 버리기도 한다."),
+
+    md("## 6. 규정도 같은 서버에"),
+    md("어제 만든 **법령 검색과 인용 추적**을 같은 서버에 붙인다.\n"
+       "도구가 늘어도 붙이는 앱은 아무것도 안 고친다."),
+
+    prep("""# 법령 네 개를 받아 조 단위로 자른다
+import re, urllib.request
+from collections import defaultdict
+
+DOCBASE = 'https://tunalee.github.io/posco/data/docs/'
+FILES = {'근로기준법': 'labor_standards.txt', '산업안전보건법': 'occupational_safety.txt',
+         '산업기술보호법': 'industrial_tech.txt', '개인정보보호법': 'privacy.txt'}
+
+CHUNKS = []
+for name, fn in FILES.items():
+    raw = urllib.request.urlopen(DOCBASE + fn, timeout=60).read().decode('utf-8')
+    text = '\\n'.join(l for l in raw.split('\\n') if not l.startswith('#'))
+    for p in re.split(r'\\n(?=제\\d+조)', text):
+        p = p.strip()
+        if len(p) >= 40:
+            CHUNKS.append({'source': name, 'title': p.split('\\n')[0][:40], 'text': p})
+print('조각 %d개' % len(CHUNKS))"""),
+
+    prep("""# 낱말 검색과 인용 그래프를 만든다
+from sklearn.feature_extraction.text import TfidfVectorizer
+import numpy as np
+
+TEXTS = [c['title'] + ' ' + c['text'] for c in CHUNKS]
+vec = TfidfVectorizer(analyzer='char_wb', ngram_range=(2, 4), max_features=50000)
+M = vec.fit_transform(TEXTS)
+
+ARTS = [(c['source'], re.match(r'제\\d+조(의\\d+)?', c['title']).group(0)) for c in CHUNKS]
+BY = {k: i for i, k in enumerate(ARTS)}
+IN = defaultdict(set)
+for i, c in enumerate(CHUNKS):
+    law, art = ARTS[i]
+    for m in re.finditer(r'제\\d+조(의\\d+)?', c['text'][len(art):]):
+        j = BY.get((law, m.group(0)))
+        if j is not None and j != i:
+            IN[j].add(i)
+print('인용 %d개' % sum(len(v) for v in IN.values()))"""),
+
+    prep("""# 도구 둘을 더 붙인다
+@mcp.tool()
+def find_rule(question: str) -> str:
+    '''사내 규정과 법령에서 관련 조문을 찾아 돌려준다.
+
+    question: 찾고 싶은 내용. 보기 작업환경측정 의무
+    '''
+    sim = (M @ vec.transform([question]).T).toarray().ravel()
+    return '\\n\\n'.join('[%s %s]\\n%s' % (CHUNKS[i]['source'], CHUNKS[i]['title'],
+                                       CHUNKS[i]['text'][:400])
+                        for i in np.argsort(-sim)[:3])
+
+@mcp.tool()
+def trace_rule(article: str) -> str:
+    '''산업안전보건법의 어떤 조문을 인용하는 다른 조문들을 돌려준다.
+    벌칙이나 과태료가 얼마인지 물을 때 쓴다.
+
+    article: 조문 번호. 보기 제42조
+    '''
+    i = BY.get(('산업안전보건법', article))
+    if i is None:
+        return '그런 조문이 없다'
+    return '\\n'.join(CHUNKS[j]['title'] for j in sorted(IN[i])) or '인용하는 조문이 없다'"""),
+
+    prep("""# 목록을 다시 받는다
+TOOLS = await as_tools()
+print('도구 %d개 —' % len(TOOLS), [t['function']['name'] for t in TOOLS])"""),
+
+    md("## 7. 여러 질문으로 시험"),
+    md("도구가 다섯이 됐다. **어떤 질문에 무엇을 부르는지** 한 번에 본다."),
+
+    prep("""# 물어보고 무엇을 불렀는지 같이 찍는다
+CALLED = []
+
+async def probe(question):
+    del CALLED[:]
+    print('Q %s' % question)
+    answer = await run(question, log=False)
+    print('  부른 도구: %s' % (CALLED or '없음'))
+    print('  답: %s' % answer[:180])
+    print()"""),
+
+    code("""# 종류가 다른 질문 다섯
+await probe('3호기 야간조 불량률')                    # 공정 DB
+await probe('하루 8473개를 2951일 만들면 몇 개인가')    # 계산
+await probe('작업환경측정 의무가 어느 조문인가')         # 규정 검색
+await probe('작업환경측정을 안 하면 어떤 벌칙이 있나')    # 검색 + 인용 추적
+await probe('오늘 점심 뭐 먹을까')                    # 부를 도구가 없다"""),
+
+    md("**질문 종류마다 다른 도구가 불린다.** 사람이 「이건 DB, 이건 규정」이라고 나눠 주지 않았다.\n\n"
+       "넷째 질문은 **도구 두 개가 순서대로** 불린다 &mdash; 조문을 찾고, 그 조문을 인용하는 벌칙을 따라간다.\n"
+       "마지막은 **부를 도구가 없어** 답이 비어 나오기도 한다. 목록에 없으면 못 하는 것이다."),
+
+    Ex(4, "도구를 하나 더 붙이고 그것도 골라 쓰는지 본다. **교대조별 불량률**을 돌려주는 도구다.\n"
+          "> 설명에 무엇을 적느냐가 불릴지 말지를 정한다.",
+       setup="""@mcp.tool()
+def shift_compare(machine: str) -> str:""",
+       blank="""    '''___'''
+    d = df[df['설비호기'] == machine]
+    return ' · '.join('%s %.1f%%' % (s, 100.0 * (g['판정'] == '불량').mean())
+                      for s, g in d.groupby('교대조'))""",
+       answer="""    '''한 설비의 주간조와 야간조 불량률을 나란히 견준다'''
+    d = df[df['설비호기'] == machine]
+    return ' · '.join('%s %.1f%%' % (s, 100.0 * (g['판정'] == '불량').mean())
+                      for s, g in d.groupby('교대조'))""",
+       check="""TOOLS = await as_tools()
+await probe('3호기는 주간과 야간 중 어느 쪽이 불량이 많나')"""),
+
+    md("## 8. 파일로 떼어 내기"),
     md("노트북에서 확인했으면 **파일 하나로** 옮긴다. 그 파일이 곧 서버다."),
 
     prep("""# 지금까지 만든 것을 server.py 로 쓴다
@@ -262,10 +411,11 @@ print('읽기만 하면 Resource, 찾거나 계산하면 Tool 이다')"""),
        "**둘** &mdash; 손으로 쓰던 도구 설명서가 **타입힌트와 설명**에서 만들어진다.\n\n"
        "**셋** &mdash; 주소로 읽는 것은 Resource, 찾거나 계산하는 것은 Tool 이다.\n\n"
        "**넷** &mdash; MCP 목록을 모델 형식으로 옮기는 함수 하나가 둘을 잇는다.\n\n"
-       "**다섯** &mdash; 파일로 떼어 내면 **설정 한 장**으로 어느 앱에나 붙는다."),
+       "**다섯** &mdash; 모델은 **큰 수 곱셈을 못 한다**. 못 하는 것을 도구로 넘기면 스스로 부른다.\n\n"
+       "**여섯** &mdash; 파일로 떼어 내면 **설정 한 장**으로 어느 앱에나 붙는다."),
 ]
 
-MODES = {("ex", 1): "together", ("ex", 2): "solo", ("ex", 3): "solo",
+MODES = {("ex", 1): "together", ("ex", 2): "solo", ("ex", 3): "solo", ("ex", 4): "solo",
          ("task", 1): "team"}
 
 SPEC = ("MCP — 도구를 붙이는 규약",
