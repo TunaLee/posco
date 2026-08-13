@@ -375,7 +375,7 @@
     <div class="cards c4">
       <div class="card"><span class="n">CH0~1</span><h3>MCP 가 나온 이유</h3><p>tool calling 이 남긴 다섯 가지와, 그것을 채운 구조를 본다.</p></div>
       <div class="card"><span class="n">CH2</span><h3>서버가 내주는 셋</h3><p>Tool · Resource · Prompt. 누가 부르는지로 갈린다.</p></div>
-      <div class="card"><span class="n">CH3~4</span><h3>연결과 구분</h3><p>이미 있는 서버를 설정 한 장으로 연결하고, 무엇을 Resource 로 낼지 정한다.</p></div>
+      <div class="card"><span class="n">CH3~4</span><h3>연결과 구분</h3><p>전송 방식과 인증을 고르고, 무엇을 Resource 로 낼지 정한다.</p></div>
       <div class="card"><span class="n">CH5</span><h3>보안과 권한</h3><p>서버를 연결할 때 볼 것과, 내 도구를 내줄 때 지킬 것.</p></div>
     </div>
     <div class="keymsg"><span class="k">범위</span><div>여기서는 <b>쓰는 쪽</b>을 다룬다. 직접 만드는 것은 뒤에서 한다.</div></div>
@@ -656,7 +656,7 @@ TOOLS = [{'name': 'defect_rate',
   <div class="ghost">03</div>
   <div class="seyebrow">CHAPTER 03</div>
   <h2>MCP 서버 연결하기</h2>
-  <div class="agenda"><span>stdio 와 HTTP</span><span>설정 파일</span><span>Inspector</span></div>
+  <div class="agenda"><span>stdio 와 HTTP</span><span>인증</span><span>Inspector</span></div>
 </section>
 <section class="slide" data-title="3가지 전송 방식">
   <div class="coord"><b></b> / <span class="tot"></span></div>
@@ -695,36 +695,6 @@ TOOLS = [{'name': 'defect_rate',
 "github": {"type": "http", "url": "https://api.githubcopilot.com/mcp/"}</code></pre></div>
 <div class="keymsg"><span class="k">왜 좁히나</span><div>한 서버에 준 토큰이 <b>다른 서버에서 쓰이는 것</b>을 막기 위해서다.</div></div>
 </div>
-</section>
-<section class="slide" data-title="Claude Desktop 연결">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>실제 호스트</div>
-  <h2 class="s-title sm">설정 파일로 붙이기</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="twocol w2">
-      <div>
-        <div class="biglist">
-          <div class="li"><div class="num">1</div><div class="tx"><h4>자동 등록 (권장)</h4><p>터미널에서 <code>fastmcp install claude-desktop server.py</code> — 설정 파일에 자동 기록.</p></div></div>
-          <div class="li"><div class="num">2</div><div class="tx"><h4>또는 수동 등록</h4><p><code>%APPDATA%\Claude\claude_desktop_config.json</code> 을 열어 서버를 추가·저장.</p></div></div>
-          <div class="li"><div class="num">3</div><div class="tx"><h4>Claude Desktop 재시작</h4><p>대화 중 도구·리소스가 인식된다.</p></div></div>
-        </div>
-        <div class="callout" style="margin-top:10px"><div class="ci"></div><div class="ct"><h4>절대경로 + PATH 주의</h4><p>GUI 앱은 터미널 PATH 를 물려받지 않는다. python·server.py를 <b>절대경로</b>로, 경로 구분자는 JSON에서 <code>\\</code> 로 이스케이프.</p></div></div>
-      </div>
-      <div class="code sm" style="align-self:start">
-        <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">claude_desktop_config.json</span></div>
-        <pre><code>{
-  "mcpServers": {
-    "my-server": {
-      "command": "C:\\Users\\me\\proj\\.venv\\Scripts\\python.exe",
-      "args": ["C:\\Users\\me\\proj\\server.py"]
-    }
-  }
-}</code></pre>
-      </div>
-    </div>
-    <div class="keymsg"><span class="k">의의</span><div>한 번 만든 서버를 <b>Claude·Cursor</b>에서 그대로 쓴다.</div></div>
-  </div>
 </section>
 <section class="slide" data-title="MCP Inspector">
   <div class="coord"><b></b> / <span class="tot"></span></div>
