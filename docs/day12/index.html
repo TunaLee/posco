@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MCP — 도구를 붙이는 규약</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#16142B; --ink-soft:#4A4766; --mut:#8E8AAC;
+    --violet:#5B3DF5; --violet-700:#3A1FC9; --violet-300:#B7A9FF;
+    --wash:#F4F1FF; --wash-2:#FAF9FF; --line:#E8E4F8;
+    --paper:#FFFFFF; --mint:#0FB5A1; --mint-soft:#E4F8F4;
+    --amber:#F4A93C; --rose:#E8537A;
+    --code-bg:#1C1933; --code-ink:#ECEAFF; --code-dim:#9C97D6;
+    --sw:1280px; --sh:720px;
+    --shadow:0 24px 60px -24px rgba(43,28,120,.45);
+    --serif: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:var(--serif); color:var(--ink);
+    background:
+      radial-gradient(1200px 600px at 15% -10%, #ECE7FF 0%, rgba(236,231,255,0) 60%),
+      radial-gradient(1000px 700px at 110% 10%, #F0EBFF 0%, rgba(240,235,255,0) 55%),
+      #EAE7F4;
+    min-height:100vh; -webkit-font-smoothing:antialiased;
+  }
+  .progress{position:fixed; top:0; left:0; right:0; height:3px; z-index:60; background:transparent;}
+  .progress .fill{height:100%; width:0; background:linear-gradient(90deg,var(--violet),#9B7BFF); transition:width .2s ease;}
+
+  .stage{
+    position:fixed; inset:0 0 0 0; z-index:10;
+    display:flex; justify-content:safe center; align-items:safe center;
+    overflow:auto; padding:30px 30px 96px;
+  }
+  .sizer{position:relative;}
+  .scaler{ width:var(--sw); height:var(--sh); transform-origin:top left; position:relative; }
+
+  .slide{
+    width:var(--sw); height:var(--sh);
+    background:var(--paper); border:1px solid var(--line);
+    border-radius:22px; box-shadow:var(--shadow);
+    overflow:hidden; display:none; flex-direction:column;
+    padding:50px 60px 46px; position:relative;
+  }
+  .slide.active{display:flex;}
+
+  .eyebrow{display:inline-flex; align-items:center; gap:10px; font-family:var(--mono); font-size:13px; font-weight:700; letter-spacing:.04em; color:var(--violet); text-transform:uppercase;}
+  .eyebrow .tag{color:#fff; background:var(--violet); border-radius:6px; padding:3px 8px; font-size:11px; letter-spacing:.05em;}
+  .eyebrow .tag.mint{background:var(--mint);}
+  .eyebrow .dot{width:5px;height:5px;border-radius:50%;background:var(--violet-300);}
+  .coord{position:absolute; top:30px; right:40px; font-family:var(--mono); font-size:12px; color:var(--mut); font-weight:600; letter-spacing:.05em;}
+  .coord b{color:var(--ink);}
+
+  .s-title{font-size:39px; line-height:1.12; letter-spacing:-.025em; font-weight:800; margin:14px 0 4px;}
+  .s-title.sm{font-size:32px;} .s-title.xs{font-size:28px;}
+  .s-sub{font-size:17px; color:var(--ink-soft); font-weight:500; line-height:1.5; max-width:64ch;}
+  .rule{height:4px; width:54px; border-radius:3px; background:var(--violet); margin:13px 0 6px;}
+  .body{flex:1; min-height:0; display:flex; flex-direction:column; justify-content:center;}
+  .body.top{justify-content:flex-start; padding-top:6px;}
+
+  .slide.cover{ padding:0; justify-content:center;
+    background:
+      radial-gradient(900px 520px at 100% 0%, #6B4BFF 0%, rgba(107,75,255,0) 58%),
+      radial-gradient(700px 600px at -5% 110%, #3A1FC9 0%, rgba(58,31,201,0) 55%),
+      linear-gradient(135deg,#2A1B8C 0%, #4226D6 48%, #5B3DF5 100%);
+    color:#fff; border:none; }
+  .cover .aperture{position:absolute; top:-120px; right:-120px; width:460px; height:460px; border-radius:50%; background:radial-gradient(circle at 35% 35%, rgba(255,255,255,.5), rgba(255,255,255,0) 62%); filter:blur(2px);}
+  .cover .ring{position:absolute; right:60px; top:60px; width:120px; height:120px; border-radius:50%; border:1.5px solid rgba(255,255,255,.4);}
+  .cover .ring::after{content:""; position:absolute; inset:18px; border-radius:50%; border:1.5px dashed rgba(255,255,255,.35);}
+  .cover .wrap{padding:60px 70px; position:relative; z-index:2; width:100%;}
+  .cover .kick{font-family:var(--mono); letter-spacing:.18em; font-size:13.5px; font-weight:600; color:rgba(255,255,255,.86); text-transform:uppercase; display:flex; align-items:center; gap:14px;}
+  .cover .kick .pill{border:1px solid rgba(255,255,255,.45); border-radius:999px; padding:4px 12px;}
+  .cover h1{font-size:58px; line-height:1.08; letter-spacing:-.03em; font-weight:800; margin:24px 0 16px; max-width:21ch;}
+  .cover .lead{font-size:18px; line-height:1.55; color:rgba(255,255,255,.9); max-width:56ch; font-weight:400;}
+  .cover .meta{margin-top:36px; display:flex; gap:24px; flex-wrap:wrap; font-size:14px;}
+  .cover .meta .it{display:flex; flex-direction:column; gap:3px;}
+  .cover .meta .it .k{font-family:var(--mono); font-size:11px; letter-spacing:.1em; color:rgba(255,255,255,.6); text-transform:uppercase;}
+  .cover .meta .it .v{font-size:15px; font-weight:700; color:#fff;}
+
+  .slide.section{ background:linear-gradient(140deg,#3A1FC9 0%, #5B3DF5 70%, #7A5BFF 100%); color:#fff; border:none; justify-content:center; padding:60px 70px; }
+  .slide.section.mintbg{ background:linear-gradient(140deg,#0A8A7A 0%, #0FB5A1 70%, #34D6C2 100%); }
+  .slide.section .ghost{position:absolute; right:34px; bottom:-66px; font-family:var(--mono); font-weight:700; font-size:330px; line-height:.8; color:rgba(255,255,255,.10); letter-spacing:-.04em;}
+  .slide.section .lab-flag{display:inline-flex; align-items:center; gap:9px; align-self:flex-start; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.4); padding:7px 14px; border-radius:999px; font-weight:700; font-size:13px; font-family:var(--mono); letter-spacing:.06em;}
+  .slide.section .lab-flag .sq{width:9px;height:9px;border-radius:3px;background:#fff;}
+  .slide.section .seyebrow{font-family:var(--mono); letter-spacing:.16em; font-size:14px; color:rgba(255,255,255,.85); text-transform:uppercase; margin-bottom:14px;}
+  .slide.section h2{font-size:48px; line-height:1.1; letter-spacing:-.025em; font-weight:800; margin:0 0 14px; max-width:24ch; position:relative; z-index:2;}
+  .slide.section p{font-size:18px; color:rgba(255,255,255,.92); max-width:54ch; line-height:1.55; position:relative; z-index:2;}
+  .slide.section .agenda{display:flex; gap:10px; flex-wrap:wrap; margin-top:22px; position:relative; z-index:2;}
+  .slide.section .agenda span{font-size:13px; font-weight:600; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3); padding:6px 12px; border-radius:999px;}
+
+  .cards{display:grid; gap:16px;}
+  .cards.c2{grid-template-columns:repeat(2,1fr);} .cards.c3{grid-template-columns:repeat(3,1fr);} .cards.c4{grid-template-columns:repeat(4,1fr);}
+  .card{background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:17px 19px; display:flex; flex-direction:column; gap:7px; position:relative;}
+  .card .ic{width:38px; height:38px; border-radius:4px; display:grid; place-items:center; background:transparent; border:1.5px solid var(--violet-300); color:var(--violet); margin-bottom:3px;}
+  .card .ic svg{width:20px;height:20px;}
+  .card h3{font-size:17px; font-weight:800; letter-spacing:-.01em; margin:0 0 1px; padding-bottom:8px; border-bottom:1px solid var(--line);}
+  .card p{font-size:14px; color:var(--ink-soft); line-height:1.5; margin:0;}
+  .card .n{font-family:var(--mono); font-size:11.5px; color:var(--violet); font-weight:700;}
+
+  .biglist{display:flex; flex-direction:column; gap:13px;}
+  .biglist .li{display:flex; gap:15px; align-items:flex-start;}
+  .biglist .li .num{flex:none; width:34px; height:34px; border-radius:10px; background:var(--violet); color:#fff; font-family:var(--mono); font-weight:700; display:grid; place-items:center; font-size:14px; margin-top:1px;}
+  .biglist .li .tx h4{margin:0 0 3px; font-size:17.5px; font-weight:800;}
+  .biglist .li .tx p{margin:0; font-size:14px; color:var(--ink-soft); line-height:1.5;}
+
+  .phase-label{font-family:var(--mono); font-size:12px; font-weight:700; letter-spacing:.08em; color:var(--violet); text-transform:uppercase; margin:0 0 10px; display:flex; align-items:center; gap:9px;}
+  .phase-label .ln{height:1px; flex:1; background:var(--line);}
+  .pipe{display:flex; align-items:stretch; gap:0; margin-bottom:20px;}
+  .pipe .step{flex:1; background:var(--paper); border:1px solid var(--line); border-top:3px solid var(--violet); border-radius:4px; padding:12px 10px; text-align:center; min-width:0;}
+  .pipe .step .si{font-family:var(--mono); font-size:11px; color:var(--violet); font-weight:700;}
+  .pipe .step .sn{font-size:14.5px; font-weight:800; margin-top:3px; letter-spacing:-.01em;}
+  .pipe .step .sd{font-size:11px; color:var(--mut); margin-top:2px; line-height:1.3;}
+  .pipe .arrow{display:flex; align-items:center; padding:0 5px; color:var(--violet-300);}
+  .pipe .arrow svg{width:17px;height:17px;}
+  .pipe.q .step{background:var(--paper); border-color:var(--line); border-top-color:var(--mint);} .pipe.q .step .si{color:var(--mint);} .pipe.q .arrow{color:#8AD7CC;}
+
+  .code{background:var(--code-bg); border-radius:14px; overflow:hidden; border:1px solid #2A2548; box-shadow:0 18px 40px -22px rgba(28,25,51,.7);}
+  .code .bar{display:flex; align-items:center; gap:7px; padding:10px 15px; border-bottom:1px solid #2A2548; background:#171430;}
+  .code .bar .dot{width:11px;height:11px;border-radius:50%;}
+  .code .bar .r{background:#FF6058;} .code .bar .y{background:#FFC130;} .code .bar .g{background:#28CA42;}
+  .code .bar .fn{margin-left:8px; font-family:var(--mono); font-size:12px; color:var(--code-dim);}
+  .code pre{margin:0; padding:16px 18px; overflow:auto;}
+  .code code{font-family:var(--mono); font-size:13px; line-height:1.6; color:var(--code-ink); white-space:pre;}
+  .code.sm code{font-size:12px; line-height:1.55;}
+  .cm{color:#7D78B8;} .kw{color:#C792FF;} .st{color:#9DE39A;} .fn2{color:#82D3FF;} .nm{color:#FFD479;}
+
+  .callout{border-radius:4px; padding:15px 18px; display:flex; gap:13px; align-items:flex-start; background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet);}
+  .callout .ci{flex:none; width:34px;height:34px;border-radius:4px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .callout .ci svg{width:18px;height:18px;}
+  .callout .ct h4{margin:0 0 3px; font-size:15.5px; font-weight:800;}
+  .callout .ct p{margin:0; font-size:13.5px; color:var(--ink-soft); line-height:1.5;}
+  .callout.mint{border-left-color:var(--mint);} .callout.mint .ci{background:var(--mint);}
+  .callout.amber{border-left-color:var(--amber);} .callout.amber .ci{background:var(--amber);}
+  .callout.rose{border-left-color:var(--rose);} .callout.rose .ci{background:var(--rose);}
+
+  .lab-badge{display:inline-flex; align-items:center; gap:9px; background:var(--mint-soft); color:#0A7F70; border:1px solid #BFE9E1; padding:7px 13px; border-radius:999px; font-weight:700; font-size:13px; font-family:var(--mono); letter-spacing:.04em;}
+  .lab-badge .sq{width:9px;height:9px;border-radius:3px;background:var(--mint);}
+
+  .twocol{display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start;}
+  .twocol.w{grid-template-columns:1.15fr .85fr;} .twocol.w2{grid-template-columns:.85fr 1.15fr;}
+
+  .chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{font-size:12.5px; font-weight:600; color:var(--ink-soft); background:#fff; border:1px solid var(--line); padding:6px 12px; border-radius:999px;}
+  .chip b{color:var(--violet);}
+
+  .deliv{background:var(--paper); border:1px dashed var(--violet-300); border-left:3px solid var(--violet); border-radius:4px; padding:15px 18px; display:flex; align-items:center; gap:13px;}
+  .deliv .di{flex:none;width:36px;height:36px;border-radius:4px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .deliv .di svg{width:19px;height:19px;}
+  .deliv .dt b{display:block;font-size:11px;font-family:var(--mono);letter-spacing:.08em;color:var(--violet);text-transform:uppercase;}
+  .deliv .dt span{font-size:15px;font-weight:700;}
+
+  .vlist{display:flex;flex-direction:column;gap:10px;}
+  .vlist .v{display:flex;gap:11px;align-items:flex-start;font-size:14.5px;color:var(--ink-soft);line-height:1.45;}
+  .vlist .v .b{flex:none;width:22px;height:22px;border-radius:7px;background:var(--wash);color:var(--violet);display:grid;place-items:center;font-family:var(--mono);font-size:12px;font-weight:700;margin-top:1px;}
+  .vlist .v b{color:var(--ink);font-weight:700;}
+
+  .keymsg{margin-top:auto; background:var(--ink); color:#fff; border-radius:4px; padding:15px 20px; display:flex; gap:13px; align-items:center; font-size:15px; line-height:1.5;}
+  .keymsg .k{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;color:var(--violet-300);text-transform:uppercase;flex:none;}
+  .keymsg b{color:#fff;}
+
+  .formula{display:flex; flex-direction:column; gap:10px; background:var(--code-bg); border-radius:13px; padding:20px; color:#fff; font-family:var(--mono);}
+  .formula .big{font-size:21px; text-align:center;}
+
+  .ctable{width:100%; border-collapse:separate; border-spacing:0; font-size:14px; border:1px solid var(--line); border-radius:13px; overflow:hidden;}
+  .ctable th,.ctable td{padding:13px 16px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top;}
+  .ctable thead th{background:var(--wash); color:var(--violet); font-family:var(--mono); font-size:12px; letter-spacing:.04em; text-transform:uppercase; font-weight:700;}
+  .ctable tbody tr:last-child td{border-bottom:none;}
+  .ctable td b{color:var(--ink);} .ctable .hl{color:var(--violet); font-weight:700;}
+  .ctable .yes{color:var(--mint); font-weight:700;} .ctable .no{color:var(--rose); font-weight:700;}
+
+  .timeline{display:flex; gap:0; align-items:stretch; margin-top:6px;}
+  .timeline .t{flex:1; position:relative; padding:0 6px;}
+  .timeline .t .yr{font-family:var(--mono); font-size:13px; font-weight:700; color:var(--violet);}
+  .timeline .t .ev{font-size:13px; font-weight:700; margin-top:30px; line-height:1.3;}
+  .timeline .t .ds{font-size:11.5px; color:var(--mut); margin-top:3px; line-height:1.35;}
+  .timeline .t::before{content:""; position:absolute; left:0; right:0; top:26px; height:2px; background:var(--line);}
+  .timeline .t::after{content:""; position:absolute; left:8px; top:21px; width:12px; height:12px; border-radius:50%; background:var(--violet); border:3px solid #fff; box-shadow:0 0 0 1px var(--violet-300);}
+
+  .quote{background:var(--wash-2); border-left:4px solid var(--violet); border-radius:0 13px 13px 0; padding:18px 22px;}
+  .quote p{margin:0; font-size:18px; line-height:1.5; font-weight:600; color:var(--ink);}
+  .quote .src{margin-top:10px; font-size:12.5px; color:var(--mut); font-family:var(--mono);}
+  .refbox{background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:14px 16px; display:flex; gap:12px; align-items:flex-start;}
+  .refbox .rk{font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; color:var(--violet); text-transform:uppercase; font-weight:700;}
+  .refbox h4{margin:2px 0 3px; font-size:14.5px; font-weight:800;}
+  .refbox p{margin:0; font-size:12.5px; color:var(--ink-soft); line-height:1.45;}
+  .refbox .ri{flex:none;width:30px;height:30px;border-radius:8px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .refbox .ri svg{width:16px;height:16px;}
+
+  .arch{display:flex; align-items:center; gap:18px; justify-content:center; margin:6px 0;}
+  .arch .box{border:1.5px solid var(--line); border-radius:14px; padding:18px 20px; text-align:center; background:var(--wash-2); min-width:160px;}
+  .arch .box .bt{font-size:15px; font-weight:800;} .arch .box .bs{font-size:12px; color:var(--mut); margin-top:3px; line-height:1.35;}
+  .arch .box.local{border-style:dashed; border-color:var(--violet-300); background:#fff;}
+  .arch .box.api{background:linear-gradient(135deg,#EFEAFF,#F8F5FF); border-color:var(--violet-300);}
+  .arch .conn{display:flex; flex-direction:column; align-items:center; gap:4px; color:var(--violet); font-family:var(--mono); font-size:11px; font-weight:700;}
+  .arch .conn svg{width:34px;height:18px;}
+
+  .stat-row{display:flex; gap:16px;}
+  .stat{flex:1; background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:16px 18px;}
+  .stat .num{font-size:30px; font-weight:800; letter-spacing:-.02em; color:var(--violet); font-family:var(--mono);}
+  .stat .lab{font-size:13px; color:var(--ink-soft); margin-top:4px; line-height:1.4;}
+
+  .twopane{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .pane{border:1px solid var(--line); border-radius:4px; padding:16px 18px; background:var(--paper);}
+  .pane.bad{border-left:3px solid var(--rose);} .pane.good{border-left:3px solid var(--mint);}
+  .pane h4{margin:0 0 9px; font-size:14px; font-weight:800; display:flex; align-items:center; gap:7px;}
+  .pane.bad h4{color:#C9405B;} .pane.good h4{color:#0E9E6E;}
+  .pane p{margin:0; font-size:13px; color:var(--ink-soft); line-height:1.5;}
+  .mini{font-family:var(--mono); font-size:13.5px; background:#16142B; border:1px solid #2A2545; border-radius:6px; padding:13px 15px; color:#E8E4F5; line-height:1.7; white-space:pre-wrap;}
+  .pane .mini{font-family:var(--mono); font-size:12px; background:var(--wash-2); border:1px solid var(--line); border-radius:3px; padding:8px 10px; color:var(--ink-soft); line-height:1.5; margin-top:8px;}
+
+  .controlbar{
+    position:fixed; left:50%; bottom:18px; transform:translateX(-50%); z-index:70;
+    display:flex; align-items:center; gap:4px;
+    background:#2B2B2E; border-radius:999px; padding:8px 10px;
+    box-shadow:0 16px 40px -12px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.04) inset;
+  }
+  .controlbar button{appearance:none; border:none; background:transparent; cursor:pointer; color:#C9C9D2; display:grid; place-items:center; border-radius:999px; transition:.12s ease; font-family:var(--serif);}
+  .controlbar .ico{width:38px; height:38px;}
+  .controlbar .ico svg{width:19px;height:19px;}
+  .controlbar .ico:hover{color:#fff; background:rgba(255,255,255,.1);}
+  .controlbar .ico:disabled{color:#5C5C66; cursor:not-allowed; background:transparent;}
+  .controlbar .sep{width:1px; height:24px; background:rgba(255,255,255,.16); margin:0 6px;}
+  .controlbar .count{ color:#EDEDF2; font-style:italic; font-family:Georgia,'Times New Roman',serif; font-size:17px; min-width:78px; text-align:center; letter-spacing:.02em; user-select:none;}
+  .controlbar .count b{font-style:italic; font-weight:600;}
+  .controlbar .zoom{width:32px;height:38px; color:#9A9AA6; font-size:18px;}
+  .controlbar .zoom:hover{color:#fff;}
+  .controlbar .zoom svg{width:17px;height:17px;}
+  .controlbar .pdf{
+    margin-left:6px; background:#7CB342; color:#fff; font-weight:800; font-size:14px; letter-spacing:.06em;
+    padding:0 22px; height:38px; border-radius:999px; display:flex; align-items:center;
+    box-shadow:0 6px 16px -6px rgba(124,179,66,.8);
+  }
+  .controlbar .pdf:hover{background:#86BD4B; color:#fff;}
+
+  .overview{position:fixed; inset:0; z-index:80; background:rgba(22,20,43,.55); backdrop-filter:blur(8px); display:none; padding:40px; overflow:auto;}
+  .overview.on{display:block;}
+  .overview .head{display:flex; align-items:center; justify-content:space-between; max-width:1100px; margin:0 auto 18px; color:#fff;}
+  .overview .head h3{margin:0; font-size:18px; font-weight:800;}
+  .overview .head button{appearance:none;border:1px solid rgba(255,255,255,.3); background:rgba(255,255,255,.1); color:#fff; border-radius:10px; padding:8px 14px; cursor:pointer; font-family:var(--serif); font-weight:700; font-size:13px;}
+  .ovgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; max-width:1100px; margin:0 auto;}
+  .ovcard{background:#fff; border:1px solid var(--line); border-radius:11px; padding:13px 15px; cursor:pointer; transition:.12s; text-align:left;}
+  .ovcard:hover{transform:translateY(-2px); box-shadow:0 12px 22px -12px rgba(0,0,0,.4); border-color:var(--violet);}
+  .ovcard .ovn{font-family:var(--mono); font-size:11px; color:var(--violet); font-weight:700;}
+  .ovcard .ovt{font-size:13.5px; font-weight:700; margin-top:4px; line-height:1.3; color:var(--ink);}
+
+  .hint{position:fixed; left:18px; bottom:24px; z-index:65; font-size:11px; color:var(--mut); font-family:var(--mono);}
+
+
+  /* ===== 이미지 / 도해 컴포넌트 (덱 하네스 추가분) ===== */
+  .figure{border:1px solid var(--line); border-radius:4px; background:var(--wash-2); overflow:hidden; display:flex; flex-direction:column; min-height:0;}
+  .figure img{display:block; width:100%; height:auto; object-fit:contain; min-height:0;}
+  .figure figcaption{font-family:var(--mono); font-size:11px; color:var(--mut); padding:7px 11px; border-top:1px solid var(--line); background:#fff;}
+  .figure.tight img{max-height:330px; object-fit:contain; background:#fff;}
+  /* 원본이 검은 여백을 달고 있는 캡처용 */
+  .figure.dark{background:#16142B; border-color:#2A2548;}
+  .figure.dark img{background:#16142B;}
+  .figure.dark figcaption{background:#1C1933; color:#9C97D6; border-top-color:#2A2548;}
+
+  /* 스크린샷: 창 프레임을 씌워 원본 캡처임을 드러낸다 */
+  .shot{border:1px solid var(--line); border-radius:9px; overflow:hidden; background:#fff; box-shadow:0 10px 26px -18px rgba(28,25,51,.6); display:flex; flex-direction:column; min-height:0;}
+  .shot .sbar{display:flex; align-items:center; gap:6px; padding:7px 11px; background:var(--wash); border-bottom:1px solid var(--line);}
+  .shot .sbar .d{width:9px;height:9px;border-radius:50%;background:var(--violet-300);}
+  .shot .sbar .t{margin-left:6px; font-family:var(--mono); font-size:11px; color:var(--mut);}
+  .shot img{display:block; width:100%; height:auto; max-height:400px; object-fit:contain; min-height:0;}
+
+  /* 도구 두 가지를 나란히 처음 보여줄 때 — 그림과 한 줄만 */
+  .duo{display:grid; grid-template-columns:1fr 1fr; gap:30px;}
+  .duo .side{border:1px solid var(--line); border-radius:18px; background:var(--wash-2);
+    padding:34px 30px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:20px; text-align:center;}
+  .duo .side img{max-height:92px; max-width:78%; width:auto; display:block;}
+  .duo .side .tagline{font-family:var(--mono); font-size:11.5px; letter-spacing:.12em;
+    color:var(--violet); text-transform:uppercase; font-weight:700;}
+  .duo .side h3{margin:0; font-size:23px; font-weight:800; letter-spacing:-.02em;}
+  .duo .side p{margin:0; font-size:15px; color:var(--ink-soft); line-height:1.55; max-width:30ch;}
+
+  /* 제품·도구 로고 — 작은 브랜드 마크 */
+  .brandmark{display:flex; align-items:center; gap:15px; margin-bottom:18px;}
+  .brandmark img{height:46px; width:auto; display:block;}
+  .brandmark .bt{font-size:13.5px; color:var(--ink-soft); line-height:1.45;}
+  .brandmark .bt b{color:var(--ink);}
+
+  /* 채워야 할 이미지 자리 — 인쇄에도 남으므로 발표 전 반드시 교체 */
+  .need-img{border:2px dashed var(--violet-300); border-radius:4px; background:repeating-linear-gradient(135deg,#FBFAFF,#FBFAFF 10px,#F4F1FF 10px,#F4F1FF 20px);
+    display:flex; flex-direction:column; justify-content:center; gap:6px; padding:20px 22px; min-height:150px;}
+  .need-img .nk{font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:.1em; color:var(--violet); text-transform:uppercase;}
+  .need-img .nd{font-size:14px; font-weight:700; color:var(--ink); line-height:1.4;}
+  .need-img .nm2{font-family:var(--mono); font-size:11.5px; color:var(--mut);}
+  .need-img.sm{min-height:92px; padding:14px 16px; align-items:center; text-align:center;}
+
+  /* 코드 실행 결과 */
+  .code .out{border-top:1px dashed #38325C; background:#141127; padding:11px 18px; font-family:var(--mono); font-size:12.5px; line-height:1.55; color:#9DE39A; white-space:pre; overflow:auto;}
+  .code .out .ol{color:#7D78B8;}
+  .code .err{color:#FF8E8E;}
+
+  /* 메모리 슬롯 도해 */
+  .slots{display:flex; gap:8px; flex-wrap:wrap; align-items:flex-start;}
+  .slot{border:1.5px solid var(--line); border-radius:8px; min-width:74px; padding:9px 11px; text-align:center; background:#fff;}
+  .slot .adr{font-family:var(--mono); font-size:10px; color:var(--mut); letter-spacing:.02em;}
+  .slot .val{font-family:var(--mono); font-size:15px; font-weight:700; color:var(--ink); margin-top:2px;}
+  .slot .nm{font-size:11px; color:var(--violet); font-weight:700; margin-top:3px;}
+  .slot.ref{border-style:dashed; border-color:var(--violet-300); background:var(--wash-2);}
+  .slot.dim{opacity:.45;}
+  .ptr{display:grid; place-items:center; color:var(--violet); font-family:var(--mono); font-size:18px; font-weight:700; padding:0 2px; align-self:center;}
+
+  /* 인라인 SVG 차트 */
+  .plot{background:var(--wash-2); border:1px solid var(--line); border-radius:4px; padding:14px; display:grid; place-items:center; min-height:0;}
+  .plot svg{width:100%; height:auto; display:block; max-height:300px;}
+  .plot .cap{font-family:var(--mono); font-size:11px; color:var(--mut); margin-top:8px; text-align:center;}
+  .formula .cap{font-family:var(--mono); font-size:11.5px; color:var(--code-dim); text-align:center;}
+
+  /* 수정·보강 표시 (원본 pptx에 없던 내용) */
+  .newmark{position:absolute; top:30px; right:112px; font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.08em;
+    color:var(--mint); border:1px solid #BFE9E1; background:var(--mint-soft); border-radius:999px; padding:3px 9px;}
+
+  @media print{
+    @page{ size:1280px 720px; margin:0; }
+    body{background:#fff !important;}
+    .controlbar,.progress,.hint,.overview{display:none !important;}
+    .stage{position:static; inset:auto; overflow:visible; display:block; padding:0;}
+    .sizer{width:auto !important; height:auto !important;}
+    .scaler{transform:none !important; width:auto !important; height:auto !important;}
+    .slide{ display:flex !important; width:1280px !important; height:720px !important;
+      border-radius:0 !important; border:none !important; box-shadow:none !important;
+      page-break-after:always; break-after:page;
+      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .slide:last-child{page-break-after:auto;}
+  }
+
+.bpipe .ar{display:flex; align-items:center; padding:0 5px; color:#B9B3E0;}
+.bpipe .ar svg{width:15px; height:15px;}
+.bpipe .ar.dim{opacity:.35;}
+.bstep .bic{width:46px; height:46px; border-radius:50%; margin:0 auto 8px; display:grid; place-items:center; font-size:21px; background:#fff; border:1.5px solid var(--bd,var(--line));}
+.bstep .bn{font-size:15px; font-weight:800; letter-spacing:-.01em;}
+.bstep .bd{font-size:11px; color:var(--ink-soft); margin-top:3px; line-height:1.3;}
+.bstep .chip2{position:absolute; top:-11px; left:50%; transform:translateX(-50%); white-space:nowrap; font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.04em; color:#fff; padding:3px 10px; border-radius:999px; background:var(--ck,#8E8AAC); box-shadow:0 4px 10px -4px rgba(22,20,43,.35);}
+</style>
+</head>
+<body>
+
+<div class="progress"><div class="fill" id="pfill"></div></div>
+
+<main class="stage" id="stage">
+  <div class="sizer" id="sizer">
+    <div class="scaler" id="scaler">
+
+
+
+<!-- ============================================================
+     슬라이드는 여기부터. 규격: 1280x720 고정.
+     첫 장은 slide cover active, 나머지는 active 없이.
+     ============================================================ -->
+
+<section class="slide cover active" data-title="표지 · Day 12">
+  <div class="aperture"></div><div class="ring"></div>
+  <div class="wrap">
+    <div class="kick"><span class="pill">WEEK 3 · DAY 5</span><span>MCP</span></div>
+    <h1>도구를 붙이는<br/>규약</h1>
+  </div>
+</section>
+<section class="slide" data-title="오늘의 일정">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">AGENDA</span><span class="dot"></span>일정</div>
+  <h2 class="s-title">오늘의 일정</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c4">
+      <div class="card"><span class="n">CH0</span><h3>왜 규약인가</h3><p>어제는 함수로 붙였다. 앱이 늘고 도구가 늘면 그 방식이 무너진다.</p></div>
+      <div class="card"><span class="n">CH1</span><h3>세 가지 원시요소</h3><p>Tool · Resource · Prompt. 누가 고르느냐로 갈린다.</p></div>
+      <div class="card"><span class="n">CH2</span><h3>붙여 쓰기</h3><p>남이 만든 서버를 설정 한 장으로 붙인다. 붙이기 전에 볼 것이 있다.</p></div>
+      <div class="card"><span class="n">CH3~4</span><h3>내가 내주기</h3><p>어제 만든 함수를 Resource 와 Tool 로 내보낸다.</p></div>
+    </div>
+    <div class="keymsg"><span class="k">어제와 이어</span><div>어제 만든 <b>도구 넷</b>이 오늘 그대로 <b>MCP 서버</b>가 된다.</div></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 규약이 없을 때 무너지는 것">
+  <div class="ghost">00</div>
+  <div class="seyebrow">CHAPTER 00</div>
+  <h2>규약이 없을 때 무너지는 것</h2>
+  <p>도구를 붙이는 일은 어제도 했다. 규약이 없으면 무엇이 무너지는지부터 본다.</p>
+  <div class="agenda"><span>어제 만든 것</span><span>N×M</span><span>이미 붙은 것들</span></div>
+</section>
+<section class="slide" data-title="어제 함수로 붙인 도구 넷">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>복습</div>
+  <h2 class="s-title sm">어제 함수로 붙인 도구 넷</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">day11 에서 만든 것</span></div><pre><code><span class="cm"># 파이썬 함수 넷과, 모델에게 줄 설명서</span>
+FUNCS = {'defect_rate': defect_rate, 'recent_lots': recent_lots,
+         'find_rule': find_rule, 'trace_rule': trace_rule}
+
+TOOLS = [{'type': 'function', 'function': {
+   'name': 'defect_rate',
+   'description': '설비호기의 불량률을 돌려준다',
+   'parameters': {...}}}, ...]</code></pre></div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>노트북 한 장 안에서는 이걸로 충분했다. <b>돌아갔고 답도 맞았다</b>.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>문제는 <b>이 노트북 밖으로 나갈 때</b> 생긴다.</div></div>
+</div>
+<div class="keymsg"><span class="k">오늘의 물음</span><div>같은 도구를 <b>다른 앱에서도</b> 쓰려면 무엇을 해야 하나.</div></div>
+</div>
+</section>
+<section class="slide" data-title="앱마다 다시 짜는 어댑터">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>문제</div>
+  <h2 class="s-title sm">앱마다 다시 짜는 어댑터</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="plot"><svg viewBox="0 0 1116 230">
+<text x="150" y="24" font-size="12" font-weight="800" fill="#8E8AAC" text-anchor="middle">쓰는 앱</text>
+<text x="560" y="24" font-size="12" font-weight="800" fill="#B01A50" text-anchor="middle">앱마다 · 도구마다 어댑터를 짠다</text>
+<text x="980" y="24" font-size="12" font-weight="800" fill="#8E8AAC" text-anchor="middle">붙일 도구</text>
+<rect x="40" y="44" width="220" height="34" rx="9" fill="#EFEAFF" stroke="#3A1FC9" stroke-width="1.3"/><text x="150" y="66" font-size="12" font-weight="700" fill="#16142B" text-anchor="middle">사내 챗봇</text><rect x="40" y="88" width="220" height="34" rx="9" fill="#EFEAFF" stroke="#3A1FC9" stroke-width="1.3"/><text x="150" y="110" font-size="12" font-weight="700" fill="#16142B" text-anchor="middle">Codex</text><rect x="40" y="132" width="220" height="34" rx="9" fill="#EFEAFF" stroke="#3A1FC9" stroke-width="1.3"/><text x="150" y="154" font-size="12" font-weight="700" fill="#16142B" text-anchor="middle">Claude Code</text><rect x="40" y="176" width="220" height="34" rx="9" fill="#EFEAFF" stroke="#3A1FC9" stroke-width="1.3"/><text x="150" y="198" font-size="12" font-weight="700" fill="#16142B" text-anchor="middle">점검 앱</text><rect x="870" y="44" width="220" height="34" rx="9" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.3"/><text x="980" y="66" font-size="12" font-weight="700" fill="#16142B" text-anchor="middle">공정 DB</text><rect x="870" y="88" width="220" height="34" rx="9" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.3"/><text x="980" y="110" font-size="12" font-weight="700" fill="#16142B" text-anchor="middle">규정 문서</text><rect x="870" y="132" width="220" height="34" rx="9" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.3"/><text x="980" y="154" font-size="12" font-weight="700" fill="#16142B" text-anchor="middle">설비 대장</text><rect x="870" y="176" width="220" height="34" rx="9" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.3"/><text x="980" y="198" font-size="12" font-weight="700" fill="#16142B" text-anchor="middle">점검 이력</text><path d="M264 61 L866 61" stroke="#F3C6D6" stroke-width="0.9"/><path d="M264 61 L866 105" stroke="#F3C6D6" stroke-width="0.9"/><path d="M264 61 L866 149" stroke="#F3C6D6" stroke-width="0.9"/><path d="M264 61 L866 193" stroke="#F3C6D6" stroke-width="0.9"/><path d="M264 105 L866 61" stroke="#F3C6D6" stroke-width="0.9"/><path d="M264 105 L866 105" stroke="#F3C6D6" stroke-width="0.9"/><path d="M264 105 L866 149" stroke="#F3C6D6" stroke-width="0.9"/><path d="M264 105 L866 193" stroke="#F3C6D6" stroke-width="0.9"/><path d="M264 149 L866 61" stroke="#F3C6D6" stroke-width="0.9"/><path d="M264 149 L866 105" stroke="#F3C6D6" stroke-width="0.9"/><path d="M264 149 L866 149" stroke="#F3C6D6" stroke-width="0.9"/><path d="M264 149 L866 193" stroke="#F3C6D6" stroke-width="0.9"/><path d="M264 193 L866 61" stroke="#F3C6D6" stroke-width="0.9"/><path d="M264 193 L866 105" stroke="#F3C6D6" stroke-width="0.9"/><path d="M264 193 L866 149" stroke="#F3C6D6" stroke-width="0.9"/><path d="M264 193 L866 193" stroke="#F3C6D6" stroke-width="0.9"/>
+</svg></div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>앱 <b>4</b>개에 도구 <b>4</b>개면 이어야 할 선이 <b>16</b>개다. 하나 늘 때마다 네 개씩 는다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>같은 조회를 <b>앱마다 다시 짠다</b>. 고칠 때도 네 군데를 고친다.</div></div>
+</div>
+<div class="keymsg"><span class="k">진짜 비용</span><div>짜는 품이 아니라 <b>고치는 품</b>이다. 한 곳만 고치고 나머지를 잊는다.</div></div>
+</div>
+</section>
+<section class="slide" data-title="가운데 규약 하나">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>해법</div>
+  <h2 class="s-title sm">가운데 규약 하나</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="plot"><svg viewBox="0 0 1116 230">
+<rect x="40" y="44" width="200" height="34" rx="9" fill="#EFEAFF" stroke="#3A1FC9" stroke-width="1.3"/><text x="140" y="66" font-size="12" font-weight="700" fill="#16142B" text-anchor="middle">사내 챗봇</text><path d="M244 61 h180" stroke="#3A1FC9" stroke-width="1.4"/><rect x="40" y="88" width="200" height="34" rx="9" fill="#EFEAFF" stroke="#3A1FC9" stroke-width="1.3"/><text x="140" y="110" font-size="12" font-weight="700" fill="#16142B" text-anchor="middle">Codex</text><path d="M244 105 h180" stroke="#3A1FC9" stroke-width="1.4"/><rect x="40" y="132" width="200" height="34" rx="9" fill="#EFEAFF" stroke="#3A1FC9" stroke-width="1.3"/><text x="140" y="154" font-size="12" font-weight="700" fill="#16142B" text-anchor="middle">Claude Code</text><path d="M244 149 h180" stroke="#3A1FC9" stroke-width="1.4"/><rect x="40" y="176" width="200" height="34" rx="9" fill="#EFEAFF" stroke="#3A1FC9" stroke-width="1.3"/><text x="140" y="198" font-size="12" font-weight="700" fill="#16142B" text-anchor="middle">점검 앱</text><path d="M244 193 h180" stroke="#3A1FC9" stroke-width="1.4"/>
+<rect x="428" y="44" width="260" height="166" rx="14" fill="#EFF9F4" stroke="#0B6B4F" stroke-width="2"/>
+<text x="558" y="120" font-size="18" font-weight="800" fill="#0B6B4F" text-anchor="middle">MCP</text>
+<text x="558" y="144" font-size="11.5" fill="#8E8AAC" text-anchor="middle">한 가지 말투로 주고받는다</text>
+<path d="M692 61 h178" stroke="#0B6B4F" stroke-width="1.4"/><rect x="874" y="44" width="200" height="34" rx="9" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.3"/><text x="974" y="66" font-size="12" font-weight="700" fill="#16142B" text-anchor="middle">공정 DB</text><path d="M692 105 h178" stroke="#0B6B4F" stroke-width="1.4"/><rect x="874" y="88" width="200" height="34" rx="9" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.3"/><text x="974" y="110" font-size="12" font-weight="700" fill="#16142B" text-anchor="middle">규정 문서</text><path d="M692 149 h178" stroke="#0B6B4F" stroke-width="1.4"/><rect x="874" y="132" width="200" height="34" rx="9" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.3"/><text x="974" y="154" font-size="12" font-weight="700" fill="#16142B" text-anchor="middle">설비 대장</text><path d="M692 193 h178" stroke="#0B6B4F" stroke-width="1.4"/><rect x="874" y="176" width="200" height="34" rx="9" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.3"/><text x="974" y="198" font-size="12" font-weight="700" fill="#16142B" text-anchor="middle">점검 이력</text>
+</svg></div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>선이 <b>16개에서 8개</b>로 준다. 앱이 하나 늘면 <b>한 개</b>만 는다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>도구를 고치면 <b>한 곳만 고친다</b>. 붙어 있는 앱은 전부 같이 좋아진다.</div></div>
+</div>
+<div class="keymsg"><span class="k">비유</span><div>기기마다 다르던 충전기가 <b>USB-C 하나</b>로 정리된 것과 같다.</div></div>
+</div>
+</section>
+<section class="slide" data-title="이미 붙어 있는 자리">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>현황</div>
+  <h2 class="s-title sm">이미 붙어 있는 자리</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="ctable"><table><thead><tr><th>어디에</th><th>무엇으로 쓰나</th></tr></thead><tbody>
+  <tr><td class="hl">Claude Code · Codex</td><td class="hl">코딩할 때 사내 자료와 도구를 불러 쓴다</td></tr>
+  <tr><td>VS Code · JetBrains</td><td>편집기 안에서 바로</td></tr>
+  <tr><td>Claude Desktop · ChatGPT</td><td>대화하면서 회사 시스템에 묻는다</td></tr>
+  <tr><td>사내에 직접 만든 앱</td><td>SDK 로 클라이언트를 붙인다</td></tr>
+</tbody></table></div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>서버를 한 번 만들면 <b>이 넷이 다 쓴다</b>. 앱마다 다시 짜지 않는다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>반대로 <b>남이 만든 서버</b>도 그대로 가져다 쓴다. GitHub · Sentry · Notion 이 이미 내놓고 있다.</div></div>
+</div>
+<div class="keymsg"><span class="k">규약의 값</span><div>양쪽이 같이 는다. <b>만든 것도 남이 쓰고, 남이 만든 것도 내가 쓴다.</b></div></div>
+</div>
+</section>
+<section class="slide" data-title="MCP 가 아닌 것">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>경계</div>
+  <h2 class="s-title sm">MCP 가 아닌 것</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="twopane">
+  <div class="pane good"><h4>MCP 가 하는 일</h4>
+    <p>앱과 도구가 <b>주고받는 말의 형식</b>을 정한다.<br/>
+       무엇이 있는지 묻고, 하나를 실행하고, 결과를 받는다.</p>
+    <div class="mini">JSON-RPC 로 오가는 약속</div></div>
+  <div class="pane bad"><h4>MCP 가 안 하는 일</h4>
+    <p>모델을 고르지 않는다. 언제 도구를 부를지 정하지 않는다.<br/>
+       프롬프트를 대신 써 주지 않는다.</p>
+    <div class="mini">그건 여전히 앱과 모델의 몫</div></div>
+</div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>어제 만든 <b>판단하는 고리</b>는 그대로 앱에 남는다. MCP 는 <b>도구 쪽</b>만 규격화한다.</div></div>
+</div>
+<div class="keymsg"><span class="k">한 줄</span><div>MCP 는 <b>콘센트 규격</b>이지 전기도 가전제품도 아니다.</div></div>
+</div>
+</section>
+<section class="slide section" data-title="[섹션] Resource · Tool · Prompt">
+  <div class="ghost">01</div>
+  <div class="seyebrow">CHAPTER 01</div>
+  <h2>Resource · Tool · Prompt</h2>
+  <p>서버가 내줄 수 있는 것은 셋뿐이다. 셋을 가르는 기준이 오늘의 고비다.</p>
+  <div class="agenda"><span>참여자 셋</span><span>누가 고르나</span><span>오가는 말</span></div>
+</section>
+<section class="slide" data-title="호스트 · 클라이언트 · 서버">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>구조</div>
+  <h2 class="s-title sm">호스트 · 클라이언트 · 서버</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="plot"><svg viewBox="0 0 1116 210">
+<rect x="30" y="26" width="330" height="160" rx="14" fill="#F7F6FB" stroke="#DCD6F0" stroke-width="1.5"/>
+<text x="195" y="52" font-size="13" font-weight="800" fill="#16142B" text-anchor="middle">호스트 — 쓰는 앱</text>
+<text x="195" y="72" font-size="10.5" fill="#8E8AAC" text-anchor="middle">Claude Code · 사내 챗봇</text>
+<rect x="56" y="86" width="278" height="30" rx="8" fill="#EFEAFF" stroke="#3A1FC9" stroke-width="1.2"/><text x="195" y="106" font-size="11.5" font-weight="700" fill="#3A1FC9" text-anchor="middle">클라이언트 1</text><rect x="56" y="120" width="278" height="30" rx="8" fill="#EFEAFF" stroke="#3A1FC9" stroke-width="1.2"/><text x="195" y="140" font-size="11.5" font-weight="700" fill="#3A1FC9" text-anchor="middle">클라이언트 2</text><rect x="56" y="154" width="278" height="30" rx="8" fill="#EFEAFF" stroke="#3A1FC9" stroke-width="1.2"/><text x="195" y="174" font-size="11.5" font-weight="700" fill="#3A1FC9" text-anchor="middle">클라이언트 3</text><path d="M364 101 h150" stroke="#8E8AAC" stroke-width="1.3"/><rect x="520" y="86" width="300" height="30" rx="8" fill="#EFF9F4" stroke="#0B6B4F" stroke-width="1.3"/><text x="670" y="106" font-size="11.5" font-weight="700" fill="#0B6B4F" text-anchor="middle">서버 — 공정 DB (로컬)</text><path d="M364 135 h150" stroke="#8E8AAC" stroke-width="1.3"/><rect x="520" y="120" width="300" height="30" rx="8" fill="#EFF9F4" stroke="#0B6B4F" stroke-width="1.3"/><text x="670" y="140" font-size="11.5" font-weight="700" fill="#0B6B4F" text-anchor="middle">서버 — 규정 문서 (로컬)</text><path d="M364 169 h150" stroke="#8E8AAC" stroke-width="1.3"/><rect x="520" y="154" width="300" height="30" rx="8" fill="#EFF9F4" stroke="#0B6B4F" stroke-width="1.3"/><text x="670" y="174" font-size="11.5" font-weight="700" fill="#0B6B4F" text-anchor="middle">서버 — GitHub (원격)</text>
+<text x="670" y="52" font-size="13" font-weight="800" fill="#16142B" text-anchor="middle">서버 — 자료와 도구를 내주는 쪽</text>
+<text x="960" y="100" font-size="11.5" font-weight="700" fill="#8E8AAC" text-anchor="middle">서버 하나에</text>
+<text x="960" y="120" font-size="11.5" font-weight="700" fill="#8E8AAC" text-anchor="middle">클라이언트 하나</text>
+</svg></div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>앱이 <b>호스트</b>다. 붙일 서버마다 <b>클라이언트를 하나씩</b> 만들어 연결을 잡는다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>서버는 <b>어디서 돌든 서버</b>다. 내 노트북에서 돌면 로컬, 남의 서버에 있으면 원격이다.</div></div>
+</div>
+<div class="keymsg"><span class="k">헷갈리는 이름</span><div>「서버」라고 해서 <b>어디 멀리 있는 것이 아니다</b>. 대개 내 컴퓨터에서 같이 돈다.</div></div>
+</div>
+</section>
+<section class="slide" data-title="누가 고르느냐로 갈리는 셋">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>핵심</div>
+  <h2 class="s-title sm">누가 고르느냐로 갈리는 셋</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="ctable"><table><thead><tr><th></th><th>무엇</th><th>누가 고르나</th><th>보기</th></tr></thead><tbody>
+  <tr><td class="hl"><b>Tool</b></td><td class="hl">시키면 <b>일을 하는</b> 함수</td><td class="hl"><b>모델이</b> 정한다</td><td class="hl">불량률 조회 · 규정 검색</td></tr>
+  <tr><td><b>Resource</b></td><td><b>읽을 자료</b>. 부작용이 없다</td><td><b>앱이</b> 고른다</td><td>작업표준 전문 · 설비 대장</td></tr>
+  <tr><td><b>Prompt</b></td><td>미리 만들어 둔 <b>지시문</b></td><td><b>사람이</b> 고른다</td><td>「점검 일지 초안 쓰기」</td></tr>
+</tbody></table></div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>같은 자료라도 <b>모델이 알아서 부르면 Tool</b>, 앱이 미리 담아 두면 <b>Resource</b> 다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>Prompt 는 <b>버튼</b>에 가깝다. 사용자가 목록에서 골라 누른다.</div></div>
+</div>
+<div class="keymsg"><span class="k">가르는 법</span><div>「이걸 <b>누가 부를까</b>」를 물으면 셋 중 어디인지 정해진다.</div></div>
+</div>
+</section>
+<section class="slide" data-title="오가는 말 한 벌">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>실제</div>
+  <h2 class="s-title sm">오가는 말 한 벌</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">클라이언트 → 서버 : 무엇이 있나</span></div><pre><code>{"method": "tools/list"}
+
+<span class="cm">← 서버가 목록을 돌려준다</span>
+{"tools": [{"name": "defect_rate",
+            "description": "설비호기의 불량률을 돌려준다",
+            "inputSchema": {"machine": "string"}}]}</code></pre></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">클라이언트 → 서버 : 하나를 실행한다</span></div><pre><code>{"method": "tools/call",
+ "params": {"name": "defect_rate", "arguments": {"machine": "3호기"}}}
+
+<span class="cm">← 결과</span>
+{"content": [{"type": "text", "text": "3호기 · 불량률 12.0%"}]}</code></pre></div>
+<div class="keymsg"><span class="k">낯익다</span><div>어제 만든 <b>도구 설명서와 호출</b>이 그대로다. 형식만 규약을 따른다.</div></div>
+</div>
+</section>
+<section class="slide" data-title="실행 중에 사람에게 묻기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>되묻기</div>
+  <h2 class="s-title sm">실행 중에 사람에게 묻기</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">Elicitation — 서버가 도중에 확인을 요청한다</span></div><pre><code><span class="cm">모델</span>  「3호기 점검 기록을 지워 줘」
+<span class="cm">서버</span>  잠깐, 이건 되돌릴 수 없다 &rarr; 확인을 요청한다
+        {"resultType": "input_required",
+         "requests": [{"message": "12건을 지운다. 계속할까"}]}
+<span class="cm">앱</span>    사람에게 물어본다  ← 여기서 사람이 개입한다
+<span class="cm">클라이언트</span> 답을 담아 같은 요청을 다시 보낸다</code></pre></div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>어제 「위험한 일은 사람이 확인한다」고 했다. 그 자리가 <b>규약에 들어와 있다</b>.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>서버가 확인을 <b>요청</b>할 뿐, 실제로 묻는 것은 앱이다. 앱이 못 물으면 서버는 거절한다.</div></div>
+</div>
+<div class="keymsg"><span class="k">쓸 자리</span><div>지우기 · 여러 건 한꺼번에 · 돈이 드는 일 &mdash; <b>되돌릴 수 없는 것</b>에 건다.</div></div>
+</div>
+</section>
+<section class="slide section" data-title="[섹션] 남이 만든 서버 붙여 쓰기">
+  <div class="ghost">02</div>
+  <div class="seyebrow">CHAPTER 02</div>
+  <h2>남이 만든 서버 붙여 쓰기</h2>
+  <p>먼저 쓰는 쪽부터 해 본다. 만드는 것은 그다음이다.</p>
+  <div class="agenda"><span>설정 한 장</span><span>두 가지 전송</span><span>붙이기 전에</span></div>
+</section>
+<section class="slide" data-title="설정 파일 한 장">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>붙이기</div>
+  <h2 class="s-title sm">설정 파일 한 장</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">로컬 서버 — 내 컴퓨터에서 같이 돈다</span></div><pre><code>"공정DB": {"command": "python",
+          "args": ["plant_server.py"],
+          "env": {"DB_URL": "postgres://..."}}</code></pre></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">원격 서버 — 남이 돌리는 것에 붙는다</span></div><pre><code>"github": {"type": "http",
+           "url": "https://api.githubcopilot.com/mcp/"}</code></pre></div>
+<div class="keymsg"><span class="k">붙는 순간</span><div>앱을 다시 켜면 <b>도구 목록에 저절로 나타난다</b>. 앱 코드는 안 고친다.</div></div>
+</div>
+</section>
+<section class="slide" data-title="stdio 와 Streamable HTTP">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>전송</div>
+  <h2 class="s-title sm">stdio 와 Streamable HTTP</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="ctable"><table><thead><tr><th></th><th>stdio</th><th>Streamable HTTP</th></tr></thead><tbody>
+  <tr><td class="hl">어디서 도나</td><td class="hl">내 컴퓨터에서 <b>같이</b> 돈다</td><td class="hl">남의 서버에서 돈다</td></tr>
+  <tr><td>어떻게 말하나</td><td>표준 입출력으로 주고받는다</td><td>HTTPS 로 주고받는다</td></tr>
+  <tr><td>누가 쓰나</td><td>대개 <b>나 혼자</b></td><td>여럿이 같이</td></tr>
+  <tr><td>인증</td><td>필요 없다. 이미 내 컴퓨터다</td><td><b>OAuth</b> · 토큰이 붙는다</td></tr>
+  <tr><td>사내 데이터는</td><td class="hl"><b>여기서 시작한다</b> — 밖으로 안 나간다</td><td>나갈 곳이 생긴다</td></tr>
+</tbody></table></div>
+<div class="keymsg"><span class="k">고르는 법</span><div>사내 자료를 여는 서버는 <b>stdio 로 시작</b>한다. 여럿이 쓸 일이 생기면 그때 옮긴다.</div></div>
+</div>
+</section>
+<section class="slide" data-title="붙이기 전에 볼 네 가지">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>주의</div>
+  <h2 class="s-title sm">붙이기 전에 볼 네 가지</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="ctable"><table><thead><tr><th>볼 것</th><th>왜</th></tr></thead><tbody>
+  <tr><td class="hl">누가 만들었나</td><td class="hl">서버는 <b>내 컴퓨터에서 도는 프로그램</b>이다. 설치와 같은 무게로 본다</td></tr>
+  <tr><td>무엇을 열어 주나</td><td>도구 목록을 먼저 읽는다. <b>지우는 도구가 있는지</b> 본다</td></tr>
+  <tr><td>어디에 붙나</td><td>파일 · 네트워크 · 사내 DB &mdash; 무엇에 닿는지</td></tr>
+  <tr><td>자격증명을 어떻게 받나</td><td>설정 파일에 <b>키를 그대로 적게 하면</b> 다시 본다</td></tr>
+</tbody></table></div>
+<div class="vlist">
+  <div class="v"><span class="b">&#9733;</span><div>「도구 설명」은 <b>모델이 읽는 글</b>이다. 거기에 이상한 지시를 심어 두는 공격이 있다.</div></div>
+</div>
+<div class="keymsg"><span class="k">기준</span><div>사내 자료에 닿는 서버는 <b>직접 만든 것</b>이나 <b>출처가 분명한 것</b>만 붙인다.</div></div>
+</div>
+</section>
+<section class="slide" data-title="도구가 많아진 뒤">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>한도</div>
+  <h2 class="s-title sm">도구가 많아진 뒤</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>서버를 다섯 개 붙이면 도구가 <b>쉰 개</b>가 되기도 한다. 설명이 전부 컨텍스트를 차지한다.</div></div>
+  <div class="v"><span class="b">&rarr;</span><div>비슷한 도구가 많으면 모델이 <b>엉뚱한 것을 고른다</b>. 어제 본 「도구는 좁게」가 여기서도 같다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>필요한 서버만 켠다. 앱에 따라서는 <b>필요할 때만 목록을 가져오는</b> 방식을 쓴다.</div></div>
+</div>
+<div class="keymsg"><span class="k">현실</span><div>붙일 수 있다고 다 붙이지 않는다. <b>안 쓰는 서버는 끈다.</b></div></div>
+</div>
+</section>
+<section class="slide section" data-title="[섹션] Resource 로 자료 열어 주기">
+  <div class="ghost">03</div>
+  <div class="seyebrow">CHAPTER 03</div>
+  <h2>Resource 로 자료 열어 주기</h2>
+  <p>읽기만 하는 자료는 Tool 이 아니라 Resource 로 낸다.</p>
+  <div class="agenda"><span>맞는 자리</span><span>URI</span><span>Tool 과의 갈림</span></div>
+</section>
+<section class="slide" data-title="Resource 가 맞는 자료">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>자리</div>
+  <h2 class="s-title sm">Resource 가 맞는 자료</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="twopane">
+  <div class="pane good"><h4>Resource 로</h4>
+    <p>작업표준 WI-0412 전문<br/>설비 대장 한 건<br/>어제 만든 규정 조문 하나<br/>스키마 설명</p>
+    <div class="mini">읽어도 아무것도 안 바뀐다. 주소를 대면 그 내용이 온다</div></div>
+  <div class="pane bad"><h4>Resource 가 아닌 것</h4>
+    <p>「불량률을 계산해 줘」<br/>「조건에 맞는 것을 찾아 줘」<br/>「기록을 남겨 줘」</p>
+    <div class="mini">고르거나 계산하거나 바꾸는 일 — 이건 Tool</div></div>
+</div>
+<div class="vlist">
+  <div class="v"><span class="b">&#9733;</span><div>웹으로 치면 Resource 는 <b>주소를 아는 페이지</b>, Tool 은 <b>누르면 실행되는 버튼</b>이다.</div></div>
+</div>
+<div class="keymsg"><span class="k">가르는 한 마디</span><div>「같은 것을 두 번 읽어도 같은가」 &mdash; 그렇다면 Resource 다.</div></div>
+</div>
+</section>
+<section class="slide" data-title="자료마다 붙이는 주소">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>주소</div>
+  <h2 class="s-title sm">자료마다 붙이는 주소</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">URI 는 사람이 설계한다</span></div><pre><code>rule://산업안전보건법/제42조        <span class="cm">규정 조문 하나</span>
+rule://산업안전보건법                <span class="cm">그 법 전체</span>
+doc://작업표준/WI-0412              <span class="cm">사내 문서</span>
+machine://3호기/spec                <span class="cm">설비 제원</span>
+
+<span class="cm">앞부분이 종류, 뒤가 어느 것인지 — 폴더 이름 붙이듯 정한다</span></code></pre></div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div><code>resources/list</code> 로 <b>목록</b>을, <code>resources/read</code> 로 <b>내용</b>을 가져간다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>목록이 크면 <b>다 내놓지 않는다</b>. 자주 쓰는 것만 목록에 두고 나머지는 Tool 로 찾게 한다.</div></div>
+</div>
+<div class="keymsg"><span class="k">설계</span><div>주소는 <b>사람이 읽고 알아볼 수 있게</b> 짓는다. 나중에 로그에서 이 글자를 본다.</div></div>
+</div>
+</section>
+<section class="slide" data-title="규정 조문을 열어 주는 서버">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>코드</div>
+  <h2 class="s-title sm">규정 조문을 열어 주는 서버</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">server.py — 어제 만든 CHUNKS 를 그대로 쓴다</span></div><pre><code>from mcp.server.fastmcp import FastMCP
+
+mcp = FastMCP("사내 규정")
+
+@mcp.resource("rule://{law}/{article}")
+def read_rule(law: str, article: str) -&gt; str:
+    """법령 조문 하나의 전문을 돌려준다"""
+    i = BY.get((law, article))
+    return CHUNKS[i]['text'] if i is not None else '그런 조문이 없다'
+
+mcp.run()</code></pre></div>
+<div class="vlist">
+  <div class="v"><span class="b">&#9733;</span><div>어제 만든 <b>조각 354개</b>가 그대로 재료다. 껍데기만 MCP 로 바꿔 씌운 것이다.</div></div>
+</div>
+<div class="keymsg"><span class="k">함수 설명이 중요하다</span><div>따옴표 안 설명이 <b>그대로 목록에 실린다</b>. 대충 적으면 대충 불린다.</div></div>
+</div>
+</section>
+<section class="slide section" data-title="[섹션] Tool 로 일을 시키기">
+  <div class="ghost">04</div>
+  <div class="seyebrow">CHAPTER 04</div>
+  <h2>Tool 로 일을 시키기</h2>
+  <p>어제 만든 조회 함수 넷을 그대로 내보낸다. 경계도 같이 옮긴다.</p>
+  <div class="agenda"><span>어제 함수 그대로</span><span>설명이 곧 성능</span><span>경계는 서버에</span></div>
+</section>
+<section class="slide" data-title="어제 함수를 그대로 Tool 로">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>옮기기</div>
+  <h2 class="s-title sm">어제 함수를 그대로 Tool 로</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">day11 의 defect_rate 를 MCP Tool 로</span></div><pre><code>@mcp.tool()
+def defect_rate(machine: str, shift: str = None) -&gt; str:
+    """설비호기의 불량률을 돌려준다. 교대조를 주면 그 안에서만 센다.
+
+    machine: 설비호기. 1호기~4호기
+    shift:   교대조. 주간 또는 야간
+    """
+    ...                      <span class="cm"># 어제 짠 몸통을 그대로 둔다</span></code></pre></div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>바뀐 것은 <b>데코레이터 한 줄과 타입 표시</b>뿐이다. 안쪽 SQL 은 손대지 않는다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>타입과 설명으로 <b>inputSchema 가 저절로 만들어진다</b>. 어제 손으로 쓰던 JSON 이 사라진다.</div></div>
+</div>
+<div class="keymsg"><span class="k">옮기는 값</span><div>노트북에서 <b>되던 것을</b> 옮긴다. 처음부터 다시 짜지 않는다.</div></div>
+</div>
+</section>
+<section class="slide" data-title="설명이 곧 성능">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>품질</div>
+  <h2 class="s-title sm">설명이 곧 성능</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="twopane">
+  <div class="pane bad"><h4>이렇게 적으면</h4>
+    <p><code>"""불량률 조회"""</code></p>
+    <div class="mini">언제 부를지 모른다. 인자에 무엇을 넣을지도 모른다</div></div>
+  <div class="pane good"><h4>이렇게 적는다</h4>
+    <p><code>"""설비호기의 불량률을 돌려준다.<br/>
+       교대조를 주면 그 안에서만 센다.<br/>
+       machine: 1호기~4호기<br/>
+       shift: 주간 또는 야간"""</code></p>
+    <div class="mini">쓸 수 있는 값까지 적는다</div></div>
+</div>
+<div class="vlist">
+  <div class="v"><span class="b">&#9733;</span><div>모델이 읽는 것은 <b>이 설명뿐</b>이다. 코드는 안 본다.</div></div>
+</div>
+<div class="keymsg"><span class="k">고칠 곳</span><div>도구를 자꾸 잘못 부르면 <b>코드가 아니라 설명</b>을 고친다.</div></div>
+</div>
+</section>
+<section class="slide" data-title="서버 쪽으로 옮겨 오는 경계">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>경계</div>
+  <h2 class="s-title sm">서버 쪽으로 옮겨 오는 경계</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="ctable"><table><thead><tr><th>어제 노트북에서</th><th>MCP 서버에서</th></tr></thead><tbody>
+  <tr><td class="hl">OPEN / SHUT 컬럼 목록</td><td class="hl">그대로. <b>서버 코드 안에</b> 둔다</td></tr>
+  <tr><td>LIMIT 100</td><td>그대로. 인자로 받아도 <b>서버가 다시 자른다</b></td></tr>
+  <tr><td>읽기 전용 연결</td><td>그대로. 서버가 쓰는 계정이 <b>조회 전용</b>이다</td></tr>
+  <tr><td>CALLS 기록</td><td>더 중요해진다 &mdash; <b>여러 앱이 같은 서버</b>를 부른다</td></tr>
+</tbody></table></div>
+<div class="vlist">
+  <div class="v"><span class="b">&#9733;</span><div>경계를 <b>앱에 두면 앱마다 다시</b> 만들어야 한다. 서버에 두면 한 번만 만든다.</div></div>
+</div>
+<div class="keymsg"><span class="k">이유</span><div>서버는 <b>누가 부를지 모른다</b>. 그래서 경계는 부르는 쪽이 아니라 <b>내주는 쪽</b>에 있어야 한다.</div></div>
+</div>
+</section>
+<section class="slide section" data-title="[섹션] 붙여서 돌려 보기">
+  <div class="ghost">05</div>
+  <div class="seyebrow">CHAPTER 05</div>
+  <h2>붙여서 돌려 보기</h2>
+  <p>만든 서버를 실제 앱에 붙이고, 되는 것과 막히는 것을 눈으로 본다.</p>
+  <div class="agenda"><span>만들 것</span><span>확인 순서</span><span>안 될 때</span></div>
+</section>
+<section class="slide" data-title="오늘 만들 서버 하나">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>실습</div>
+  <h2 class="s-title sm">오늘 만들 서버 하나</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="bpipe">
+  <div class="bstep"><b>1</b><span>서버 뼈대</span><i>FastMCP 한 줄</i></div>
+  <div class="bstep"><b>2</b><span>Resource</span><i>규정 조문 열기</i></div>
+  <div class="bstep"><b>3</b><span>Tool</span><i>불량률 · 최근 기록</i></div>
+  <div class="bstep"><b>4</b><span>붙이기</span><i>설정 한 장</i></div>
+  <div class="bstep"><b>5</b><span>시켜 보기</span><i>되는 것과 막히는 것</i></div>
+</div>
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div>재료는 <b>어제 것을 그대로</b> 쓴다. 새로 짤 것은 껍데기뿐이다.</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>다 만들고 나면 <b>Codex 에서도 사내 챗봇에서도</b> 같은 도구가 보인다.</div></div>
+</div>
+<div class="keymsg"><span class="k">오늘의 끝</span><div>어제 노트북 안에만 있던 도구가 <b>앱 밖으로 나간다</b>.</div></div>
+</div>
+</section>
+<section class="slide" data-title="되는지 보는 순서">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>확인</div>
+  <h2 class="s-title sm">되는지 보는 순서</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="ctable"><table><thead><tr><th>순서</th><th>무엇을</th><th>안 되면</th></tr></thead><tbody>
+  <tr><td class="hl">1</td><td class="hl">서버만 따로 켜 본다 (Inspector)</td><td class="hl">앱 문제가 아니다. 서버 코드부터</td></tr>
+  <tr><td>2</td><td><code>tools/list</code> 에 내 도구가 보이나</td><td>데코레이터나 이름을 본다</td></tr>
+  <tr><td>3</td><td>도구를 손으로 한 번 실행</td><td>인자 이름과 타입을 본다</td></tr>
+  <tr><td>4</td><td>앱에 붙이고 목록에 뜨나</td><td>설정 파일 경로와 명령어</td></tr>
+  <tr><td>5</td><td>말로 시켜서 불리나</td><td><b>설명을 고친다</b></td></tr>
+</tbody></table></div>
+<div class="keymsg"><span class="k">가장 흔한 것</span><div>서버는 멀쩡한데 <b>설정 파일의 경로</b>가 틀렸거나, <b>설명이 부실해</b> 안 불린다.</div></div>
+</div>
+</section>
+<section class="slide" data-title="일부러 시켜 보기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>확인</div>
+  <h2 class="s-title sm">일부러 시켜 보기</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">막히는 것을 눈으로 본다</span></div><pre><code>Q  3호기 점검 기록을 지워 줘
+&rarr; <span class="st">지우는 도구가 없다</span>. 목록에 없으니 부를 것이 없다
+
+Q  건조 ZONE1 온도를 보여 줘
+&rarr; <span class="st">SHUT 컬럼</span>. 서버가 SELECT 하지 않는다
+
+Q  전부 다 보여 줘
+&rarr; <span class="st">LIMIT</span> 에 걸린다</code></pre></div>
+<div class="vlist">
+  <div class="v"><span class="b">&#9733;</span><div>어제와 <b>같은 세 가지</b>를 시켜 본다. 껍데기가 바뀌어도 경계는 그대로여야 한다.</div></div>
+</div>
+<div class="keymsg"><span class="k">확인의 뜻</span><div>MCP 로 옮기면서 <b>경계가 새지 않았는지</b> 보는 것이다.</div></div>
+</div>
+</section>
+<section class="slide section" data-title="[섹션] 정리">
+  <div class="ghost">06</div>
+  <div class="seyebrow">CHAPTER 06</div>
+  <h2>정리</h2>
+  <p>오늘 손에 남는 것과, 자주 어긋나는 자리를 짚는다.</p>
+  <div class="agenda"><span>가져갈 것</span><span>헷갈리는 지점</span></div>
+</section>
+<section class="slide" data-title="오늘 가져갈 다섯 가지">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>정리</div>
+  <h2 class="s-title sm">오늘 가져갈 다섯 가지</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="vlist">
+  <div class="v"><span class="b">1</span><div>규약은 <b>고치는 품</b>을 줄인다. 앱 넷 × 도구 넷이 <b>16개에서 8개</b>가 된다.</div></div>
+  <div class="v"><span class="b">2</span><div>서버가 내주는 것은 셋 &mdash; <b>Tool · Resource · Prompt</b>. 「누가 부를까」로 가른다.</div></div>
+  <div class="v"><span class="b">3</span><div>사내 자료를 여는 서버는 <b>stdio 로 시작</b>한다. 밖으로 나갈 일이 없다.</div></div>
+  <div class="v"><span class="b">4</span><div>모델이 읽는 것은 <b>설명뿐</b>이다. 잘못 불리면 코드가 아니라 설명을 고친다.</div></div>
+  <div class="v"><span class="b">5</span><div>경계는 <b>내주는 쪽</b>에 둔다. 서버는 누가 부를지 모르기 때문이다.</div></div>
+</div>
+<div class="keymsg"><span class="k">한 줄</span><div>남의 서버를 붙이는 것은 <b>설치와 같은 무게</b>다. 어제 만든 도구가 <b>노트북 밖으로</b> 나갔다.</div></div>
+</div>
+</section>
+<section class="slide" data-title="헷갈리기 쉬운 지점">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>주의</div>
+  <h2 class="s-title sm">헷갈리기 쉬운 지점</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="ctable"><table><thead><tr><th>이렇게 알기 쉽다</th><th>실제로는</th></tr></thead><tbody>
+  <tr><td class="hl">MCP 서버는 어디 멀리 있다</td><td class="hl">대개 <b>내 컴퓨터</b>에서 같이 돈다</td></tr>
+  <tr><td>MCP 가 도구를 골라 준다</td><td>고르는 것은 <b>모델</b>이다. MCP 는 형식만 정한다</td></tr>
+  <tr><td>붙이면 다 좋아진다</td><td>도구가 많아지면 <b>엉뚱한 것을 고른다</b></td></tr>
+  <tr><td>Resource 로 다 내주면 된다</td><td>목록이 크면 <b>컨텍스트를 다 먹는다</b></td></tr>
+  <tr><td>규약이니 안 바뀐다</td><td>아직 <b>어리다</b>. 지난달에도 여러 기능이 폐기됐다</td></tr>
+</tbody></table></div>
+<div class="keymsg"><span class="k">마지막 것</span><div>지난달에 <b>Sampling · Logging</b> 이 폐기됐다. 배운 것이 오래가지 않을 수 있다.</div></div>
+</div>
+</section>
+
+
+    </div>
+  </div>
+</main>
+<div class="overview" id="overview">
+  <div class="head"><h3>슬라이드 목차</h3><button id="ovClose">닫기 ✕</button></div>
+  <div class="ovgrid" id="ovgrid"></div>
+</div>
+
+<div class="controlbar">
+  <button class="ico" id="btnMenu" title="목차"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+  <span class="sep"></span>
+  <button class="ico" id="btnPrev" title="이전"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <span class="count"><b id="cur">1</b> / <span id="tot2">75</span></span>
+  <button class="ico" id="btnNext" title="다음"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 18l6-6-6-6"/></svg></button>
+  <span class="sep"></span>
+  <button class="zoom" id="btnOut" title="축소"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14"/></svg></button>
+  <button class="zoom" id="btnIn" title="확대"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></button>
+  <button class="zoom" id="btnFit" title="화면 맞춤"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 4H5a1 1 0 0 0-1 1v4M15 4h4a1 1 0 0 1 1 1v4M9 20H5a1 1 0 0 1-1-1v-4M15 20h4a1 1 0 0 0 1-1v-4"/></svg></button>
+  <button class="pdf" id="btnPdf" title="PDF로 저장 (인쇄 → PDF로 저장)">PDF</button>
+</div>
+
+<div class="hint">← → 또는 Space · 목차(≡) · 줌(−/+) · 숫자 입력 후 Enter로 이동</div>
+<div id="jumpHint"></div>
+<style>
+  #jumpHint{position:fixed; left:50%; bottom:74px; transform:translateX(-50%) translateY(6px); z-index:75;
+    background:#2B2B2E; color:#fff; font-family:Georgia,'Times New Roman',serif; font-style:italic;
+    font-size:20px; letter-spacing:.04em; padding:8px 20px; border-radius:999px;
+    box-shadow:0 12px 28px -10px rgba(0,0,0,.55); opacity:0; pointer-events:none;
+    transition:opacity .12s ease, transform .12s ease;}
+  #jumpHint.on{opacity:1; transform:translateX(-50%) translateY(0);}
+  @media print{ #jumpHint{display:none !important;} }
+</style>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const scaler = document.getElementById('scaler');
+  const sizer  = document.getElementById('sizer');
+  const stage  = document.getElementById('stage');
+  const total  = slides.length;
+  let idx = 0, userZoom = 1;
+  const BW = 1280, BH = 720;
+
+  document.getElementById('tot2').textContent = total;
+  slides.forEach((s, i) => {
+    const c = s.querySelector('.coord b');     if (c) c.textContent = String(i + 1).padStart(2, '0');
+    const t = s.querySelector('.coord .tot');  if (t) t.textContent = total;
+  });
+
+  const ovgrid = document.getElementById('ovgrid');
+  slides.forEach((s, i) => {
+    const b = document.createElement('button');
+    b.className = 'ovcard';
+    b.innerHTML = '<div class="ovn">' + String(i + 1).padStart(2, '0') + '</div><div class="ovt">' + (s.dataset.title || '') + '</div>';
+    b.addEventListener('click', () => { go(i); closeOverview(); });
+    ovgrid.appendChild(b);
+  });
+  const overview = document.getElementById('overview');
+  function openOverview(){ overview.classList.add('on'); }
+  function closeOverview(){ overview.classList.remove('on'); }
+  document.getElementById('btnMenu').addEventListener('click', openOverview);
+  document.getElementById('ovClose').addEventListener('click', closeOverview);
+  overview.addEventListener('click', (e) => { if (e.target === overview) closeOverview(); });
+
+  function fitScale(){
+    const availW = stage.clientWidth  - 60;
+    const availH = stage.clientHeight - 60;
+    return Math.min(availW / BW, availH / BH);
+  }
+  function applyScale(){
+    const eff = fitScale() * userZoom;
+    scaler.style.transform = 'scale(' + eff + ')';
+    sizer.style.width  = (BW * eff) + 'px';
+    sizer.style.height = (BH * eff) + 'px';
+  }
+  window.addEventListener('resize', applyScale);
+
+  function go(n){
+    idx = Math.max(0, Math.min(total - 1, n));
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    document.getElementById('cur').textContent = idx + 1;
+    document.getElementById('btnPrev').disabled = idx === 0;
+    document.getElementById('btnNext').disabled = idx === total - 1;
+    document.getElementById('pfill').style.width = (idx / (total - 1) * 100) + '%';
+    applyScale();
+    stage.scrollTop = 0; stage.scrollLeft = 0;
+  }
+  document.getElementById('btnPrev').addEventListener('click', () => go(idx - 1));
+  document.getElementById('btnNext').addEventListener('click', () => go(idx + 1));
+  document.getElementById('btnIn').addEventListener('click',  () => { userZoom = Math.min(2.4, userZoom + 0.15); applyScale(); });
+  document.getElementById('btnOut').addEventListener('click', () => { userZoom = Math.max(0.5, userZoom - 0.15); applyScale(); });
+  document.getElementById('btnFit').addEventListener('click', () => { userZoom = 1; applyScale(); });
+  document.getElementById('btnPdf').addEventListener('click', () => window.print());
+
+  // ---- 슬라이드 번호 입력 → Enter 로 점프 ----
+  let jumpBuf = '', jumpTimer = null;
+  const jumpHint = document.getElementById('jumpHint');
+  function showJump(){
+    if (!jumpHint) return;
+    if (jumpBuf){ jumpHint.textContent = '→ ' + jumpBuf; jumpHint.classList.add('on'); }
+    else { jumpHint.classList.remove('on'); }
+  }
+  function clearJump(){ jumpBuf = ''; if (jumpTimer) clearTimeout(jumpTimer); showJump(); }
+  function commitJump(){
+    if (jumpBuf){ const n = parseInt(jumpBuf, 10); if (!isNaN(n)) go(n - 1); }
+    clearJump();
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (overview.classList.contains('on')) { if (e.key === 'Escape') closeOverview(); return; }
+    if (/^[0-9]$/.test(e.key)){
+      e.preventDefault();
+      jumpBuf = (jumpBuf + e.key).slice(0, 3);
+      showJump();
+      if (jumpTimer) clearTimeout(jumpTimer);
+      jumpTimer = setTimeout(clearJump, 1600);
+      return;
+    }
+    if (e.key === 'Enter'){ e.preventDefault(); commitJump(); return; }
+    if (e.key === 'Escape'){ clearJump(); }
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown'){ e.preventDefault(); clearJump(); go(idx + 1); }
+    if (e.key === 'ArrowLeft'  || e.key === 'PageUp'){ e.preventDefault(); clearJump(); go(idx - 1); }
+    if (e.key === 'Home'){ clearJump(); go(0); } if (e.key === 'End'){ clearJump(); go(total - 1); }
+    if (e.key === '+' || e.key === '='){ userZoom = Math.min(2.4, userZoom + 0.15); applyScale(); }
+    if (e.key === '-'){ userZoom = Math.max(0.5, userZoom - 0.15); applyScale(); }
+  });
+
+  applyScale(); go(0);
+</script>
+</body>
+</html>
