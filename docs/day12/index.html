@@ -375,7 +375,7 @@
     <div class="cards c4">
       <div class="card"><span class="n">CH0~1</span><h3>MCP 가 나온 이유</h3><p>tool calling 이 남긴 다섯 가지와, 그것을 채운 구조를 본다.</p></div>
       <div class="card"><span class="n">CH2</span><h3>서버가 내주는 셋</h3><p>Tool · Resource · Prompt. 누가 부르는지로 갈린다.</p></div>
-      <div class="card"><span class="n">CH3~4</span><h3>연결과 구분</h3><p>전송 방식과 인증을 고르고, 무엇을 Resource 로 낼지 정한다.</p></div>
+      <div class="card"><span class="n">CH3~4</span><h3>연결과 구분</h3><p>전송 방식을 고르고, 무엇을 Resource 로 낼지 정한다.</p></div>
       <div class="card"><span class="n">CH5</span><h3>보안과 권한</h3><p>서버를 연결할 때 볼 것과, 내 도구를 내줄 때 지킬 것.</p></div>
     </div>
     <div class="keymsg"><span class="k">범위</span><div>여기서는 <b>쓰는 쪽</b>을 다룬다. 직접 만드는 것은 뒤에서 한다.</div></div>
@@ -656,7 +656,7 @@ TOOLS = [{'name': 'defect_rate',
   <div class="ghost">03</div>
   <div class="seyebrow">CHAPTER 03</div>
   <h2>MCP 서버 연결하기</h2>
-  <div class="agenda"><span>stdio 와 HTTP</span><span>인증</span><span>Inspector</span></div>
+  <div class="agenda"><span>stdio 와 HTTP</span><span>Inspector</span><span>RAG 와의 갈림</span></div>
 </section>
 <section class="slide" data-title="3가지 전송 방식">
   <div class="coord"><b></b> / <span class="tot"></span></div>
@@ -678,23 +678,6 @@ TOOLS = [{'name': 'defect_rate',
   <h2 class="s-title sm">stdio 와 Streamable HTTP 견주기</h2>
   <div class="rule"></div>
   <div class="body"><table class="ctable"><thead><tr><th>기준</th><th>stdio</th><th>Streamable HTTP</th></tr></thead><tbody><tr><td>어디서 실행</td><td>같은 머신의 하위 프로세스</td><td class="hl">원격 서비스</td></tr><tr><td>주 용도</td><td>로컬 개발·데스크톱 도구</td><td class="hl">프로덕션·다중 사용자</td></tr><tr><td>인증</td><td>보통 불필요</td><td class="hl">OAuth 필요</td></tr><tr><td>전환</td><td colspan="2">코드 한 줄: mcp.run(transport="streamable-http")</td></tr></tbody></table><div class="callout "><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></div><div class="ct"><h4>SSE는 어떻게 됐나</h4><p>예전 원격 방식(HTTP+SSE)은 Streamable HTTP로 대체됐다. 새로 만들면 Streamable HTTP를 쓴다.</p></div></div></div>
-</section>
-<section class="slide" data-title="원격 인증">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>인증</div>
-  <h2 class="s-title sm">원격 서버의 인증</h2>
-  <div class="rule"></div>
-  <div class="body">
-<div class="vlist">
-  <div class="v"><span class="b">&rarr;</span><div>원격 서버는 <b>OAuth 로 보호되는 자원</b>으로 다룬다</div></div>
-  <div class="v"><span class="b">&rarr;</span><div>토큰은 <b>그 서버에서만</b> 쓰이게 좁힌다</div></div>
-</div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">설정에 키를 그대로 적지 않는다</span></div><pre><code><span class="cm">✕ 이렇게 적으면 파일을 본 사람이 다 쓴다</span>
-"github": {"url": "...", "headers": {"Authorization": "Bearer ghp_xxx"}}
-
-<span class="cm">○ 앱이 OAuth 로 받아 오게 둔다</span>
-"github": {"type": "http", "url": "https://api.githubcopilot.com/mcp/"}</code></pre></div>
-<div class="keymsg"><span class="k">왜 좁히나</span><div>한 서버에 준 토큰이 <b>다른 서버에서 쓰이는 것</b>을 막기 위해서다.</div></div>
-</div>
 </section>
 <section class="slide" data-title="MCP Inspector">
   <div class="coord"><b></b> / <span class="tot"></span></div>
