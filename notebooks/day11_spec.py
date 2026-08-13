@@ -12,13 +12,14 @@ CELLS = [
        "조회만 되게 할 것인지, 원본 값을 그대로 줄 것인지, 몇 줄까지 줄 것인지.\n"
        "이걸 안 정하고 만들면 **도구가 정하는 대로** 열린다."),
 
-    prep("""# 키는 화면에 안 찍히게 받는다
+    prep("""# ① 키를 받는다. 화면에 안 찍히게 getpass 로 받는다.
 import getpass, json, urllib.request
+
 KEY = getpass.getpass('nvapi- 로 시작하는 키: ')
-
 URL = 'https://integrate.api.nvidia.com/v1/chat/completions'
-MODEL = 'nvidia/llama-3.3-nemotron-super-49b-v1'
+MODEL = 'nvidia/llama-3.3-nemotron-super-49b-v1'"""),
 
+    prep("""# ② 모델에 말을 거는 함수. 오늘 이 함수 하나로 다 부른다.
 def chat(messages, tools=None, n=500, temp=0):
     body = {'model': MODEL, 'max_tokens': n, 'temperature': temp, 'messages': messages}
     if tools:
@@ -32,8 +33,9 @@ def chat(messages, tools=None, n=500, temp=0):
                 return json.load(f)['choices'][0]['message']
         except Exception as e:
             err = str(e)[:80]
-    return {'role': 'assistant', 'content': '[실패] %s' % err}
+    return {'role': 'assistant', 'content': '[실패] %s' % err}"""),
 
+    prep("""# ③ 키가 살아 있는지 한 마디 물어본다. '서울' 이 나오면 준비 끝이다.
 print((chat([{'role': 'user', 'content': '한 단어로만. 대한민국의 수도는?'}], n=10)
        .get('content') or '').strip())"""),
 
@@ -151,12 +153,13 @@ print('이 글을 Codex 에 넣고, 받은 코드를 다음 절의 검사기에 
     md("받은 코드를 **바로 붙이지 않는다.** 다섯 가지를 기계로 먼저 본다.\n"
        "사람 눈으로도 볼 수 있지만, 매번 같은 것을 보게 되니 함수로 둔다."),
 
-    prep("""# 받아 온 코드 문자열을 검사한다. 통과 못 하면 다시 시킨다.
+    prep("""# ① 걸러 낼 말을 목록으로 둔다. 여기에 한 줄씩 보태면 검사가 는다.
 import re
 
 BANNED = ['insert ', 'update ', 'delete ', 'drop ', 'alter ', 'create table']
-SECRET = ['건조_', '프레스_', '코팅_', '전극_', '화성_', 'nmp_', '에이징_']
+SECRET = ['건조_', '프레스_', '코팅_', '전극_', '화성_', 'nmp_', '에이징_']"""),
 
+    prep("""# ② 다섯 가지를 차례로 본다. 통과 못 하면 다시 시킨다.
 def review(src):
     low = src.lower()
     bad = []
@@ -188,8 +191,9 @@ def review(src):
 
     if 'mode=ro' not in low:
         bad.append('[권고] 읽기 전용 연결이 아니다')
-    return bad
+    return bad"""),
 
+    prep("""# 검사 결과를 보기 좋게 찍는다
 def show_review(name, src):
     bad = review(src)
     print('%s — %s' % (name, '통과' if not bad else '%d건' % len(bad)))
@@ -197,7 +201,7 @@ def show_review(name, src):
         print('   ' + b)
     print()"""),
 
-    prep("""# 실제로 자주 돌아오는 코드 두 벌. 하나는 시킨 대로, 하나는 친절이 지나치다.
+    prep("""# ① 시킨 대로 온 코드. 읽기 전용 연결에 LIMIT 까지 붙어 있다.
 GOOD = '''
 import sqlite3
 CALLS = []
@@ -212,8 +216,9 @@ def defect_rate(machine, shift=None):
     args = (machine,) if not shift else (machine, shift)
     with _con() as c:
         return c.execute(sql, args).fetchall()
-'''
+'''"""),
 
+    prep("""# ② 친절이 지나친 코드. 시킨 세 개 말고 두 개를 더 얹었다.
 TOO_KIND = '''
 import sqlite3
 def _con():
@@ -277,15 +282,16 @@ for name, con in [('보통 연결', sqlite3.connect('plant.db')),
     md("## 6. 조회 도구와 규정 검색"),
     md("경계대로 도구를 짠다. **집계만 돌려주고, 원본 공정 조건은 SELECT 하지 않는다.**"),
 
-    prep("""# 도구 하나 — 읽기 전용 조회
+    prep("""# ① 읽기 전용 연결과, 기록을 남길 자리를 만든다.
 import sqlite3
 
 CALLS = []                                   # 누가 무엇을 불렀는지 남긴다
-MACHINES = sorted(df['설비호기'].unique())
+MACHINES = sorted(df['설비호기'].unique())    # 쓸 수 있는 설비 이름
 
 def _ro():
-    return sqlite3.connect('file:plant.db?mode=ro', uri=True)
+    return sqlite3.connect('file:plant.db?mode=ro', uri=True)"""),
 
+    prep("""# ② 첫째 도구 — 불량률. 집계만 돌려주고 원본 행은 안 준다.
 def defect_rate(machine, shift=None):
     CALLS.append(('defect_rate', machine, shift))
     if machine not in MACHINES:
@@ -300,8 +306,9 @@ def defect_rate(machine, shift=None):
     if not n:
         return '해당 조건에 데이터가 없다'
     return '%s %s · 측정 %d건 중 불량 %d건 · 불량률 %.1f%%' % (
-        machine, shift or '전체', n, bad or 0, 100.0 * (bad or 0) / n)
+        machine, shift or '전체', n, bad or 0, 100.0 * (bad or 0) / n)"""),
 
+    prep("""# ③ 둘째 도구 — 최근 기록. OPEN 에 있는 네 컬럼만 SELECT 한다.
 def recent_lots(machine, limit=5):
     CALLS.append(('recent_lots', machine, limit))
     if machine not in MACHINES:
@@ -311,8 +318,9 @@ def recent_lots(machine, limit=5):
             'SELECT 로트번호, 시각, 교대조, 판정 FROM 공정이력 '
             'WHERE 설비호기=? ORDER BY 시각 DESC LIMIT ?',
             (machine, min(int(limit), 100))).fetchall()
-    return '\\n'.join('%s %s %s %s' % r for r in rows) or '데이터가 없다'
+    return '\\n'.join('%s %s %s %s' % r for r in rows) or '데이터가 없다'"""),
 
+    prep("""# ④ 세 가지로 불러 본다. 마지막은 없는 설비다.
 print(defect_rate('3호기'))
 print(defect_rate('3호기', '야간'))
 print(defect_rate('9호기'))"""),
@@ -355,7 +363,7 @@ vec = TfidfVectorizer(analyzer='char_wb', ngram_range=(2, 4), max_features=50000
 M = vec.fit_transform(TEXTS)
 print('벡터 %d개 · 낱말 자질 %d개' % (len(V), M.shape[1]))"""),
 
-    prep("""# 두 순위를 합친다. 양쪽에서 위에 있을수록 이긴다.
+    prep("""# ① 두 순위를 합친다. 양쪽에서 위에 있을수록 이긴다. (RRF)
 def hybrid_scored(question, k=20):
     dense = np.argsort(-(V @ EMB.encode([question], normalize_embeddings=True)[0]))
     sparse = np.argsort(-(M @ vec.transform([question]).T).toarray().ravel())
@@ -369,8 +377,9 @@ def hybrid_scored(question, k=20):
 
 def hybrid(question, k=3):
     order, _ = hybrid_scored(question, k)
-    return [CHUNKS[i] for i in order]
+    return [CHUNKS[i] for i in order]"""),
 
+    prep("""# ② 셋째 도구 — 규정 검색. 위 검색을 함수 하나로 감싼 것이다.
 def find_rule(question):
     CALLS.append(('find_rule', question, None))
     hits = hybrid(question, 3)
@@ -466,7 +475,7 @@ print('그냥 상위 5 와 자리가 같은 것 %d개 / 5개' % same)"""),
        "「짤리면 얼마나 미리 알려주나」라고 묻지 「해고의 예고」라고 묻지 않는다.\n"
        "이 어긋남을 메우는 것이 **사전**이고, 사전은 코드가 아니라 **현업이 채우는 표**다."),
 
-    prep("""# 현장에서 쓰는 말 → 규정에 적힌 말. 엑셀 한 장이면 된다.
+    prep("""# 사전과, 시험해 볼 질문 넷. 엑셀 한 장이면 되는 표다.
 GLOSSARY = {
     '쉬는 날':   '연차 유급휴가',
     '짤리':     '해고',            # 어간으로 둔다. 짤리면·짤린다 를 다 잡으려고
@@ -478,9 +487,9 @@ GLOSSARY = {
 QS = [('쉬는 날은 일 년에 며칠인가',   '근로기준법', '제60조'),
       ('짤리면 얼마나 미리 알려주나',   '근로기준법', '제26조'),
       ('산재 나면 회사가 뭘 해야 하나', '근로기준법', '제78조'),
-      ('몸 검사 안 하면 어떻게 되나',   '산업안전보건법', '제43조')]
+      ('몸 검사 안 하면 어떻게 되나',   '산업안전보건법', '제43조')]"""),
 
-# 그 조문이 몇 등에 오는지 — 의미 검색과 낱말 검색 각각
+    prep("""# 그 조문이 몇 등에 오는지 재는 자 — 의미 검색과 낱말 검색 각각
 def rank_of(question, source, article):
     d = np.argsort(-(V @ EMB.encode([question], normalize_embeddings=True)[0]))
     p = np.argsort(-(M @ vec.transform([question]).T).toarray().ravel())
@@ -611,11 +620,12 @@ for name in ['NanumGothic', 'AppleGothic', 'Malgun Gothic']:
 plt.rc('axes', unicode_minus=False)
 print('폰트:', FONT)"""),
 
-    prep("""# 조문 하나를 가운데 두고 이웃만 그린다
+    prep("""# ① 동그라미 안에 적을 짧은 이름을 만든다
 def label(i):
     m = re.match(r'(제\\d+조(?:의\\d+)?)\\(([^)]*)\\)', CHUNKS[i]['title'])
-    return '%s\\n%s' % (m.group(1), m.group(2)[:10]) if m else CHUNKS[i]['title'][:12]
+    return '%s\\n%s' % (m.group(1), m.group(2)[:10]) if m else CHUNKS[i]['title'][:12]"""),
 
+    prep("""# ② 조문 하나를 가운데 두고 이웃만 그린다 (ego graph)
 def draw(law, article):
     c = BY.get((law, article))
     if c is None:
@@ -699,14 +709,15 @@ print(cited_by('산업안전보건법', ART))"""),
     md("## 10. 에이전트에 붙이기"),
     md("모델에는 **함수가 아니라 설명서**를 준다. 언제 부를지는 설명서를 보고 모델이 정한다."),
 
-    prep("""# 도구 설명서 — 이름 · 하는 일 · 인자
+    prep("""# 넷째 도구와, 이름으로 함수를 찾는 표
 def trace_rule(article):
     CALLS.append(('trace_rule', article, None))
     return cited_by('산업안전보건법', article)
 
 FUNCS = {'defect_rate': defect_rate, 'recent_lots': recent_lots,
-         'find_rule': find_rule, 'trace_rule': trace_rule}
+         'find_rule': find_rule, 'trace_rule': trace_rule}"""),
 
+    prep("""# 모델에는 함수가 아니라 설명서를 준다. 언제 부를지는 이걸 읽고 정한다.
 TOOLS = [
  {'type': 'function', 'function': {
    'name': 'defect_rate',
@@ -733,12 +744,13 @@ TOOLS = [
      'article': {'type': 'string', 'description': '조문 번호. 예 제42조'}}}}},
 ]"""),
 
-    prep("""# 시스템 프롬프트 — 무엇을 하는 비서이고 무엇은 안 하는지
+    prep("""# ① 시스템 프롬프트 — 무엇을 하는 비서이고 무엇은 안 하는지
 SYSTEM = ('너는 공정 데이터와 사내 규정을 보는 비서다. 한국어로만 답한다.\\n'
           '숫자는 도구로 조회한 값만 쓴다. 어림잡지 마라.\\n'
           '규정은 find_rule 로 찾은 것만 인용한다. 찾지 않았으면 규정을 언급하지 마라.\\n'
-          '도구가 돌려주지 않은 값은 표에 빈칸으로도 넣지 마라.')
+          '도구가 돌려주지 않은 값은 표에 빈칸으로도 넣지 마라.')"""),
 
+    prep("""# ② 판단 → 행동 → 관찰을 되풀이하는 고리. 에이전트의 몸통이다.
 LAST_OUT = []                                # 마지막 질문에서 도구가 돌려준 것
 
 def run(question, max_steps=5, log=True):
@@ -762,14 +774,16 @@ def run(question, max_steps=5, log=True):
                 out = '오류: %s' % e
             LAST_OUT.append(str(out))
             messages.append({'role': 'tool', 'tool_call_id': c['id'], 'content': str(out)})
-    return '[한도] %d번 안에 못 끝냈다' % max_steps
+    return '[한도] %d번 안에 못 끝냈다' % max_steps"""),
 
+    prep("""# ③ 답에 있는 숫자가 도구 출력에 있는지 대조한다.
 def ungrounded(answer):
     '''답에 있는 숫자 중 도구가 돌려주지 않은 것'''
     seen = ' '.join(LAST_OUT)
     nums = set(re.findall(r'\\d+\\.?\\d*', answer))
-    return sorted(n for n in nums if len(n) >= 2 and n not in seen)
+    return sorted(n for n in nums if len(n) >= 2 and n not in seen)"""),
 
+    prep("""# ④ 물어보고 · 무엇을 불렀고 · 근거 없는 숫자가 있는지 한 번에 본다.
 def probe(question):
     '''물어보고, 무엇을 불렀고 무엇이 돌아왔는지 같이 본다'''
     before = len(CALLS)
