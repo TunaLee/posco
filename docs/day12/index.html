@@ -373,12 +373,12 @@
   <div class="rule"></div>
   <div class="body">
     <div class="cards c4">
-      <div class="card"><span class="n">CH0~1</span><h3>왜 규약인가</h3><p>앱마다 도구마다 다시 짜던 것을 하나로 묶는다.</p></div>
-      <div class="card"><span class="n">CH2~3</span><h3>서버가 내주는 셋</h3><p>Tool · Resource · Prompt. 누가 부르는지로 갈린다.</p></div>
-      <div class="card"><span class="n">CH4~5</span><h3>붙이고 만들기</h3><p>남이 만든 서버를 붙이고, FastMCP 로 직접 만든다.</p></div>
-      <div class="card"><span class="n">CH6~7</span><h3>내가 내주기</h3><p>어제 만든 함수를 Resource 와 Tool 로 내보낸다.</p></div>
+      <div class="card"><span class="n">CH0~1</span><h3>왜 규약인가</h3><p>앱마다 도구마다 다시 짜던 것을 하나로 묶는다. MCP 의 구조를 본다.</p></div>
+      <div class="card"><span class="n">CH2</span><h3>서버가 내주는 셋</h3><p>Tool · Resource · Prompt. 누가 부르는지로 갈린다.</p></div>
+      <div class="card"><span class="n">CH3~4</span><h3>붙여 쓰고 가려 쓰기</h3><p>남이 만든 서버를 붙인다. 무엇을 Resource 로 낼지 정한다.</p></div>
+      <div class="card"><span class="n">CH5</span><h3>보안</h3><p>붙이기 전에 볼 것과, 도구를 내줄 때 지킬 것.</p></div>
     </div>
-    <div class="keymsg"><span class="k">어제와 이어</span><div>어제 만든 <b>도구 넷</b>이 오늘 그대로 <b>MCP 서버</b>가 된다.</div></div>
+    <div class="keymsg"><span class="k">범위</span><div>여기서는 <b>쓰는 쪽</b>을 다룬다. 직접 만드는 것은 뒤에서 한다.</div></div>
   </div>
 </section>
 <section class="slide section" data-title="[섹션] 따로따로 잇던 방식">
@@ -483,65 +483,15 @@ Codex         「3호기 야간 불량률」  &rarr; <span class="st">같은 함
   <div class="rule"></div>
   <div class="body"><div class="cards c3"><div class="card"><span class="n">Request</span><h3>요청</h3><p>id가 붙고 응답을 기대한다. 예: 도구 목록·도구 호출.</p></div><div class="card"><span class="n">Response</span><h3>응답</h3><p>결과(result) 또는 오류(error)를 돌려준다.</p></div><div class="card"><span class="n">Notification</span><h3>알림</h3><p>id 없이 한 방향 통지. 응답이 없다. 예: 진행 상황.</p></div></div><div class="callout "><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></div><div class="ct"><h4>오류도 규격이 있다</h4><p>오류는 코드+메시지로 표준화된다. 참고로 2025-06 스펙에서 여러 요청을 묶는 배치(batching)는 제거됐다.</p></div></div></div>
 </section>
-<section class="slide section" data-title="[섹션] 데코레이터">
+<section class="slide section" data-title="[섹션] Tool · Resource · Prompt">
   <div class="ghost">02</div>
   <div class="seyebrow">CHAPTER 02</div>
-  <h2>데코레이터</h2>
-  <div class="agenda"><span>함수도 값</span><span>감싸는 함수</span><span>@mcp.tool</span></div>
-</section>
-<section class="slide" data-title="함수도 값이다">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>데코레이터 ①</div>
-  <h2 class="s-title sm">값으로 다루는 함수</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">values.py</span></div><pre><code>def hello():
-    return &quot;안녕&quot;
-
-f = hello        <span class="cm"># 괄호 없이 = 함수 &#x27;자체&#x27;를 변수에 담기 (호출 아님)</span>
-print(f())       <span class="cm"># 안녕</span>
-<span class="cm"># 함수를 인자로 넘기거나, 함수를 돌려줄 수도 있다</span></code></pre></div>
-  <div class="keymsg"><span class="k">토대</span><div>함수를 값으로 다룰 수 있으니, <b>함수를 받아 함수를 돌려주는</b> 데코레이터도 가능하다.</div></div></div>
-</section>
-<section class="slide" data-title="데코레이터란 — 함수를 감싸는 함수">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>데코레이터</div>
-  <h2 class="s-title sm">함수를 감싸는 함수</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">decorator.py</span></div><pre><code>def announce(func):
-    def wrapper(*a, **k):
-        print(&quot;[호출]&quot;, func.__name__)
-        return func(*a, **k)
-    return wrapper
-
-@announce            <span class="cm"># greet = announce(greet) 와 완전히 같다</span>
-def greet(name):
-    return f&quot;안녕, {name}&quot;</code></pre></div>
-  <div class="keymsg"><span class="k">핵심</span><div><b>@announce</b> 는 <code>greet = announce(greet)</code> 의 문법 설탕 — 함수를 받아 기능을 덧입힌 새 함수로 바꾼다.</div></div></div>
-</section>
-<section class="slide" data-title="@mcp.tool 은 함수를 등록한다">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag mint">준비</span><span class="dot"></span>MCP와 연결</div>
-  <h2 class="s-title sm">@mcp.tool 이 하는 일</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">register.py</span></div><pre><code>TOOLS = {}
-def tool(func):          <span class="cm"># @mcp.tool 의 축소판</span>
-    TOOLS[func.__name__] = func
-    return func
-
-@tool
-def add(a, b): return a + b
-<span class="cm"># 이제 TOOLS == {&quot;add&quot;: add} — 함수가 &#x27;등록&#x27;됐다</span></code></pre></div>
-  <div class="callout mint"><div class="ci" style="font-size:18px"></div><div class="ct"><h4>MCP도 똑같다</h4><p><code>@mcp.tool</code>·<code>@mcp.resource</code>·<code>@mcp.prompt</code> 는 함수를 <b>MCP 서버에 등록</b>한다. 타입힌트=스키마, docstring=설명.</p></div></div></div>
-</section>
-<section class="slide section" data-title="[섹션] Tool · Resource · Prompt">
-  <div class="ghost">03</div>
-  <div class="seyebrow">CHAPTER 03</div>
   <h2>Tool · Resource · Prompt</h2>
   <div class="agenda"><span>셋 한눈에</span><span>구분 규칙</span><span>누가 부르나</span></div>
 </section>
 <section class="slide" data-title="3 primitives 한눈에">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>세 기둥</div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>세 기둥</div>
   <h2 class="s-title sm">서버가 내주는 셋</h2>
   <div class="rule"></div>
   <div class="body">
@@ -555,7 +505,7 @@ def add(a, b): return a + b
 </section>
 <section class="slide" data-title="세 프리미티브 — 호출하면 이렇게 나온다">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag mint">예시</span><span class="dot"></span>호출 → 결과</div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>호출과 결과</div>
   <h2 class="s-title sm">불렀을 때 돌아오는 것</h2>
   <div class="rule"></div>
   <div class="body">
@@ -568,7 +518,7 @@ def add(a, b): return a + b
 </section>
 <section class="slide" data-title="구분 규칙">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>Tool vs Resource</div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>Tool vs Resource</div>
   <h2 class="s-title sm">읽기와 행동</h2>
   <div class="rule"></div>
   <div class="body">
@@ -581,14 +531,14 @@ def add(a, b): return a + b
 </section>
 <section class="slide" data-title="제어 주체">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>제어 주체</div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>제어 주체</div>
   <h2 class="s-title sm">셋을 가르는 기준</h2>
   <div class="rule"></div>
   <div class="body"><div class="cards c3"><div class="card"><span class="n" style="color:var(--violet)">모델이 결정</span><h3>Tools</h3><p>모델이 필요할 때 스스로 호출한다. 행동·부작용.</p></div><div class="card"><span class="n" style="color:var(--mint)">앱이 결정</span><h3>Resources</h3><p>호스트 앱이 맥락으로 골라 넣는 읽기 전용 데이터.</p></div><div class="card"><span class="n" style="color:var(--amber)">사용자가 선택</span><h3>Prompts</h3><p>사용자가 슬래시 명령처럼 고르는 템플릿.</p></div></div><div class="keymsg"><span class="k">핵심</span><div>같은 서버가 노출해도 <b>제어 주체가 다르다</b>. 이 구분이 설계·보안의 출발점.</div></div></div>
 </section>
 <section class="slide" data-title=" 미니실습 · Tool인가 Resource인가">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag mint">미니 실습</span><span class="dot"></span>분류</div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>미니 실습</div>
   <h2 class="s-title sm">Tool 과 Resource 가르기</h2>
   <div class="rule"></div>
   <div class="body">
@@ -604,7 +554,7 @@ def add(a, b): return a + b
 </section>
 <section class="slide" data-title="tool calling이란">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>도구 호출</div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>도구 호출</div>
   <h2 class="s-title sm">모델이 도구를 부르는 흐름</h2>
   <div class="rule"></div>
   <div class="body">
@@ -618,14 +568,14 @@ def add(a, b): return a + b
   <div class="keymsg"><span class="k">핵심</span><div>도구 <b>선택·인자·호출 시점을 모델이</b> 정한다. 뒤에서 직접 돌려 본다.</div></div></div>
 </section>
 <section class="slide section" data-title="[섹션] 붙여 쓰기">
-  <div class="ghost">04</div>
-  <div class="seyebrow">CHAPTER 04</div>
+  <div class="ghost">03</div>
+  <div class="seyebrow">CHAPTER 03</div>
   <h2>붙여 쓰기</h2>
   <div class="agenda"><span>전송 방식</span><span>설정 한 장</span><span>Inspector</span></div>
 </section>
 <section class="slide" data-title="3가지 전송 방식">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>transport</div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>transport</div>
   <h2 class="s-title sm">세 가지 전송 방식</h2>
   <div class="rule"></div>
   <div class="body">
@@ -639,14 +589,14 @@ def add(a, b): return a + b
 </section>
 <section class="slide" data-title="전송 선택">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>선택 기준</div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>선택 기준</div>
   <h2 class="s-title sm">무엇으로 붙일지 고르기</h2>
   <div class="rule"></div>
   <div class="body"><table class="ctable"><thead><tr><th>기준</th><th>stdio</th><th>Streamable HTTP</th></tr></thead><tbody><tr><td>어디서 실행</td><td>같은 머신의 하위 프로세스</td><td class="hl">원격 서비스</td></tr><tr><td>주 용도</td><td>로컬 개발·데스크톱 도구</td><td class="hl">프로덕션·다중 사용자</td></tr><tr><td>인증</td><td>보통 불필요</td><td class="hl">OAuth 필요</td></tr><tr><td>전환</td><td colspan="2">코드 한 줄: mcp.run(transport="streamable-http")</td></tr></tbody></table><div class="callout "><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></div><div class="ct"><h4>SSE는 어떻게 됐나</h4><p>예전 원격 방식(HTTP+SSE)은 Streamable HTTP로 대체됐다. 새로 만들면 Streamable HTTP를 쓴다.</p></div></div></div>
 </section>
 <section class="slide" data-title="원격 인증">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>인증</div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>인증</div>
   <h2 class="s-title sm">원격 서버의 인증</h2>
   <div class="rule"></div>
   <div class="body">
@@ -663,7 +613,7 @@ def add(a, b): return a + b
 </section>
 <section class="slide" data-title="Claude Desktop 연결">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>실제 호스트</div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>실제 호스트</div>
   <h2 class="s-title sm">설정 파일로 붙이기</h2>
   <div class="rule"></div>
   <div class="body">
@@ -693,7 +643,7 @@ def add(a, b): return a + b
 </section>
 <section class="slide" data-title="MCP Inspector">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>검사 도구</div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>검사 도구</div>
   <h2 class="s-title sm">Inspector 로 먼저 확인하기</h2>
   <div class="rule"></div>
   <div class="body">
@@ -716,90 +666,31 @@ fastmcp dev inspector server.py
     </div>
   </div>
 </section>
-<section class="slide section" data-title="[섹션] FastMCP">
-  <div class="ghost">05</div>
-  <div class="seyebrow">CHAPTER 05</div>
-  <h2>FastMCP</h2>
-  <div class="agenda"><span>왜 쓰나</span><span>세 줄 서버</span><span>데코레이터 셋</span></div>
-</section>
-<section class="slide" data-title="FastMCP — 왜">
+<section class="slide" data-title="LLM ↔ MCP 도구 호출 루프">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>왜 FastMCP</div>
-  <h2 class="s-title sm">FastMCP 를 쓰는 이유</h2>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>한눈에</div>
+  <h2 class="s-title sm">모델과 MCP 가 주고받는 고리</h2>
   <div class="rule"></div>
-  <div class="body">
-    <div class="twocol w">
-      <div>
-        <p class="s-sub" style="margin-bottom:12px">원시 SDK로 직접 짜면 stdio 처리·JSON-RPC 직렬화·핸들러 등록까지 손이 많이 간다. <b style="color:var(--ink)">FastMCP</b>는 이를 <b style="color:var(--ink)">데코레이터+타입힌트</b>로 줄여 준다.</p>
-        <div class="vlist">
-          <div class="v"><span class="b"></span><div>함수 시그니처 → <b>JSON 스키마 자동 생성</b></div></div>
-          <div class="v"><span class="b"></span><div>입력 검증·문서화·라우팅 자동</div></div>
-          <div class="v"><span class="b"></span><div>대부분의 서버가 FastMCP 로 만들어진다</div></div>
-        </div>
-      </div>
-      <div class="code sm" style="align-self:start">
-        <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">install</span></div>
-        <pre><code><span class="cm"># 설치 (현재 3.x)</span>
-pip install fastmcp
-
-<span class="cm"># 버전 확인</span>
-fastmcp version</code></pre>
-      </div>
-    </div>
+  <div class="body"><div class="pipe">
+    <div class="step"><div class="si">1</div><div class="sn">도구 → 스펙</div><div class="sd">MCP 도구를 OpenAI function schema로 변환해 LLM에 제공</div></div>
+    <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+    <div class="step"><div class="si">2</div><div class="sn">LLM 선택</div><div class="sd">모델이 질문을 보고 부를 도구와 인자를 정한다</div></div>
+    <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+    <div class="step new"><div class="si">3</div><div class="sn">MCP 실행</div><div class="sd">call_tool 로 실제 실행 → 결과를 모델에 반환</div></div>
+    <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+    <div class="step"><div class="si">4</div><div class="sn">LLM 답변</div><div class="sd">근거로 최종 답. 필요하면 2~3을 반복</div></div>
   </div>
+  <div class="keymsg"><span class="k">연결</span><div>이 루프가 <b>Agentic RAG의 씨앗</b> — 여기서 한 걸음 더 나가면 스스로 점검하는 구조가 된다.</div></div></div>
 </section>
-<section class="slide" data-title="최소 서버 3줄">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>최소 예제</div>
-  <h2 class="s-title sm">세 줄로 되는 서버</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="code">
-      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">server.py</span></div>
-      <pre><code><span class="kw">from</span> fastmcp <span class="kw">import</span> FastMCP
-mcp = <span class="fn2">FastMCP</span>(<span class="st">"Demo"</span>)
-
-<span class="kw">@mcp.tool</span>
-<span class="kw">def</span> <span class="fn2">add</span>(a: <span class="kw">int</span>, b: <span class="kw">int</span>) -> <span class="kw">int</span>:
-    <span class="st">"""두 수를 더한다"""</span>          <span class="cm"># docstring → 모델이 읽는 설명</span>
-    <span class="kw">return</span> a + b
-
-<span class="kw">if</span> __name__ == <span class="st">"__main__"</span>:
-    mcp.<span class="fn2">run</span>()                      <span class="cm"># 기본 stdio 전송</span></code></pre>
-    </div>
-    <div class="callout mint" style="margin-top:14px"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div><div class="ct"><h4>핵심</h4><p>타입힌트(<span style="font-family:var(--mono)">int</span>)와 docstring만으로 <b>스키마·설명</b>이 만들어진다. 3.x에선 데코레이터가 원함수를 그대로 돌려줘 <b>직접 호출도 가능</b>.</p></div></div>
-  </div>
-</section>
-<section class="slide" data-title="resource · prompt 데코레이터">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>나머지 둘</div>
-  <h2 class="s-title sm">resource 와 prompt 데코레이터</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="code sm">
-      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">more.py</span></div>
-      <pre><code><span class="cm"># 읽기 전용 데이터 — URI로 주소 지정</span>
-<span class="kw">@mcp.resource</span>(<span class="st">"greeting://{name}"</span>, description=<span class="st">"이름으로 인사말 반환"</span>)
-<span class="kw">def</span> <span class="fn2">greeting</span>(name: <span class="kw">str</span>) -> <span class="kw">str</span>:
-    <span class="kw">return</span> <span class="st">f"안녕하세요, {name}님!"</span>
-
-<span class="cm"># 재사용 프롬프트 템플릿 (슬래시 명령처럼)</span>
-<span class="kw">@mcp.prompt</span>
-<span class="kw">def</span> <span class="fn2">summarize</span>(topic: <span class="kw">str</span>) -> <span class="kw">str</span>:
-    <span class="kw">return</span> <span class="st">f"다음 주제를 3문장으로 요약해줘: {topic}"</span></code></pre>
-    </div>
-    <div class="callout amber" style="margin-top:12px"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>실무 팁</h4><p>resource는 <b>description=을 명시</b>하라 — FastMCP의 docstring 파싱이 항상 잡히진 않는다(클라이언트 목록에서 설명이 비는 사고 방지).</p></div></div>
-  </div>
-</section>
-<section class="slide section" data-title="[섹션] Resource 로 자료 열어 주기">
-  <div class="ghost">06</div>
-  <div class="seyebrow">CHAPTER 06</div>
-  <h2>Resource 로 자료 열어 주기</h2>
-  <div class="agenda"><span>본질</span><span>URI</span><span>설계 원칙</span></div>
+<section class="slide section" data-title="[섹션] Resource 와 Tool 가려 쓰기">
+  <div class="ghost">04</div>
+  <div class="seyebrow">CHAPTER 04</div>
+  <h2>Resource 와 Tool 가려 쓰기</h2>
+  <div class="agenda"><span>본질</span><span>URI</span><span>경계</span><span>결정 흐름</span></div>
 </section>
 <section class="slide" data-title="Resource의 본질">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>본질</div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>본질</div>
   <h2 class="s-title sm">Resource 의 본질</h2>
   <div class="rule"></div>
   <div class="body">
@@ -816,9 +707,27 @@ mcp = <span class="fn2">FastMCP</span>(<span class="st">"Demo"</span>)
 <div class="keymsg"><span class="k">가르는 물음</span><div>「같은 것을 두 번 읽어도 같은가」 &mdash; 그렇다면 Resource 다.</div></div>
 </div>
 </section>
+<section class="slide" data-title="Tool의 본질">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>본질</div>
+  <h2 class="s-title sm">Tool 의 본질</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="vlist">
+  <div class="v"><span class="b">&rarr;</span><div><b>행동한다</b> &mdash; 계산하거나 찾거나 바꾼다</div></div>
+  <div class="v"><span class="b">&rarr;</span><div><b>모델이 스스로</b> 부른다. 언제 부를지 사람이 안 정한다</div></div>
+  <div class="v"><span class="b">&#9733;</span><div>리소스가 <b>서랍 속 문서</b>라면 도구는 <b>버튼</b>이다. 누르면 무언가 일어난다.</div></div>
+</div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">같은 규정 서버라도 이쪽은 Tool 이다</span></div><pre><code>&gt;&gt;&gt; call_tool("find_rule", {"question": "작업 멈춰도 되나"})
+
+"[산업안전보건법 제26조(작업중지 등)] ..."
+
+<span class="cm">주소를 몰라도 된다. 대신 찾는 일을 서버가 한다 &mdash; 그래서 Tool</span></code></pre></div>
+<div class="keymsg"><span class="k">한 줄</span><div>주소를 알면 <b>Resource</b>, 찾아 줘야 하면 <b>Tool</b> 이다.</div></div>
+</div>
+</section>
 <section class="slide" data-title="URI vs URL">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>처음 짚기</div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>처음 짚기</div>
   <h2 class="s-title sm">URI 와 URL</h2>
   <div class="rule"></div>
   <div class="body" style="justify-content:flex-start;gap:12px;padding-top:6px">
@@ -828,7 +737,7 @@ mcp = <span class="fn2">FastMCP</span>(<span class="st">"Demo"</span>)
 </section>
 <section class="slide" data-title="static vs dynamic">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>두 종류</div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>두 종류</div>
   <h2 class="s-title sm">미리 있는 것과 그때 만드는 것</h2>
   <div class="rule"></div>
   <div class="body">
@@ -839,34 +748,9 @@ mcp = <span class="fn2">FastMCP</span>(<span class="st">"Demo"</span>)
     <div class="keymsg"><span class="k">감각</span><div>템플릿은 ‘REST 경로 파라미터’와 같다 — <span style="font-family:var(--mono)">{id}</span>가 함수 인자로 들어온다.</div></div>
   </div>
 </section>
-<section class="slide" data-title="템플릿 리소스 예">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>코드</div>
-  <h2 class="s-title sm">주소에 인자를 넣는 템플릿</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="code">
-      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">template.py</span></div>
-      <pre><code>DOCS = {<span class="st">"leave"</span>: <span class="st">"연차는 3영업일 전 신청"</span>, <span class="st">"expense"</span>: <span class="st">"비용은 영수증 첨부"</span>}
-
-<span class="kw">@mcp.resource</span>(<span class="st">"docs://{doc_id}"</span>, description=<span class="st">"사내 정책 문서를 ID로 읽는다"</span>)
-<span class="kw">def</span> <span class="fn2">get_doc</span>(doc_id: <span class="kw">str</span>) -> <span class="kw">str</span>:
-    <span class="kw">return</span> DOCS.<span class="fn2">get</span>(doc_id, <span class="st">"문서를 찾을 수 없습니다."</span>)
-<span class="cm"># docs://leave 를 읽으면 → "연차는 3영업일 전 신청"</span></code></pre>
-    </div>
-    <div class="lab-badge" style="margin-top:14px"><span class="sq"></span>{doc_id} 자리표시자가 그대로 함수 인자가 된다</div>
-  </div>
-</section>
-<section class="slide" data-title="URI 스킴 짓기">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>URI</div>
-  <h2 class="s-title sm">URI 스킴 짓기</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="twopane"><div class="pane bad"><h4> file:// 그대로</h4><p>많은 호스트가 <b>file://</b>을 자기 파일 접근으로 가로챈다 → 내 리소스가 안 열린다.</p></div><div class="pane good"><h4> 커스텀 스킴</h4><p><b>docs://</b>, <b>policy://</b>처럼 <b>내 스킴</b>을 정한다 → 충돌 없이 안전.</p></div></div><div class="keymsg"><span class="k">규칙</span><div><span style="font-family:var(--mono)">type://path/{param}</span> 꼴로 <b>종류별 접두사</b>를 통일한다. 예측 가능한 주소가 모델 활용도를 높인다.</div></div></div>
-</section>
 <section class="slide" data-title="다시, 읽기 vs 행동">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>경계 정리</div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>경계 정리</div>
   <h2 class="s-title sm">Resource 와 Tool 의 경계</h2>
   <div class="rule"></div>
   <div class="body">
@@ -884,131 +768,20 @@ mcp = <span class="fn2">FastMCP</span>(<span class="st">"Demo"</span>)
 </section>
 <section class="slide" data-title="결정 흐름">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>결정 흐름</div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>결정 흐름</div>
   <h2 class="s-title sm">무엇으로 낼지 정하는 흐름</h2>
   <div class="rule"></div>
   <div class="body"><div class="pipe q"><div class="step"><div class="si">① 부작용?</div><div class="sn">상태를 바꾸나</div><div class="sd">예 → Tool</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">② 매개변수?</div><div class="sn">값을 받아 달라지나</div><div class="sd">예 → 템플릿 리소스</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">③ 그 외</div><div class="sn">항상 같은 데이터</div><div class="sd">고정 리소스</div></div></div><div class="keymsg"><span class="k">한 문장</span><div><b>바꾸면 Tool</b>, 읽기인데 <b>매개변수가 있으면 템플릿</b>, 없으면 <b>고정 리소스</b>.</div></div></div>
 </section>
-<section class="slide" data-title="설계 원칙 4가지">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>원칙</div>
-  <h2 class="s-title sm">Resource 설계 원칙 넷</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="cards c2">
-      <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1"/></svg></div><h3>일관된 URI 스킴</h3><p><span style="font-family:var(--mono)">type://path/{param}</span> 형태로 예측 가능하게. 종류별 접두사를 통일.</p></div>
-      <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg></div><h3>설명을 명시</h3><p><b>description=</b>로 무엇을 반환하는지 분명히 — 클라이언트 목록에서 보인다.</p></div>
-      <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 9h16"/></svg></div><h3>MIME 타입</h3><p>텍스트·JSON 등 형식을 분명히 적어 클라이언트가 제대로 다루게 한다.</p></div>
-      <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></div><h3>목록 제공</h3><p>어떤 리소스가 있는지 ‘목록’으로 노출해 발견 가능하게.</p></div>
-    </div>
-  </div>
-</section>
-<section class="slide" data-title="파일을 리소스로">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>파일</div>
-  <h2 class="s-title sm">파일을 Resource 로</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="code sm">
-      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">files.py</span></div>
-      <pre><code><span class="kw">from</span> pathlib <span class="kw">import</span> Path
-BASE = Path(<span class="st">"./docs"</span>)
-
-<span class="kw">@mcp.resource</span>(<span class="st">"docs://{name}"</span>, description=<span class="st">"docs 폴더의 텍스트 파일을 읽는다"</span>)  <span class="cm"># file://은 호스트로 해석돼 깨짐</span>
-<span class="kw">def</span> <span class="fn2">read_file</span>(name: <span class="kw">str</span>) -> <span class="kw">str</span>:
-    p = (BASE / name).<span class="fn2">resolve</span>()
-    <span class="kw">if</span> BASE.<span class="fn2">resolve</span>() <span class="kw">not in</span> p.parents:   <span class="cm"># 경로 탈출 방지(검증!)</span>
-        <span class="kw">raise</span> <span class="fn2">ValueError</span>(<span class="st">"허용되지 않은 경로"</span>)
-    <span class="kw">return</span> p.<span class="fn2">read_text</span>(encoding=<span class="st">"utf-8"</span>)</code></pre>
-    </div>
-    <div class="callout amber" style="margin-top:12px"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>보안</h4><p>경로 매개변수는 <b>반드시 검증</b> — <span style="font-family:var(--mono)">../</span> 같은 탈출을 막는다.</p></div></div>
-  </div>
-</section>
-<section class="slide" data-title="CSV·DB를 리소스로">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>표 데이터</div>
-  <h2 class="s-title sm">CSV 와 DB 를 Resource 로</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="code sm">
-      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">data.py</span></div>
-      <pre><code><span class="kw">import</span> csv
-ROWS = {r[<span class="st">"id"</span>]: r <span class="kw">for</span> r <span class="kw">in</span> csv.<span class="fn2">DictReader</span>(<span class="fn2">open</span>(<span class="st">"products.csv"</span>))}
-
-<span class="kw">@mcp.resource</span>(<span class="st">"product://{pid}"</span>, description=<span class="st">"제품 ID로 사양 행을 반환"</span>)
-<span class="kw">def</span> <span class="fn2">product</span>(pid: <span class="kw">str</span>) -> <span class="kw">dict</span>:
-    <span class="kw">return</span> ROWS.<span class="fn2">get</span>(pid, {<span class="st">"error"</span>: <span class="st">"not found"</span>})
-
-<span class="cm"># DB도 동일 — 함수 안에서 SELECT 후 dict 반환(읽기 전용)</span></code></pre>
-    </div>
-    <div class="lab-badge" style="margin-top:12px"><span class="sq"></span>읽기 전용 SELECT는 Resource, INSERT/UPDATE는 Tool</div>
-  </div>
-</section>
-<section class="slide section" data-title="[섹션] Tool 로 일을 시키기">
-  <div class="ghost">07</div>
-  <div class="seyebrow">CHAPTER 07</div>
-  <h2>Tool 로 일을 시키기</h2>
-  <div class="agenda"><span>함수가 도구로</span><span>입력 스키마</span><span>되돌리기</span></div>
-</section>
-<section class="slide" data-title="Tool의 본질">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>본질</div>
-  <h2 class="s-title sm">Tool 의 본질</h2>
-  <div class="rule"></div>
-  <div class="body">
-<div class="vlist">
-  <div class="v"><span class="b">&rarr;</span><div><b>행동한다</b> &mdash; 계산하거나 찾거나 바꾼다</div></div>
-  <div class="v"><span class="b">&rarr;</span><div><b>모델이 스스로</b> 부른다. 언제 부를지 사람이 안 정한다</div></div>
-  <div class="v"><span class="b">&#9733;</span><div>리소스가 <b>서랍 속 문서</b>라면 도구는 <b>버튼</b>이다. 누르면 무언가 일어난다.</div></div>
-</div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">같은 규정 서버라도 이쪽은 Tool 이다</span></div><pre><code>&gt;&gt;&gt; call_tool("find_rule", {"question": "작업 멈춰도 되나"})
-
-"[산업안전보건법 제26조(작업중지 등)] ..."
-
-<span class="cm">주소를 몰라도 된다. 대신 찾는 일을 서버가 한다 &mdash; 그래서 Tool</span></code></pre></div>
-<div class="keymsg"><span class="k">한 줄</span><div>주소를 알면 <b>Resource</b>, 찾아 줘야 하면 <b>Tool</b> 이다.</div></div>
-</div>
-</section>
-<section class="slide" data-title="함수가 도구가 된다">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>기본</div>
-  <h2 class="s-title sm">도구가 되는 함수</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>타입힌트 → <b>JSON 스키마 자동 생성</b></div></div><div class="v"><span class="b">→</span><div>docstring → <b>모델이 읽는 설명</b></div></div><div class="v"><span class="b"></span><div>이름과 설명이 곧 <b>프롬프트</b>다 — 신중하게 짓는다</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">basic.py</span></div><pre><code><span class="kw">@mcp.tool</span>
-<span class="kw">def</span> add(a: int, b: int) -> int:
-    <span class="st">"""두 정수를 더한다"""</span>
-    <span class="kw">return</span> a + b</code></pre></div></div></div>
-</section>
-<section class="slide" data-title="입력 스키마 심화">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>입력</div>
-  <h2 class="s-title sm">입력 스키마</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div><b>Optional·기본값</b>으로 유연하게</div></div><div class="v"><span class="b">→</span><div>enum·범위 같은 <b>제약</b>은 검증으로</div></div><div class="v"><span class="b">&rarr;</span><div>복잡하면 <b>Pydantic 모델</b>을 인자로 받는다</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">schema.py</span></div><pre><code><span class="kw">@mcp.tool</span>
-<span class="kw">def</span> search(query: str, k: int = 5, lang: str = <span class="st">"ko"</span>) -> list:
-    <span class="st">"""문서를 검색한다. k=결과 수, lang=언어"""</span>
-    <span class="kw">return</span> do_search(query, k, lang)</code></pre></div></div></div>
-</section>
-<section class="slide" data-title="친절한 에러">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>에러</div>
-  <h2 class="s-title sm">친절한 에러</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="twocol w2">
-    <div><div class="vlist">
-      <div class="v"><span class="b"></span><div><b>“Error 500”</b> — 뭘 고칠지 모른다</div></div>
-      <div class="v"><span class="b"></span><div><b>“k는 1~50 사이”</b> — 인자를 바로 고친다</div></div>
-    </div></div>
-    <div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">error.py</span></div><pre><code><span class="kw">@mcp.tool</span>
-<span class="kw">def</span> <span class="fn2">search</span>(q: str, k: int = 5) -&gt; list:
-    <span class="kw">if</span> <span class="kw">not</span> 1 &lt;= k &lt;= 50:
-        <span class="kw">raise</span> ValueError(<span class="st">"k는 1~50 사이여야 합니다"</span>)  <span class="cm"># 고칠 방법을 알려줌</span>
-    ...</code></pre></div>
-  </div>
-  <div class="keymsg"><span class="k">원칙</span><div>에러엔 <b>무엇이·왜·어떻게 고칠지</b>를 담는다. 에러를 잘 적으면 모델이 인자를 스스로 고쳐 다시 부른다.</div></div></div>
+<section class="slide section" data-title="[섹션] 보안">
+  <div class="ghost">05</div>
+  <div class="seyebrow">CHAPTER 05</div>
+  <h2>보안</h2>
+  <div class="agenda"><span>되묻기</span><span>위협 모델</span><span>방어 수칙</span><span>무엇을 열까</span></div>
 </section>
 <section class="slide" data-title="Elicitation">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>되묻기</div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>되묻기</div>
   <h2 class="s-title sm">Elicitation — 도중에 되묻기</h2>
   <div class="rule"></div>
   <div class="body"><div class="twocol w2">
@@ -1026,71 +799,9 @@ ROWS = {r[<span class="st">"id"</span>]: r <span class="kw">for</span> r <span c
   </div>
   <div class="keymsg"><span class="k">감각</span><div>Tool은 한 번 부르고 끝이 아니라, 필요하면 <b>사용자·모델과 주고받는다</b>. 지우기·결제처럼 되돌릴 수 없는 일에 건다.</div></div></div>
 </section>
-<section class="slide" data-title="DB 쓰기">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>DB</div>
-  <h2 class="s-title sm">DB 에 쓰는 도구</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="twocol w"><div><div class="vlist"><div class="v"><span class="b">→</span><div>SELECT(읽기) → Resource로도 가능</div></div><div class="v"><span class="b">→</span><div><b>INSERT/UPDATE/DELETE → Tool</b></div></div><div class="v"><span class="b"></span><div>트랜잭션·검증으로 데이터를 지킨다</div></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">db.py</span></div><pre><code><span class="kw">@mcp.tool</span>
-<span class="kw">def</span> add_customer(name: str, email: str) -> dict:
-    <span class="st">"""고객을 등록한다(부작용)"""</span>
-    <span class="kw">with</span> db.begin() as tx:
-        cid = tx.insert(name, email)
-    <span class="kw">return</span> {<span class="st">"id"</span>: cid}</code></pre></div></div></div>
-</section>
-<section class="slide" data-title="되돌릴 수 있게">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>안전</div>
-  <h2 class="s-title sm">되돌릴 수 있는 설계</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="twocol w2">
-    <div><div class="vlist">
-      <div class="v"><span class="b"></span><div><b>확인</b> — 실행 전 사용자 승인 (elicit)</div></div>
-      <div class="v"><span class="b"></span><div><b>드라이런</b> — 진짜 실행 전 결과 미리보기</div></div>
-      <div class="v"><span class="b"></span><div><b>되돌리기</b> — 백업·취소 경로를 남긴다</div></div>
-    </div></div>
-    <div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">safe_delete.py</span></div><pre><code><span class="kw">@mcp.tool</span>(annotations={<span class="st">"destructiveHint"</span>: <span class="kw">True</span>})  <span class="cm"># 위험 표시</span>
-<span class="kw">async</span> <span class="kw">def</span> <span class="fn2">delete</span>(id: int, dry_run: bool = <span class="kw">True</span>, ctx: Context = <span class="kw">None</span>):
-    <span class="kw">if</span> dry_run:                          <span class="cm"># ① 드라이런: 미리보기만</span>
-        <span class="kw">return</span> <span class="st">f"[미리보기] #{id} 삭제 예정 (dry_run=False로 실행)"</span>
-    <span class="kw">if</span> <span class="kw">not</span> <span class="kw">await</span> confirm(ctx, id): <span class="kw">return</span> <span class="st">"취소됨"</span>  <span class="cm"># ② 실행 전 확인</span>
-    backup(id); remove(id)              <span class="cm"># ③ 되돌리기: 백업 후 삭제</span>
-    <span class="kw">return</span> <span class="st">"삭제 완료 (백업됨)"</span></code></pre></div>
-  </div>
-  <div class="keymsg"><span class="k">원칙</span><div><b>destructive 도구는 “되돌릴 수 있는가”를 먼저</b> 설계한다. 확인 단계를 붙이는 것이 가장 싸게 막는 방법이다.</div></div></div>
-</section>
-<section class="slide" data-title="좋은 도구 설계">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>설계</div>
-  <h2 class="s-title sm">좋은 도구의 조건</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="twocol w2">
-    <div><div class="vlist">
-      <div class="v"><span class="b">→</span><div>도구 하나는 <b>한 가지 일</b>만</div></div>
-      <div class="v"><span class="b">→</span><div>이름·설명은 <b>모델을 위한 프롬프트</b> — 구체적으로</div></div>
-      <div class="v"><span class="b">→</span><div>인자는 적게, 반환은 예측 가능하게</div></div>
-    </div></div>
-    <div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">design.py</span></div><pre><code><span class="cm">#  한 도구가 여러 일 → 모델이 오용</span>
-<span class="kw">@mcp.tool</span>
-<span class="kw">def</span> <span class="fn2">manage</span>(action, target, value): ...  <span class="cm"># add/del/find 를 한 함수에</span>
-
-<span class="cm">#  하나의 일 · 이름·설명 구체적</span>
-<span class="kw">@mcp.tool</span>
-<span class="kw">def</span> <span class="fn2">add_task</span>(title: str) -&gt; dict:
-    <span class="st">"""할 일을 추가한다"""</span>            <span class="cm"># 설명 = 모델용 프롬프트</span>
-    ...</code></pre></div>
-  </div>
-  <div class="keymsg"><span class="k">주의</span><div>한 도구가 너무 많은 걸 하면 <b>모델이 오용</b>한다 — 잘게 쪼갠다.</div></div></div>
-</section>
-<section class="slide section" data-title="[섹션] 보안">
-  <div class="ghost">08</div>
-  <div class="seyebrow">CHAPTER 08</div>
-  <h2>보안</h2>
-  <div class="agenda"><span>위협 모델</span><span>방어 수칙</span><span>무엇을 열까</span></div>
-</section>
 <section class="slide" data-title="보안·설계 주의">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>주의점</div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>주의점</div>
   <h2 class="s-title sm">붙이기 전에 볼 것</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1104,21 +815,21 @@ ROWS = {r[<span class="st">"id"</span>]: r <span class="kw">for</span> r <span c
 </section>
 <section class="slide" data-title="위협 모델">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>위협</div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>위협</div>
   <h2 class="s-title sm">공격이 들어오는 길</h2>
   <div class="rule"></div>
   <div class="body"><div class="cards c2"><div class="card"><span class="n" style="color:var(--rose)">주입</span><h3>프롬프트 인젝션</h3><p>도구 설명·결과에 숨긴 지시가 모델을 조종할 수 있다.</p></div><div class="card"><span class="n" style="color:var(--rose)">대리인</span><h3>혼동된 대리인</h3><p>권한 있는 도구가 남의 요청을 대신 실행해 버린다.</p></div><div class="card"><span class="n" style="color:var(--rose)">과잉</span><h3>과도한 권한</h3><p>토큰·스코프가 넓으면 사고 시 피해가 커진다.</p></div><div class="card"><span class="n" style="color:var(--rose)">출처</span><h3>믿을 수 없는 서버</h3><p>검증 안 된 서버는 데이터 유출 통로가 될 수 있다.</p></div></div><div class="callout rose"><div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div class="ct"><h4>전제</h4><p>도구 설명·주석은 <b>신뢰된 서버가 아니면 그대로 믿지 않는다</b>.</p></div></div></div>
 </section>
 <section class="slide" data-title="방어 수칙">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>방어</div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>방어</div>
   <h2 class="s-title sm">방어 수칙</h2>
   <div class="rule"></div>
   <div class="body"><div class="vlist"><div class="v"><span class="b"></span><div><b>실행 전 사용자 확인</b> — 도구 호출은 사람이 승인(스펙 권고)</div></div><div class="v"><span class="b"></span><div><b>최소 권한</b> — 필요한 것만, 스코프는 좁게</div></div><div class="v"><span class="b"></span><div><b>입출력 검증</b> — 도구 결과를 그대로 믿지 않는다</div></div><div class="v"><span class="b"></span><div><b>신뢰된 서버만</b> — 출처를 확인하고 붙인다</div></div></div><div class="keymsg"><span class="k">원칙</span><div>도구는 <b>임의 코드 실행</b>과 같다. 늘 사람이 개입할 여지를 남긴다.</div></div></div>
 </section>
 <section class="slide" data-title="보안">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>보안</div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>보안</div>
   <h2 class="s-title sm">도구를 내줄 때의 보안</h2>
   <div class="rule"></div>
   <div class="body"><div class="twocol w2">
@@ -1136,114 +847,15 @@ ROWS = {r[<span class="st">"id"</span>]: r <span class="kw">for</span> r <span c
   </div>
   <div class="keymsg"><span class="k">전제</span><div>편리함과 권한 사이에서 <b>항상 사람이 개입할 여지</b>를 남긴다.</div></div></div>
 </section>
-<section class="slide section" data-title="[섹션] 붙여서 돌려 보기">
-  <div class="ghost">09</div>
-  <div class="seyebrow">CHAPTER 09</div>
-  <h2>붙여서 돌려 보기</h2>
-  <div class="agenda"><span>설치와 실행</span><span>첫 Tool</span><span>Inspector</span></div>
-</section>
-<section class="slide" data-title="Lab 0 · 설치·실행">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag mint">LAB 0</span><span class="dot"></span>셋업</div>
-  <h2 class="s-title sm">설치하고 켜 보기</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="code">
-      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">lab0</span></div>
-      <pre><code><span class="cm"># Colab: %pip install fastmcp   ·   로컬(venv 활성화 후): pip install fastmcp</span>
-
-<span class="cm"># server.py</span>
-<span class="kw">from</span> fastmcp <span class="kw">import</span> FastMCP
-mcp = <span class="fn2">FastMCP</span>(<span class="st">"MyFirstServer"</span>)
-
-<span class="kw">if</span> __name__ == <span class="st">"__main__"</span>:
-    mcp.<span class="fn2">run</span>()</code></pre>
-    </div>
-    <div class="lab-badge" style="margin-top:14px"><span class="sq"></span>노트북은 Colab에서 <code>Client(mcp)</code>로 호출 · <code>mcp.run()</code>은 로컬 터미널에서 <code>python server.py</code></div>
-  </div>
-</section>
-<section class="slide" data-title="Lab 1 · 첫 Tool">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag mint">LAB 1</span><span class="dot"></span>tool</div>
-  <h2 class="s-title sm">첫 Tool 만들기</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="code sm">
-      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">lab1_tools.py</span></div>
-      <pre><code><span class="kw">@mcp.tool</span>
-<span class="kw">def</span> <span class="fn2">add</span>(a: <span class="kw">int</span>, b: <span class="kw">int</span>) -> <span class="kw">int</span>:
-    <span class="st">"""두 정수를 더한다"""</span>
-    <span class="kw">return</span> a + b
-
-<span class="kw">@mcp.tool</span>
-<span class="kw">def</span> <span class="fn2">word_count</span>(text: <span class="kw">str</span>) -> <span class="kw">int</span>:
-    <span class="st">"""문장의 단어 수를 센다"""</span>
-    <span class="kw">return</span> <span class="fn2">len</span>(text.<span class="fn2">split</span>())</code></pre>
-    </div>
-    <div class="lab-badge" style="margin-top:12px"><span class="sq"></span> 타입힌트와 docstring 을 넣어야 스키마와 설명이 생긴다</div>
-  </div>
-</section>
-<section class="slide" data-title="Lab 2 · Inspector로 검증">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag mint">LAB 2</span><span class="dot"></span>검사</div>
-  <h2 class="s-title sm">Inspector 로 검증</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="code sm">
-      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">terminal</span></div>
-      <pre><code><span class="cm"># 로컬 터미널 · venv 활성화 후 (윈도우는 Node.js 필요)</span>
-fastmcp dev inspector server.py
-<span class="cm"># 브라우저 열림 → Connect</span>
-<span class="cm"># Tools 탭 → add 선택 → a=2, b=3 → Run → 5 확인</span></code></pre>
-    </div>
-    <div class="vlist" style="margin-top:14px">
-      <div class="v"><span class="b">→</span><div>Tools 탭에 add·word_count가 <b>설명과 함께</b> 보이는지</div></div>
-      <div class="v"><span class="b">→</span><div>입력 폼에 값을 넣고 실제 반환을 확인</div></div>
-    </div>
-  </div>
-</section>
-<section class="slide" data-title="Lab 3 · Resource 추가">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag mint">LAB 3</span><span class="dot"></span>resource</div>
-  <h2 class="s-title sm">Resource 붙이기</h2>
-  <div class="rule"></div>
-  <div class="body">
-    <div class="code sm">
-      <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">lab3_resource.py</span></div>
-      <pre><code>STATUS = {<span class="st">"version"</span>: <span class="st">"1.0"</span>, <span class="st">"env"</span>: <span class="st">"dev"</span>}
-
-<span class="kw">@mcp.resource</span>(<span class="st">"config://status"</span>, description=<span class="st">"서버 상태 정보"</span>)
-<span class="kw">def</span> <span class="fn2">status</span>() -> <span class="kw">dict</span>:
-    <span class="kw">return</span> STATUS</code></pre>
-    </div>
-    <div class="lab-badge" style="margin-top:12px"><span class="sq"></span> Inspector의 Resources 탭에서 config://status 읽기 확인</div>
-  </div>
-</section>
-<section class="slide" data-title="LLM ↔ MCP 도구 호출 루프">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH9</span><span class="dot"></span>한눈에</div>
-  <h2 class="s-title sm">모델과 MCP 가 주고받는 고리</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="pipe">
-    <div class="step"><div class="si">1</div><div class="sn">도구 → 스펙</div><div class="sd">MCP 도구를 OpenAI function schema로 변환해 LLM에 제공</div></div>
-    <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
-    <div class="step"><div class="si">2</div><div class="sn">LLM 선택</div><div class="sd">모델이 질문을 보고 부를 도구와 인자를 정한다</div></div>
-    <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
-    <div class="step new"><div class="si">3</div><div class="sn">MCP 실행</div><div class="sd">call_tool 로 실제 실행 → 결과를 모델에 반환</div></div>
-    <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
-    <div class="step"><div class="si">4</div><div class="sn">LLM 답변</div><div class="sd">근거로 최종 답. 필요하면 2~3을 반복</div></div>
-  </div>
-  <div class="keymsg"><span class="k">연결</span><div>이 루프가 <b>Agentic RAG의 씨앗</b> — 여기서 한 걸음 더 나가면 스스로 점검하는 구조가 된다.</div></div></div>
-</section>
 <section class="slide section" data-title="[섹션] 정리">
-  <div class="ghost">10</div>
-  <div class="seyebrow">CHAPTER 10</div>
+  <div class="ghost">06</div>
+  <div class="seyebrow">CHAPTER 06</div>
   <h2>정리</h2>
   <div class="agenda"><span>가져갈 것</span><span>헷갈리는 지점</span></div>
 </section>
 <section class="slide" data-title="핵심 정리">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH10</span><span class="dot"></span>핵심 정리</div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>핵심 정리</div>
   <h2 class="s-title sm">오늘 가져갈 것</h2>
   <div class="rule"></div>
   <div class="body">
@@ -1258,7 +870,7 @@ fastmcp dev inspector server.py
 </section>
 <section class="slide" data-title="자주 묻는 오개념">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH10</span><span class="dot"></span>오개념 정리</div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>오개념 정리</div>
   <h2 class="s-title sm">헷갈리기 쉬운 지점</h2>
   <div class="rule"></div>
   <div class="body">
