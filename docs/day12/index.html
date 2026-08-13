@@ -375,8 +375,8 @@
     <div class="cards c4">
       <div class="card"><span class="n">CH0~1</span><h3>MCP 가 나온 이유</h3><p>tool calling 이 남긴 다섯 가지와, 그것을 채운 구조를 본다.</p></div>
       <div class="card"><span class="n">CH2</span><h3>서버가 내주는 셋</h3><p>Tool · Resource · Prompt. 누가 부르는지로 갈린다.</p></div>
-      <div class="card"><span class="n">CH3~4</span><h3>붙여 쓰고 가려 쓰기</h3><p>남이 만든 서버를 붙인다. 무엇을 Resource 로 낼지 정한다.</p></div>
-      <div class="card"><span class="n">CH5</span><h3>권한과 보안</h3><p>남의 서버를 붙일 때 볼 것과, 내 도구를 내줄 때 지킬 것.</p></div>
+      <div class="card"><span class="n">CH3~4</span><h3>연결과 구분</h3><p>이미 있는 서버를 설정 한 장으로 연결하고, 무엇을 Resource 로 낼지 정한다.</p></div>
+      <div class="card"><span class="n">CH5</span><h3>보안과 권한</h3><p>서버를 연결할 때 볼 것과, 내 도구를 내줄 때 지킬 것.</p></div>
     </div>
     <div class="keymsg"><span class="k">범위</span><div>여기서는 <b>쓰는 쪽</b>을 다룬다. 직접 만드는 것은 뒤에서 한다.</div></div>
   </div>
@@ -652,10 +652,10 @@ TOOLS = [{'name': 'defect_rate',
   </div>
   <div class="keymsg"><span class="k">핵심</span><div>도구 <b>선택·인자·호출 시점을 모델이</b> 정한다. 뒤에서 직접 돌려 본다.</div></div></div>
 </section>
-<section class="slide section" data-title="[섹션] 남의 서버 붙여 쓰기">
+<section class="slide section" data-title="[섹션] MCP 서버 연결하기">
   <div class="ghost">03</div>
   <div class="seyebrow">CHAPTER 03</div>
-  <h2>남의 서버 붙여 쓰기</h2>
+  <h2>MCP 서버 연결하기</h2>
   <div class="agenda"><span>stdio 와 HTTP</span><span>설정 파일</span><span>Inspector</span></div>
 </section>
 <section class="slide" data-title="3가지 전송 방식">
@@ -787,10 +787,10 @@ fastmcp dev inspector server.py
 <div class="keymsg"><span class="k">껍데기만 바뀐다</span><div>MCP 는 RAG 를 <b>대신하지 않는다</b>. 청킹 · 임베딩 · 하이브리드는 <b>서버 안쪽</b>에 그대로 있다.</div></div>
   </div>
 </section>
-<section class="slide section" data-title="[섹션] Resource 와 Tool 가려 쓰기">
+<section class="slide section" data-title="[섹션] Resource 와 Tool 의 구분">
   <div class="ghost">04</div>
   <div class="seyebrow">CHAPTER 04</div>
-  <h2>Resource 와 Tool 가려 쓰기</h2>
+  <h2>Resource 와 Tool 의 구분</h2>
   <div class="agenda"><span>읽기와 행동</span><span>URI</span><span>결정 흐름</span></div>
 </section>
 <section class="slide" data-title="Resource의 본질">
@@ -878,10 +878,10 @@ fastmcp dev inspector server.py
   <div class="rule"></div>
   <div class="body"><div class="pipe q"><div class="step"><div class="si">① 부작용?</div><div class="sn">상태를 바꾸나</div><div class="sd">예 → Tool</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">② 매개변수?</div><div class="sn">값을 받아 달라지나</div><div class="sd">예 → 템플릿 리소스</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">③ 그 외</div><div class="sn">항상 같은 데이터</div><div class="sd">고정 리소스</div></div></div><div class="keymsg"><span class="k">한 문장</span><div><b>바꾸면 Tool</b>, 읽기인데 <b>매개변수가 있으면 템플릿</b>, 없으면 <b>고정 리소스</b>.</div></div></div>
 </section>
-<section class="slide section" data-title="[섹션] 붙일 때와 내줄 때의 보안">
+<section class="slide section" data-title="[섹션] MCP 보안과 권한">
   <div class="ghost">05</div>
   <div class="seyebrow">CHAPTER 05</div>
-  <h2>붙일 때와 내줄 때의 보안</h2>
+  <h2>MCP 보안과 권한</h2>
   <div class="agenda"><span>되묻기</span><span>프롬프트 인젝션</span><span>방어 수칙</span></div>
 </section>
 <section class="slide" data-title="Elicitation">
@@ -952,11 +952,11 @@ fastmcp dev inspector server.py
   </div>
   <div class="keymsg"><span class="k">전제</span><div>편리함과 권한 사이에서 <b>항상 사람이 개입할 여지</b>를 남긴다.</div></div></div>
 </section>
-<section class="slide section" data-title="[섹션] 현업에 붙일 자리">
+<section class="slide section" data-title="[섹션] 현업 적용 사례">
   <div class="ghost">06</div>
   <div class="seyebrow">CHAPTER 06</div>
-  <h2>현업에 붙일 다섯 자리</h2>
-  <p>어디에 붙이면 값을 하는지, 그때 도구가 어떻게 도는지 본다.</p>
+  <h2>현업 적용 사례</h2>
+  <p>어디에 쓸 수 있는지, 그때 도구가 어떻게 도는지 본다.</p>
   <div class="agenda"><span>문서 폴더</span><span>공정 DB</span><span>바깥 자료</span><span>읽고 쓰기</span><span>코드</span></div>
 </section>
 <section class="slide" data-title="파일 MCP — RAG 강의자료 폴더 접근 흐름">
