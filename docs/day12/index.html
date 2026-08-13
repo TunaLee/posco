@@ -373,19 +373,19 @@
   <div class="rule"></div>
   <div class="body">
     <div class="cards c4">
-      <div class="card"><span class="n">CH0~1</span><h3>왜 규약인가</h3><p>앱마다 도구마다 다시 짜던 것을 하나로 묶는다. MCP 의 구조를 본다.</p></div>
+      <div class="card"><span class="n">CH0~1</span><h3>MCP 가 나온 이유</h3><p>tool calling 이 남긴 다섯 가지와, 그것을 채운 구조를 본다.</p></div>
       <div class="card"><span class="n">CH2</span><h3>서버가 내주는 셋</h3><p>Tool · Resource · Prompt. 누가 부르는지로 갈린다.</p></div>
       <div class="card"><span class="n">CH3~4</span><h3>붙여 쓰고 가려 쓰기</h3><p>남이 만든 서버를 붙인다. 무엇을 Resource 로 낼지 정한다.</p></div>
-      <div class="card"><span class="n">CH5</span><h3>보안</h3><p>붙이기 전에 볼 것과, 도구를 내줄 때 지킬 것.</p></div>
+      <div class="card"><span class="n">CH5</span><h3>권한과 보안</h3><p>남의 서버를 붙일 때 볼 것과, 내 도구를 내줄 때 지킬 것.</p></div>
     </div>
     <div class="keymsg"><span class="k">범위</span><div>여기서는 <b>쓰는 쪽</b>을 다룬다. 직접 만드는 것은 뒤에서 한다.</div></div>
   </div>
 </section>
-<section class="slide section" data-title="[섹션] 따로따로 잇던 방식">
+<section class="slide section" data-title="[섹션] MCP 가 나온 이유">
   <div class="ghost">00</div>
   <div class="seyebrow">CHAPTER 00</div>
-  <h2>따로따로 잇던 방식</h2>
-  <div class="agenda"><span>N×M</span><span>USB-C</span><span>어디까지 왔나</span></div>
+  <h2>MCP 가 나온 이유</h2>
+  <div class="agenda"><span>tool calling 의 한계</span><span>N×M</span><span>USB-C</span></div>
 </section>
 <section class="slide" data-title="도입 — N×M 통합 문제">
   <div class="coord"><b></b> / <span class="tot"></span></div>
@@ -484,11 +484,11 @@ TOOLS = [{'name': 'defect_rate',
   <div class="rule"></div>
   <div class="body"><div class="vlist"><div class="v"><span class="b">•</span><div><b>2024.11</b> — Anthropic이 MCP 공개. 언어 서버 프로토콜(LSP)에서 착안.</div></div><div class="v"><span class="b">•</span><div><b>2025.03</b> — OpenAI 채택, 이후 Google 등으로 확산.</div></div><div class="v"><span class="b">•</span><div><b>2025.06</b> — 구조화된 도구 출력·OAuth 인증·Elicitation 추가.</div></div><div class="v"><span class="b">•</span><div><b>2025.09</b> — 서버를 찾는 <b>레지스트리</b> 프리뷰.</div></div><div class="v"><span class="b">•</span><div><b>2025.11</b> — Tasks 등 도입(1주년). <b>2025.12</b> Linux Foundation에 기부.</div></div></div><div class="keymsg"><span class="k">의미</span><div>1년 만에 특정 회사 기능이 아니라 <b>업계 공통 표준</b>이 됐다.</div></div></div>
 </section>
-<section class="slide section" data-title="[섹션] MCP 란 무엇인가">
+<section class="slide section" data-title="[섹션] 호스트 · 클라이언트 · 서버">
   <div class="ghost">01</div>
   <div class="seyebrow">CHAPTER 01</div>
-  <h2>MCP 의 구조</h2>
-  <div class="agenda"><span>한 장 정의</span><span>호스트·클라이언트·서버</span><span>JSON-RPC</span></div>
+  <h2>호스트 · 클라이언트 · 서버</h2>
+  <div class="agenda"><span>셋의 역할</span><span>JSON-RPC</span><span>오가는 메시지</span></div>
 </section>
 <section class="slide" data-title="MCP 한 장 정의">
   <div class="coord"><b></b> / <span class="tot"></span></div>
@@ -619,11 +619,11 @@ Codex         「3호기 야간 불량률」  &rarr; <span class="st">같은 함
   </div>
   <div class="keymsg"><span class="k">핵심</span><div>도구 <b>선택·인자·호출 시점을 모델이</b> 정한다. 뒤에서 직접 돌려 본다.</div></div></div>
 </section>
-<section class="slide section" data-title="[섹션] 붙여 쓰기">
+<section class="slide section" data-title="[섹션] 남의 서버 붙여 쓰기">
   <div class="ghost">03</div>
   <div class="seyebrow">CHAPTER 03</div>
-  <h2>붙여 쓰기</h2>
-  <div class="agenda"><span>전송 방식</span><span>설정 한 장</span><span>Inspector</span></div>
+  <h2>남의 서버 붙여 쓰기</h2>
+  <div class="agenda"><span>stdio 와 HTTP</span><span>설정 파일</span><span>Inspector</span></div>
 </section>
 <section class="slide" data-title="3가지 전송 방식">
   <div class="coord"><b></b> / <span class="tot"></span></div>
@@ -738,7 +738,7 @@ fastmcp dev inspector server.py
   <div class="ghost">04</div>
   <div class="seyebrow">CHAPTER 04</div>
   <h2>Resource 와 Tool 가려 쓰기</h2>
-  <div class="agenda"><span>본질</span><span>URI</span><span>경계</span><span>결정 흐름</span></div>
+  <div class="agenda"><span>읽기와 행동</span><span>URI</span><span>결정 흐름</span></div>
 </section>
 <section class="slide" data-title="Resource의 본질">
   <div class="coord"><b></b> / <span class="tot"></span></div>
@@ -825,11 +825,11 @@ fastmcp dev inspector server.py
   <div class="rule"></div>
   <div class="body"><div class="pipe q"><div class="step"><div class="si">① 부작용?</div><div class="sn">상태를 바꾸나</div><div class="sd">예 → Tool</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">② 매개변수?</div><div class="sn">값을 받아 달라지나</div><div class="sd">예 → 템플릿 리소스</div></div><div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="step"><div class="si">③ 그 외</div><div class="sn">항상 같은 데이터</div><div class="sd">고정 리소스</div></div></div><div class="keymsg"><span class="k">한 문장</span><div><b>바꾸면 Tool</b>, 읽기인데 <b>매개변수가 있으면 템플릿</b>, 없으면 <b>고정 리소스</b>.</div></div></div>
 </section>
-<section class="slide section" data-title="[섹션] 보안">
+<section class="slide section" data-title="[섹션] 붙일 때와 내줄 때의 보안">
   <div class="ghost">05</div>
   <div class="seyebrow">CHAPTER 05</div>
-  <h2>보안</h2>
-  <div class="agenda"><span>되묻기</span><span>위협 모델</span><span>방어 수칙</span><span>무엇을 열까</span></div>
+  <h2>붙일 때와 내줄 때의 보안</h2>
+  <div class="agenda"><span>되묻기</span><span>프롬프트 인젝션</span><span>방어 수칙</span></div>
 </section>
 <section class="slide" data-title="Elicitation">
   <div class="coord"><b></b> / <span class="tot"></span></div>
