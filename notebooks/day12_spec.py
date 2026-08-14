@@ -138,41 +138,44 @@ def chat(messages, tools=None, n=600):
     with urllib.request.urlopen(req, timeout=180) as f:
         return json.load(f)['choices'][0]['message']"""),
 
-    prep("""# MCP 도구 목록을 모델이 읽는 형식으로 바꾼다
-async def as_tools():
-    async with Client(mcp) as c:
-        return [{'type': 'function',
-                 'function': {'name': t.name,
-                              'description': t.description,
-                              'parameters': t.inputSchema}}
-                for t in await c.list_tools()]
-
-TOOLS = await as_tools()
-print('넘길 도구 %d개' % len(TOOLS))"""),
+    prep("""# 서버가 준 목록을 모델이 읽는 형식으로 바꾼다
+def to_openai(tools):
+    return [{'type': 'function',
+             'function': {'name': t.name,
+                          'description': t.description,
+                          'parameters': t.inputSchema}}
+            for t in tools]"""),
 
     md("**이 한 함수가 MCP 와 모델을 잇는 전부다.** 이름·설명·스키마를 옮겨 담을 뿐이다."),
 
-    prep("""# 판단은 모델이, 실행은 MCP 가 한다
+    prep("""# 클라이언트를 열고 — 목록을 받고 — 모델이 고른 것을 부른다
 async def run(question, log=True):
-    messages = [{'role': 'system', 'content':
-                 '너는 공정 데이터를 보는 비서다. 한국어로만 답한다. '
-                 '숫자는 도구로 조회한 값만 쓴다.'},
-                {'role': 'user', 'content': question}]
-    for _ in range(4):
-        m = chat(messages, TOOLS)
-        messages.append(m)
-        calls = m.get('tool_calls') or []
-        if not calls:
-            return (m.get('content') or '').strip() or '[답 없음]'
-        for c in calls:
-            args = json.loads(c['function']['arguments'] or '{}')
-            if log:
-                print('  [MCP] %s(%s)' % (c['function']['name'], args))
-            if 'CALLED' in globals():
-                CALLED.append(c['function']['name'])
-            out = await call(c['function']['name'], args)
-            messages.append({'role': 'tool', 'tool_call_id': c['id'], 'content': out})
-    return '[한도]'"""),
+    async with Client(mcp) as client:                          # ① 연결
+        spec = to_openai(await client.list_tools())            # ② 발견
+        messages = [{'role': 'system', 'content':
+                     '너는 공정 데이터를 보는 비서다. 한국어로만 답한다. '
+                     '숫자는 도구로 조회한 값만 쓴다.'},
+                    {'role': 'user', 'content': question}]
+        for _ in range(4):
+            m = chat(messages, spec)                           # ③ 모델이 고른다
+            messages.append(m)
+            calls = m.get('tool_calls') or []
+            if not calls:
+                return (m.get('content') or '').strip() or '[답 없음]'
+            for c in calls:
+                name, args = c['function']['name'], json.loads(c['function']['arguments'] or '{}')
+                if log:
+                    print('  [MCP] %s(%s)' % (name, args))
+                if 'CALLED' in globals():
+                    CALLED.append(name)
+                r = await client.call_tool(name, args)         # ④ 실행
+                messages.append({'role': 'tool', 'tool_call_id': c['id'],
+                                 'content': r.content[0].text})
+        return '[한도]'"""),
+
+    md("**①②③④ 가 어제와 오늘의 차이다.**\n"
+       "어제는 도구 목록을 코드에 손으로 적었다. 오늘은 부를 때마다 `list_tools()` 로 **물어본다**.\n"
+       "그래서 뒤에서 도구를 아무리 늘려도 이 함수는 한 글자도 안 고친다."),
 
     code("""# 물어본다
 print(await run('3호기 야간조 불량률이 얼마야'))"""),
@@ -190,9 +193,7 @@ def machine_list() -> str:""",
     return ', '.join(sorted(df['설비호기'].unique()))""",
        answer="""    '''쓸 수 있는 설비호기 이름을 모두 돌려준다'''
     return ', '.join(sorted(df['설비호기'].unique()))""",
-       check="""TOOLS = await as_tools()
-print('도구 %d개' % len(TOOLS))
-print(await run('어떤 설비가 있는지 알려줘'))"""),
+       check="""print(await run('어떤 설비가 있는지 알려줘'))"""),
 
     md("## 5. 모델이 못 하는 계산"),
     md("모델은 **큰 수 곱셈을 못 한다.** 다음 토큰을 고르는 방식이라 자릿수가 어긋난다.\n"
@@ -220,9 +221,12 @@ def calc(expression: str) -> str:
     except Exception as e:
         return '계산할 수 없다: %s' % e"""),
 
-    prep("""# 도구가 늘었으니 목록을 다시 받는다
-TOOLS = await as_tools()
-print('도구 %d개 —' % len(TOOLS), [t['function']['name'] for t in TOOLS])"""),
+    prep("""# 서버에 무엇이 있는지 물어본다. run() 도 부를 때마다 이렇게 묻는다.
+async def tool_names():
+    async with Client(mcp) as c:
+        return [t.name for t in await c.list_tools()]
+
+print(await tool_names())"""),
 
     code("""# 같은 질문을 도구와 함께
 print(await run('하루 8473개를 2951일 만들면 모두 몇 개인가'))"""),
@@ -296,9 +300,8 @@ def trace_rule(article: str) -> str:
         return '그런 조문이 없다'
     return '\\n'.join(CHUNKS[j]['title'] for j in sorted(IN[i])) or '인용하는 조문이 없다'"""),
 
-    prep("""# 목록을 다시 받는다
-TOOLS = await as_tools()
-print('도구 %d개 —' % len(TOOLS), [t['function']['name'] for t in TOOLS])"""),
+    prep("""# 늘어난 목록을 확인한다
+print(await tool_names())"""),
 
     md("## 7. 여러 질문으로 시험"),
     md("도구가 다섯이 됐다. **어떤 질문에 무엇을 부르는지** 한 번에 본다."),
@@ -337,8 +340,7 @@ def shift_compare(machine: str) -> str:""",
     d = df[df['설비호기'] == machine]
     return ' · '.join('%s %.1f%%' % (s, 100.0 * (g['판정'] == '불량').mean())
                       for s, g in d.groupby('교대조'))""",
-       check="""TOOLS = await as_tools()
-await probe('3호기는 주간과 야간 중 어느 쪽이 불량이 많나')"""),
+       check="""await probe('3호기는 주간과 야간 중 어느 쪽이 불량이 많나')"""),
 
     md("## 8. 프로젝트 주제로 도구 늘리기"),
     md("여기까지 만든 도구는 **불량률 · 계산 · 규정 검색 · 인용 추적** 넷이다.\n"
@@ -431,8 +433,7 @@ def summarize_url(url: str) -> str:
     return (m.get('content') or '').strip()"""),
 
     prep("""# 도구가 여섯이 됐다
-TOOLS = await as_tools()
-print('도구 %d개 —' % len(TOOLS), [t['function']['name'] for t in TOOLS])"""),
+print(await tool_names())"""),
 
     code("""# 늘어난 도구를 모델이 골라 쓰는지 본다
 await probe('3호기는 주간과 야간 중 어느 쪽이 불량이 많나')
