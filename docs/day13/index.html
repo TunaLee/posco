@@ -444,24 +444,7 @@ mcp = <span class="st">FastMCP</span>(<span class="s">"공정 도우미"</span>)
   <div class="body">
 <div class="vlist"><div class="v"><span class="b">&rarr;</span><div><b>귀를 연다</b> &mdash; 붙으러 오는 클라이언트를 기다린다.</div></div><div class="v"><span class="b">&rarr;</span><div><b>안 끝난다</b> &mdash; 서버는 계속 도는 것이라 그 줄에서 멈춰 있다.</div></div><div class="v"><span class="b">&#9733;</span><div>그래서 노트북에서 그냥 부르면 <b>셀이 안 끝난다</b>. 딴 갈래로 띄워야 한다.</div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">노트북에서 띄울 때</span></div><pre><code>threading.<span class="st">Thread</span>(
     target=<span class="kw">lambda</span>: srv.run(transport=<span class="s">'http'</span>, port=<span class="n">8931</span>),
-    daemon=<span class="kw">True</span>).start()</code></pre></div><div class="keymsg"><span class="k">한 줄로</span><div><code>run()</code> 은 <b>돌아오지 않는 함수</b>다. 그것이 서버의 정의다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="전송 방식">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>전송</div>
-  <h2 class="s-title sm">stdio 와 HTTP 의 갈림</h2>
-  <div class="rule"></div>
-  <div class="body">
-<div class="ctable"><table>
-  <thead><tr><th></th><th>stdio</th><th>HTTP</th></tr></thead>
-  <tbody>
-  <tr><td>어떻게 붙나</td><td class="hl">앱이 서버를 직접 실행한다</td><td class="hl">주소로 찾아간다</td></tr>
-  <tr><td>어디에 있나</td><td>같은 기계</td><td class="hl">아무 데나</td></tr>
-  <tr><td>누가 켜나</td><td>앱이 켠다</td><td>미리 떠 있다</td></tr>
-  <tr><td>여럿이 쓰나</td><td>못 쓴다</td><td class="hl">쓴다</td></tr>
-  <tr><td>쓰는 자리</td><td>내 PC 의 Codex</td><td class="hl">사내 서버 · 조별 과제</td></tr>
-  </tbody></table></div><div class="keymsg"><span class="k">오늘 쓰는 것</span><div>조별 서버를 한 호스트에 모을 것이라 <b>HTTP</b> 로 간다.</div></div>
+    daemon=<span class="kw">True</span>).start()</code></pre></div><div class="keymsg"><span class="k">전송 방식은 인자로</span><div><code>transport</code> 를 안 주면 <b>stdio</b>, 주면 <b>HTTP</b> 다. 몸통은 안 바뀐다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="주소로 붙기">
@@ -575,22 +558,22 @@ Q  3호기 상태 좀 봐줘
   <h2>도구로 정하는 권한 경계</h2>
   <div class="agenda"><span>읽기와 쓰기</span><span>되돌리기</span><span>안 여는 것</span></div>
 </section>
-<section class="slide" data-title="읽기와 쓰기">
+<section class="slide" data-title="되돌릴 수 있나">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>갈림</div>
-  <h2 class="s-title sm">읽기와 쓰기의 갈림</h2>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>새 축</div>
+  <h2 class="s-title sm">되돌릴 수 있나로 다시 가르기</h2>
   <div class="rule"></div>
   <div class="body">
 <div class="twopane">
-  <div class="pane good"><h4>읽기</h4>
-    <p>틀려도 <b>되돌릴 수 있다</b>.<br/>다시 부르면 그만이다.</p>
-    <p>새는 것만 막으면 된다 &mdash; 어느 칸을, 몇 줄까지.</p>
+  <div class="pane good"><h4>되돌아오는 것</h4>
+    <p>틀려도 <b>다시 부르면 그만</b>이다.</p>
+    <p>막을 것은 <b>새는 것</b>뿐이다 &mdash; 어느 칸을, 몇 줄까지.</p>
     <div class="mini">불량률 조회 · 규정 검색 · 최근 기록</div></div>
-  <div class="pane bad"><h4>쓰기</h4>
-    <p>틀리면 <b>안 돌아온다</b>.<br/>지운 것은 지워진 것이다.</p>
+  <div class="pane bad"><h4>안 돌아오는 것</h4>
+    <p>틀리면 <b>지운 것은 지워진 것</b>이다.</p>
     <p>되돌릴 길을 <b>미리</b> 만들어 둬야 한다.</p>
     <div class="mini">메모 남기기 · 상태 바꾸기 · 지우기</div></div>
-</div><div class="keymsg"><span class="k">첫 서버는</span><div><b>읽기만</b> 여는 것으로 시작한다. 쓰기는 되돌릴 길을 만든 뒤에 연다.</div></div>
+</div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>앞서 <b>Resource 냐 Tool 이냐</b>로 갈랐다. 그건 <b>부작용이 있나</b>를 본 것이다.</div></div><div class="v"><span class="b">&#9733;</span><div>여기서 가르는 축은 다르다 &mdash; <b>사고가 났을 때 되돌아오나</b>.</div></div></div><div class="keymsg"><span class="k">첫 서버는</span><div><b>되돌아오는 것만</b> 열고 시작한다. 나머지는 되돌릴 길을 만든 뒤에 연다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="권한의 자리">
