@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MCP — 도구를 붙이는 규약</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#16142B; --ink-soft:#4A4766; --mut:#8E8AAC;
+    --violet:#5B3DF5; --violet-700:#3A1FC9; --violet-300:#B7A9FF;
+    --wash:#F4F1FF; --wash-2:#FAF9FF; --line:#E8E4F8;
+    --paper:#FFFFFF; --mint:#0FB5A1; --mint-soft:#E4F8F4;
+    --amber:#F4A93C; --rose:#E8537A;
+    --code-bg:#1C1933; --code-ink:#ECEAFF; --code-dim:#9C97D6;
+    --sw:1280px; --sh:720px;
+    --shadow:0 24px 60px -24px rgba(43,28,120,.45);
+    --serif: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:var(--serif); color:var(--ink);
+    background:
+      radial-gradient(1200px 600px at 15% -10%, #ECE7FF 0%, rgba(236,231,255,0) 60%),
+      radial-gradient(1000px 700px at 110% 10%, #F0EBFF 0%, rgba(240,235,255,0) 55%),
+      #EAE7F4;
+    min-height:100vh; -webkit-font-smoothing:antialiased;
+  }
+  .progress{position:fixed; top:0; left:0; right:0; height:3px; z-index:60; background:transparent;}
+  .progress .fill{height:100%; width:0; background:linear-gradient(90deg,var(--violet),#9B7BFF); transition:width .2s ease;}
+
+  .stage{
+    position:fixed; inset:0 0 0 0; z-index:10;
+    display:flex; justify-content:safe center; align-items:safe center;
+    overflow:auto; padding:30px 30px 96px;
+  }
+  .sizer{position:relative;}
+  .scaler{ width:var(--sw); height:var(--sh); transform-origin:top left; position:relative; }
+
+  .slide{
+    width:var(--sw); height:var(--sh);
+    background:var(--paper); border:1px solid var(--line);
+    border-radius:22px; box-shadow:var(--shadow);
+    overflow:hidden; display:none; flex-direction:column;
+    padding:50px 60px 46px; position:relative;
+  }
+  .slide.active{display:flex;}
+
+  .eyebrow{display:inline-flex; align-items:center; gap:10px; font-family:var(--mono); font-size:13px; font-weight:700; letter-spacing:.04em; color:var(--violet); text-transform:uppercase;}
+  .eyebrow .tag{color:#fff; background:var(--violet); border-radius:6px; padding:3px 8px; font-size:11px; letter-spacing:.05em;}
+  .eyebrow .tag.mint{background:var(--mint);}
+  .eyebrow .dot{width:5px;height:5px;border-radius:50%;background:var(--violet-300);}
+  .coord{position:absolute; top:30px; right:40px; font-family:var(--mono); font-size:12px; color:var(--mut); font-weight:600; letter-spacing:.05em;}
+  .coord b{color:var(--ink);}
+
+  .s-title{font-size:39px; line-height:1.12; letter-spacing:-.025em; font-weight:800; margin:14px 0 4px;}
+  .s-title.sm{font-size:32px;} .s-title.xs{font-size:28px;}
+  .s-sub{font-size:17px; color:var(--ink-soft); font-weight:500; line-height:1.5; max-width:64ch;}
+  .rule{height:4px; width:54px; border-radius:3px; background:var(--violet); margin:13px 0 6px;}
+  .body{flex:1; min-height:0; display:flex; flex-direction:column; justify-content:center;}
+  .body.top{justify-content:flex-start; padding-top:6px;}
+
+  .slide.cover{ padding:0; justify-content:center;
+    background:
+      radial-gradient(900px 520px at 100% 0%, #6B4BFF 0%, rgba(107,75,255,0) 58%),
+      radial-gradient(700px 600px at -5% 110%, #3A1FC9 0%, rgba(58,31,201,0) 55%),
+      linear-gradient(135deg,#2A1B8C 0%, #4226D6 48%, #5B3DF5 100%);
+    color:#fff; border:none; }
+  .cover .aperture{position:absolute; top:-120px; right:-120px; width:460px; height:460px; border-radius:50%; background:radial-gradient(circle at 35% 35%, rgba(255,255,255,.5), rgba(255,255,255,0) 62%); filter:blur(2px);}
+  .cover .ring{position:absolute; right:60px; top:60px; width:120px; height:120px; border-radius:50%; border:1.5px solid rgba(255,255,255,.4);}
+  .cover .ring::after{content:""; position:absolute; inset:18px; border-radius:50%; border:1.5px dashed rgba(255,255,255,.35);}
+  .cover .wrap{padding:60px 70px; position:relative; z-index:2; width:100%;}
+  .cover .kick{font-family:var(--mono); letter-spacing:.18em; font-size:13.5px; font-weight:600; color:rgba(255,255,255,.86); text-transform:uppercase; display:flex; align-items:center; gap:14px;}
+  .cover .kick .pill{border:1px solid rgba(255,255,255,.45); border-radius:999px; padding:4px 12px;}
+  .cover h1{font-size:58px; line-height:1.08; letter-spacing:-.03em; font-weight:800; margin:24px 0 16px; max-width:21ch;}
+  .cover .lead{font-size:18px; line-height:1.55; color:rgba(255,255,255,.9); max-width:56ch; font-weight:400;}
+  .cover .meta{margin-top:36px; display:flex; gap:24px; flex-wrap:wrap; font-size:14px;}
+  .cover .meta .it{display:flex; flex-direction:column; gap:3px;}
+  .cover .meta .it .k{font-family:var(--mono); font-size:11px; letter-spacing:.1em; color:rgba(255,255,255,.6); text-transform:uppercase;}
+  .cover .meta .it .v{font-size:15px; font-weight:700; color:#fff;}
+
+  .slide.section{ background:linear-gradient(140deg,#3A1FC9 0%, #5B3DF5 70%, #7A5BFF 100%); color:#fff; border:none; justify-content:center; padding:60px 70px; }
+  .slide.section.mintbg{ background:linear-gradient(140deg,#0A8A7A 0%, #0FB5A1 70%, #34D6C2 100%); }
+  .slide.section .ghost{position:absolute; right:34px; bottom:-66px; font-family:var(--mono); font-weight:700; font-size:330px; line-height:.8; color:rgba(255,255,255,.10); letter-spacing:-.04em;}
+  .slide.section .lab-flag{display:inline-flex; align-items:center; gap:9px; align-self:flex-start; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.4); padding:7px 14px; border-radius:999px; font-weight:700; font-size:13px; font-family:var(--mono); letter-spacing:.06em;}
+  .slide.section .lab-flag .sq{width:9px;height:9px;border-radius:3px;background:#fff;}
+  .slide.section .seyebrow{font-family:var(--mono); letter-spacing:.16em; font-size:14px; color:rgba(255,255,255,.85); text-transform:uppercase; margin-bottom:14px;}
+  .slide.section h2{font-size:48px; line-height:1.1; letter-spacing:-.025em; font-weight:800; margin:0 0 14px; max-width:24ch; position:relative; z-index:2;}
+  .slide.section p{font-size:18px; color:rgba(255,255,255,.92); max-width:54ch; line-height:1.55; position:relative; z-index:2;}
+  .slide.section .agenda{display:flex; gap:10px; flex-wrap:wrap; margin-top:22px; position:relative; z-index:2;}
+  .slide.section .agenda span{font-size:13px; font-weight:600; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3); padding:6px 12px; border-radius:999px;}
+
+  .cards{display:grid; gap:16px;}
+  .cards.c2{grid-template-columns:repeat(2,1fr);} .cards.c3{grid-template-columns:repeat(3,1fr);} .cards.c4{grid-template-columns:repeat(4,1fr);}
+  .card{background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:17px 19px; display:flex; flex-direction:column; gap:7px; position:relative;}
+  .card .ic{width:38px; height:38px; border-radius:4px; display:grid; place-items:center; background:transparent; border:1.5px solid var(--violet-300); color:var(--violet); margin-bottom:3px;}
+  .card .ic svg{width:20px;height:20px;}
+  .card h3{font-size:17px; font-weight:800; letter-spacing:-.01em; margin:0 0 1px; padding-bottom:8px; border-bottom:1px solid var(--line);}
+  .card p{font-size:14px; color:var(--ink-soft); line-height:1.5; margin:0;}
+  .card .n{font-family:var(--mono); font-size:11.5px; color:var(--violet); font-weight:700;}
+
+  .biglist{display:flex; flex-direction:column; gap:13px;}
+  .biglist .li{display:flex; gap:15px; align-items:flex-start;}
+  .biglist .li .num{flex:none; width:34px; height:34px; border-radius:10px; background:var(--violet); color:#fff; font-family:var(--mono); font-weight:700; display:grid; place-items:center; font-size:14px; margin-top:1px;}
+  .biglist .li .tx h4{margin:0 0 3px; font-size:17.5px; font-weight:800;}
+  .biglist .li .tx p{margin:0; font-size:14px; color:var(--ink-soft); line-height:1.5;}
+
+  .phase-label{font-family:var(--mono); font-size:12px; font-weight:700; letter-spacing:.08em; color:var(--violet); text-transform:uppercase; margin:0 0 10px; display:flex; align-items:center; gap:9px;}
+  .phase-label .ln{height:1px; flex:1; background:var(--line);}
+  .pipe{display:flex; align-items:stretch; gap:0; margin-bottom:20px;}
+  .pipe .step{flex:1; background:var(--paper); border:1px solid var(--line); border-top:3px solid var(--violet); border-radius:4px; padding:12px 10px; text-align:center; min-width:0;}
+  .pipe .step .si{font-family:var(--mono); font-size:11px; color:var(--violet); font-weight:700;}
+  .pipe .step .sn{font-size:14.5px; font-weight:800; margin-top:3px; letter-spacing:-.01em;}
+  .pipe .step .sd{font-size:11px; color:var(--mut); margin-top:2px; line-height:1.3;}
+  .pipe .arrow{display:flex; align-items:center; padding:0 5px; color:var(--violet-300);}
+  .pipe .arrow svg{width:17px;height:17px;}
+  .pipe.q .step{background:var(--paper); border-color:var(--line); border-top-color:var(--mint);} .pipe.q .step .si{color:var(--mint);} .pipe.q .arrow{color:#8AD7CC;}
+
+  .code{background:var(--code-bg); border-radius:14px; overflow:hidden; border:1px solid #2A2548; box-shadow:0 18px 40px -22px rgba(28,25,51,.7);}
+  .code .bar{display:flex; align-items:center; gap:7px; padding:10px 15px; border-bottom:1px solid #2A2548; background:#171430;}
+  .code .bar .dot{width:11px;height:11px;border-radius:50%;}
+  .code .bar .r{background:#FF6058;} .code .bar .y{background:#FFC130;} .code .bar .g{background:#28CA42;}
+  .code .bar .fn{margin-left:8px; font-family:var(--mono); font-size:12px; color:var(--code-dim);}
+  .code pre{margin:0; padding:16px 18px; overflow:auto;}
+  .code code{font-family:var(--mono); font-size:13px; line-height:1.6; color:var(--code-ink); white-space:pre;}
+  .code.sm code{font-size:12px; line-height:1.55;}
+  .cm{color:#7D78B8;} .kw{color:#C792FF;} .st{color:#9DE39A;} .fn2{color:#82D3FF;} .nm{color:#FFD479;}
+
+  .callout{border-radius:4px; padding:15px 18px; display:flex; gap:13px; align-items:flex-start; background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet);}
+  .callout .ci{flex:none; width:34px;height:34px;border-radius:4px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .callout .ci svg{width:18px;height:18px;}
+  .callout .ct h4{margin:0 0 3px; font-size:15.5px; font-weight:800;}
+  .callout .ct p{margin:0; font-size:13.5px; color:var(--ink-soft); line-height:1.5;}
+  .callout.mint{border-left-color:var(--mint);} .callout.mint .ci{background:var(--mint);}
+  .callout.amber{border-left-color:var(--amber);} .callout.amber .ci{background:var(--amber);}
+  .callout.rose{border-left-color:var(--rose);} .callout.rose .ci{background:var(--rose);}
+
+  .lab-badge{display:inline-flex; align-items:center; gap:9px; background:var(--mint-soft); color:#0A7F70; border:1px solid #BFE9E1; padding:7px 13px; border-radius:999px; font-weight:700; font-size:13px; font-family:var(--mono); letter-spacing:.04em;}
+  .lab-badge .sq{width:9px;height:9px;border-radius:3px;background:var(--mint);}
+
+  .twocol{display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start;}
+  .twocol.w{grid-template-columns:1.15fr .85fr;} .twocol.w2{grid-template-columns:.85fr 1.15fr;}
+
+  .chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{font-size:12.5px; font-weight:600; color:var(--ink-soft); background:#fff; border:1px solid var(--line); padding:6px 12px; border-radius:999px;}
+  .chip b{color:var(--violet);}
+
+  .deliv{background:var(--paper); border:1px dashed var(--violet-300); border-left:3px solid var(--violet); border-radius:4px; padding:15px 18px; display:flex; align-items:center; gap:13px;}
+  .deliv .di{flex:none;width:36px;height:36px;border-radius:4px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .deliv .di svg{width:19px;height:19px;}
+  .deliv .dt b{display:block;font-size:11px;font-family:var(--mono);letter-spacing:.08em;color:var(--violet);text-transform:uppercase;}
+  .deliv .dt span{font-size:15px;font-weight:700;}
+
+  .vlist{display:flex;flex-direction:column;gap:10px;}
+  .vlist .v{display:flex;gap:11px;align-items:flex-start;font-size:14.5px;color:var(--ink-soft);line-height:1.45;}
+  .vlist .v .b{flex:none;width:22px;height:22px;border-radius:7px;background:var(--wash);color:var(--violet);display:grid;place-items:center;font-family:var(--mono);font-size:12px;font-weight:700;margin-top:1px;}
+  .vlist .v b{color:var(--ink);font-weight:700;}
+
+  .keymsg{margin-top:auto; background:var(--ink); color:#fff; border-radius:4px; padding:15px 20px; display:flex; gap:13px; align-items:center; font-size:15px; line-height:1.5;}
+  .keymsg .k{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;color:var(--violet-300);text-transform:uppercase;flex:none;}
+  .keymsg b{color:#fff;}
+
+  .formula{display:flex; flex-direction:column; gap:10px; background:var(--code-bg); border-radius:13px; padding:20px; color:#fff; font-family:var(--mono);}
+  .formula .big{font-size:21px; text-align:center;}
+
+  .ctable{width:100%; border-collapse:separate; border-spacing:0; font-size:14px; border:1px solid var(--line); border-radius:13px; overflow:hidden;}
+  .ctable th,.ctable td{padding:13px 16px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top;}
+  .ctable thead th{background:var(--wash); color:var(--violet); font-family:var(--mono); font-size:12px; letter-spacing:.04em; text-transform:uppercase; font-weight:700;}
+  .ctable tbody tr:last-child td{border-bottom:none;}
+  .ctable td b{color:var(--ink);} .ctable .hl{color:var(--violet); font-weight:700;}
+  .ctable .yes{color:var(--mint); font-weight:700;} .ctable .no{color:var(--rose); font-weight:700;}
+
+  .timeline{display:flex; gap:0; align-items:stretch; margin-top:6px;}
+  .timeline .t{flex:1; position:relative; padding:0 6px;}
+  .timeline .t .yr{font-family:var(--mono); font-size:13px; font-weight:700; color:var(--violet);}
+  .timeline .t .ev{font-size:13px; font-weight:700; margin-top:30px; line-height:1.3;}
+  .timeline .t .ds{font-size:11.5px; color:var(--mut); margin-top:3px; line-height:1.35;}
+  .timeline .t::before{content:""; position:absolute; left:0; right:0; top:26px; height:2px; background:var(--line);}
+  .timeline .t::after{content:""; position:absolute; left:8px; top:21px; width:12px; height:12px; border-radius:50%; background:var(--violet); border:3px solid #fff; box-shadow:0 0 0 1px var(--violet-300);}
+
+  .quote{background:var(--wash-2); border-left:4px solid var(--violet); border-radius:0 13px 13px 0; padding:18px 22px;}
+  .quote p{margin:0; font-size:18px; line-height:1.5; font-weight:600; color:var(--ink);}
+  .quote .src{margin-top:10px; font-size:12.5px; color:var(--mut); font-family:var(--mono);}
+  .refbox{background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:14px 16px; display:flex; gap:12px; align-items:flex-start;}
+  .refbox .rk{font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; color:var(--violet); text-transform:uppercase; font-weight:700;}
+  .refbox h4{margin:2px 0 3px; font-size:14.5px; font-weight:800;}
+  .refbox p{margin:0; font-size:12.5px; color:var(--ink-soft); line-height:1.45;}
+  .refbox .ri{flex:none;width:30px;height:30px;border-radius:8px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .refbox .ri svg{width:16px;height:16px;}
+
+  .arch{display:flex; align-items:center; gap:18px; justify-content:center; margin:6px 0;}
+  .arch .box{border:1.5px solid var(--line); border-radius:14px; padding:18px 20px; text-align:center; background:var(--wash-2); min-width:160px;}
+  .arch .box .bt{font-size:15px; font-weight:800;} .arch .box .bs{font-size:12px; color:var(--mut); margin-top:3px; line-height:1.35;}
+  .arch .box.local{border-style:dashed; border-color:var(--violet-300); background:#fff;}
+  .arch .box.api{background:linear-gradient(135deg,#EFEAFF,#F8F5FF); border-color:var(--violet-300);}
+  .arch .conn{display:flex; flex-direction:column; align-items:center; gap:4px; color:var(--violet); font-family:var(--mono); font-size:11px; font-weight:700;}
+  .arch .conn svg{width:34px;height:18px;}
+
+  .stat-row{display:flex; gap:16px;}
+  .stat{flex:1; background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:16px 18px;}
+  .stat .num{font-size:30px; font-weight:800; letter-spacing:-.02em; color:var(--violet); font-family:var(--mono);}
+  .stat .lab{font-size:13px; color:var(--ink-soft); margin-top:4px; line-height:1.4;}
+
+  .twopane{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .pane{border:1px solid var(--line); border-radius:4px; padding:16px 18px; background:var(--paper);}
+  .pane.bad{border-left:3px solid var(--rose);} .pane.good{border-left:3px solid var(--mint);}
+  .pane h4{margin:0 0 9px; font-size:14px; font-weight:800; display:flex; align-items:center; gap:7px;}
+  .pane.bad h4{color:#C9405B;} .pane.good h4{color:#0E9E6E;}
+  .pane p{margin:0; font-size:13px; color:var(--ink-soft); line-height:1.5;}
+  .mini{font-family:var(--mono); font-size:13.5px; background:#16142B; border:1px solid #2A2545; border-radius:6px; padding:13px 15px; color:#E8E4F5; line-height:1.7; white-space:pre-wrap;}
+  .pane .mini{font-family:var(--mono); font-size:12px; background:var(--wash-2); border:1px solid var(--line); border-radius:3px; padding:8px 10px; color:var(--ink-soft); line-height:1.5; margin-top:8px;}
+
+  .controlbar{
+    position:fixed; left:50%; bottom:18px; transform:translateX(-50%); z-index:70;
+    display:flex; align-items:center; gap:4px;
+    background:#2B2B2E; border-radius:999px; padding:8px 10px;
+    box-shadow:0 16px 40px -12px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.04) inset;
+  }
+  .controlbar button{appearance:none; border:none; background:transparent; cursor:pointer; color:#C9C9D2; display:grid; place-items:center; border-radius:999px; transition:.12s ease; font-family:var(--serif);}
+  .controlbar .ico{width:38px; height:38px;}
+  .controlbar .ico svg{width:19px;height:19px;}
+  .controlbar .ico:hover{color:#fff; background:rgba(255,255,255,.1);}
+  .controlbar .ico:disabled{color:#5C5C66; cursor:not-allowed; background:transparent;}
+  .controlbar .sep{width:1px; height:24px; background:rgba(255,255,255,.16); margin:0 6px;}
+  .controlbar .count{ color:#EDEDF2; font-style:italic; font-family:Georgia,'Times New Roman',serif; font-size:17px; min-width:78px; text-align:center; letter-spacing:.02em; user-select:none;}
+  .controlbar .count b{font-style:italic; font-weight:600;}
+  .controlbar .zoom{width:32px;height:38px; color:#9A9AA6; font-size:18px;}
+  .controlbar .zoom:hover{color:#fff;}
+  .controlbar .zoom svg{width:17px;height:17px;}
+  .controlbar .pdf{
+    margin-left:6px; background:#7CB342; color:#fff; font-weight:800; font-size:14px; letter-spacing:.06em;
+    padding:0 22px; height:38px; border-radius:999px; display:flex; align-items:center;
+    box-shadow:0 6px 16px -6px rgba(124,179,66,.8);
+  }
+  .controlbar .pdf:hover{background:#86BD4B; color:#fff;}
+
+  .overview{position:fixed; inset:0; z-index:80; background:rgba(22,20,43,.55); backdrop-filter:blur(8px); display:none; padding:40px; overflow:auto;}
+  .overview.on{display:block;}
+  .overview .head{display:flex; align-items:center; justify-content:space-between; max-width:1100px; margin:0 auto 18px; color:#fff;}
+  .overview .head h3{margin:0; font-size:18px; font-weight:800;}
+  .overview .head button{appearance:none;border:1px solid rgba(255,255,255,.3); background:rgba(255,255,255,.1); color:#fff; border-radius:10px; padding:8px 14px; cursor:pointer; font-family:var(--serif); font-weight:700; font-size:13px;}
+  .ovgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; max-width:1100px; margin:0 auto;}
+  .ovcard{background:#fff; border:1px solid var(--line); border-radius:11px; padding:13px 15px; cursor:pointer; transition:.12s; text-align:left;}
+  .ovcard:hover{transform:translateY(-2px); box-shadow:0 12px 22px -12px rgba(0,0,0,.4); border-color:var(--violet);}
+  .ovcard .ovn{font-family:var(--mono); font-size:11px; color:var(--violet); font-weight:700;}
+  .ovcard .ovt{font-size:13.5px; font-weight:700; margin-top:4px; line-height:1.3; color:var(--ink);}
+
+  .hint{position:fixed; left:18px; bottom:24px; z-index:65; font-size:11px; color:var(--mut); font-family:var(--mono);}
+
+
+  /* ===== 이미지 / 도해 컴포넌트 (덱 하네스 추가분) ===== */
+  .figure{border:1px solid var(--line); border-radius:4px; background:var(--wash-2); overflow:hidden; display:flex; flex-direction:column; min-height:0;}
+  .figure img{display:block; width:100%; height:auto; object-fit:contain; min-height:0;}
+  .figure figcaption{font-family:var(--mono); font-size:11px; color:var(--mut); padding:7px 11px; border-top:1px solid var(--line); background:#fff;}
+  .figure.tight img{max-height:330px; object-fit:contain; background:#fff;}
+  /* 원본이 검은 여백을 달고 있는 캡처용 */
+  .figure.dark{background:#16142B; border-color:#2A2548;}
+  .figure.dark img{background:#16142B;}
+  .figure.dark figcaption{background:#1C1933; color:#9C97D6; border-top-color:#2A2548;}
+
+  /* 스크린샷: 창 프레임을 씌워 원본 캡처임을 드러낸다 */
+  .shot{border:1px solid var(--line); border-radius:9px; overflow:hidden; background:#fff; box-shadow:0 10px 26px -18px rgba(28,25,51,.6); display:flex; flex-direction:column; min-height:0;}
+  .shot .sbar{display:flex; align-items:center; gap:6px; padding:7px 11px; background:var(--wash); border-bottom:1px solid var(--line);}
+  .shot .sbar .d{width:9px;height:9px;border-radius:50%;background:var(--violet-300);}
+  .shot .sbar .t{margin-left:6px; font-family:var(--mono); font-size:11px; color:var(--mut);}
+  .shot img{display:block; width:100%; height:auto; max-height:400px; object-fit:contain; min-height:0;}
+
+  /* 도구 두 가지를 나란히 처음 보여줄 때 — 그림과 한 줄만 */
+  .duo{display:grid; grid-template-columns:1fr 1fr; gap:30px;}
+  .duo .side{border:1px solid var(--line); border-radius:18px; background:var(--wash-2);
+    padding:34px 30px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:20px; text-align:center;}
+  .duo .side img{max-height:92px; max-width:78%; width:auto; display:block;}
+  .duo .side .tagline{font-family:var(--mono); font-size:11.5px; letter-spacing:.12em;
+    color:var(--violet); text-transform:uppercase; font-weight:700;}
+  .duo .side h3{margin:0; font-size:23px; font-weight:800; letter-spacing:-.02em;}
+  .duo .side p{margin:0; font-size:15px; color:var(--ink-soft); line-height:1.55; max-width:30ch;}
+
+  /* 제품·도구 로고 — 작은 브랜드 마크 */
+  .brandmark{display:flex; align-items:center; gap:15px; margin-bottom:18px;}
+  .brandmark img{height:46px; width:auto; display:block;}
+  .brandmark .bt{font-size:13.5px; color:var(--ink-soft); line-height:1.45;}
+  .brandmark .bt b{color:var(--ink);}
+
+  /* 채워야 할 이미지 자리 — 인쇄에도 남으므로 발표 전 반드시 교체 */
+  .need-img{border:2px dashed var(--violet-300); border-radius:4px; background:repeating-linear-gradient(135deg,#FBFAFF,#FBFAFF 10px,#F4F1FF 10px,#F4F1FF 20px);
+    display:flex; flex-direction:column; justify-content:center; gap:6px; padding:20px 22px; min-height:150px;}
+  .need-img .nk{font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:.1em; color:var(--violet); text-transform:uppercase;}
+  .need-img .nd{font-size:14px; font-weight:700; color:var(--ink); line-height:1.4;}
+  .need-img .nm2{font-family:var(--mono); font-size:11.5px; color:var(--mut);}
+  .need-img.sm{min-height:92px; padding:14px 16px; align-items:center; text-align:center;}
+
+  /* 코드 실행 결과 */
+  .code .out{border-top:1px dashed #38325C; background:#141127; padding:11px 18px; font-family:var(--mono); font-size:12.5px; line-height:1.55; color:#9DE39A; white-space:pre; overflow:auto;}
+  .code .out .ol{color:#7D78B8;}
+  .code .err{color:#FF8E8E;}
+
+  /* 메모리 슬롯 도해 */
+  .slots{display:flex; gap:8px; flex-wrap:wrap; align-items:flex-start;}
+  .slot{border:1.5px solid var(--line); border-radius:8px; min-width:74px; padding:9px 11px; text-align:center; background:#fff;}
+  .slot .adr{font-family:var(--mono); font-size:10px; color:var(--mut); letter-spacing:.02em;}
+  .slot .val{font-family:var(--mono); font-size:15px; font-weight:700; color:var(--ink); margin-top:2px;}
+  .slot .nm{font-size:11px; color:var(--violet); font-weight:700; margin-top:3px;}
+  .slot.ref{border-style:dashed; border-color:var(--violet-300); background:var(--wash-2);}
+  .slot.dim{opacity:.45;}
+  .ptr{display:grid; place-items:center; color:var(--violet); font-family:var(--mono); font-size:18px; font-weight:700; padding:0 2px; align-self:center;}
+
+  /* 인라인 SVG 차트 */
+  .plot{background:var(--wash-2); border:1px solid var(--line); border-radius:4px; padding:14px; display:grid; place-items:center; min-height:0;}
+  .plot svg{width:100%; height:auto; display:block; max-height:300px;}
+  .plot .cap{font-family:var(--mono); font-size:11px; color:var(--mut); margin-top:8px; text-align:center;}
+  .formula .cap{font-family:var(--mono); font-size:11.5px; color:var(--code-dim); text-align:center;}
+
+  /* 수정·보강 표시 (원본 pptx에 없던 내용) */
+  .newmark{position:absolute; top:30px; right:112px; font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.08em;
+    color:var(--mint); border:1px solid #BFE9E1; background:var(--mint-soft); border-radius:999px; padding:3px 9px;}
+
+  @media print{
+    @page{ size:1280px 720px; margin:0; }
+    body{background:#fff !important;}
+    .controlbar,.progress,.hint,.overview{display:none !important;}
+    .stage{position:static; inset:auto; overflow:visible; display:block; padding:0;}
+    .sizer{width:auto !important; height:auto !important;}
+    .scaler{transform:none !important; width:auto !important; height:auto !important;}
+    .slide{ display:flex !important; width:1280px !important; height:720px !important;
+      border-radius:0 !important; border:none !important; box-shadow:none !important;
+      page-break-after:always; break-after:page;
+      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .slide:last-child{page-break-after:auto;}
+  }
+
+/* nvidia-dli 원본 규칙 */
+.figwrap img{max-width:100%; max-height:100%; object-fit:contain; border-radius:3px;
+    box-shadow:0 8px 24px -18px rgba(43,28,120,.4);}
+
+/* nvidia-dli 컨테이너 규칙 */
+.figwrap{flex:1; min-height:0; display:flex; align-items:center; justify-content:center;
+    background:var(--wash-2); border:1px solid var(--line); border-radius:4px; padding:12px;}
+</style>
+</head>
+<body>
+
+<div class="progress"><div class="fill" id="pfill"></div></div>
+
+<main class="stage" id="stage">
+  <div class="sizer" id="sizer">
+    <div class="scaler" id="scaler">
+
+
+
+<!-- ============================================================
+     슬라이드는 여기부터. 규격: 1280x720 고정.
+     첫 장은 slide cover active, 나머지는 active 없이.
+     ============================================================ -->
+
+<section class="slide cover active" data-title="표지 · Day 13">
+  <div class="aperture"></div><div class="ring"></div>
+  <div class="wrap">
+    <div class="kick"><span class="pill">WEEK 3 · DAY 6</span><span>MCP 서버</span></div>
+    <h1>내가 만든 서버를<br/>남이 쓰게 하기</h1>
+  </div>
+</section>
+<section class="slide" data-title="오늘의 일정">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">AGENDA</span><span class="dot"></span>일정</div>
+  <h2 class="s-title">오늘의 일정</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c4">
+      <div class="card"><span class="n">CH0~1</span><h3>파일로 떼어 내고 띄우기</h3><p>노트북 안에 있던 서버를 파일로 옮기고 실제로 돌린다. 주소가 생긴다.</p></div>
+      <div class="card"><span class="n">CH2~3</span><h3>도구를 잘 만드는 법과 권한</h3><p>모델이 읽는 것은 이름·설명·스키마뿐이다. 만들 도구를 고르는 것이 권한을 정하는 일이다.</p></div>
+      <div class="card"><span class="n">CH4~6</span><h3>여럿을 한 앱에 · 컨테이너</h3><p>조별 서버를 한 호스트에 붙이고, 컨테이너로 싸서 compose 로 한 번에 올린다.</p></div>
+      <div class="card"><span class="n">CH7~8</span><h3>사내망 적용과 조별 과제</h3><p>바깥이 막힌 곳에서 쓰는 법을 보고, 조가 낼 서버를 설계한다.</p></div>
+    </div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 노트북 안에 있던 서버">
+  <div class="ghost">00</div>
+  <div class="seyebrow">CHAPTER 00</div>
+  <h2>노트북 안에 있던 서버</h2>
+  <div class="agenda"><span>어제까지</span><span>떼어 낼 까닭</span></div>
+</section>
+<section class="slide" data-title="어제까지">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>되짚기</div>
+  <h2 class="s-title sm">변수에 담겨 있던 서버</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">어제 노트북</span></div><pre><code><span class="cm"># 서버를 만들고</span>
+mcp = <span class="st">FastMCP</span>(<span class="s">'공정 도우미'</span>)
+
+<span class="cm"># 같은 노트북 안에서 바로 붙었다</span>
+<span class="kw">async with</span> <span class="st">Client</span>(mcp) <span class="kw">as</span> client:
+    <span class="kw">await</span> client.list_tools()</code></pre></div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>서버가 <b>변수 하나</b>였다. 네트워크를 안 탔다.</div></div><div class="v"><span class="b">&#9733;</span><div>그래서 붙는 것이 확실했다. 방화벽도 포트도 없었다.</div></div></div><div class="keymsg"><span class="k">그런데</span><div>노트북을 닫으면 <b>사라진다</b>. 나 말고는 아무도 못 쓴다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="떼어 낼 까닭">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>까닭</div>
+  <h2 class="s-title sm">파일로 떼어 내야 하는 것 셋</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="vlist"><div class="v"><span class="b">1</span><div><b>계속 돌아야 한다</b> &mdash; 노트북을 닫아도 서버는 살아 있어야 남이 쓴다.</div></div><div class="v"><span class="b">2</span><div><b>주소가 있어야 한다</b> &mdash; 붙으려면 어디로 가야 하는지 알아야 한다.</div></div><div class="v"><span class="b">3</span><div><b>어디서든 같아야 한다</b> &mdash; 파이썬 버전과 깔린 꾸러미가 사람마다 다르다.</div></div></div><div class="keymsg"><span class="k">오늘 하는 일</span><div>이 셋을 차례로 푼다 &mdash; <b>파일</b>로 떼고, <b>띄워</b> 주소를 얻고, <b>컨테이너</b>로 싼다.</div></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 파일로 떼어 내고 띄우기">
+  <div class="ghost">01</div>
+  <div class="seyebrow">CHAPTER 01</div>
+  <h2>파일로 떼어 내고 띄우기</h2>
+  <div class="agenda"><span>server.py</span><span>stdio 와 HTTP</span><span>주소로 붙기</span></div>
+</section>
+<section class="slide" data-title="server.py">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>파일</div>
+  <h2 class="s-title sm">파일 한 장이 곧 서버</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">server.py</span></div><pre><code><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">from</span> fastmcp <span class="kw">import</span> FastMCP
+
+df = pd.read_csv(<span class="s">"cell_process.csv"</span>)
+mcp = <span class="st">FastMCP</span>(<span class="s">"공정 도우미"</span>)
+
+<span class="dec">@mcp.tool()</span>
+<span class="kw">def</span> <span class="st">defect_rate</span>(machine: str) -&gt; str:
+    <span class="s">"설비호기의 불량률을 돌려준다"</span>
+    ...
+
+<span class="kw">if</span> __name__ == <span class="s">"__main__"</span>:
+    mcp.run()          <span class="cm"># ← 어제와 갈리는 한 줄</span></code></pre></div><div class="keymsg"><span class="k">바뀐 것은 한 줄</span><div>몸통은 어제 그대로다. <code>mcp.run()</code> 이 붙어서 <b>돌아가는 것</b>이 됐다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="mcp.run">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>실행</div>
+  <h2 class="s-title sm">mcp.run 이 하는 일</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="vlist"><div class="v"><span class="b">&rarr;</span><div><b>귀를 연다</b> &mdash; 붙으러 오는 클라이언트를 기다린다.</div></div><div class="v"><span class="b">&rarr;</span><div><b>안 끝난다</b> &mdash; 서버는 계속 도는 것이라 그 줄에서 멈춰 있다.</div></div><div class="v"><span class="b">&#9733;</span><div>그래서 노트북에서 그냥 부르면 <b>셀이 안 끝난다</b>. 딴 갈래로 띄워야 한다.</div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">노트북에서 띄울 때</span></div><pre><code>threading.<span class="st">Thread</span>(
+    target=<span class="kw">lambda</span>: srv.run(transport=<span class="s">'http'</span>, port=<span class="n">8931</span>),
+    daemon=<span class="kw">True</span>).start()</code></pre></div><div class="keymsg"><span class="k">한 줄로</span><div><code>run()</code> 은 <b>돌아오지 않는 함수</b>다. 그것이 서버의 정의다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="전송 방식">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>전송</div>
+  <h2 class="s-title sm">stdio 와 HTTP 의 갈림</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="ctable"><table>
+  <thead><tr><th></th><th>stdio</th><th>HTTP</th></tr></thead>
+  <tbody>
+  <tr><td>어떻게 붙나</td><td class="hl">앱이 서버를 직접 실행한다</td><td class="hl">주소로 찾아간다</td></tr>
+  <tr><td>어디에 있나</td><td>같은 기계</td><td class="hl">아무 데나</td></tr>
+  <tr><td>누가 켜나</td><td>앱이 켠다</td><td>미리 떠 있다</td></tr>
+  <tr><td>여럿이 쓰나</td><td>못 쓴다</td><td class="hl">쓴다</td></tr>
+  <tr><td>쓰는 자리</td><td>내 PC 의 Codex</td><td class="hl">사내 서버 · 조별 과제</td></tr>
+  </tbody></table></div><div class="keymsg"><span class="k">오늘 쓰는 것</span><div>조별 서버를 한 호스트에 모을 것이라 <b>HTTP</b> 로 간다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="주소로 붙기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>실측</div>
+  <h2 class="s-title sm">객체와 주소, 같은 결과</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">같은 서버에 두 가지로 붙어 본다</span></div><pre><code><span class="kw">await</span> peek(srv)                            <span class="cm"># 객체를 넘긴다</span>
+<span class="kw">await</span> peek(<span class="s">'http://127.0.0.1:8931/mcp'</span>)   <span class="cm"># 주소를 넘긴다</span></code></pre></div><div class="out">객체로 붙기 : (['defect_rate'], '3호기 전체 측정 600건 중 불량 72건 · 12.0%')
+주소로 붙기 : (['defect_rate'], '3호기 전체 측정 600건 중 불량 72건 · 12.0%')</div><div class="keymsg"><span class="k">똑같다</span><div><code>list_tools</code> 도 <code>call_tool</code> 도 안 바뀐다. 서버가 <b>어디에 있든</b> 붙는 쪽은 같다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="포트">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>포트</div>
+  <h2 class="s-title sm">한 기계에 서버 여럿</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="vlist"><div class="v"><span class="b">&rarr;</span><div>주소는 <b>기계 이름 + 포트</b>다. 포트가 서버를 가르는 이름표다.</div></div><div class="v"><span class="b">&rarr;</span><div><code>8931</code> 에 설비 서버, <code>8932</code> 에 규정 서버를 따로 띄운다.</div></div><div class="v"><span class="b">&#9733;</span><div>포트가 겹치면 <b>나중 것이 못 뜬다</b>. 조마다 다른 번호를 준다.</div></div></div><div class="keymsg"><span class="k">뒤에 나올 것</span><div>compose 를 쓰면 포트를 외울 일이 없다. <b>이름으로</b> 서로 찾는다.</div></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 도구를 잘 만드는 법">
+  <div class="ghost">02</div>
+  <div class="seyebrow">CHAPTER 02</div>
+  <h2>도구를 잘 만드는 법</h2>
+  <div class="agenda"><span>모델이 받는 것</span><span>흔들리는 고르기</span><span>에러 문구</span></div>
+</section>
+<section class="slide" data-title="모델이 받는 것">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>전달</div>
+  <h2 class="s-title sm">모델에게 넘어가는 것 셋</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">서버가 내보내는 글 전부</span></div><pre><code>이름    defect_rate
+설명    설비호기의 불량률을 돌려준다. 교대조를 주면 그 안에서만 센다.
+        machine: 설비호기. 1호기 ~ 4호기
+        shift: 교대조. 주간 또는 야간. 비우면 전체
+스키마  {
+          <span class="s">"machine"</span>: {<span class="s">"type"</span>: <span class="s">"string"</span>},
+          <span class="s">"shift"</span>:   {<span class="s">"type"</span>: <span class="s">"string"</span>, <span class="s">"default"</span>: <span class="s">""</span>}
+        }</code></pre></div><div class="keymsg"><span class="k">여기 없는 것은 모른다</span><div>함수 <b>몸통은 안 넘어간다</b>. 코드가 아무리 정확해도 이름과 설명이 흐리면 못 고른다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="설명은 누가 읽나">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>설명</div>
+  <h2 class="s-title sm">설명은 모델이 읽는 글</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="twopane">
+  <div class="pane bad"><h4>사람에게 쓰는 글</h4>
+    <p><code>"데이터를 본다"</code></p>
+    <p><code>"불량률 계산 로직 v2"</code></p>
+    <div class="mini">무엇을 하는지는 알겠는데 언제 쓰는지가 없다</div></div>
+  <div class="pane good"><h4>모델에게 쓰는 글</h4>
+    <p><code>"설비호기의 불량률을 돌려준다.</code></p>
+    <p><code>&nbsp;품질·불량·양품을 물으면 이것을 쓴다."</code></p>
+    <div class="mini">「언제 쓰는지」가 판단의 근거가 된다</div></div>
+</div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div>인자 설명도 같이 적는다 &mdash; <code>machine: 설비호기. 1호기 ~ 4호기</code>. 모델이 <b>넣을 값</b>을 안다.</div></div></div><div class="keymsg"><span class="k">한 줄로</span><div>설명은 문서가 아니라 <b>지시문</b>이다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="흔들리는 고르기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>실측</div>
+  <h2 class="s-title sm">같은 질문 세 번의 결과</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="out">Q  3호기 불량률 알려줘
+   1회 → ['check_quality']
+   2회 → ['check_quality']
+   3회 → ['check_quality']
+
+Q  3호기 상태 좀 봐줘
+   1회 → ['check_runtime']
+   2회 → ['check_quality', 'check_runtime']
+   3회 → ['check_quality', 'check_runtime']</div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>뜻이 분명한 질문은 <b>세 번 다 같다</b>.</div></div><div class="v"><span class="b">&rarr;</span><div>모호한 질문은 <b>매번 다르다</b>. 온도를 0 으로 놓아도 그렇다.</div></div></div><div class="keymsg"><span class="k">그래서</span><div>도구를 <b>좁게</b> 만들고 <b>이름을 분명하게</b> 짓는다. 한 도구가 여러 일을 하면 판단할 근거가 없다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="에러 문구">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>실측</div>
+  <h2 class="s-title sm">없는 설비에 돌아온 두 가지 글</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">같은 질문에 도구 둘이 돌려준 글</span></div><pre><code><span class="cm"># 검증이 없는 도구</span>
+터졌다 &rarr; Error calling tool 'defect_rate': float division by zero
+
+<span class="cm"># 길을 알려 주는 도구</span>
+「7호기」 는 없는 설비다. 쓸 수 있는 이름: 1호기, 2호기, 3호기, 4호기</code></pre></div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div><b>이 두 줄이 모델에게 넘어가는 글이다.</b> 앞엣것으로는 무엇이 잘못됐는지 모른다.</div></div></div><div class="keymsg"><span class="k">에러 문구도</span><div>사람만 읽는 것이 아니다. <b>쓸 수 있는 값</b>을 같이 준다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="지어내기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>위험</div>
+  <h2 class="s-title sm">빈 값을 채우려는 버릇</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="out"><b>검증 없는 도구</b>
+  7호기 불량률을 조회하려고 했으나 오류가 발생했습니다.
+  이 오류는 일반적으로 <b>데이터가 존재하지 않거나</b>… &nbsp;&nbsp;← 짐작으로 메운다
+
+<b>길을 알려 준 도구</b>
+  제공된 정보에 따르면 <b>1호기, 2호기, 3호기, 4호기</b> 만 존재합니다.
+  ### 현재 가능한 기기별 불량률 (최신 데이터, <b>가상 데이터로 대체</b>… &nbsp;&nbsp;← 이어 붙이려 든다</div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div>둘 다 <b>지어내려 든다</b>. 도구가 값을 안 주면 모델은 빈자리를 메우려 한다.</div></div></div><div class="keymsg"><span class="k">도구의 몫</span><div>없으면 <b>없다고 돌려준다</b>. 「무엇이 있는지」까지 같이 주면 짐작할 여지가 준다.</div></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 도구로 정하는 권한 경계">
+  <div class="ghost">03</div>
+  <div class="seyebrow">CHAPTER 03</div>
+  <h2>도구로 정하는 권한 경계</h2>
+  <div class="agenda"><span>읽기와 쓰기</span><span>되돌리기</span><span>안 여는 것</span></div>
+</section>
+<section class="slide" data-title="읽기와 쓰기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>갈림</div>
+  <h2 class="s-title sm">읽기와 쓰기의 갈림</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="twopane">
+  <div class="pane good"><h4>읽기</h4>
+    <p>틀려도 <b>되돌릴 수 있다</b>.<br/>다시 부르면 그만이다.</p>
+    <p>새는 것만 막으면 된다 &mdash; 어느 칸을, 몇 줄까지.</p>
+    <div class="mini">불량률 조회 · 규정 검색 · 최근 기록</div></div>
+  <div class="pane bad"><h4>쓰기</h4>
+    <p>틀리면 <b>안 돌아온다</b>.<br/>지운 것은 지워진 것이다.</p>
+    <p>되돌릴 길을 <b>미리</b> 만들어 둬야 한다.</p>
+    <div class="mini">메모 남기기 · 상태 바꾸기 · 지우기</div></div>
+</div><div class="keymsg"><span class="k">첫 서버는</span><div><b>읽기만</b> 여는 것으로 시작한다. 쓰기는 되돌릴 길을 만든 뒤에 연다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="권한의 자리">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>권한</div>
+  <h2 class="s-title sm">프롬프트와 도구 목록</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="twopane">
+  <div class="pane bad"><h4>프롬프트로 막기</h4>
+    <p><code>"데이터를 지우지 마라"</code></p>
+    <p>말로 부탁하는 것이다. 말은 <b>돌려 말하면 뚫린다</b>.</p>
+    <div class="mini">지우는 도구가 있으면 언젠가 불린다</div></div>
+  <div class="pane good"><h4>도구로 막기</h4>
+    <p>지우는 도구를 <b>안 만든다</b></p>
+    <p>없는 것은 못 부른다. 아무리 잘 설득해도 못 부른다.</p>
+    <div class="mini">경계가 코드에 박혀 있다</div></div>
+</div><div class="keymsg"><span class="k">한 줄로</span><div><b>만들 도구를 고르는 것</b>이 곧 권한을 정하는 일이다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="되돌리기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>설계</div>
+  <h2 class="s-title sm">지우는 도구를 만든다면</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">지운 것을 버리지 않는다</span></div><pre><code><span class="dec">@mcp.tool()</span>
+<span class="kw">def</span> <span class="st">remove_note</span>(number: int) -&gt; str:
+    <span class="s">"점검 메모를 지운다. 지운 것은 되살릴 수 있게 따로 둔다."</span>
+    <span class="kw">if</span> <span class="kw">not</span> <span class="n">1</span> &lt;= number &lt;= len(NOTES):
+        <span class="kw">return</span> <span class="s">'1 부터 %d 사이 번호를 준다'</span> % len(NOTES)
+    TRASH.append(NOTES.pop(number - <span class="n">1</span>))   <span class="cm"># ← 버리지 않는다</span>
+    <span class="kw">return</span> <span class="s">'지웠다. 되살리려면 되살리기 도구를 쓴다'</span></code></pre></div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div><b>지우는 도구와 되살리는 도구를 짝으로</b> 만든다. 하나만 만들면 사고가 사고로 끝난다.</div></div></div><div class="keymsg"><span class="k">범위도 좁힌다</span><div>「번호 하나」만 받는다. 「조건에 맞는 것 전부」를 받으면 <b>한 번에 다 날아간다</b>.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="표시">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>표시</div>
+  <h2 class="s-title sm">readOnlyHint 가 하는 일</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">붙는 앱에게 주는 표시</span></div><pre><code><span class="dec">@mcp.tool(annotations={<span class="s">'readOnlyHint'</span>: <span class="kw">True</span>})</span>
+<span class="kw">def</span> <span class="st">list_notes</span>() -&gt; str: ...
+
+<span class="dec">@mcp.tool(annotations={<span class="s">'readOnlyHint'</span>: <span class="kw">False</span>,
+                      <span class="s">'destructiveHint'</span>: <span class="kw">True</span>})</span>
+<span class="kw">def</span> <span class="st">remove_note</span>(number: int) -&gt; str: ...</code></pre></div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>앱은 이걸 보고 <b>「그냥 실행」과 「사람에게 물어보고」</b>를 가른다.</div></div><div class="v"><span class="b">&#9733;</span><div><b>강제가 아니다.</b> 표시를 안 지키는 앱도 있다. 막는 것은 도구 안에서 한다.</div></div></div><div class="keymsg"><span class="k">표시는 표시일 뿐</span><div>자물쇠가 아니라 <b>라벨</b>이다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="안 여는 것">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>경계</div>
+  <h2 class="s-title sm">경계를 값으로 박기</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">경계를 값으로 박아 둔다</span></div><pre><code>OPEN = [<span class="s">"로트번호"</span>, <span class="s">"시각"</span>, <span class="s">"설비호기"</span>, <span class="s">"교대조"</span>, <span class="s">"판정"</span>]
+LIMIT = <span class="n">20</span>
+
+<span class="cm"># 내보낼 때 이것만 통과한다</span>
+<span class="kw">return</span> d[OPEN].to_string(index=<span class="kw">False</span>)</code></pre></div><div class="out">막은 칸이 샜나: 안 샜다
+돌려준 줄 수: 20            ← 100건을 달라고 해도 20줄</div><div class="keymsg"><span class="k">먼저 적는다</span><div>무엇을 열지보다 <b>무엇을 안 열지</b>를 먼저 정한다. 그게 조별 과제의 다섯째 칸이다.</div></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 서버 여럿을 한 앱에">
+  <div class="ghost">04</div>
+  <div class="seyebrow">CHAPTER 04</div>
+  <h2>서버 여럿을 한 앱에</h2>
+  <div class="agenda"><span>조마다 서버</span><span>이름 충돌</span><span>접두어</span></div>
+</section>
+<section class="slide" data-title="조마다 서버">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>구조</div>
+  <h2 class="s-title sm">조마다 서버 하나</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="bpipe">
+  <div class="bstep"><div class="si">1조</div><div class="sn">설비 서버</div><div class="sd">불량률 · 최근 기록</div></div>
+  <div class="bstep"><div class="si">2조</div><div class="sn">규정 서버</div><div class="sd">조문 검색 · 인용 추적</div></div>
+  <div class="bstep"><div class="si">3조</div><div class="sn">교대 서버</div><div class="sd">교대별 실적 · 인수인계</div></div>
+</div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">호스트가 하는 일은 이것뿐</span></div><pre><code><span class="kw">for</span> path <span class="kw">in</span> sorted(glob.glob(<span class="s">'teams/*.py'</span>)):
+    host.mount(create_proxy(path), namespace=path.stem)</code></pre></div><div class="keymsg"><span class="k">조가 낼 것</span><div>파일 <b>하나</b>다. <code>teams/</code> 에 넣으면 붙는다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="이름 충돌">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>실측</div>
+  <h2 class="s-title sm">말없이 덮이는 도구 이름</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">두 조 다 defect_rate 를 만들었다</span></div><pre><code>plain.mount(team1)
+plain.mount(team2)
+
+<span class="cm"># 도구 목록</span>
+[<span class="s">'defect_rate'</span>, <span class="s">'find_rule'</span>]        <span class="cm">← 2조 것이 사라졌다</span>
+<span class="cm"># 불러 보면</span>
+[1조] 3호기 12.0%</code></pre></div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>먼저 붙인 <b>1조가 이긴다</b>. 2조의 같은 이름 도구는 목록에서 그냥 없다.</div></div><div class="v"><span class="b">&#9733;</span><div>경고 한 줄이 로그에 찍힐 뿐이다. <b>2조는 자기 도구가 안 불린다는 것도 모른다.</b></div></div></div><div class="keymsg"><span class="k">도구 이름은</span><div>서버가 달라도 <b>앱 안에서는 전역</b>이다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="접두어">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>해결</div>
+  <h2 class="s-title sm">접두어로 가르기</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">붙이는 쪽이 이름을 나눠 준다</span></div><pre><code>merged.mount(team1, namespace=<span class="s">'team1'</span>)
+merged.mount(team2, namespace=<span class="s">'team2'</span>)</code></pre></div><div class="out">도구 목록: ['team1_defect_rate', 'team2_find_rule', 'team2_defect_rate']
+
+team1_defect_rate → [1조] 3호기 12.0%
+team2_defect_rate → [2조] 3호기 99.9%</div><div class="keymsg"><span class="k">둘 다 산다</span><div>이름이 겹쳐도 <b>어느 조 것인지</b>가 이름에 남는다. 발표 때 누구 도구가 불렸는지 보인다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="따로 죽는다">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>격리</div>
+  <h2 class="s-title sm">프로세스 격리</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="vlist"><div class="v"><span class="b">&rarr;</span><div>조별 서버는 <b>딴 프로세스</b>로 뜬다. 한 조 코드가 터져도 그 조만 죽는다.</div></div><div class="v"><span class="b">&rarr;</span><div>호스트는 그 도구만 실패로 처리하고 <b>나머지로 답한다</b>.</div></div><div class="v"><span class="b">&#9733;</span><div>발표 중 사고를 생각하면 이게 크다. 한 조 때문에 전체가 멈추지 않는다.</div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">호스트 쪽 대비</span></div><pre><code><span class="kw">try</span>:
+    out = (<span class="kw">await</span> client.call_tool(name, args)).content[<span class="n">0</span>].text
+<span class="kw">except</span> Exception <span class="kw">as</span> e:
+    out = <span class="s">'도구가 실패했다: %s'</span> % e</code></pre></div><div class="keymsg"><span class="k">한 줄로</span><div><b>따로 도는 것</b>이 컨테이너로 가는 이유이기도 하다.</div></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 컨테이너로 싸기">
+  <div class="ghost">05</div>
+  <div class="seyebrow">CHAPTER 05</div>
+  <h2>컨테이너로 싸기</h2>
+  <div class="agenda"><span>왜 필요한가</span><span>Dockerfile</span><span>build 와 run</span></div>
+</section>
+<section class="slide" data-title="안 되는 문제">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>문제</div>
+  <h2 class="s-title sm">내 PC 에서만 도는 문제</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="twopane">
+  <div class="pane bad"><h4>파일만 넘겼을 때</h4>
+    <p>「파이썬이 3.9 라 안 돼요」<br/>
+       「pandas 를 안 깔았는데요」<br/>
+       「csv 경로가 다른데요」</p>
+    <div class="mini">사람마다 환경이 다르다</div></div>
+  <div class="pane good"><h4>컨테이너로 넘겼을 때</h4>
+    <p>파이썬 · 꾸러미 · 데이터 · 실행 명령을<br/><b>한 덩이</b>로 싸서 넘긴다.</p>
+    <div class="mini">어느 기계에서 열어도 안이 같다</div></div>
+</div><div class="keymsg"><span class="k">컨테이너란</span><div><b>서버가 돌아가는 데 필요한 전부</b>를 담은 상자다. 상자를 옮기면 그대로 돈다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="이미지와 컨테이너">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>용어</div>
+  <h2 class="s-title sm">이미지와 컨테이너의 갈림</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="bpipe">
+  <div class="bstep"><div class="si">1</div><div class="sn">Dockerfile</div><div class="sd">무엇을 담을지 적은 <b>설명서</b></div></div>
+  <div class="bstep"><div class="si">2</div><div class="sn">이미지</div><div class="sd">설명서대로 <b>만들어 둔 것</b>. 안 움직인다</div></div>
+  <div class="bstep"><div class="si">3</div><div class="sn">컨테이너</div><div class="sd">이미지를 <b>돌린 것</b>. 실제로 도는 서버</div></div>
+</div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div>이미지 하나로 <b>컨테이너 여럿</b>을 띄울 수 있다. 붕어빵 틀과 붕어빵이다.</div></div></div><div class="keymsg"><span class="k">명령으로 보면</span><div><code>build</code> 가 이미지를 만들고, <code>run</code> 이 컨테이너를 띄운다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="Dockerfile">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>작성</div>
+  <h2 class="s-title sm">Dockerfile 여섯 줄</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">Dockerfile</span></div><pre><code><span class="kw">FROM</span> python:3.12-slim          <span class="cm"># 바탕. 파이썬이 깔린 최소 리눅스</span>
+
+<span class="kw">WORKDIR</span> /app                     <span class="cm"># 상자 안에서 일할 자리</span>
+<span class="kw">COPY</span> requirements.txt .         <span class="cm"># 꾸러미 목록을 넣고</span>
+<span class="kw">RUN</span> pip install --no-cache-dir -r requirements.txt
+
+<span class="kw">COPY</span> server.py .                <span class="cm"># 서버 파일을 넣는다</span>
+<span class="kw">EXPOSE</span> 8000
+<span class="kw">CMD</span> [<span class="s">"fastmcp"</span>, <span class="s">"run"</span>, <span class="s">"server.py"</span>,
+     <span class="s">"--transport"</span>, <span class="s">"http"</span>, <span class="s">"--host"</span>, <span class="s">"0.0.0.0"</span>, <span class="s">"--port"</span>, <span class="s">"8000"</span>]</code></pre></div><div class="keymsg"><span class="k">전송 방식은 여기서</span><div><code>server.py</code> 는 <code>mcp.run()</code> 한 줄로 끝난다. <b>어떻게 띄울지는 상자가 정한다.</b></div></div>
+  </div>
+</section>
+<section class="slide" data-title="build 와 run">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>명령</div>
+  <h2 class="s-title sm">만들고 띄우는 두 명령</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">터미널</span></div><pre><code>$ docker build -t 공정도우미:1.0 .
+ =&gt; [1/5] FROM python:3.12-slim
+ =&gt; [4/5] RUN pip install -r requirements.txt
+ =&gt; naming to docker.io/library/공정도우미:1.0
+
+$ docker run -p 8000:8000 공정도우미:1.0
+Uvicorn running on http://0.0.0.0:8000</code></pre></div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div><code>-t</code> 는 이름표다. <code>공정도우미:1.0</code> 처럼 <b>이름:버전</b>으로 붙인다.</div></div><div class="v"><span class="b">&rarr;</span><div><code>-p 8000:8000</code> 은 <b>바깥 포트 : 안쪽 포트</b>다. 앞이 내 PC, 뒤가 상자 안.</div></div></div><div class="keymsg"><span class="k">한 가지 함정</span><div>상자 안에서는 <code>127.0.0.1</code> 이 아니라 <b><code>0.0.0.0</code></b> 으로 열어야 밖에서 붙는다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="무엇이 들었나">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>확인</div>
+  <h2 class="s-title sm">상자 안을 들여다보기</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">터미널</span></div><pre><code>$ docker images
+REPOSITORY   TAG   SIZE
+공정도우미     1.0   <span class="n">248MB</span>
+
+$ docker exec -it 공정도우미 sh      <span class="cm"># 상자 안으로 들어간다</span>
+# ls /app
+requirements.txt  server.py
+# python -c "import pandas; print(pandas.__version__)"
+3.0.5</code></pre></div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div>상자 안에는 <b>내가 넣은 것만</b> 있다. 내 PC 의 다른 파일은 안 보인다.</div></div></div><div class="keymsg"><span class="k">그래서 안전하기도 하다</span><div>서버가 잘못 짜여도 <b>상자 밖 파일</b>은 못 건드린다.</div></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] compose 로 여럿을 한 번에">
+  <div class="ghost">06</div>
+  <div class="seyebrow">CHAPTER 06</div>
+  <h2>compose 로 여럿을 한 번에</h2>
+  <div class="agenda"><span>서비스</span><span>이름으로 찾기</span><span>expose 와 ports</span></div>
+</section>
+<section class="slide" data-title="손으로 띄우면">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>문제</div>
+  <h2 class="s-title sm">손으로 띄울 때 드는 일</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="out">$ docker run -d -p 8001:8000 team1
+$ docker run -d -p 8002:8000 team2
+$ docker run -d -p 8003:8000 team3
+$ docker run -d -p 8080:8080 \
+    -e TEAM_URLS="http://???:8001/mcp,http://???:8002/mcp,…" host</div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>포트를 <b>사람이 외워야</b> 한다. 조가 늘 때마다 명령이 늘어난다.</div></div><div class="v"><span class="b">&rarr;</span><div>컨테이너끼리는 <code>127.0.0.1</code> 로 서로를 <b>못 찾는다</b>. 각자 딴 상자다.</div></div></div><div class="keymsg"><span class="k">compose 가 푸는 것</span><div>이 넷을 <b>한 파일</b>에 적고 한 번에 올린다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="compose.yml">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>작성</div>
+  <h2 class="s-title sm">compose.yml 한 장</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">compose.yml</span></div><pre><code><span class="kw">services:</span>
+  <span class="st">team1:</span>
+    build: ./teams/team1
+    expose: [<span class="s">"8000"</span>]        <span class="cm"># team2 도 같은 모양</span>
+
+  <span class="st">host:</span>
+    build: ./host
+    ports: [<span class="s">"8080:8080"</span>]
+    environment:
+      TEAM_URLS: <span class="s">"http://team1:8000/mcp,http://team2:8000/mcp"</span>
+    depends_on: [team1, team2]</code></pre></div><div class="keymsg"><span class="k">한 파일이 전부다</span><div>서비스 셋을 적었다. <code>docker compose up</code> 한 줄이면 셋 다 뜬다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="이름으로 찾기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>연결</div>
+  <h2 class="s-title sm">서비스 이름이 곧 주소</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="out">TEAM_URLS: "http://<b>team1</b>:8000/mcp,http://<b>team2</b>:8000/mcp"
+                    ↑
+              기계 이름이 아니라 <b>서비스 이름</b>이다</div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>compose 가 서비스마다 <b>이름을 붙여</b> 서로 찾게 이어 준다.</div></div><div class="v"><span class="b">&rarr;</span><div>IP 를 적을 일이 없다. 컨테이너가 다시 떠서 IP 가 바뀌어도 <b>이름은 그대로</b>다.</div></div><div class="v"><span class="b">&#9733;</span><div>조가 늘면 서비스 한 칸과 주소 하나만 더 적는다.</div></div></div><div class="keymsg"><span class="k">한 줄로</span><div><code>team1</code> 이라고 쓰면 그 상자로 간다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="expose 와 ports">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>경계</div>
+  <h2 class="s-title sm">안쪽만 열기와 바깥까지 열기</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="twopane">
+  <div class="pane good"><h4>expose</h4>
+    <p><code>expose: ["8000"]</code></p>
+    <p>같은 compose 안의 <b>다른 서비스만</b> 붙는다.<br/>내 PC 브라우저로는 못 연다.</p>
+    <div class="mini">조별 서버 — 호스트만 쓰면 된다</div></div>
+  <div class="pane bad"><h4>ports</h4>
+    <p><code>ports: ["8080:8080"]</code></p>
+    <p><b>바깥까지</b> 연다. 브라우저로 열린다.<br/>같은 망의 다른 PC 도 붙는다.</p>
+    <div class="mini">호스트 하나만 이렇게 연다</div></div>
+</div><div class="keymsg"><span class="k">밖으로 낸 것은 하나</span><div>조별 서버를 <code>ports</code> 로 열면 <b>아무나 직접 부른다</b>. 열 까닭이 없다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="올리고 내리기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>명령</div>
+  <h2 class="s-title sm">한 줄로 올리고 내리기</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">터미널</span></div><pre><code>$ docker compose up -d --build       <span class="cm"># 만들고 띄운다</span>
+$ docker compose ps
+
+SERVICE   STATUS         PORTS
+host      Up 3 minutes   0.0.0.0:8080-&gt;8080/tcp
+team1     Up 3 minutes   8000/tcp
+team2     Up 3 minutes   8000/tcp
+
+$ docker compose logs host --tail 5
+붙은 조 — team1, team2
+
+$ docker compose down                <span class="cm"># 한 번에 내린다</span></code></pre></div><div class="keymsg"><span class="k">조가 늘어도</span><div>명령은 그대로다. <b>파일만</b> 고친다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="실제로 붙은 모습">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>실측</div>
+  <h2 class="s-title sm">세 상자가 붙어 낸 답</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="out">Q  3호기 불량률 보고 위험하면 멈출 근거 조문도 같이 알려줘
+
+  [team1] defect_rate({'machine': '3호기'})
+          → 3호기 전체 측정 600건 중 불량 72건 · 12.0%
+
+  [team2] find_rule({'question': '위험할 때 작업을 멈추는 근거'})
+          → 산업안전보건법 제26조(작업중지 등)
+
+  답  3호기 불량률 12.0%. 근거는 제26조다.</div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div><b>한 문장에 두 조의 도구가 순서대로</b> 불렸다. 사람이 나눠 주지 않았다.</div></div></div><div class="keymsg"><span class="k">이것이 발표 장면</span><div>자기 조 도구가 <b>남의 질문에</b> 불리는 것을 눈으로 본다.</div></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 사내망에서 쓰기">
+  <div class="ghost">07</div>
+  <div class="seyebrow">CHAPTER 07</div>
+  <h2>사내망에서 쓰기</h2>
+  <div class="agenda"><span>막히는 자리</span><span>사내 저장소</span><span>통째로 옮기기</span></div>
+</section>
+<section class="slide" data-title="막히는 자리">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>진단</div>
+  <h2 class="s-title sm">바깥이 막히면 걸리는 곳 셋</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="vlist"><div class="v"><span class="b">1</span><div><code>FROM python:3.12-slim</code> &mdash; <b>바탕 이미지</b>를 못 받는다.</div></div><div class="v"><span class="b">2</span><div><code>pip install</code> &mdash; <b>꾸러미</b>를 못 받는다.</div></div><div class="v"><span class="b">3</span><div>도구가 바깥 API 를 부르면 &mdash; <b>실행할 때</b> 막힌다.</div></div></div><div class="keymsg"><span class="k">푸는 길 셋</span><div>① 사내 저장소를 본다 &nbsp; ② 프록시를 넘긴다 &nbsp; ③ <b>통째로 옮긴다</b></div></div>
+  </div>
+</section>
+<section class="slide" data-title="사내 저장소">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>방법 ①</div>
+  <h2 class="s-title sm">사내 저장소와 미러</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">Dockerfile.intra</span></div><pre><code><span class="kw">FROM</span> harbor.사내주소/library/python:3.12-slim
+
+<span class="kw">WORKDIR</span> /app
+<span class="kw">COPY</span> requirements.txt .
+<span class="kw">RUN</span> pip install --no-cache-dir \
+      --index-url https://nexus.사내주소/repository/pypi/simple \
+      --trusted-host nexus.사내주소 \
+      -r requirements.txt
+
+<span class="kw">COPY</span> server.py .
+<span class="kw">CMD</span> [<span class="s">"python"</span>, <span class="s">"server.py"</span>]</code></pre></div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>Harbor · Nexus 같은 <b>사내 저장소</b>가 이미 있으면 주소만 바꾸면 된다.</div></div><div class="v"><span class="b">&#9733;</span><div><b>정보시스템 담당에게 먼저 물어본다</b> &mdash; 대개 이미 굴리고 있다.</div></div></div><div class="keymsg"><span class="k">바뀌는 것은 두 줄</span><div><code>FROM</code> 과 <code>--index-url</code> 뿐이다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="통째로 옮기기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>방법 ③</div>
+  <h2 class="s-title sm">파일로 통째 옮기기</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="bpipe">
+  <div class="bstep"><div class="si">1</div><div class="sn">바깥 PC</div><div class="sd"><code>docker build -t 공정도우미:1.0 .</code></div></div>
+  <div class="bstep"><div class="si">2</div><div class="sn">파일로 뽑기</div><div class="sd"><code>docker save 공정도우미:1.0 -o 공정도우미.tar</code></div></div>
+  <div class="bstep"><div class="si">3</div><div class="sn">사내 PC</div><div class="sd"><code>docker load -i 공정도우미.tar</code></div></div>
+</div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div><b>빌드를 사내에서 안 한다.</b> 다 만든 것을 통째로 옮긴다. 폐쇄망에서 제일 흔한 길이다.</div></div><div class="v"><span class="b">&rarr;</span><div>옮기는 것은 승인된 반입 경로를 쓴다. 파일 하나라 <b>검사에 걸기도 쉽다</b>.</div></div></div><div class="keymsg"><span class="k">되짚어 두면</span><div>컨테이너는 <b>파일 한 개</b>로 만들 수 있다. 그것이 이 방법이 되는 까닭이다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="프록시">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>방법 ②</div>
+  <h2 class="s-title sm">프록시만 있는 곳</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">터미널</span></div><pre><code>$ docker build \
+    --build-arg HTTP_PROXY=$HTTP_PROXY \
+    --build-arg HTTPS_PROXY=$HTTPS_PROXY \
+    -t 공정도우미:1.0 .</code></pre></div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>빌드할 때만 쓰는 값이라 <b>이미지 안에 안 남는다</b>.</div></div><div class="v"><span class="b">&#9733;</span><div>도구가 실행 중에도 바깥을 봐야 하면 <code>environment</code> 로 따로 넣는다.</div></div></div><div class="keymsg"><span class="k">먼저 확인할 것</span><div>사내 프록시 주소와 <b>예외 목록</b>은 정보시스템 담당이 쥐고 있다.</div></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 조별 과제 — 서버 설계">
+  <div class="ghost">08</div>
+  <div class="seyebrow">CHAPTER 08</div>
+  <h2>조별 과제 — 서버 설계</h2>
+  <div class="agenda"><span>호스트는 준비됨</span><span>다섯 칸</span><span>발표</span></div>
+</section>
+<section class="slide" data-title="호스트는 준비됨">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>과제</div>
+  <h2 class="s-title sm">조가 낼 것은 파일 하나</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="ctable"><table>
+  <thead><tr><th>무엇</th><th>누가</th><th>설명</th></tr></thead>
+  <tbody>
+  <tr><td>웹 호스트</td><td>강사</td><td>채팅창 · 모델 · MCP 클라이언트가 다 들어 있다</td></tr>
+  <tr><td class="hl">server.py</td><td class="hl">조</td><td class="hl">도구 두셋. 다섯 칸을 채워 Codex 에게 시킨다</td></tr>
+  <tr><td>붙이기</td><td>강사</td><td><code>teams/</code> 에 넣으면 접두어가 붙어 올라온다</td></tr>
+  </tbody></table></div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div><b>코드를 손으로 안 쓴다.</b> 무엇을 만들지 정하는 것이 조가 할 일이다.</div></div></div><div class="keymsg"><span class="k">발표 장면</span><div>자기 조 도구가 <b>남의 질문에</b> 불리는 것을 채팅창에서 본다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="다섯 칸">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>설계</div>
+  <h2 class="s-title sm">채워야 할 다섯 칸</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">조별 설계</span></div><pre><code>OUR = {
+    <span class="s">'이름'</span>:       <span class="s">'점검 도우미'</span>,
+    <span class="s">'지금 손으로'</span>: <span class="s">'점검 때마다 작업표준을 폴더에서 찾고 기록을 엑셀에서 본다'</span>,
+    <span class="s">'읽기 도구'</span>:   [<span class="s">'최근 점검 이력 조회'</span>, <span class="s">'작업표준 검색'</span>],
+    <span class="s">'쓰기 도구'</span>:   [<span class="s">'점검 메모 남기기'</span>],
+    <span class="s">'안 여는 것'</span>:  <span class="s">'설비 원시 계측값과 담당자 이름'</span>,
+}</code></pre></div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div><b>지금 손으로 하고 있는 일</b>에서 고른다. 없는 일을 지어내지 않는다.</div></div><div class="v"><span class="b">&#9733;</span><div><b>정답을 눈으로 대조할 수 있는 주제</b>를 고른다. 그래야 잘 됐는지 안다.</div></div></div><div class="keymsg"><span class="k">다섯째 칸이 핵심</span><div>「안 여는 것」이 <b>권한 경계</b>다. 이걸 먼저 정한다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="프롬프트로">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>변환</div>
+  <h2 class="s-title sm">다섯 칸에서 나온 프롬프트</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">Codex 에게 넘길 글</span></div><pre><code>FastMCP 로 server.py 를 만들어 줘. 서버 이름은 「점검 도우미」.
+데이터는 cell_process.csv 를 pandas 로 읽는다.
+
+도구 셋 — 점검 이력 조회(최대 20건) · 작업표준 검색 · 메모 남기기.
+        <b>지우는 기능은 만들지 마라.</b>
+
+지켜야 할 것
+  - 원시 계측값과 담당자 이름은 어떤 도구도 내보내지 않는다
+  - 없는 설비를 물으면 쓸 수 있는 이름을 알려 준다
+  - 각 도구 설명에 「언제 쓰는지」를 한 줄 적는다
+  - 맨 아래 mcp.run(transport="http", host="0.0.0.0", port=8000)</code></pre></div><div class="keymsg"><span class="k">「지켜야 할 것」이</span><div>오늘 배운 전부다 &mdash; <b>경계 · 친절한 에러 · 설명</b>.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="발표에 넣을 것">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>마무리</div>
+  <h2 class="s-title sm">발표에서 보여줄 두 장면</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="twopane">
+  <div class="pane good"><h4>되는 장면</h4>
+    <p>한 문장을 물었더니 <b>여러 조의 도구가</b> 순서대로 불린다.<br/>
+       어느 조 것이 불렸는지 화면에 남는다.</p>
+    <div class="mini">MCP 를 배운 증거가 여기 있다</div></div>
+  <div class="pane bad"><h4>막히는 장면</h4>
+    <p>「지워 줘」 &mdash; 지우는 도구가 없다<br/>
+       「전부 보여 줘」 &mdash; 20줄에서 잘린다<br/>
+       「원시 계측값 줘」 &mdash; 도구가 안 돌려준다</p>
+    <div class="mini">되는 것만 보여주는 발표는 다 비슷하다</div></div>
+</div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div><b>안 되는 것을 확인한 발표</b>는 드물다. 그 한 장면이 남는다.</div></div></div><div class="keymsg"><span class="k">한 줄</span><div>경계를 <b>보여주는 것</b>까지가 발표다.</div></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 정리">
+  <div class="ghost">09</div>
+  <div class="seyebrow">CHAPTER 09</div>
+  <h2>정리</h2>
+  <div class="agenda"><span>핵심</span><span>오개념</span></div>
+</section>
+<section class="slide" data-title="핵심 정리">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH9</span><span class="dot"></span>정리</div>
+  <h2 class="s-title sm">오늘 손에 남는 것</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="vlist"><div class="v"><span class="b">1</span><div><code>mcp.run()</code> 한 줄이 서버를 띄운다. 그 순간 <b>주소가 생긴다</b>.</div></div><div class="v"><span class="b">2</span><div><code>Client()</code> 괄호 안만 바뀐다. 서버가 어디에 있든 <b>붙는 쪽은 같다</b>.</div></div><div class="v"><span class="b">3</span><div>모델이 받는 것은 <b>이름 · 설명 · 스키마</b> 셋뿐이다. 몸통은 안 간다.</div></div><div class="v"><span class="b">4</span><div>권한은 프롬프트가 아니라 <b>만들 도구를 고르는 것</b>으로 정한다.</div></div><div class="v"><span class="b">5</span><div>도구 이름은 전역이다. 서버를 여럿 붙일 때는 <b>접두어</b>로 가른다.</div></div></div><div class="keymsg"><span class="k">여섯째</span><div>컨테이너는 <b>한 덩이</b>로 싸고, compose 는 그 덩이 여럿을 <b>이름으로</b> 잇는다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="오개념">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH9</span><span class="dot"></span>오개념</div>
+  <h2 class="s-title sm">자주 어긋나는 것 넷</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="ctable"><table>
+  <thead><tr><th>흔한 생각</th><th>실제</th></tr></thead>
+  <tbody>
+  <tr><td>서버를 띄우면 아무나 못 붙는다</td><td class="hl"><code>0.0.0.0</code> 으로 열면 같은 망의 누구나 붙는다</td></tr>
+  <tr><td>프롬프트로 「지우지 마라」 하면 안 지운다</td><td class="hl">지우는 도구가 있으면 언젠가 불린다</td></tr>
+  <tr><td><code>readOnlyHint</code> 가 쓰기를 막는다</td><td class="hl">표시일 뿐이다. 막는 것은 도구 안에서 한다</td></tr>
+  <tr><td>서버 이름이 다르면 도구 이름은 겹쳐도 된다</td><td class="hl">앱 안에서 전역이라 말없이 덮인다</td></tr>
+  </tbody></table></div><div class="keymsg"><span class="k">다음</span><div>조별 서버를 <b>teams/ 에 내는 것</b>이 과제다. 발표는 붙여서 돌려 보는 것으로 한다.</div></div>
+  </div>
+</section>
+
+
+    </div>
+  </div>
+</main>
+<div class="overview" id="overview">
+  <div class="head"><h3>슬라이드 목차</h3><button id="ovClose">닫기 </button></div>
+  <div class="ovgrid" id="ovgrid"></div>
+</div>
+
+<div class="controlbar">
+  <button class="ico" id="btnMenu" title="목차"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+  <span class="sep"></span>
+  <button class="ico" id="btnPrev" title="이전"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <span class="count"><b id="cur">1</b> / <span id="tot2">75</span></span>
+  <button class="ico" id="btnNext" title="다음"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 18l6-6-6-6"/></svg></button>
+  <span class="sep"></span>
+  <button class="zoom" id="btnOut" title="축소"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14"/></svg></button>
+  <button class="zoom" id="btnIn" title="확대"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></button>
+  <button class="zoom" id="btnFit" title="화면 맞춤"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 4H5a1 1 0 0 0-1 1v4M15 4h4a1 1 0 0 1 1 1v4M9 20H5a1 1 0 0 1-1-1v-4M15 20h4a1 1 0 0 0 1-1v-4"/></svg></button>
+  <button class="pdf" id="btnPdf" title="PDF로 저장 (인쇄 → PDF로 저장)">PDF</button>
+</div>
+
+<div class="hint">← → 또는 Space · 목차(≡) · 줌(−/+) · 숫자 입력 후 Enter로 이동</div>
+<div id="jumpHint"></div>
+<style>
+  #jumpHint{position:fixed; left:50%; bottom:74px; transform:translateX(-50%) translateY(6px); z-index:75;
+    background:#2B2B2E; color:#fff; font-family:Georgia,'Times New Roman',serif; font-style:italic;
+    font-size:20px; letter-spacing:.04em; padding:8px 20px; border-radius:999px;
+    box-shadow:0 12px 28px -10px rgba(0,0,0,.55); opacity:0; pointer-events:none;
+    transition:opacity .12s ease, transform .12s ease;}
+  #jumpHint.on{opacity:1; transform:translateX(-50%) translateY(0);}
+  @media print{ #jumpHint{display:none !important;} }
+</style>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const scaler = document.getElementById('scaler');
+  const sizer  = document.getElementById('sizer');
+  const stage  = document.getElementById('stage');
+  const total  = slides.length;
+  let idx = 0, userZoom = 1;
+  const BW = 1280, BH = 720;
+
+  document.getElementById('tot2').textContent = total;
+  slides.forEach((s, i) => {
+    const c = s.querySelector('.coord b');     if (c) c.textContent = String(i + 1).padStart(2, '0');
+    const t = s.querySelector('.coord .tot');  if (t) t.textContent = total;
+  });
+
+  const ovgrid = document.getElementById('ovgrid');
+  slides.forEach((s, i) => {
+    const b = document.createElement('button');
+    b.className = 'ovcard';
+    b.innerHTML = '<div class="ovn">' + String(i + 1).padStart(2, '0') + '</div><div class="ovt">' + (s.dataset.title || '') + '</div>';
+    b.addEventListener('click', () => { go(i); closeOverview(); });
+    ovgrid.appendChild(b);
+  });
+  const overview = document.getElementById('overview');
+  function openOverview(){ overview.classList.add('on'); }
+  function closeOverview(){ overview.classList.remove('on'); }
+  document.getElementById('btnMenu').addEventListener('click', openOverview);
+  document.getElementById('ovClose').addEventListener('click', closeOverview);
+  overview.addEventListener('click', (e) => { if (e.target === overview) closeOverview(); });
+
+  function fitScale(){
+    const availW = stage.clientWidth  - 60;
+    const availH = stage.clientHeight - 60;
+    return Math.min(availW / BW, availH / BH);
+  }
+  function applyScale(){
+    const eff = fitScale() * userZoom;
+    scaler.style.transform = 'scale(' + eff + ')';
+    sizer.style.width  = (BW * eff) + 'px';
+    sizer.style.height = (BH * eff) + 'px';
+  }
+  window.addEventListener('resize', applyScale);
+
+  function go(n){
+    idx = Math.max(0, Math.min(total - 1, n));
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    document.getElementById('cur').textContent = idx + 1;
+    document.getElementById('btnPrev').disabled = idx === 0;
+    document.getElementById('btnNext').disabled = idx === total - 1;
+    document.getElementById('pfill').style.width = (idx / (total - 1) * 100) + '%';
+    applyScale();
+    stage.scrollTop = 0; stage.scrollLeft = 0;
+  }
+  document.getElementById('btnPrev').addEventListener('click', () => go(idx - 1));
+  document.getElementById('btnNext').addEventListener('click', () => go(idx + 1));
+  document.getElementById('btnIn').addEventListener('click',  () => { userZoom = Math.min(2.4, userZoom + 0.15); applyScale(); });
+  document.getElementById('btnOut').addEventListener('click', () => { userZoom = Math.max(0.5, userZoom - 0.15); applyScale(); });
+  document.getElementById('btnFit').addEventListener('click', () => { userZoom = 1; applyScale(); });
+  document.getElementById('btnPdf').addEventListener('click', () => window.print());
+
+  // ---- 슬라이드 번호 입력 → Enter 로 점프 ----
+  let jumpBuf = '', jumpTimer = null;
+  const jumpHint = document.getElementById('jumpHint');
+  function showJump(){
+    if (!jumpHint) return;
+    if (jumpBuf){ jumpHint.textContent = '→ ' + jumpBuf; jumpHint.classList.add('on'); }
+    else { jumpHint.classList.remove('on'); }
+  }
+  function clearJump(){ jumpBuf = ''; if (jumpTimer) clearTimeout(jumpTimer); showJump(); }
+  function commitJump(){
+    if (jumpBuf){ const n = parseInt(jumpBuf, 10); if (!isNaN(n)) go(n - 1); }
+    clearJump();
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (overview.classList.contains('on')) { if (e.key === 'Escape') closeOverview(); return; }
+    if (/^[0-9]$/.test(e.key)){
+      e.preventDefault();
+      jumpBuf = (jumpBuf + e.key).slice(0, 3);
+      showJump();
+      if (jumpTimer) clearTimeout(jumpTimer);
+      jumpTimer = setTimeout(clearJump, 1600);
+      return;
+    }
+    if (e.key === 'Enter'){ e.preventDefault(); commitJump(); return; }
+    if (e.key === 'Escape'){ clearJump(); }
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown'){ e.preventDefault(); clearJump(); go(idx + 1); }
+    if (e.key === 'ArrowLeft'  || e.key === 'PageUp'){ e.preventDefault(); clearJump(); go(idx - 1); }
+    if (e.key === 'Home'){ clearJump(); go(0); } if (e.key === 'End'){ clearJump(); go(total - 1); }
+    if (e.key === '+' || e.key === '='){ userZoom = Math.min(2.4, userZoom + 0.15); applyScale(); }
+    if (e.key === '-'){ userZoom = Math.max(0.5, userZoom - 0.15); applyScale(); }
+  });
+
+  applyScale(); go(0);
+</script>
+</body>
+</html>
