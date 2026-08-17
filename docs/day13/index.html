@@ -431,52 +431,16 @@ $ B/bin/python -c "import numpy; print(numpy.__version__)"
   <h2 class="s-title sm">가상환경이 갈라 주는 층</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="plot"><svg viewBox="0 0 1116 330">
-  <text x="118" y="20" font-size="11" font-weight="800" fill="#8E8AAC" text-anchor="middle">층</text>
-  <text x="588" y="20" font-size="11" font-weight="800" fill="#8E8AAC" text-anchor="middle">무엇이 들어 있나</text>
-
-  <rect x="40" y="30" width="156" height="66" rx="10" fill="#3A1FC9"/>
-  <text x="118" y="61" font-size="13.5" font-weight="800" fill="#fff" text-anchor="middle">라이브러리</text>
-  <text x="118" y="80" font-size="10.5" fill="#C9BEFF" text-anchor="middle">numpy · pandas</text>
-  <rect x="206" y="30" width="378" height="66" rx="10" fill="#EFEAFF" stroke="#3A1FC9" stroke-width="1.8"/>
-  <text x="395" y="56" font-size="12" font-weight="800" fill="#3A1FC9" text-anchor="middle">프로젝트 A</text>
-  <text x="395" y="78" font-size="13" font-family="ui-monospace,monospace" fill="#16142B" text-anchor="middle">numpy 2.5.2</text>
-  <rect x="592" y="30" width="378" height="66" rx="10" fill="#EFEAFF" stroke="#3A1FC9" stroke-width="1.8"/>
-  <text x="781" y="56" font-size="12" font-weight="800" fill="#3A1FC9" text-anchor="middle">프로젝트 B</text>
-  <text x="781" y="78" font-size="13" font-family="ui-monospace,monospace" fill="#16142B" text-anchor="middle">numpy 1.26.4</text>
-  <path d="M984 30 h14 v66 h-14" stroke="#3A1FC9" stroke-width="1.8" fill="none"/>
-  <text x="1050" y="57" font-size="11.5" font-weight="800" fill="#3A1FC9" text-anchor="middle">가상환경이</text>
-  <text x="1050" y="74" font-size="11.5" font-weight="800" fill="#3A1FC9" text-anchor="middle">나눈다</text>
-
-  <rect x="40" y="108" width="156" height="58" rx="10" fill="#EDEBF6"/>
-  <text x="118" y="142" font-size="13.5" font-weight="800" fill="#5B5580" text-anchor="middle">파이썬 자체</text>
-  <rect x="206" y="108" width="764" height="58" rx="10" fill="#F7F6FB" stroke="#C9C4E4" stroke-width="1.5" stroke-dasharray="6 4"/>
-  <text x="588" y="142" font-size="13" font-family="ui-monospace,monospace" fill="#8E8AAC" text-anchor="middle">Python 3.12 &nbsp;— 하나뿐이다</text>
-
-  <rect x="40" y="178" width="156" height="58" rx="10" fill="#EDEBF6"/>
-  <text x="118" y="205" font-size="13.5" font-weight="800" fill="#5B5580" text-anchor="middle">운영체제</text>
-  <text x="118" y="222" font-size="13.5" font-weight="800" fill="#5B5580" text-anchor="middle">도구</text>
-  <rect x="206" y="178" width="764" height="58" rx="10" fill="#F7F6FB" stroke="#C9C4E4" stroke-width="1.5" stroke-dasharray="6 4"/>
-  <text x="588" y="212" font-size="12.5" fill="#8E8AAC" text-anchor="middle">폰트 · 그림 처리 라이브러리 · 글자 인식 도구</text>
-
-  <rect x="40" y="248" width="156" height="58" rx="10" fill="#EDEBF6"/>
-  <text x="118" y="282" font-size="13.5" font-weight="800" fill="#5B5580" text-anchor="middle">운영체제</text>
-  <rect x="206" y="248" width="764" height="58" rx="10" fill="#F7F6FB" stroke="#C9C4E4" stroke-width="1.5" stroke-dasharray="6 4"/>
-  <text x="588" y="282" font-size="13" font-family="ui-monospace,monospace" fill="#8E8AAC" text-anchor="middle">macOS &nbsp;— 내 컴퓨터 것을 그대로 쓴다</text>
-
-  <path d="M984 108 h14 v198 h-14" stroke="#C9C4E4" stroke-width="1.5" fill="none"/>
-  <text x="1050" y="198" font-size="11.5" font-weight="800" fill="#8E8AAC" text-anchor="middle">셋은 다</text>
-  <text x="1050" y="215" font-size="11.5" font-weight="800" fill="#8E8AAC" text-anchor="middle">같이 쓴다</text>
-</svg></div><div class="keymsg"><span class="k">위 한 층만</span><div>아래 셋은 <b>내 컴퓨터 것을 그대로</b> 쓴다. 그래서 아래 셋에서 문제가 남는다.</div></div>
+<div class="figwrap"><img src="assets/layers.png" alt="네 층으로 쌓인 그림. 맨 위 4층 라이브러리만 프로젝트 A(numpy 2.5.2)와 B(numpy 1.26.4)로 갈라지고, 3층 파이썬 자체(Python 3.12)와 2층 운영체제 도구, 1층 운영체제(macOS/Windows)는 통으로 이어져 있다. 오른쪽 대괄호 둘이 가상환경이 나누는 범위는 맨 위 한 층뿐이고 컨테이너는 네 층 전부를 감싼다는 것을 보여준다"/></div><div class="keymsg"><span class="k">대괄호 둘을 견준다</span><div>가상환경은 <b>맨 위 한 층</b>, 컨테이너는 <b>네 층 전부</b>다. 오늘 넘어갈 거리가 그만큼이다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="가상환경 안">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>2단계</div>
-  <h2 class="s-title sm">가상환경 안의 구조</h2>
+  <h2 class="s-title sm">가상환경 폴더 안의 구조</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="figwrap"><img src="assets/venv-layers.png" alt="가상환경 구조도. 내 컴퓨터의 운영체제 층 위에 전역 환경과 프로젝트 A 가 나란히 있고, 프로젝트 A 안의 .venv 가 파이썬 실행 파일과 site-packages, pip 를 따로 갖는다. 운영체제는 하나로 공유하며 복사하지 않는다"/></div><div class="keymsg"><span class="k">오른쪽 위 점선</span><div>여기까지 <b>같이 감싸면 컨테이너</b>가 된다. 그림에 이미 적혀 있다.</div></div>
+<div class="figwrap"><img src="assets/venv-layers.png" alt="가상환경 폴더 구조도. 전역 환경의 시스템 파이썬과 전역 site-packages 옆에 프로젝트 A 가 있고, 그 안의 .venv 가 파이썬 실행 파일과 전용 site-packages, pip 를 따로 갖는다"/></div><div class="keymsg"><span class="k">폴더 하나가 전부</span><div><code>.venv</code> 를 지우면 <b>그 환경만</b> 사라진다. 전역은 안 건드린다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="한계 하나">
