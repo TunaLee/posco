@@ -392,7 +392,7 @@
   <h2 class="s-title sm">PC 마다 다른 실행 환경</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="figwrap"><img src="assets/env-mismatch.png" alt="같은 코드를 세 곳에서 돌린 그림. 내 로컬은 macOS·Node 18.16·React 18.2 로 실행 성공, 배포한 서버는 Amazon Linux 2·Node 16.14·React 17.0 에 패키지가 빠져 500 오류와 Cannot find module, 동료 PC 는 Windows 10·Node 20.11 에 환경변수가 없어 실행 실패가 난다"/></div><div class="keymsg"><span class="k">오늘 따라갈 순서</span><div>같은 코드를 옮겼을 뿐인데 셋이 다 다르게 돈다. 이 문제를 <b>가상환경 &rarr; 컨테이너</b> 순서로 푼다.</div></div>
+<div class="figwrap"><img src="assets/env-mismatch.webp" alt="같은 코드를 세 곳에서 돌린 그림. 내 로컬은 macOS·Node 18.16·React 18.2 로 실행 성공, 배포한 서버는 Amazon Linux 2·Node 16.14·React 17.0 에 패키지가 빠져 500 오류와 Cannot find module, 동료 PC 는 Windows 10·Node 20.11 에 환경변수가 없어 실행 실패가 난다"/></div><div class="keymsg"><span class="k">오늘 따라갈 순서</span><div>같은 코드를 옮겼을 뿐인데 셋이 다 다르게 돈다. 이 문제를 <b>가상환경 &rarr; 컨테이너</b> 순서로 푼다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="한 버전만">
@@ -431,7 +431,7 @@ $ B/bin/python -c "import numpy; print(numpy.__version__)"
   <h2 class="s-title sm">가상환경이 갈라 주는 층</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="figwrap"><img src="assets/layers.png" alt="네 층으로 쌓인 그림. 맨 위 4층 라이브러리만 프로젝트 A(numpy 2.5.2)와 B(numpy 1.26.4)로 갈라지고, 3층 파이썬 자체(Python 3.12)와 2층 운영체제 도구, 1층 운영체제(macOS/Windows)는 통으로 이어져 있다. 오른쪽 대괄호 둘이 가상환경이 나누는 범위는 맨 위 한 층뿐이고 컨테이너는 네 층 전부를 감싼다는 것을 보여준다"/></div><div class="keymsg"><span class="k">대괄호 둘을 견준다</span><div>가상환경은 <b>맨 위 한 층</b>, 컨테이너는 <b>네 층 전부</b>다. 오늘 넘어갈 거리가 그만큼이다.</div></div>
+<div class="figwrap"><img src="assets/layers.webp" alt="네 층으로 쌓인 그림. 맨 위 4층 라이브러리만 프로젝트 A(numpy 2.5.2)와 B(numpy 1.26.4)로 갈라지고, 3층 파이썬 자체(Python 3.12)와 2층 운영체제 도구, 1층 운영체제(macOS/Windows)는 통으로 이어져 있다. 오른쪽 대괄호 둘이 가상환경이 나누는 범위는 맨 위 한 층뿐이고 컨테이너는 네 층 전부를 감싼다는 것을 보여준다"/></div><div class="keymsg"><span class="k">대괄호 둘을 견준다</span><div>가상환경은 <b>맨 위 한 층</b>, 컨테이너는 <b>네 층 전부</b>다. 오늘 넘어갈 거리가 그만큼이다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="가상환경 안">
@@ -440,7 +440,7 @@ $ B/bin/python -c "import numpy; print(numpy.__version__)"
   <h2 class="s-title sm">가상환경 폴더 안의 구조</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="figwrap"><img src="assets/venv-layers.png" alt="가상환경 폴더 구조도. 전역 환경의 시스템 파이썬과 전역 site-packages 옆에 프로젝트 A 가 있고, 그 안의 .venv 가 파이썬 실행 파일과 전용 site-packages, pip 를 따로 갖는다"/></div><div class="keymsg"><span class="k">폴더 하나가 전부</span><div><code>.venv</code> 를 지우면 <b>그 환경만</b> 사라진다. 전역은 안 건드린다.</div></div>
+<div class="figwrap"><img src="assets/venv-layers.webp" alt="가상환경 폴더 구조도. 전역 환경의 시스템 파이썬과 전역 site-packages 옆에 프로젝트 A 가 있고, 그 안의 .venv 가 파이썬 실행 파일과 전용 site-packages, pip 를 따로 갖는다"/></div><div class="keymsg"><span class="k">폴더 하나가 전부</span><div><code>.venv</code> 를 지우면 <b>그 환경만</b> 사라진다. 전역은 안 건드린다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="한계 하나">
@@ -533,7 +533,7 @@ NAME="Debian GNU/Linux"                              <span class="cm">← 맥이
   <h2 class="s-title sm">운영체제를 통째로 올리는 가상머신</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="figwrap"><img src="assets/vm-stack.png" alt="가상머신 구조도 — 인프라 위에 하이퍼바이저가 있고 그 위에 가상머신 셋이 각각 게스트 운영체제와 앱을 따로 올리고 있다"/></div><div class="keymsg"><span class="k">무거운 이유</span><div>앱마다 <b>운영체제를 하나씩</b> 올린다. 뜨는 데 몇 분, 크기는 수 GB 다.</div></div>
+<div class="figwrap"><img src="assets/vm-stack.webp" alt="가상머신 구조도 — 인프라 위에 하이퍼바이저가 있고 그 위에 가상머신 셋이 각각 게스트 운영체제와 앱을 따로 올리고 있다"/></div><div class="keymsg"><span class="k">무거운 이유</span><div>앱마다 <b>운영체제를 하나씩</b> 올린다. 뜨는 데 몇 분, 크기는 수 GB 다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="컨테이너 구조">
@@ -542,7 +542,7 @@ NAME="Debian GNU/Linux"                              <span class="cm">← 맥이
   <h2 class="s-title sm">운영체제를 나눠 쓰는 컨테이너</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="figwrap"><img src="assets/container-stack.png" alt="컨테이너 구조도 — 인프라와 호스트 운영체제 위에 Docker 한 층이 있고 그 위에 앱 여섯 개가 나란히 올라가 있다. 게스트 운영체제가 없다"/></div><div class="keymsg"><span class="k">가벼운 이유</span><div><b>운영체제를 새로 안 올린다.</b> 그래서 몇 초에 뜨고 수십 MB 로 끝난다.</div></div>
+<div class="figwrap"><img src="assets/container-stack.webp" alt="컨테이너 구조도 — 인프라와 호스트 운영체제 위에 Docker 한 층이 있고 그 위에 앱 여섯 개가 나란히 올라가 있다. 게스트 운영체제가 없다"/></div><div class="keymsg"><span class="k">가벼운 이유</span><div><b>운영체제를 새로 안 올린다.</b> 그래서 몇 초에 뜨고 수십 MB 로 끝난다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="셋 견주기">
@@ -676,7 +676,7 @@ mcp-host-team2:latest        719MB          153MB   <span class="cm">← 무거�
   <h2 class="s-title sm">검색 결과에서 고르는 기준</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="shot"><div class="sbar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">Docker Hub · python 검색</span></div><img src="assets/hub-search.png" alt="Docker Hub 에서 python 을 검색한 화면. 324,304개의 결과가 나오고 각 항목에 Docker Official Image, Verified Publisher 같은 배지와 내려받은 횟수가 붙어 있다"></div><div class="keymsg"><span class="k">32만 개 중에</span><div><b>Docker Official Image</b> 배지와 <b>내려받은 횟수</b>를 본다. 그게 고르는 기준이다.</div></div>
+<div class="shot"><div class="sbar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">Docker Hub · python 검색</span></div><img src="assets/hub-search.webp" alt="Docker Hub 에서 python 을 검색한 화면. 324,304개의 결과가 나오고 각 항목에 Docker Official Image, Verified Publisher 같은 배지와 내려받은 횟수가 붙어 있다"></div><div class="keymsg"><span class="k">32만 개 중에</span><div><b>Docker Official Image</b> 배지와 <b>내려받은 횟수</b>를 본다. 그게 고르는 기준이다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="태그">
@@ -685,7 +685,7 @@ mcp-host-team2:latest        719MB          153MB   <span class="cm">← 무거�
   <h2 class="s-title sm">태그가 곧 버전</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="shot"><div class="sbar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">Docker Hub · python 태그 목록</span></div><img src="assets/hub-tags.png" alt="python 이미지의 태그 목록 화면. 태그마다 docker pull 명령, OS와 아키텍처, 알려진 취약점 개수, 압축 크기가 표로 나와 있다"></div><div class="keymsg"><span class="k">여기서 셋을 본다</span><div><b>받는 명령</b> · <b>크기</b> · <b>알려진 취약점</b>. 이름만 보고 고르지 않는다.</div></div>
+<div class="shot"><div class="sbar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">Docker Hub · python 태그 목록</span></div><img src="assets/hub-tags.webp" alt="python 이미지의 태그 목록 화면. 태그마다 docker pull 명령, OS와 아키텍처, 알려진 취약점 개수, 압축 크기가 표로 나와 있다"></div><div class="keymsg"><span class="k">여기서 셋을 본다</span><div><b>받는 명령</b> · <b>크기</b> · <b>알려진 취약점</b>. 이름만 보고 고르지 않는다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="latest">
