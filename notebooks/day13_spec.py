@@ -1,4 +1,4 @@
-"""3주차 D6 — Docker 다루기"""
+"""4주차 D1 — Docker 다루기"""
 from nbkit import md, code, h, lab, prep, Ex, Task
 
 CELLS = [
