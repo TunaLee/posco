@@ -588,7 +588,7 @@ $ ls node_modules/@next/ | grep linux
   <h2 class="s-title sm">운영체제를 나눠 쓰는 컨테이너</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="figwrap"><img src="assets/container-stack.webp" alt="컨테이너 구조도 — 인프라와 호스트 운영체제 위에 Docker 한 층이 있고 그 위에 앱 여섯 개가 나란히 올라가 있다. 게스트 운영체제가 없다"/></div><div class="keymsg"><span class="k">가벼운 이유</span><div><b>운영체제를 새로 안 올린다.</b> 밑에 있는 것을 나눠 쓴다. 그래서 몇 초에 뜨고 수십 MB 다.</div></div>
+<div class="figwrap"><img src="assets/container-apps.webp" alt="컨테이너 셋이 나란히 있는 구조도. 컨테이너 1은 Next.js 앱으로 앱 코드·node_modules·환경변수·포트 3000 을 담고, 2는 PostgreSQL 로 데이터베이스·데이터 볼륨·포트 5432 를, 3은 MCP 서버로 서버 코드·의존 라이브러리·포트 8000 을 담는다. 그 아래로 Docker 이미지(Alpine Linux), Docker 엔진, 호스트 운영체제, 물리 서버가 깔려 있다"/></div><div class="keymsg"><span class="k">게스트 운영체제가 없다</span><div>앞 그림과 견주면 <b>한 층이 빠졌다</b>. 밑에 있는 것을 나눠 쓰니 몇 초에 뜬다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="나눠 주는 범위">
@@ -1361,43 +1361,13 @@ $ docker run -d --name web  -p 8080:80   -e API=???      posco-web:1.0</code></p
 volumes: { pg: }</code></pre></div><div class="keymsg"><span class="k">한 줄로 올린다</span><div><code>docker compose up -d</code> 면 셋이 <b>순서대로</b> 뜬다.</div></div>
   </div>
 </section>
-<section class="slide" data-title="이어진 모양">
+<section class="slide" data-title="전체 모양">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>구조</div>
-  <h2 class="s-title sm">서비스가 이름으로 이어진 모양</h2>
+  <h2 class="s-title sm">compose 로 만드는 전체 모양</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="plot"><svg viewBox="0 0 1116 300">
-  <rect x="60" y="30" width="996" height="200" rx="14" fill="#FAFAFD" stroke="#C9C4E4" stroke-width="1.5" stroke-dasharray="7 5"/>
-  <text x="88" y="54" font-size="11.5" font-weight="800" fill="#8E8AAC">compose 가 만든 울타리 &mdash; 안에서는 이름으로 서로 찾는다</text>
-
-  <rect x="110" y="80" width="250" height="86" rx="12" fill="#EFEAFF" stroke="#3A1FC9" stroke-width="1.8"/>
-  <text x="235" y="108" font-size="14" font-weight="800" fill="#3A1FC9" text-anchor="middle">host</text>
-  <text x="235" y="130" font-size="11.5" fill="#16142B" text-anchor="middle">채팅창 · 모델</text>
-  <text x="235" y="150" font-size="11" font-family="ui-monospace,monospace" fill="#8E8AAC" text-anchor="middle">ports 8080</text>
-
-  <path d="M364 112 H452" stroke="#3A1FC9" stroke-width="2.2" fill="none"/>
-  <path d="M448 105l14 7-14 7z" fill="#3A1FC9"/>
-  <text x="408" y="100" font-size="11" font-family="ui-monospace,monospace" fill="#3A1FC9" text-anchor="middle">team1</text>
-  <path d="M364 134 H452" stroke="#3A1FC9" stroke-width="2.2" fill="none"/>
-  <path d="M448 127l14 7-14 7z" fill="#3A1FC9"/>
-  <text x="408" y="156" font-size="11" font-family="ui-monospace,monospace" fill="#3A1FC9" text-anchor="middle">team2</text>
-
-  <rect x="460" y="72" width="236" height="48" rx="10" fill="#EFF9F4" stroke="#0B6B4F" stroke-width="1.6"/>
-  <text x="578" y="102" font-size="13" font-weight="800" fill="#0B6B4F" text-anchor="middle">team1</text>
-  <rect x="460" y="128" width="236" height="48" rx="10" fill="#EFF9F4" stroke="#0B6B4F" stroke-width="1.6"/>
-  <text x="578" y="158" font-size="13" font-weight="800" fill="#0B6B4F" text-anchor="middle">team2</text>
-  <text x="578" y="200" font-size="11" font-family="ui-monospace,monospace" fill="#8E8AAC" text-anchor="middle">expose 8000 &mdash; 밖으로 안 열린다</text>
-
-  <path d="M60 112 H-0" stroke="none"/>
-  <rect x="800" y="80" width="216" height="86" rx="12" fill="#fff" stroke="#C9C4E4" stroke-width="1.5"/>
-  <text x="908" y="112" font-size="12.5" font-weight="800" fill="#5B5580" text-anchor="middle">브라우저</text>
-  <text x="908" y="134" font-size="11" font-family="ui-monospace,monospace" fill="#8E8AAC" text-anchor="middle">127.0.0.1:8080</text>
-  <path d="M796 122 H700" stroke="#8E8AAC" stroke-width="1.6" fill="none" stroke-dasharray="4 3"/>
-  <text x="908" y="190" font-size="11" font-weight="700" fill="#8E8AAC" text-anchor="middle">host 만 닿는다</text>
-
-  <text x="558" y="266" font-size="12.5" font-weight="800" fill="#3A1FC9" text-anchor="middle">IP 를 적는 곳이 없다 &nbsp;·&nbsp; 상자가 다시 떠도 이름은 그대로다</text>
-</svg></div><div class="keymsg"><span class="k">밖으로 낸 것은 하나</span><div><code>ports</code> 를 적은 <b>host 만</b> 브라우저에서 열린다. 조별 서버는 안에서만 쓴다.</div></div>
+<div class="figwrap"><img src="assets/compose-map.webp" alt="Docker Compose 구성도. app-net 네트워크 안에 nextjs-app(포트 3000), postgres(5432), mcp-server(8000) 세 서비스가 있고 서로 이름으로 통신한다. 각 서비스는 포트 매핑으로 호스트에 열리고, 아래에 docker-compose.yml 전문이 서비스별로 나뉘어 있으며 postgres_data 볼륨이 호스트 디스크에 데이터를 남긴다"/></div><div class="keymsg"><span class="k">한 파일이 이 전부를 정한다</span><div>어떤 상자를 띄우고 <b>서로 어떻게 부르고</b> 무엇을 남길지가 한 장에 적혀 있다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="안팎">
