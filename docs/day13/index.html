@@ -491,6 +491,22 @@ $ which libgl               <span class="cm">그림 처리 라이브러리</span
 </div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div>가상환경은 <b>내 컴퓨터 안에서만</b> 나눠 준다. 밖으로 옮기는 도구가 아니다.</div></div></div><div class="keymsg"><span class="k">세 한계를 모으면</span><div><b>파이썬 버전 · 운영체제 층 · 옮기기</b> 셋이 남았다.</div></div>
   </div>
 </section>
+<section class="slide" data-title="node_modules">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>다른 언어</div>
+  <h2 class="s-title sm">같은 한계를 갖는 node_modules</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">사내 Node 프로젝트를 뜯어 보면</span></div><pre><code>$ ls node_modules/@next/
+swc-darwin-arm64            <span class="cm">← macOS·ARM 전용 바이너리</span>
+
+$ find node_modules -type d -name node_modules | wc -l
+1004                        <span class="cm">← 중첩된 폴더</span>
+
+$ 같은 패키지가 여러 버전으로 든 것
+lru-cache   11.3.5, 6.0.0   <span class="cm">← 가상환경 안에서는 안 되는 일</span></code></pre></div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div><code>venv</code> 를 안 만들어도 프로젝트별로 갈린다. Node 는 <b>로컬이 기본값</b>이다.</div></div><div class="v"><span class="b">&rarr;</span><div>그래도 <b>Node 버전 자체는 못 바꾼다.</b> 파이썬의 pyenv 처럼 nvm 이 따로 필요하다.</div></div><div class="v"><span class="b">&#9733;</span><div><code>darwin-arm64</code> 는 <b>리눅스에서 안 돈다.</b> 폴더째 복사하면 깨진다.</div></div></div><div class="keymsg"><span class="k">결론이 같다</span><div>격리는 되는데 <b>옮기기가 안 된다</b>. 그래서 Node 앱도 컨테이너로 싼다.</div></div>
+  </div>
+</section>
 <section class="slide" data-title="컨테이너">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>4단계</div>
@@ -889,6 +905,7 @@ CMD ["python", "app.py"]</code></pre></div><div class="keymsg"><span class="k">�
 __pycache__
 *.ipynb
 venv/
+node_modules/       <span class="cm">← 플랫폼 전용 바이너리가 들어 있다</span>
 data/*.csv          <span class="cm">← 큰 데이터는 밖에 둔다</span></code></pre></div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div>없으면 <code>COPY . .</code> 가 <b>폴더의 모든 것</b>을 퍼담는다 &mdash; 키 파일까지.</div></div></div><div class="keymsg"><span class="k">두 가지를 막는다</span><div><b>이미지가 커지는 것</b>과 <b>비밀이 새는 것</b>.</div></div>
   </div>
 </section>
