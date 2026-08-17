@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>MCP — 도구를 붙이는 규약</title>
+<title>Docker 다루기</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.min.css" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -363,7 +363,7 @@
   <div class="aperture"></div><div class="ring"></div>
   <div class="wrap">
     <div class="kick"><span class="pill">WEEK 3 · DAY 6</span><span>Docker</span></div>
-    <h1>만든 것을<br/>상자에 담기</h1>
+    <h1>Docker 다루기</h1>
   </div>
 </section>
 <section class="slide" data-title="오늘의 일정">
@@ -380,11 +380,11 @@
     </div>
   </div>
 </section>
-<section class="slide section" data-title="[섹션] 컨테이너가 필요한 이유">
+<section class="slide section" data-title="[섹션] 격리 — 가상환경에서 컨테이너까지">
   <div class="ghost">00</div>
   <div class="seyebrow">CHAPTER 00</div>
-  <h2>컨테이너가 필요한 이유</h2>
-  <div class="agenda"><span>되는데 안 되는 상황</span><span>무엇을 싸는가</span></div>
+  <h2>격리 — 가상환경에서 컨테이너까지</h2>
+  <div class="agenda"><span>한 자리에 한 버전</span><span>가상환경의 한계 셋</span><span>컨테이너가 넘는 곳</span></div>
 </section>
 <section class="slide" data-title="안 되는 상황">
   <div class="coord"><b></b> / <span class="tot"></span></div>
@@ -399,32 +399,158 @@
   <div class="pane bad"><h4>받은 사람 자리</h4>
     <p>파이썬 3.9 · pandas 없음<br/>그 경로에 파일이 없음<br/>키가 뭔지 모름</p>
     <div class="mini">첫 줄에서 멈춘다</div></div>
-</div><div class="keymsg"><span class="k">빠진 것</span><div>파일은 넘겼는데 <b>돌아가는 데 필요한 나머지</b>를 안 넘겼다.</div></div>
+</div><div class="keymsg"><span class="k">오늘 따라갈 순서</span><div>이 문제를 <b>가상환경 &rarr; 컨테이너</b> 순서로 하나씩 풀어 간다.</div></div>
   </div>
 </section>
-<section class="slide" data-title="무엇이 필요한가">
+<section class="slide" data-title="한 버전만">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>목록</div>
-  <h2 class="s-title sm">프로그램 하나가 돌려면 필요한 것</h2>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>1단계</div>
+  <h2 class="s-title sm">한 자리에 한 버전</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="vlist"><div class="v"><span class="b">1</span><div><b>실행할 코드</b> &mdash; 이건 보통 잘 넘긴다.</div></div><div class="v"><span class="b">2</span><div><b>파이썬과 라이브러리</b> &mdash; 버전이 다르면 안 돈다.</div></div><div class="v"><span class="b">3</span><div><b>운영체제 쪽 도구</b> &mdash; 폰트, 이미지 처리 라이브러리 같은 것.</div></div><div class="v"><span class="b">4</span><div><b>데이터와 설정</b> &mdash; 어디에 있는지, 키는 무엇인지.</div></div><div class="v"><span class="b">5</span><div><b>시작하는 명령</b> &mdash; 무엇을 어떻게 실행하는지.</div></div></div><div class="keymsg"><span class="k">컨테이너란</span><div>이 다섯을 <b>한 덩이로 묶어</b> 통째로 옮기는 방법이다.</div></div>
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">같은 자리에 다른 버전을 깔아 본다</span></div><pre><code>$ pip install numpy==1.26.4
+$ python -c "import numpy; print(numpy.__version__)"
+1.26.4
+
+$ pip install numpy==2.5.2        <span class="cm">← 다른 버전을 깐다</span>
+$ python -c "import numpy; print(numpy.__version__)"
+2.5.2                             <span class="cm">← 앞의 것이 사라졌다</span></code></pre></div><div class="keymsg"><span class="k">여기서 막힌다</span><div>프로젝트가 둘인데 <b>필요한 버전이 다르면</b> 한쪽을 포기해야 한다.</div></div>
   </div>
 </section>
-<section class="slide" data-title="지금 하는 방식">
+<section class="slide" data-title="가상환경">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>2단계</div>
+  <h2 class="s-title sm">가상환경으로 자리 나누기</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">환경을 둘로 만들어 각각 깐다</span></div><pre><code>$ python -m venv A  &amp;&amp;  A/bin/pip install numpy==2.5.2
+$ python -m venv B  &amp;&amp;  B/bin/pip install numpy==1.26.4
+
+$ A/bin/python -c "import numpy; print(numpy.__version__)"
+2.5.2
+$ B/bin/python -c "import numpy; print(numpy.__version__)"
+1.26.4                            <span class="cm">← 둘이 같이 산다</span></code></pre></div><div class="keymsg"><span class="k">풀렸다</span><div><b>라이브러리 버전 충돌</b>은 가상환경으로 해결된다. conda 로 하던 것이 이것이다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="나눠 주는 범위">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>2단계</div>
+  <h2 class="s-title sm">가상환경이 갈라 주는 층</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="plot"><svg viewBox="0 0 1100 210">
+  <rect x="40" y="24" width="1020" height="46" rx="10" fill="#EFEAFF" stroke="#3A1FC9" stroke-width="1.6"/>
+  <text x="550" y="53" font-size="14" font-weight="800" fill="#3A1FC9" text-anchor="middle">파이썬 라이브러리 — 가상환경이 갈라 준다</text>
+  <rect x="40" y="82" width="1020" height="40" rx="10" fill="#F4F3FA" stroke="#C9C4E4" stroke-width="1.4" stroke-dasharray="5 4"/>
+  <text x="550" y="107" font-size="13" font-weight="700" fill="#8E8AAC" text-anchor="middle">파이썬 자체 (버전) — 못 바꾼다</text>
+  <rect x="40" y="130" width="1020" height="40" rx="10" fill="#F4F3FA" stroke="#C9C4E4" stroke-width="1.4" stroke-dasharray="5 4"/>
+  <text x="550" y="155" font-size="13" font-weight="700" fill="#8E8AAC" text-anchor="middle">운영체제 도구 · 데이터 경로 — 손도 못 댄다</text>
+  <text x="550" y="196" font-size="12" font-weight="700" fill="#8E8AAC" text-anchor="middle">맨 위 한 층만 나눠 준다</text>
+</svg></div><div class="keymsg"><span class="k">그래서</span><div>가상환경은 <b>맨 위 한 층</b>만 나눈다. 아래 두 층에서 문제가 남는다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="한계 하나">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>3단계</div>
+  <h2 class="s-title sm">한계 ① 못 바꾸는 파이썬 버전</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">세 환경의 파이썬을 찍어 본다</span></div><pre><code>$ python --version          <span class="cm">← 환경을 만든 파이썬</span>
+Python 3.12.13
+$ A/bin/python --version
+Python 3.12.13
+$ B/bin/python --version
+Python 3.12.13              <span class="cm">← 셋이 다 같다</span></code></pre></div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div>가상환경은 <b>만든 파이썬을 물려받는다</b>. 3.9 가 필요하면 답이 없다.</div></div></div><div class="keymsg"><span class="k">현업에서</span><div>오래된 코드가 <b>3.9 에서만</b> 도는 일이 흔하다. 여기서 걸린다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="한계 둘">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>3단계</div>
+  <h2 class="s-title sm">한계 ② 파이썬 밖의 도구</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">파이썬이 아닌 도구를 찾아본다</span></div><pre><code>$ which tesseract           <span class="cm">글자 인식 도구</span>
+없음
+$ which libgl               <span class="cm">그림 처리 라이브러리</span>
+없음</code></pre></div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div><code>pip</code> 로 못 깐다. <b>운영체제 쪽에 깔아야</b> 하는 것들이다.</div></div><div class="v"><span class="b">&#9733;</span><div>이미지 처리나 문서 인식을 하면 <b>거의 반드시</b> 만난다.</div></div></div><div class="keymsg"><span class="k">가상환경 밖</span><div>이건 <b>가상환경이 손댈 수 없는 층</b>이다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="한계 셋">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>3단계</div>
+  <h2 class="s-title sm">한계 ③ 옮길 때 안 따라오는 것</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="twopane">
+  <div class="pane bad"><h4>넘어가는 것</h4>
+    <p><code>requirements.txt</code><br/>&mdash; <b>이름과 버전 목록</b>뿐</p>
+    <div class="mini">받는 사람이 직접 깔아야 한다</div></div>
+  <div class="pane bad"><h4>안 넘어가는 것</h4>
+    <p>파이썬 버전 · 운영체제 도구<br/>데이터 위치 · 시작 명령</p>
+    <div class="mini">그래서 「제 자리에서는 됐는데」가 나온다</div></div>
+</div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div>가상환경은 <b>내 컴퓨터 안에서만</b> 나눠 준다. 밖으로 옮기는 도구가 아니다.</div></div></div><div class="keymsg"><span class="k">세 한계를 모으면</span><div><b>파이썬 버전 · 운영체제 층 · 옮기기</b> 셋이 남았다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="컨테이너">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>4단계</div>
+  <h2 class="s-title sm">컨테이너가 넘는 곳</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">내 컴퓨터에 없는 파이썬을 쓴다</span></div><pre><code>$ python3 --version                                  <span class="cm">← 내 맥에 깔린 것</span>
+Python 3.9.6
+
+$ docker run --rm python:3.9-slim  python --version
+Python 3.9.25
+$ docker run --rm python:3.13-slim python --version
+Python 3.13.15                                       <span class="cm">← 둘을 동시에</span></code></pre></div><div class="keymsg"><span class="k">한계 ①이 풀렸다</span><div>파이썬 버전을 <b>상자마다 다르게</b> 쓴다. 내 컴퓨터에는 아무것도 안 깐다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="안쪽">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>4단계</div>
+  <h2 class="s-title sm">딴 리눅스가 든 상자 안</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">상자 안의 운영체제를 확인한다</span></div><pre><code>$ docker run --rm python:3.12-slim sh -c 'cat /etc/os-release | head -2'
+PRETTY_NAME="Debian GNU/Linux 13 (trixie)"
+NAME="Debian GNU/Linux"                              <span class="cm">← 맥이 아니라 데비안</span></code></pre></div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>운영체제 층까지 들어 있으니 <b><code>apt install</code> 로 tesseract 도 깐다</b>.</div></div><div class="v"><span class="b">&#9733;</span><div>그 상태 그대로 <b>파일 하나로 옮긴다</b>. 한계 ②와 ③도 같이 풀린다.</div></div></div><div class="keymsg"><span class="k">셋이 다 풀렸다</span><div><b>버전 · 운영체제 층 · 옮기기</b> — 컨테이너가 세 층을 통째로 싼다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="가상머신">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>견주기</div>
-  <h2 class="s-title sm">설치 안내서와 상자</h2>
+  <h2 class="s-title sm">운영체제를 통째로 올리는 가상머신</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="figwrap"><img src="assets/vm-stack.png" alt="가상머신 구조도 — 인프라 위에 하이퍼바이저가 있고 그 위에 가상머신 셋이 각각 게스트 운영체제와 앱을 따로 올리고 있다"/></div><div class="keymsg"><span class="k">무거운 까닭</span><div>앱마다 <b>운영체제를 하나씩</b> 올린다. 뜨는 데 몇 분, 크기는 수 GB 다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="컨테이너 구조">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>견주기</div>
+  <h2 class="s-title sm">운영체제를 나눠 쓰는 컨테이너</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="figwrap"><img src="assets/container-stack.png" alt="컨테이너 구조도 — 인프라와 호스트 운영체제 위에 Docker 한 층이 있고 그 위에 앱 여섯 개가 나란히 올라가 있다. 게스트 운영체제가 없다"/></div><div class="keymsg"><span class="k">가벼운 까닭</span><div><b>운영체제를 새로 안 올린다.</b> 그래서 몇 초에 뜨고 수십 MB 로 끝난다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="셋 견주기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>정리</div>
+  <h2 class="s-title sm">가상환경 · 컨테이너 · 가상머신</h2>
   <div class="rule"></div>
   <div class="body">
 <div class="ctable"><table>
-  <thead><tr><th></th><th>설치 안내서를 넘길 때</th><th>상자로 넘길 때</th></tr></thead>
+  <thead><tr><th></th><th>가상환경</th><th>컨테이너</th><th>가상머신</th></tr></thead>
   <tbody>
-  <tr><td>받는 사람이 할 일</td><td class="hl">문서 보고 하나씩 깐다</td><td class="hl">명령 하나</td></tr>
-  <tr><td>버전이 다르면</td><td>안 돈다</td><td class="hl">상관없다</td></tr>
-  <tr><td>내 컴퓨터가 더러워지나</td><td>깔린 것이 쌓인다</td><td class="hl">상자 안에만 쌓인다</td></tr>
-  <tr><td>지울 때</td><td>무엇을 지울지 모른다</td><td class="hl">상자만 지운다</td></tr>
-  </tbody></table></div><div class="keymsg"><span class="k">오늘의 목표</span><div>Dockerfile 은 <b>Codex 가 쓴다</b>. 맞게 썼는지 <b>판단하는 것</b>을 배운다.</div></div>
+  <tr><td>라이브러리를 나누나</td><td class="hl">나눈다</td><td class="hl">나눈다</td><td>나눈다</td></tr>
+  <tr><td>파이썬 버전을 바꾸나</td><td>못 바꾼다</td><td class="hl">바꾼다</td><td>바꾼다</td></tr>
+  <tr><td>운영체제 도구를 깔 수 있나</td><td>못 깐다</td><td class="hl">깐다</td><td>깐다</td></tr>
+  <tr><td>통째로 옮기나</td><td>못 옮긴다</td><td class="hl">옮긴다</td><td>옮긴다</td></tr>
+  <tr><td>뜨는 시간</td><td>즉시</td><td class="hl">몇 초</td><td>몇 분</td></tr>
+  <tr><td>크기</td><td>수십 MB</td><td class="hl">수백 MB</td><td>수 GB</td></tr>
+  </tbody></table></div><div class="keymsg"><span class="k">자리가 정해진다</span><div>가상환경으로 <b>되는 일은 그대로</b> 한다. 안 되는 일에 컨테이너를 쓴다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="로고">
@@ -445,11 +571,11 @@
   <h2 class="s-title sm">오늘 거치는 네 단계</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="bpipe">
-  <div class="bstep"><div class="si">1</div><div class="sn">받아 쓴다</div><div class="sd">남이 올린 상자를 띄워 본다</div></div>
-  <div class="bstep"><div class="si">2</div><div class="sn">시킨다</div><div class="sd">Codex 에게 Dockerfile 을 받는다</div></div>
-  <div class="bstep"><div class="si">3</div><div class="sn">고친다</div><div class="sd">틀린 데를 찾아 바로잡는다</div></div>
-  <div class="bstep"><div class="si">4</div><div class="sn">올린다</div><div class="sd">만든 것을 담아 실제로 돌린다</div></div>
+<div class="pipe">
+  <div class="step"><div class="si">1</div><div class="sn">받아 쓴다</div><div class="sd">공개된 상자를 띄워 본다</div></div>
+  <div class="step"><div class="si">2</div><div class="sn">시킨다</div><div class="sd">Codex 에게 Dockerfile 을 받는다</div></div>
+  <div class="step"><div class="si">3</div><div class="sn">고친다</div><div class="sd">틀린 데를 찾아 바로잡는다</div></div>
+  <div class="step"><div class="si">4</div><div class="sn">올린다</div><div class="sd">담아서 실제로 돌린다</div></div>
 </div><div class="keymsg"><span class="k">손으로 쓰는 것은</span><div><b>Dockerfile 이 아니라 명령어</b>다. 파일은 Codex 가 쓴다.</div></div>
   </div>
 </section>
@@ -465,10 +591,10 @@
   <h2 class="s-title sm">설명서 · 이미지 · 컨테이너</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="bpipe">
-  <div class="bstep"><div class="si">1</div><div class="sn">Dockerfile</div><div class="sd">무엇을 담을지 적은 <b>설명서</b>. 글자 파일이다</div></div>
-  <div class="bstep"><div class="si">2</div><div class="sn">이미지</div><div class="sd">설명서대로 <b>만들어 둔 덩이</b>. 안 움직인다</div></div>
-  <div class="bstep"><div class="si">3</div><div class="sn">컨테이너</div><div class="sd">이미지를 <b>돌린 것</b>. 실제로 도는 프로그램</div></div>
+<div class="pipe">
+  <div class="step"><div class="si">1</div><div class="sn">Dockerfile</div><div class="sd">무엇을 담을지 적은 <b>설명서</b>. 글자 파일이다</div></div>
+  <div class="step"><div class="si">2</div><div class="sn">이미지</div><div class="sd">설명서대로 <b>만들어 둔 덩이</b>. 안 움직인다</div></div>
+  <div class="step"><div class="si">3</div><div class="sn">컨테이너</div><div class="sd">이미지를 <b>돌린 것</b>. 실제로 도는 프로그램</div></div>
 </div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div>이미지 하나로 <b>컨테이너 여럿</b>을 띄운다. 붕어빵 틀과 붕어빵 관계다.</div></div><div class="v"><span class="b">&rarr;</span><div><code>build</code> 가 이미지를 만들고, <code>run</code> 이 컨테이너를 띄운다.</div></div></div><div class="keymsg"><span class="k">헷갈리면</span><div><b>이미지는 명사, 컨테이너는 동사</b>다. 하나는 놓여 있고 하나는 돌고 있다.</div></div>
   </div>
 </section>
@@ -1289,10 +1415,10 @@ RUN pip install --no-cache-dir \
   <h2 class="s-title sm">바깥에서 만들어 파일로 옮기기</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="bpipe">
-  <div class="bstep"><div class="si">1</div><div class="sn">바깥 PC</div><div class="sd"><code>docker build -t posco-app:1.0 .</code></div></div>
-  <div class="bstep"><div class="si">2</div><div class="sn">파일로</div><div class="sd"><code>docker save posco-app:1.0 -o app.tar</code></div></div>
-  <div class="bstep"><div class="si">3</div><div class="sn">사내 PC</div><div class="sd"><code>docker load -i app.tar</code></div></div>
+<div class="pipe">
+  <div class="step"><div class="si">1</div><div class="sn">바깥 PC</div><div class="sd"><code>docker build -t posco-app:1.0 .</code></div></div>
+  <div class="step"><div class="si">2</div><div class="sn">파일로</div><div class="sd"><code>docker save posco-app:1.0 -o app.tar</code></div></div>
+  <div class="step"><div class="si">3</div><div class="sn">사내 PC</div><div class="sd"><code>docker load -i app.tar</code></div></div>
 </div><div class="keymsg"><span class="k">빌드를 사내에서 안 한다</span><div>다 만든 것을 통째로 옮긴다. <b>폐쇄망에서 제일 흔한 길</b>이다.</div></div>
   </div>
 </section>
@@ -1345,16 +1471,16 @@ Loaded image: posco-app:1.2                <span class="cm">← 되살아났다<
 <div class="vlist"><div class="v"><span class="b">1</span><div>막히는 곳은 <b>바탕 이미지 · 라이브러리 · 실행 중 통신</b> 셋이다.</div></div><div class="v"><span class="b">2</span><div>사내 저장소가 있으면 <b>주소 두 줄</b>만 바꾸면 된다.</div></div><div class="v"><span class="b">3</span><div>아무것도 없으면 <b><code>save</code> 로 뽑아 <code>load</code></b> 한다.</div></div></div><div class="keymsg"><span class="k">먼저 할 일</span><div><b>정보시스템 담당에게 물어보는 것</b>이다. 대개 이미 답이 있다.</div></div>
   </div>
 </section>
-<section class="slide section" data-title="[섹션] 실전 — 만든 것 담기">
+<section class="slide section" data-title="[섹션] 실전 — 앱을 컨테이너로">
   <div class="ghost">09</div>
   <div class="seyebrow">CHAPTER 09</div>
-  <h2>실전 — 만든 것 담기</h2>
+  <h2>실전 — 앱을 컨테이너로</h2>
   <div class="agenda"><span>무엇을 담나</span><span>순서</span><span>확인</span></div>
 </section>
 <section class="slide" data-title="무엇을">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH9</span><span class="dot"></span>대상</div>
-  <h2 class="s-title sm">담을 만한 세 가지</h2>
+  <h2 class="s-title sm">컨테이너로 만들 만한 세 가지</h2>
   <div class="rule"></div>
   <div class="body">
 <div class="ctable"><table>
