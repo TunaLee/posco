@@ -1483,101 +1483,204 @@ RUN pip install --no-cache-dir \
       -t posco-app:1.0 .</code></pre></div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>빌드할 때만 쓰는 값이라 <b>이미지 안에 안 남는다</b>.</div></div><div class="v"><span class="b">&#9733;</span><div>앱이 돌 때도 바깥을 봐야 하면 <code>-e</code> 로 <b>따로</b> 넣는다.</div></div></div><div class="keymsg"><span class="k">확인할 것</span><div>프록시 주소와 <b>예외 목록</b>은 정보시스템 담당이 쥐고 있다.</div></div>
   </div>
 </section>
-<section class="slide" data-title="통째로">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>방법 ③</div>
-  <h2 class="s-title sm">바깥에서 만들어 파일로 옮기기</h2>
-  <div class="rule"></div>
-  <div class="body">
-<div class="pipe">
-  <div class="step"><div class="si">1</div><div class="sn">바깥 PC</div><div class="sd"><code>docker build -t posco-app:1.0 .</code></div></div>
-  <div class="step"><div class="si">2</div><div class="sn">파일로</div><div class="sd"><code>docker save posco-app:1.0 -o app.tar</code></div></div>
-  <div class="step"><div class="si">3</div><div class="sn">사내 PC</div><div class="sd"><code>docker load -i app.tar</code></div></div>
-</div><div class="keymsg"><span class="k">빌드를 사내에서 안 한다</span><div>다 만든 것을 통째로 옮긴다. <b>폐쇄망에서 제일 흔한 길</b>이다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="실제로">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>실측</div>
-  <h2 class="s-title sm">파일로 뽑았다 되살리기</h2>
-  <div class="rule"></div>
-  <div class="body">
-<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">터미널</span></div><pre><code>$ docker save posco-app:1.2 -o posco-app.tar
-$ ls -lh posco-app.tar
-46M  posco-app.tar                         <span class="cm">← 이미지 하나가 파일 하나</span>
-
-$ docker rmi -f posco-app:1.2              <span class="cm">← 지웠다</span>
-$ docker load -i posco-app.tar
-Loaded image: posco-app:1.2                <span class="cm">← 되살아났다</span></code></pre></div><div class="keymsg"><span class="k">옮길 것이 하나</span><div>파일 한 개라 <b>승인된 반입 경로에 태우기</b>도 쉽다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="무거움">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>실무</div>
-  <h2 class="s-title sm">옮길 것을 가볍게</h2>
-  <div class="rule"></div>
-  <div class="body">
-<div class="vlist"><div class="v"><span class="b">&rarr;</span><div><code>slim</code> 판을 쓰면 크기가 <b>절반 아래</b>로 준다.</div></div><div class="v"><span class="b">&rarr;</span><div>데이터는 이미지에 넣지 않는다. 넣으면 <b>옮길 파일이 그만큼 커진다</b>.</div></div><div class="v"><span class="b">&#9733;</span><div><code>docker save</code> 는 여러 이미지를 <b>한 파일에</b> 담을 수 있다 &mdash; 뒤에 이름을 나열한다.</div></div></div><div class="keymsg"><span class="k">현실적인 크기</span><div>앱 하나가 <b>50MB 안팎</b>이면 반입에 무리가 없다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="점검표">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>준비</div>
-  <h2 class="s-title sm">사내에 올리기 전 확인할 것</h2>
-  <div class="rule"></div>
-  <div class="body">
-<div class="ctable"><table>
-  <thead><tr><th>확인</th><th>어떻게</th></tr></thead>
-  <tbody>
-  <tr><td class="hl">키가 이미지에 안 들어갔나</td><td class="hl"><code>docker history 이미지 | grep -i key</code></td></tr>
-  <tr><td>바탕 이미지를 받을 수 있나</td><td>사내 저장소 주소 확인</td></tr>
-  <tr><td>데이터를 밖에 뒀나</td><td><code>docker images</code> 로 크기 확인</td></tr>
-  <tr><td class="hl">처음부터 뜨나</td><td class="hl"><code>compose down</code> 후 <code>up</code></td></tr>
-  </tbody></table></div><div class="keymsg"><span class="k">마지막 줄이 중요</span><div><b>한 번 지우고 다시 올려 본다.</b> 발표 자리에서 처음 해 보면 늦다.</div></div>
-  </div>
-</section>
 <section class="slide section" data-title="[섹션] 실전 — 앱을 컨테이너로">
   <div class="ghost">09</div>
   <div class="seyebrow">CHAPTER 09</div>
   <h2>실전 — 앱을 컨테이너로</h2>
-  <div class="agenda"><span>무엇을 담나</span><span>순서</span><span>확인</span></div>
+  <div class="agenda"><span>전체 흐름 일곱</span><span>Codex 에게 시키기</span><span>옮겨서 띄우기</span></div>
 </section>
-<section class="slide" data-title="무엇을">
+<section class="slide" data-title="전체 흐름">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH9</span><span class="dot"></span>대상</div>
-  <h2 class="s-title sm">컨테이너로 만들 만한 세 가지</h2>
+  <div class="eyebrow"><span class="tag">CH9</span><span class="dot"></span>흐름</div>
+  <h2 class="s-title sm">실습 전체 일곱 단계</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="plot"><svg viewBox="0 0 1116 320">
+  <text x="70" y="22" font-size="11.5" font-weight="800" fill="#3A1FC9">만드는 쪽</text>
+  <rect x="40" y="34" width="150" height="56" rx="10" fill="#EFEAFF" stroke="#3A1FC9" stroke-width="1.6"/>
+  <text x="115" y="58" font-size="12" font-weight="800" fill="#16142B" text-anchor="middle">1 폴더 정리</text>
+  <text x="115" y="76" font-size="10.5" fill="#8E8AAC" text-anchor="middle">앱마다 하나</text>
+  <path d="M194 62 H232" stroke="#3A1FC9" stroke-width="2"/><path d="M228 56l12 6-12 6z" fill="#3A1FC9"/>
+  <rect x="240" y="34" width="176" height="56" rx="10" fill="#EFEAFF" stroke="#3A1FC9" stroke-width="1.6"/>
+  <text x="328" y="58" font-size="12" font-weight="800" fill="#16142B" text-anchor="middle">2 Dockerfile</text>
+  <text x="328" y="76" font-size="10.5" fill="#3A1FC9" text-anchor="middle">Codex 가 쓴다</text>
+  <path d="M420 62 H458" stroke="#3A1FC9" stroke-width="2"/><path d="M454 56l12 6-12 6z" fill="#3A1FC9"/>
+  <rect x="466" y="34" width="176" height="56" rx="10" fill="#EFEAFF" stroke="#3A1FC9" stroke-width="1.6"/>
+  <text x="554" y="58" font-size="12" font-weight="800" fill="#16142B" text-anchor="middle">3 compose.yml</text>
+  <text x="554" y="76" font-size="10.5" fill="#3A1FC9" text-anchor="middle">Codex 가 쓴다</text>
+  <path d="M646 62 H684" stroke="#3A1FC9" stroke-width="2"/><path d="M680 56l12 6-12 6z" fill="#3A1FC9"/>
+  <rect x="692" y="34" width="150" height="56" rx="10" fill="#EFF9F4" stroke="#0B6B4F" stroke-width="1.6"/>
+  <text x="767" y="58" font-size="12" font-weight="800" fill="#0B6B4F" text-anchor="middle">4 build</text>
+  <text x="767" y="76" font-size="10.5" fill="#8E8AAC" text-anchor="middle">이미지가 생긴다</text>
+  <path d="M846 62 H884" stroke="#0B6B4F" stroke-width="2"/><path d="M880 56l12 6-12 6z" fill="#0B6B4F"/>
+  <rect x="892" y="34" width="150" height="56" rx="10" fill="#EFF9F4" stroke="#0B6B4F" stroke-width="1.6"/>
+  <text x="967" y="58" font-size="12" font-weight="800" fill="#0B6B4F" text-anchor="middle">5 up</text>
+  <text x="967" y="76" font-size="10.5" fill="#8E8AAC" text-anchor="middle">여기서 확인한다</text>
+
+  <path d="M967 96 V128" stroke="#8E8AAC" stroke-width="1.6" stroke-dasharray="4 3"/>
+  <path d="M960 124l7 12 7-12z" fill="#8E8AAC"/>
+  <text x="70" y="152" font-size="11.5" font-weight="800" fill="#8E8AAC">옮기는 쪽</text>
+
+  <rect x="640" y="164" width="200" height="56" rx="10" fill="#FFF8E8" stroke="#B98900" stroke-width="1.6"/>
+  <text x="740" y="188" font-size="12" font-weight="800" fill="#16142B" text-anchor="middle">6 save</text>
+  <text x="740" y="206" font-size="10.5" font-family="ui-monospace,monospace" fill="#8E8AAC" text-anchor="middle">images.tar &nbsp;124MB</text>
+  <path d="M636 192 H570" stroke="#B98900" stroke-width="2"/><path d="M574 186l-12 6 12 6z" fill="#B98900"/>
+  <text x="603" y="180" font-size="10.5" font-weight="700" fill="#B98900" text-anchor="middle">USB</text>
+  <rect x="370" y="164" width="200" height="56" rx="10" fill="#FFF8E8" stroke="#B98900" stroke-width="1.6"/>
+  <text x="470" y="188" font-size="12" font-weight="800" fill="#16142B" text-anchor="middle">7 load &rarr; up</text>
+  <text x="470" y="206" font-size="10.5" fill="#8E8AAC" text-anchor="middle">인터넷 없이 뜬다</text>
+
+  <path d="M40 250 H1076" stroke="#E7E4F5" stroke-width="1.4"/>
+  <text x="558" y="278" font-size="12.5" font-weight="800" fill="#3A1FC9" text-anchor="middle">사람이 하는 것 &mdash; 1 · 4 · 5 · 6 · 7 &nbsp;&nbsp;|&nbsp;&nbsp; Codex 가 하는 것 &mdash; 2 · 3</text>
+  <text x="558" y="302" font-size="11.5" font-weight="700" fill="#8E8AAC" text-anchor="middle">치는 것은 명령어뿐이다. 파일은 받아서 읽고 고친다.</text>
+</svg></div><div class="keymsg"><span class="k">오늘 실습이 이 그림이다</span><div>왼쪽에서 오른쪽으로 한 번, 그다음 <b>아래로 내려와 옮긴다</b>.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="1단계">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH9</span><span class="dot"></span>1단계</div>
+  <h2 class="s-title sm">폴더를 앱마다 하나로</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">이 모양으로 맞춰 둔다</span></div><pre><code>공정도우미/
+├─ compose.yml            <span class="cm">← 셋을 묶는 파일</span>
+├─ .env                   <span class="cm">← 키. 커밋 안 한다</span>
+├─ web/                   <span class="cm">← Next.js 화면</span>
+│   ├─ package.json
+│   └─ app/
+└─ api/                   <span class="cm">← 파이썬 서버</span>
+    ├─ requirements.txt
+    └─ app.py</code></pre></div><div class="keymsg"><span class="k">먼저 이걸 맞춘다</span><div>폴더가 섞여 있으면 <b>Codex 도 헷갈린다</b>. 앱마다 폴더 하나로 갈라 둔다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="2단계 프롬프트">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH9</span><span class="dot"></span>2단계</div>
+  <h2 class="s-title sm">Dockerfile 을 받는 프롬프트</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">앱마다 한 번씩 시킨다</span></div><pre><code>web/ 폴더에 Dockerfile 을 만들어 줘. Next.js 앱이다.
+
+  node 22-alpine 을 쓴다
+  만드는 단계와 돌리는 단계를 나눈다 (standalone 출력)
+  3000 포트를 연다. HOSTNAME 은 0.0.0.0 으로 준다
+  .dockerignore 도 만든다 — node_modules 와 .next 를 넣는다
+  파일은 .jsx 로 쓴다. TypeScript 는 안 쓴다</code></pre></div><div class="keymsg"><span class="k">마지막 두 줄이 있어야</span><div><code>node_modules</code> 를 안 빼면 <b>맥용 파일이 이미지에 들어가</b> 리눅스에서 깨진다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="2단계 결과">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH9</span><span class="dot"></span>2단계</div>
+  <h2 class="s-title sm">받은 Dockerfile 읽기</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">web/Dockerfile</span></div><pre><code>FROM node:22-alpine AS build          <span class="cm">만드는 단계</span>
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM node:22-alpine                  <span class="cm">돌리는 단계</span>
+ENV HOSTNAME=0.0.0.0 PORT=3000       <span class="cm">← 이 줄이 있나 먼저 본다</span>
+COPY --from=build /app/.next/standalone ./
+CMD ["node", "server.js"]</code></pre></div><div class="keymsg"><span class="k">세 곳을 확인한다</span><div><b>0.0.0.0</b> 이 있나 · 키를 <b>ENV 로 박지</b> 않았나 · 데이터를 <b>COPY 하지</b> 않았나.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="3단계">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH9</span><span class="dot"></span>3단계</div>
+  <h2 class="s-title sm">compose.yml 을 받는 프롬프트</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">셋을 묶는다</span></div><pre><code>compose.yml 을 만들어 줘. 서비스는 둘이다.
+
+  web  ./web 을 빌드한다. 3000 포트를 밖으로 연다
+  api  ./api 를 빌드한다. 8000 포트를 밖으로 연다
+       web 은 api 를 http://api:8000 으로 부른다
+
+  키는 .env 에서 읽는다. 값은 파일에 적지 마라
+  데이터는 볼륨에 남긴다</code></pre></div><div class="keymsg"><span class="k">IP 를 적지 않는다</span><div><code>http://api:8000</code> &mdash; <b>서비스 이름</b>이 곧 주소다. compose 가 이어 준다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="4단계">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH9</span><span class="dot"></span>4단계</div>
+  <h2 class="s-title sm">이미지를 만들고 확인하기</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">만든 뒤 반드시 목록을 본다</span></div><pre><code>$ docker compose build
+
+$ docker images
+posco-web    1.1    321MB          <span class="cm">← 이 둘이 나오면 성공</span>
+posco-app    1.2    220MB
+
+$ docker image inspect posco-web:1.1 --format '{{.Architecture}}'
+arm64                              <span class="cm">← 만든 PC 의 CPU 종류</span></code></pre></div><div class="keymsg"><span class="k">크기와 CPU 를 본다</span><div><b>1GB 를 넘으면</b> 무언가 잘못 들어갔다. CPU 종류는 옮길 때 걸린다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="5단계">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH9</span><span class="dot"></span>5단계</div>
+  <h2 class="s-title sm">띄워서 눈으로 확인하기</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">세 가지를 차례로 본다</span></div><pre><code>$ docker compose up -d
+$ docker compose ps
+SERVICE   STATUS         PORTS
+api       Up 3 seconds   0.0.0.0:8000-&gt;8000/tcp
+web       Up 3 seconds   0.0.0.0:3000-&gt;3000/tcp
+
+$ curl http://127.0.0.1:3000/
+&lt;h1&gt;공정 도우미&lt;/h1&gt;                <span class="cm">← 화면이 뜬다</span></code></pre></div><div class="keymsg"><span class="k">여기까지가 절반</span><div><b>브라우저로 열어 본다.</b> 떴다고 도는 것이 아니라 답해야 도는 것이다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="6단계">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH9</span><span class="dot"></span>6단계</div>
+  <h2 class="s-title sm">파일 하나로 뽑아내기</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">여러 이미지를 한 파일에 담는다</span></div><pre><code>$ docker save posco-web:1.1 posco-app:1.2 -o images.tar
+
+$ ls -lh images.tar
+124M  images.tar                    <span class="cm">← 이미지 둘이 한 파일에</span>
+
+$ ls
+compose.yml   images.tar   .env      <span class="cm">← 옮길 것은 이 셋뿐</span></code></pre></div><div class="keymsg"><span class="k">옮길 것이 셋</span><div><code>images.tar</code> · <code>compose.yml</code> · <code>.env</code>. 소스 코드는 안 넘긴다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="7단계">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH9</span><span class="dot"></span>7단계</div>
+  <h2 class="s-title sm">옮긴 곳에서 띄우기</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">인터넷을 한 번도 쓰지 않는다</span></div><pre><code>$ docker load -i images.tar
+Loaded image: posco-web:1.1
+Loaded image: posco-app:1.2         <span class="cm">← 파일에서 되살아났다</span>
+
+$ docker compose up -d
+$ curl http://127.0.0.1:3000/
+&lt;h1&gt;공정 도우미&lt;/h1&gt;                <span class="cm">← 그대로 뜬다</span></code></pre></div><div class="keymsg"><span class="k">실제로 확인한 것</span><div>이미지를 <b>통째로 지운 뒤</b> 파일에서만 되살려 띄웠다. 화면이 그대로 나왔다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="폐쇄망 준비">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH9</span><span class="dot"></span>주의</div>
+  <h2 class="s-title sm">폐쇄망으로 넘길 때 고칠 세 곳</h2>
   <div class="rule"></div>
   <div class="body">
 <div class="ctable"><table>
-  <thead><tr><th>만든 것</th><th>담을 때 걸리는 곳</th></tr></thead>
+  <thead><tr><th>고칠 것</th><th>왜</th></tr></thead>
   <tbody>
-  <tr><td class="hl">RAG 문서 검색</td><td class="hl">임베딩 모델이 무겁다 · 문서를 밖에 둔다</td></tr>
-  <tr><td class="hl">MCP 공정 도우미</td><td class="hl">CSV 를 밖에 물린다 · 키를 환경변수로</td></tr>
-  <tr><td>웹 채팅 앱</td><td>포트를 열고 <code>0.0.0.0</code> 으로 받게</td></tr>
-  </tbody></table></div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div>셋 다 <b>같은 세 가지</b>에 걸린다 &mdash; 데이터 위치, 키, 여는 주소.</div></div></div><div class="keymsg"><span class="k">오늘 배운 것이</span><div><b>데이터 위치 · 키 · 여는 주소</b>를 다루는 법이었다.</div></div>
+  <tr><td class="hl"><code>build:</code> 를 <code>image:</code> 로</td><td class="hl">build 로 두면 받는 쪽이 다시 만들려고 인터넷을 찾는다</td></tr>
+  <tr><td class="hl"><code>--platform linux/amd64</code></td><td class="hl">맥에서 만든 것은 arm64 다. x86 서버에서 안 뜬다</td></tr>
+  <tr><td>Docker Desktop 라이선스</td><td>규모가 있는 회사는 유료다. 담당자에게 먼저 확인한다</td></tr>
+  </tbody></table></div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div><b>첫 줄이 제일 많이 걸린다.</b> 폐쇄망용 <code>compose.yml</code> 은 따로 둔다.</div></div></div><div class="keymsg"><span class="k">만들 때 정한다</span><div>옮길 곳이 x86 이면 <b>처음부터</b> <code>--platform linux/amd64</code> 로 만든다.</div></div>
   </div>
 </section>
-<section class="slide" data-title="순서">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH9</span><span class="dot"></span>절차</div>
-  <h2 class="s-title sm">담는 순서 다섯</h2>
-  <div class="rule"></div>
-  <div class="body">
-<div class="vlist"><div class="v"><span class="b">1</span><div><b>내 컴퓨터에서 돌려 본다.</b> 안 도는 것은 담아도 안 돈다.</div></div><div class="v"><span class="b">2</span><div><b>여섯 칸을 적는다.</b> 버전 · 라이브러리 · 시작 명령 · 포트 · 데이터 · 키.</div></div><div class="v"><span class="b">3</span><div><b>Codex 에게 시킨다.</b> 여섯 칸을 그대로 붙여 넣는다.</div></div><div class="v"><span class="b">4</span><div><b>나온 것을 읽는다.</b> 실수 목록 일곱과 대조한다.</div></div><div class="v"><span class="b">5</span><div><b>build 하고 run 한다.</b> 안 되면 로그를 본다.</div></div></div><div class="keymsg"><span class="k">막히면</span><div><b>4번으로 돌아간다.</b> 대개 실수 목록 안에 답이 있다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="점검">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH9</span><span class="dot"></span>확인</div>
-  <h2 class="s-title sm">띄운 뒤 확인할 셋</h2>
-  <div class="rule"></div>
-  <div class="body">
-<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">세 가지를 확인한다</span></div><pre><code>$ docker ps                              <span class="cm">① 떴나</span>
-$ curl http://127.0.0.1:8000/            <span class="cm">② 답하나</span>
-$ docker logs app --tail 20              <span class="cm">③ 안에서 뭐라 하나</span></code></pre></div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div><b>②가 제일 중요하다.</b> 떠 있기만 하고 답 안 하는 것이 흔하다.</div></div></div><div class="keymsg"><span class="k">셋을 다 본다</span><div>하나만 보고 넘어가면 <b>발표 자리에서</b> 안 되는 것을 만난다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="안 될 때">
+<section class="slide" data-title="막히면">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH9</span><span class="dot"></span>진단</div>
   <h2 class="s-title sm">증상별로 어디를 보나</h2>
@@ -1586,27 +1689,27 @@ $ docker logs app --tail 20              <span class="cm">③ 안에서 뭐라 �
 <div class="ctable"><table>
   <thead><tr><th>증상</th><th>먼저 볼 곳</th></tr></thead>
   <tbody>
-  <tr><td class="hl">바로 <code>Exited</code></td><td class="hl"><code>docker logs</code> — 시작하다 죽은 이유가 있다</td></tr>
+  <tr><td class="hl">바로 <code>Exited</code></td><td class="hl"><code>docker compose logs 서비스</code> — 죽은 이유가 있다</td></tr>
   <tr><td class="hl"><code>Up</code> 인데 응답 없음</td><td class="hl">로그의 <code>listening on</code> 줄 — <code>127.0.0.1</code> 인가</td></tr>
-  <tr><td>포트 오류</td><td><code>docker ps</code> — 그 번호를 누가 쥐고 있나</td></tr>
-  <tr><td>파일이 없다고 함</td><td><code>docker exec … ls</code> — 상자 안에 들어갔나</td></tr>
-  <tr><td>빌드가 안 됨</td><td>오류 줄의 <code>[n/m]</code> — 몇 번째 단계에서 죽었나</td></tr>
+  <tr><td>포트가 이미 쓰인다고 함</td><td><code>lsof -nP -iTCP:3000 -sTCP:LISTEN</code></td></tr>
+  <tr><td>load 한 것이 안 뜸</td><td><code>docker image inspect</code> — CPU 종류가 맞나</td></tr>
+  <tr><td>빌드가 안 됨</td><td>오류 줄의 <code>[n/m]</code> — 몇 번째 단계인가</td></tr>
   </tbody></table></div><div class="keymsg"><span class="k">공통점</span><div><b>거의 다 로그에 있다.</b> 짐작하기 전에 먼저 본다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="조별 과제">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH9</span><span class="dot"></span>과제</div>
-  <h2 class="s-title sm">조가 낼 것</h2>
+  <h2 class="s-title sm">조가 낼 것 셋</h2>
   <div class="rule"></div>
   <div class="body">
 <div class="ctable"><table>
   <thead><tr><th>무엇</th><th>내용</th></tr></thead>
   <tbody>
-  <tr><td class="hl">여섯 칸</td><td class="hl">담을 프로그램의 버전 · 라이브러리 · 시작 명령 · 포트 · 데이터 · 키</td></tr>
-  <tr><td>Dockerfile</td><td>Codex 에게 받아 <b>고친 것</b>. 무엇을 왜 고쳤는지 한 줄씩</td></tr>
-  <tr><td class="hl">도는 화면</td><td class="hl"><code>docker ps</code> 와 실제로 답하는 화면</td></tr>
-  </tbody></table></div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div><b>고친 내역이 핵심이다.</b> 한 번에 나온 것보다 고친 것이 배운 증거다.</div></div></div><div class="keymsg"><span class="k">발표에서</span><div><b>처음에 뭐가 틀렸는지</b>를 같이 보여준다. 그게 제일 남는다.</div></div>
+  <tr><td class="hl">파일 셋</td><td class="hl"><code>images.tar</code> · <code>compose.yml</code> · <code>env.example</code></td></tr>
+  <tr><td>고친 내역</td><td>Codex 가 내놓은 것에서 <b>무엇을 왜 고쳤는지</b> 한 줄씩</td></tr>
+  <tr><td class="hl">도는 화면</td><td class="hl"><code>compose ps</code> 와 브라우저 화면</td></tr>
+  </tbody></table></div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div><b>다른 조 PC 에서 <code>load</code> 하고 띄워 본다.</b> 그게 통과 기준이다.</div></div></div><div class="keymsg"><span class="k">발표에서</span><div><b>처음에 뭐가 틀렸는지</b>를 같이 보여준다. 한 번에 된 것보다 그게 남는다.</div></div>
   </div>
 </section>
 <section class="slide section" data-title="[섹션] 정리">
