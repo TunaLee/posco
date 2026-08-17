@@ -601,7 +601,7 @@ $ ls node_modules/@next/ | grep linux
   <h2 class="s-title sm">운영체제를 나눠 쓰는 컨테이너</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="figwrap"><img src="assets/container-stack.webp" alt="컨테이너 구조도 — 인프라와 호스트 운영체제 위에 Docker 한 층이 있고 그 위에 앱 여섯 개가 나란히 올라가 있다. 게스트 운영체제가 없다"/></div><div class="keymsg"><span class="k">가벼운 이유</span><div><b>운영체제를 새로 안 올린다.</b> 밑에 있는 것을 나눠 쓴다. 그래서 몇 초에 뜨고 수십 MB 다.</div></div>
+<div class="figwrap"><img src="assets/container-apps.webp" alt="컨테이너 셋이 나란히 있는 구조도. 컨테이너 1은 Next.js 앱으로 앱 코드·node_modules·환경변수·포트 3000 을 담고, 2는 PostgreSQL 로 데이터베이스·데이터 볼륨·포트 5432 를, 3은 MCP 서버로 서버 코드·의존 라이브러리·포트 8000 을 담는다. 그 아래로 Docker 이미지(Alpine Linux), Docker 엔진, 호스트 운영체제, 물리 서버가 깔려 있다"/></div><div class="keymsg"><span class="k">게스트 운영체제가 없다</span><div>앞 그림과 견주면 <b>한 층이 빠졌다</b>. 밑에 있는 것을 나눠 쓰니 몇 초에 뜬다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="나눠 주는 범위">
