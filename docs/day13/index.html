@@ -558,7 +558,20 @@ $ ls node_modules/@next/ | grep linux
   <h2 class="s-title sm">이름이 컨테이너인 이유</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="vlist"><div class="v"><span class="b">&rarr;</span><div>배에 싣는 <b>네모난 화물 상자</b>에서 온 말이다.</div></div><div class="v"><span class="b">&rarr;</span><div>상자 규격이 하나로 정해지자 <b>안에 무엇이 들었는지 몰라도</b> 배·기차·트럭이 다 실었다.</div></div><div class="v"><span class="b">&#9733;</span><div>컨테이너도 같다. <b>겉모양이 하나라</b> 내 PC · 사내 서버 · 클라우드가 다 받는다.</div></div></div><div class="keymsg"><span class="k">규격이 값을 한다</span><div>안에 파이썬이 들었는지 자바가 들었는지 <b>받는 쪽은 몰라도 된다</b>.</div></div>
+<div class="duo">
+  <div class="side">
+    <div class="tagline">화물 컨테이너</div>
+    <img src="assets/containers.webp" alt="항만에 똑같은 규격의 화물 컨테이너 수백 개가 층층이 쌓여 있는 사진">
+    <h3>규격이 하나다</h3>
+    <p>안에 무엇이 들었는지 몰라도<br/>배 · 기차 · 트럭이 다 싣는다.</p>
+  </div>
+  <div class="side">
+    <div class="tagline">Docker</div>
+    <img src="assets/docker-logo.svg" alt="컨테이너를 등에 싣고 있는 Docker 고래 로고">
+    <h3>같은 생각을 프로그램에</h3>
+    <p>안에 파이썬이 들었는지 자바가 들었는지<br/>받는 쪽은 몰라도 된다.</p>
+  </div>
+</div><div class="keymsg"><span class="k">규격이 값을 한다</span><div><b>겉모양이 하나라</b> 내 PC · 사내 서버 · 클라우드가 다 받는다. 사진 &mdash; Port of Rotterdam, AgainErick, CC BY-SA 4.0</div></div>
   </div>
 </section>
 <section class="slide" data-title="로고">
@@ -588,7 +601,7 @@ $ ls node_modules/@next/ | grep linux
   <h2 class="s-title sm">운영체제를 나눠 쓰는 컨테이너</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="figwrap"><img src="assets/container-apps.webp" alt="컨테이너 셋이 나란히 있는 구조도. 컨테이너 1은 Next.js 앱으로 앱 코드·node_modules·환경변수·포트 3000 을 담고, 2는 PostgreSQL 로 데이터베이스·데이터 볼륨·포트 5432 를, 3은 MCP 서버로 서버 코드·의존 라이브러리·포트 8000 을 담는다. 그 아래로 Docker 이미지(Alpine Linux), Docker 엔진, 호스트 운영체제, 물리 서버가 깔려 있다"/></div><div class="keymsg"><span class="k">게스트 운영체제가 없다</span><div>앞 그림과 견주면 <b>한 층이 빠졌다</b>. 밑에 있는 것을 나눠 쓰니 몇 초에 뜬다.</div></div>
+<div class="figwrap"><img src="assets/container-stack.webp" alt="컨테이너 구조도 — 인프라와 호스트 운영체제 위에 Docker 한 층이 있고 그 위에 앱 여섯 개가 나란히 올라가 있다. 게스트 운영체제가 없다"/></div><div class="keymsg"><span class="k">가벼운 이유</span><div><b>운영체제를 새로 안 올린다.</b> 밑에 있는 것을 나눠 쓴다. 그래서 몇 초에 뜨고 수십 MB 다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="나눠 주는 범위">
