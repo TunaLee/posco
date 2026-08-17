@@ -384,7 +384,7 @@
   <div class="ghost">00</div>
   <div class="seyebrow">CHAPTER 00</div>
   <h2>격리 — 가상환경에서 컨테이너까지</h2>
-  <div class="agenda"><span>한 자리에 한 버전</span><span>가상환경의 한계 셋</span><span>컨테이너가 넘는 곳</span></div>
+  <div class="agenda"><span>한 곳에 한 버전</span><span>가상환경의 한계 셋</span><span>PC 에 없는 파이썬 버전 쓰기</span></div>
 </section>
 <section class="slide" data-title="안 되는 상황">
   <div class="coord"><b></b> / <span class="tot"></span></div>
@@ -392,23 +392,16 @@
   <h2 class="s-title sm">PC 마다 다른 실행 환경</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="twopane">
-  <div class="pane good"><h4>만들 때 쓴 PC</h4>
-    <p>파이썬 3.12 · pandas 3.0 설치됨<br/>데이터는 <code>~/work/data.csv</code><br/>키는 환경변수에 넣어 둠</p>
-    <div class="mini">잘 돈다</div></div>
-  <div class="pane bad"><h4>옮겨 간 PC</h4>
-    <p>파이썬 3.9 · pandas 없음<br/>그 경로에 파일이 없음<br/>키가 뭔지 모름</p>
-    <div class="mini">첫 줄에서 멈춘다</div></div>
-</div><div class="keymsg"><span class="k">오늘 따라갈 순서</span><div>이 문제를 <b>가상환경 &rarr; 컨테이너</b> 순서로 하나씩 풀어 간다.</div></div>
+<div class="figwrap"><img src="assets/env-mismatch.png" alt="같은 코드를 세 곳에서 돌린 그림. 내 로컬은 macOS·Node 18.16·React 18.2 로 실행 성공, 배포한 서버는 Amazon Linux 2·Node 16.14·React 17.0 에 패키지가 빠져 500 오류와 Cannot find module, 동료 PC 는 Windows 10·Node 20.11 에 환경변수가 없어 실행 실패가 난다"/></div><div class="keymsg"><span class="k">오늘 따라갈 순서</span><div>같은 코드를 옮겼을 뿐인데 셋이 다 다르게 돈다. 이 문제를 <b>가상환경 &rarr; 컨테이너</b> 순서로 푼다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="한 버전만">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>1단계</div>
-  <h2 class="s-title sm">한 자리에 한 버전</h2>
+  <h2 class="s-title sm">한 곳에 한 버전</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">같은 자리에 다른 버전을 깔아 본다</span></div><pre><code>$ pip install numpy==1.26.4
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">같은 곳에 다른 버전을 깔아 본다</span></div><pre><code>$ pip install numpy==1.26.4
 $ python -c "import numpy; print(numpy.__version__)"
 1.26.4
 
@@ -438,15 +431,52 @@ $ B/bin/python -c "import numpy; print(numpy.__version__)"
   <h2 class="s-title sm">가상환경이 갈라 주는 층</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="plot"><svg viewBox="0 0 1100 210">
-  <rect x="40" y="24" width="1020" height="46" rx="10" fill="#EFEAFF" stroke="#3A1FC9" stroke-width="1.6"/>
-  <text x="550" y="53" font-size="14" font-weight="800" fill="#3A1FC9" text-anchor="middle">파이썬 라이브러리 — 가상환경이 갈라 준다</text>
-  <rect x="40" y="82" width="1020" height="40" rx="10" fill="#F4F3FA" stroke="#C9C4E4" stroke-width="1.4" stroke-dasharray="5 4"/>
-  <text x="550" y="107" font-size="13" font-weight="700" fill="#8E8AAC" text-anchor="middle">파이썬 자체 (버전) — 못 바꾼다</text>
-  <rect x="40" y="130" width="1020" height="40" rx="10" fill="#F4F3FA" stroke="#C9C4E4" stroke-width="1.4" stroke-dasharray="5 4"/>
-  <text x="550" y="155" font-size="13" font-weight="700" fill="#8E8AAC" text-anchor="middle">운영체제 도구 · 데이터 경로 — 손도 못 댄다</text>
-  <text x="550" y="196" font-size="12" font-weight="700" fill="#8E8AAC" text-anchor="middle">맨 위 한 층만 나눠 준다</text>
-</svg></div><div class="keymsg"><span class="k">그래서</span><div>가상환경은 <b>맨 위 한 층</b>만 나눈다. 아래 두 층에서 문제가 남는다.</div></div>
+<div class="plot"><svg viewBox="0 0 1116 330">
+  <text x="118" y="20" font-size="11" font-weight="800" fill="#8E8AAC" text-anchor="middle">층</text>
+  <text x="588" y="20" font-size="11" font-weight="800" fill="#8E8AAC" text-anchor="middle">무엇이 들어 있나</text>
+
+  <rect x="40" y="30" width="156" height="66" rx="10" fill="#3A1FC9"/>
+  <text x="118" y="61" font-size="13.5" font-weight="800" fill="#fff" text-anchor="middle">라이브러리</text>
+  <text x="118" y="80" font-size="10.5" fill="#C9BEFF" text-anchor="middle">numpy · pandas</text>
+  <rect x="206" y="30" width="378" height="66" rx="10" fill="#EFEAFF" stroke="#3A1FC9" stroke-width="1.8"/>
+  <text x="395" y="56" font-size="12" font-weight="800" fill="#3A1FC9" text-anchor="middle">프로젝트 A</text>
+  <text x="395" y="78" font-size="13" font-family="ui-monospace,monospace" fill="#16142B" text-anchor="middle">numpy 2.5.2</text>
+  <rect x="592" y="30" width="378" height="66" rx="10" fill="#EFEAFF" stroke="#3A1FC9" stroke-width="1.8"/>
+  <text x="781" y="56" font-size="12" font-weight="800" fill="#3A1FC9" text-anchor="middle">프로젝트 B</text>
+  <text x="781" y="78" font-size="13" font-family="ui-monospace,monospace" fill="#16142B" text-anchor="middle">numpy 1.26.4</text>
+  <path d="M984 30 h14 v66 h-14" stroke="#3A1FC9" stroke-width="1.8" fill="none"/>
+  <text x="1050" y="57" font-size="11.5" font-weight="800" fill="#3A1FC9" text-anchor="middle">가상환경이</text>
+  <text x="1050" y="74" font-size="11.5" font-weight="800" fill="#3A1FC9" text-anchor="middle">나눈다</text>
+
+  <rect x="40" y="108" width="156" height="58" rx="10" fill="#EDEBF6"/>
+  <text x="118" y="142" font-size="13.5" font-weight="800" fill="#5B5580" text-anchor="middle">파이썬 자체</text>
+  <rect x="206" y="108" width="764" height="58" rx="10" fill="#F7F6FB" stroke="#C9C4E4" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="588" y="142" font-size="13" font-family="ui-monospace,monospace" fill="#8E8AAC" text-anchor="middle">Python 3.12 &nbsp;— 하나뿐이다</text>
+
+  <rect x="40" y="178" width="156" height="58" rx="10" fill="#EDEBF6"/>
+  <text x="118" y="205" font-size="13.5" font-weight="800" fill="#5B5580" text-anchor="middle">운영체제</text>
+  <text x="118" y="222" font-size="13.5" font-weight="800" fill="#5B5580" text-anchor="middle">도구</text>
+  <rect x="206" y="178" width="764" height="58" rx="10" fill="#F7F6FB" stroke="#C9C4E4" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="588" y="212" font-size="12.5" fill="#8E8AAC" text-anchor="middle">폰트 · 그림 처리 라이브러리 · 글자 인식 도구</text>
+
+  <rect x="40" y="248" width="156" height="58" rx="10" fill="#EDEBF6"/>
+  <text x="118" y="282" font-size="13.5" font-weight="800" fill="#5B5580" text-anchor="middle">운영체제</text>
+  <rect x="206" y="248" width="764" height="58" rx="10" fill="#F7F6FB" stroke="#C9C4E4" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="588" y="282" font-size="13" font-family="ui-monospace,monospace" fill="#8E8AAC" text-anchor="middle">macOS &nbsp;— 내 컴퓨터 것을 그대로 쓴다</text>
+
+  <path d="M984 108 h14 v198 h-14" stroke="#C9C4E4" stroke-width="1.5" fill="none"/>
+  <text x="1050" y="198" font-size="11.5" font-weight="800" fill="#8E8AAC" text-anchor="middle">셋은 다</text>
+  <text x="1050" y="215" font-size="11.5" font-weight="800" fill="#8E8AAC" text-anchor="middle">같이 쓴다</text>
+</svg></div><div class="keymsg"><span class="k">위 한 층만</span><div>아래 셋은 <b>내 컴퓨터 것을 그대로</b> 쓴다. 그래서 아래 셋에서 문제가 남는다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="가상환경 안">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>2단계</div>
+  <h2 class="s-title sm">가상환경 안의 구조</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="figwrap"><img src="assets/venv-layers.png" alt="가상환경 구조도. 내 컴퓨터의 운영체제 층 위에 전역 환경과 프로젝트 A 가 나란히 있고, 프로젝트 A 안의 .venv 가 파이썬 실행 파일과 site-packages, pip 를 따로 갖는다. 운영체제는 하나로 공유하며 복사하지 않는다"/></div><div class="keymsg"><span class="k">오른쪽 위 점선</span><div>여기까지 <b>같이 감싸면 컨테이너</b>가 된다. 그림에 이미 적혀 있다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="한계 하나">
@@ -478,7 +508,7 @@ $ which libgl               <span class="cm">그림 처리 라이브러리</span
 <section class="slide" data-title="한계 셋">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>3단계</div>
-  <h2 class="s-title sm">한계 ③ 옮길 때 안 따라오는 것</h2>
+  <h2 class="s-title sm">한계 ③ 옮길 때의 문제</h2>
   <div class="rule"></div>
   <div class="body">
 <div class="twopane">
@@ -510,7 +540,7 @@ lru-cache   11.3.5, 6.0.0   <span class="cm">← 가상환경 안에서는 안 �
 <section class="slide" data-title="컨테이너">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>4단계</div>
-  <h2 class="s-title sm">컨테이너가 넘는 곳</h2>
+  <h2 class="s-title sm">PC 에 없는 파이썬 버전 쓰기</h2>
   <div class="rule"></div>
   <div class="body">
 <div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">내 컴퓨터에 없는 파이썬을 쓴다</span></div><pre><code>$ python3 --version                                  <span class="cm">← 내 맥에 깔린 것</span>
@@ -525,7 +555,7 @@ Python 3.13.15                                       <span class="cm">← 둘을
 <section class="slide" data-title="안쪽">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>4단계</div>
-  <h2 class="s-title sm">딴 리눅스가 든 상자 안</h2>
+  <h2 class="s-title sm">상자 안의 운영체제</h2>
   <div class="rule"></div>
   <div class="body">
 <div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">상자 안의 운영체제를 확인한다</span></div><pre><code>$ docker run --rm python:3.12-slim sh -c 'cat /etc/os-release | head -2'
@@ -843,7 +873,7 @@ Images        13        3   1.564GB   2.658MB</code></pre></div><div class="keym
 <section class="slide" data-title="세 칸 찾기">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>준비</div>
-  <h2 class="s-title sm">내 것에서 여섯 칸 찾아내기</h2>
+  <h2 class="s-title sm">앱에서 여섯 칸 찾아내기</h2>
   <div class="rule"></div>
   <div class="body">
 <div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">앞의 셋은 명령 세 줄로 나온다</span></div><pre><code>$ python --version
@@ -1089,7 +1119,7 @@ cat: can't open '/memo.txt': No such file or directory   <span class="cm">← �
 <section class="slide" data-title="볼륨">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>실측</div>
-  <h2 class="s-title sm">볼륨을 붙인 뒤</h2>
+  <h2 class="s-title sm">볼륨을 붙인 결과</h2>
   <div class="rule"></div>
   <div class="body">
 <div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">상자를 지웠는데 내용이 살아 있다</span></div><pre><code>$ docker run -d --name memo1 -v memodata:/data nginx:1.27-alpine
@@ -1117,7 +1147,7 @@ $ docker volume rm memodata      <span class="cm">← 이건 진짜로 데이터
 <section class="slide" data-title="폴더 물리기">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>실측</div>
-  <h2 class="s-title sm">내 폴더를 상자에 비추기</h2>
+  <h2 class="s-title sm">PC 폴더를 상자에 물리기</h2>
   <div class="rule"></div>
   <div class="body">
 <div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">양쪽이 같이 바뀐다</span></div><pre><code>$ echo "호스트에서 쓴 파일" &gt; note.txt
