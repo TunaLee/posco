@@ -363,7 +363,7 @@
   <div class="aperture"></div><div class="ring"></div>
   <div class="wrap">
     <div class="kick"><span class="pill">WEEK 3 · DAY 6</span><span>MCP 서버</span></div>
-    <h1>내가 만든 서버를<br/>남이 쓰게 하기</h1>
+    <h1>서버로 떼어 내고<br/>붙여 쓰기</h1>
   </div>
 </section>
 <section class="slide" data-title="오늘의 일정">
@@ -374,17 +374,17 @@
   <div class="body">
     <div class="cards c4">
       <div class="card"><span class="n">CH0~1</span><h3>파일로 떼어 내고 띄우기</h3><p>노트북 안에 있던 서버를 파일로 옮기고 실제로 돌린다. 주소가 생긴다.</p></div>
-      <div class="card"><span class="n">CH2~3</span><h3>도구를 잘 만드는 법과 권한</h3><p>모델이 읽는 것은 이름·설명·스키마뿐이다. 만들 도구를 고르는 것이 권한을 정하는 일이다.</p></div>
-      <div class="card"><span class="n">CH4~6</span><h3>여럿을 한 앱에 · 컨테이너</h3><p>조별 서버를 한 호스트에 붙이고, 컨테이너로 싸서 compose 로 한 번에 올린다.</p></div>
+      <div class="card"><span class="n">CH2~3</span><h3>도구 설계와 권한 경계</h3><p>모델이 읽는 것은 이름·설명·스키마뿐이다. 만들 도구를 고르는 것이 권한을 정하는 일이다.</p></div>
+      <div class="card"><span class="n">CH4~6</span><h3>서버 여럿 붙이기와 컨테이너</h3><p>조별 서버를 한 호스트에 붙이고, 컨테이너로 싸서 compose 로 한 번에 올린다.</p></div>
       <div class="card"><span class="n">CH7~8</span><h3>사내망 적용과 조별 과제</h3><p>바깥이 막힌 곳에서 쓰는 법을 보고, 조가 낼 서버를 설계한다.</p></div>
     </div>
   </div>
 </section>
-<section class="slide section" data-title="[섹션] 노트북 안에 있던 서버">
+<section class="slide section" data-title="[섹션] 서버를 떼어 내야 하는 까닭">
   <div class="ghost">00</div>
   <div class="seyebrow">CHAPTER 00</div>
-  <h2>노트북 안에 있던 서버</h2>
-  <div class="agenda"><span>어제까지</span><span>떼어 낼 까닭</span></div>
+  <h2>서버를 떼어 내야 하는 까닭</h2>
+  <div class="agenda"><span>어제까지의 서버</span><span>떼어 낼 까닭 셋</span></div>
 </section>
 <section class="slide" data-title="어제까지">
   <div class="coord"><b></b> / <span class="tot"></span></div>
@@ -397,16 +397,16 @@ mcp = <span class="st">FastMCP</span>(<span class="s">'공정 도우미'</span>)
 
 <span class="cm"># 같은 노트북 안에서 바로 붙었다</span>
 <span class="kw">async with</span> <span class="st">Client</span>(mcp) <span class="kw">as</span> client:
-    <span class="kw">await</span> client.list_tools()</code></pre></div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>서버가 <b>변수 하나</b>였다. 네트워크를 안 탔다.</div></div><div class="v"><span class="b">&#9733;</span><div>그래서 붙는 것이 확실했다. 방화벽도 포트도 없었다.</div></div></div><div class="keymsg"><span class="k">그런데</span><div>노트북을 닫으면 <b>사라진다</b>. 나 말고는 아무도 못 쓴다.</div></div>
+    <span class="kw">await</span> client.list_tools()</code></pre></div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>서버가 <b>변수 하나</b>였다. 네트워크를 안 탔다.</div></div><div class="v"><span class="b">&#9733;</span><div>그래서 붙는 것이 확실했다. 방화벽도 포트도 없었다.</div></div></div><div class="keymsg"><span class="k">그런데</span><div>노트북을 닫으면 <b>사라진다</b>. 다른 앱은 붙을 데가 없다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="떼어 낼 까닭">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>까닭</div>
-  <h2 class="s-title sm">파일로 떼어 내야 하는 것 셋</h2>
+  <h2 class="s-title sm">파일로 떼어 내야 하는 까닭 셋</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="vlist"><div class="v"><span class="b">1</span><div><b>계속 돌아야 한다</b> &mdash; 노트북을 닫아도 서버는 살아 있어야 남이 쓴다.</div></div><div class="v"><span class="b">2</span><div><b>주소가 있어야 한다</b> &mdash; 붙으려면 어디로 가야 하는지 알아야 한다.</div></div><div class="v"><span class="b">3</span><div><b>어디서든 같아야 한다</b> &mdash; 파이썬 버전과 깔린 꾸러미가 사람마다 다르다.</div></div></div><div class="keymsg"><span class="k">오늘 하는 일</span><div>이 셋을 차례로 푼다 &mdash; <b>파일</b>로 떼고, <b>띄워</b> 주소를 얻고, <b>컨테이너</b>로 싼다.</div></div>
+<div class="vlist"><div class="v"><span class="b">1</span><div><b>계속 돌아야 한다</b> &mdash; 노트북을 닫아도 서버는 살아 있어야 붙을 수 있다.</div></div><div class="v"><span class="b">2</span><div><b>주소가 있어야 한다</b> &mdash; 붙으려면 어디로 가야 하는지 알아야 한다.</div></div><div class="v"><span class="b">3</span><div><b>어디서든 같아야 한다</b> &mdash; 파이썬 버전과 깔린 꾸러미가 사람마다 다르다.</div></div></div><div class="keymsg"><span class="k">오늘 하는 일</span><div>이 셋을 차례로 푼다 &mdash; <b>파일</b>로 떼고, <b>띄워</b> 주소를 얻고, <b>컨테이너</b>로 싼다.</div></div>
   </div>
 </section>
 <section class="slide section" data-title="[섹션] 파일로 떼어 내고 띄우기">
@@ -442,7 +442,7 @@ mcp = <span class="st">FastMCP</span>(<span class="s">"공정 도우미"</span>)
   <h2 class="s-title sm">mcp.run 이 하는 일</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="vlist"><div class="v"><span class="b">&rarr;</span><div><b>귀를 연다</b> &mdash; 붙으러 오는 클라이언트를 기다린다.</div></div><div class="v"><span class="b">&rarr;</span><div><b>안 끝난다</b> &mdash; 서버는 계속 도는 것이라 그 줄에서 멈춰 있다.</div></div><div class="v"><span class="b">&#9733;</span><div>그래서 노트북에서 그냥 부르면 <b>셀이 안 끝난다</b>. 딴 갈래로 띄워야 한다.</div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">노트북에서 띄울 때</span></div><pre><code>threading.<span class="st">Thread</span>(
+<div class="vlist"><div class="v"><span class="b">&rarr;</span><div><b>기다린다</b> &mdash; 붙으러 오는 클라이언트를 받으려고 그 자리에 머문다.</div></div><div class="v"><span class="b">&rarr;</span><div><b>안 끝난다</b> &mdash; 서버는 계속 도는 것이라 그 줄에서 멈춰 있다.</div></div><div class="v"><span class="b">&#9733;</span><div>그래서 노트북에서 그냥 부르면 <b>셀이 안 끝난다</b>. 따로 떼어 돌려야 한다.</div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">노트북에서 띄울 때</span></div><pre><code>threading.<span class="st">Thread</span>(
     target=<span class="kw">lambda</span>: srv.run(transport=<span class="s">'http'</span>, port=<span class="n">8931</span>),
     daemon=<span class="kw">True</span>).start()</code></pre></div><div class="keymsg"><span class="k">전송 방식은 인자로</span><div><code>transport</code> 를 안 주면 <b>stdio</b>, 주면 <b>HTTP</b> 다. 몸통은 안 바뀐다.</div></div>
   </div>
@@ -549,7 +549,7 @@ Q  3호기 상태 좀 봐줘
 
 <b>길을 알려 준 도구</b>
   제공된 정보에 따르면 <b>1호기, 2호기, 3호기, 4호기</b> 만 존재합니다.
-  ### 현재 가능한 기기별 불량률 (최신 데이터, <b>가상 데이터로 대체</b>… &nbsp;&nbsp;← 이어 붙이려 든다</div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div>둘 다 <b>지어내려 든다</b>. 도구가 값을 안 주면 모델은 빈자리를 메우려 한다.</div></div></div><div class="keymsg"><span class="k">도구의 몫</span><div>없으면 <b>없다고 돌려준다</b>. 「무엇이 있는지」까지 같이 주면 짐작할 여지가 준다.</div></div>
+  ### 현재 가능한 기기별 불량률 (최신 데이터, <b>가상 데이터로 대체</b>… &nbsp;&nbsp;← 이어 붙이려 든다</div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div>둘 다 <b>지어내려 든다</b>. 도구가 값을 안 주면 모델은 빈자리를 메우려 한다.</div></div></div><div class="keymsg"><span class="k">도구의 몫</span><div>없으면 <b>없다고 돌려준다</b>. 「무엇이 있는지」까지 같이 주면 짐작할 여지가 줄어든다.</div></div>
   </div>
 </section>
 <section class="slide section" data-title="[섹션] 도구로 정하는 권한 경계">
@@ -606,7 +606,7 @@ Q  3호기 상태 좀 봐줘
     <span class="kw">if</span> <span class="kw">not</span> <span class="n">1</span> &lt;= number &lt;= len(NOTES):
         <span class="kw">return</span> <span class="s">'1 부터 %d 사이 번호를 준다'</span> % len(NOTES)
     TRASH.append(NOTES.pop(number - <span class="n">1</span>))   <span class="cm"># ← 버리지 않는다</span>
-    <span class="kw">return</span> <span class="s">'지웠다. 되살리려면 되살리기 도구를 쓴다'</span></code></pre></div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div><b>지우는 도구와 되살리는 도구를 짝으로</b> 만든다. 하나만 만들면 사고가 사고로 끝난다.</div></div></div><div class="keymsg"><span class="k">범위도 좁힌다</span><div>「번호 하나」만 받는다. 「조건에 맞는 것 전부」를 받으면 <b>한 번에 다 날아간다</b>.</div></div>
+    <span class="kw">return</span> <span class="s">'지웠다. 되살리려면 되살리기 도구를 쓴다'</span></code></pre></div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div><b>지우는 도구와 되살리는 도구를 짝으로</b> 만든다. 되살리기가 없으면 실수 한 번이 그대로 남는다.</div></div></div><div class="keymsg"><span class="k">범위도 좁힌다</span><div>「번호 하나」만 받는다. 「조건에 맞는 것 전부」를 받으면 <b>한 번에 다 날아간다</b>.</div></div>
   </div>
 </section>
 <section class="slide" data-title="표시">
@@ -637,10 +637,10 @@ LIMIT = <span class="n">20</span>
 돌려준 줄 수: 20            ← 100건을 달라고 해도 20줄</div><div class="keymsg"><span class="k">먼저 적는다</span><div>무엇을 열지보다 <b>무엇을 안 열지</b>를 먼저 정한다. 그게 조별 과제의 다섯째 칸이다.</div></div>
   </div>
 </section>
-<section class="slide section" data-title="[섹션] 서버 여럿을 한 앱에">
+<section class="slide section" data-title="[섹션] 서버 여럿을 한 앱에 붙이기">
   <div class="ghost">04</div>
   <div class="seyebrow">CHAPTER 04</div>
-  <h2>서버 여럿을 한 앱에</h2>
+  <h2>서버 여럿을 한 앱에 붙이기</h2>
   <div class="agenda"><span>조마다 서버</span><span>이름 충돌</span><span>접두어</span></div>
 </section>
 <section class="slide" data-title="조마다 서버">
@@ -694,7 +694,7 @@ team2_defect_rate → [2조] 3호기 99.9%</div><div class="keymsg"><span class=
 <div class="vlist"><div class="v"><span class="b">&rarr;</span><div>조별 서버는 <b>딴 프로세스</b>로 뜬다. 한 조 코드가 터져도 그 조만 죽는다.</div></div><div class="v"><span class="b">&rarr;</span><div>호스트는 그 도구만 실패로 처리하고 <b>나머지로 답한다</b>.</div></div><div class="v"><span class="b">&#9733;</span><div>발표 중 사고를 생각하면 이게 크다. 한 조 때문에 전체가 멈추지 않는다.</div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">호스트 쪽 대비</span></div><pre><code><span class="kw">try</span>:
     out = (<span class="kw">await</span> client.call_tool(name, args)).content[<span class="n">0</span>].text
 <span class="kw">except</span> Exception <span class="kw">as</span> e:
-    out = <span class="s">'도구가 실패했다: %s'</span> % e</code></pre></div><div class="keymsg"><span class="k">한 줄로</span><div><b>따로 도는 것</b>이 컨테이너로 가는 이유이기도 하다.</div></div>
+    out = <span class="s">'도구가 실패했다: %s'</span> % e</code></pre></div><div class="keymsg"><span class="k">한 줄로</span><div><b>따로 돌기 때문에 따로 죽는다.</b> 컨테이너로 싸는 까닭도 같다.</div></div>
   </div>
 </section>
 <section class="slide section" data-title="[섹션] 컨테이너로 싸기">
@@ -706,7 +706,7 @@ team2_defect_rate → [2조] 3호기 99.9%</div><div class="keymsg"><span class=
 <section class="slide" data-title="안 되는 문제">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>문제</div>
-  <h2 class="s-title sm">내 PC 에서만 도는 문제</h2>
+  <h2 class="s-title sm">한 대에서만 도는 문제</h2>
   <div class="rule"></div>
   <div class="body">
 <div class="twopane">
@@ -764,7 +764,7 @@ team2_defect_rate → [2조] 3호기 99.9%</div><div class="keymsg"><span class=
  =&gt; naming to docker.io/library/공정도우미:1.0
 
 $ docker run -p 8000:8000 공정도우미:1.0
-Uvicorn running on http://0.0.0.0:8000</code></pre></div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div><code>-t</code> 는 이름표다. <code>공정도우미:1.0</code> 처럼 <b>이름:버전</b>으로 붙인다.</div></div><div class="v"><span class="b">&rarr;</span><div><code>-p 8000:8000</code> 은 <b>바깥 포트 : 안쪽 포트</b>다. 앞이 내 PC, 뒤가 상자 안.</div></div></div><div class="keymsg"><span class="k">한 가지 함정</span><div>상자 안에서는 <code>127.0.0.1</code> 이 아니라 <b><code>0.0.0.0</code></b> 으로 열어야 밖에서 붙는다.</div></div>
+Uvicorn running on http://0.0.0.0:8000</code></pre></div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div><code>-t</code> 는 이름표다. <code>공정도우미:1.0</code> 처럼 <b>이름:버전</b>으로 붙인다.</div></div><div class="v"><span class="b">&rarr;</span><div><code>-p 8000:8000</code> 은 <b>바깥 포트 : 안쪽 포트</b>다. 앞이 바깥, 뒤가 상자 안.</div></div></div><div class="keymsg"><span class="k">한 가지 함정</span><div>상자 안에서는 <code>127.0.0.1</code> 이 아니라 <b><code>0.0.0.0</code></b> 으로 열어야 밖에서 붙는다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="무엇이 들었나">
@@ -781,13 +781,13 @@ $ docker exec -it 공정도우미 sh      <span class="cm"># 상자 안으로 �
 # ls /app
 requirements.txt  server.py
 # python -c "import pandas; print(pandas.__version__)"
-3.0.5</code></pre></div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div>상자 안에는 <b>내가 넣은 것만</b> 있다. 내 PC 의 다른 파일은 안 보인다.</div></div></div><div class="keymsg"><span class="k">그래서 안전하기도 하다</span><div>서버가 잘못 짜여도 <b>상자 밖 파일</b>은 못 건드린다.</div></div>
+3.0.5</code></pre></div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div>상자 안에는 <b>넣은 것만</b> 있다. 바깥 파일은 안 보인다.</div></div></div><div class="keymsg"><span class="k">그래서 안전하기도 하다</span><div>서버가 잘못 짜여도 <b>상자 밖 파일</b>은 못 건드린다.</div></div>
   </div>
 </section>
-<section class="slide section" data-title="[섹션] compose 로 여럿을 한 번에">
+<section class="slide section" data-title="[섹션] compose 로 여러 서버 띄우기">
   <div class="ghost">06</div>
   <div class="seyebrow">CHAPTER 06</div>
-  <h2>compose 로 여럿을 한 번에</h2>
+  <h2>compose 로 여러 서버 띄우기</h2>
   <div class="agenda"><span>서비스</span><span>이름으로 찾기</span><span>expose 와 ports</span></div>
 </section>
 <section class="slide" data-title="손으로 띄우면">
@@ -842,7 +842,7 @@ $ docker run -d -p 8080:8080 \
 <div class="twopane">
   <div class="pane good"><h4>expose</h4>
     <p><code>expose: ["8000"]</code></p>
-    <p>같은 compose 안의 <b>다른 서비스만</b> 붙는다.<br/>내 PC 브라우저로는 못 연다.</p>
+    <p>같은 compose 안의 <b>다른 서비스만</b> 붙는다.<br/>바깥 브라우저로는 못 연다.</p>
     <div class="mini">조별 서버 — 호스트만 쓰면 된다</div></div>
   <div class="pane bad"><h4>ports</h4>
     <p><code>ports: ["8080:8080"]</code></p>
@@ -885,7 +885,7 @@ $ docker compose down                <span class="cm"># 한 번에 내린다</sp
   [team2] find_rule({'question': '위험할 때 작업을 멈추는 근거'})
           → 산업안전보건법 제26조(작업중지 등)
 
-  답  3호기 불량률 12.0%. 근거는 제26조다.</div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div><b>한 문장에 두 조의 도구가 순서대로</b> 불렸다. 사람이 나눠 주지 않았다.</div></div></div><div class="keymsg"><span class="k">이것이 발표 장면</span><div>자기 조 도구가 <b>남의 질문에</b> 불리는 것을 눈으로 본다.</div></div>
+  답  3호기 불량률 12.0%. 근거는 제26조다.</div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div><b>한 문장에 두 조의 도구가 순서대로</b> 불렸다. 사람이 나눠 주지 않았다.</div></div></div><div class="keymsg"><span class="k">이것이 발표 장면</span><div>자기 조 도구가 <b>다른 조 질문에</b> 불리는 것을 눈으로 본다.</div></div>
   </div>
 </section>
 <section class="slide section" data-title="[섹션] 사내망에서 쓰기">
@@ -932,7 +932,7 @@ $ docker compose down                <span class="cm"># 한 번에 내린다</sp
   <div class="bstep"><div class="si">1</div><div class="sn">바깥 PC</div><div class="sd"><code>docker build -t 공정도우미:1.0 .</code></div></div>
   <div class="bstep"><div class="si">2</div><div class="sn">파일로 뽑기</div><div class="sd"><code>docker save 공정도우미:1.0 -o 공정도우미.tar</code></div></div>
   <div class="bstep"><div class="si">3</div><div class="sn">사내 PC</div><div class="sd"><code>docker load -i 공정도우미.tar</code></div></div>
-</div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div><b>빌드를 사내에서 안 한다.</b> 다 만든 것을 통째로 옮긴다. 폐쇄망에서 제일 흔한 길이다.</div></div><div class="v"><span class="b">&rarr;</span><div>옮기는 것은 승인된 반입 경로를 쓴다. 파일 하나라 <b>검사에 걸기도 쉽다</b>.</div></div></div><div class="keymsg"><span class="k">되짚어 두면</span><div>컨테이너는 <b>파일 한 개</b>로 만들 수 있다. 그것이 이 방법이 되는 까닭이다.</div></div>
+</div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div><b>빌드를 사내에서 안 한다.</b> 다 만든 것을 통째로 옮긴다. 폐쇄망에서 제일 흔한 길이다.</div></div><div class="v"><span class="b">&rarr;</span><div>옮기는 것은 승인된 반입 경로를 쓴다. 파일 하나라 <b>검사에 걸기도 쉽다</b>.</div></div></div><div class="keymsg"><span class="k">이 길이 열리는 까닭</span><div>이미지는 <b>파일 하나로 뽑힌다</b>. 옮길 것이 하나뿐이다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="프록시">
@@ -965,7 +965,7 @@ $ docker compose down                <span class="cm"># 한 번에 내린다</sp
   <tr><td>웹 호스트</td><td>강사</td><td>채팅창 · 모델 · MCP 클라이언트가 다 들어 있다</td></tr>
   <tr><td class="hl">server.py</td><td class="hl">조</td><td class="hl">도구 두셋. 다섯 칸을 채워 Codex 에게 시킨다</td></tr>
   <tr><td>붙이기</td><td>강사</td><td><code>teams/</code> 에 넣으면 접두어가 붙어 올라온다</td></tr>
-  </tbody></table></div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div><b>코드를 손으로 안 쓴다.</b> 무엇을 만들지 정하는 것이 조가 할 일이다.</div></div></div><div class="keymsg"><span class="k">발표 장면</span><div>자기 조 도구가 <b>남의 질문에</b> 불리는 것을 채팅창에서 본다.</div></div>
+  </tbody></table></div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div><b>코드를 손으로 안 쓴다.</b> 무엇을 만들지 정하는 것이 조가 할 일이다.</div></div></div><div class="keymsg"><span class="k">발표 장면</span><div>자기 조 도구가 <b>다른 조 질문에</b> 불리는 것을 채팅창에서 본다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="다섯 칸">
@@ -999,7 +999,7 @@ $ docker compose down                <span class="cm"># 한 번에 내린다</sp
   - 원시 계측값과 담당자 이름은 어떤 도구도 내보내지 않는다
   - 없는 설비를 물으면 쓸 수 있는 이름을 알려 준다
   - 각 도구 설명에 「언제 쓰는지」를 한 줄 적는다
-  - 맨 아래 mcp.run(transport="http", host="0.0.0.0", port=8000)</code></pre></div><div class="keymsg"><span class="k">「지켜야 할 것」이</span><div>오늘 배운 전부다 &mdash; <b>경계 · 친절한 에러 · 설명</b>.</div></div>
+  - 맨 아래 mcp.run(transport="http", host="0.0.0.0", port=8000)</code></pre></div><div class="keymsg"><span class="k">「지켜야 할 것」에</span><div>앞에서 잰 것이 그대로 들어간다 &mdash; <b>경계 · 친절한 에러 · 설명</b>.</div></div>
   </div>
 </section>
 <section class="slide" data-title="발표에 넣을 것">
@@ -1033,7 +1033,7 @@ $ docker compose down                <span class="cm"># 한 번에 내린다</sp
   <h2 class="s-title sm">오늘 손에 남는 것</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="vlist"><div class="v"><span class="b">1</span><div><code>mcp.run()</code> 한 줄이 서버를 띄운다. 그 순간 <b>주소가 생긴다</b>.</div></div><div class="v"><span class="b">2</span><div><code>Client()</code> 괄호 안만 바뀐다. 서버가 어디에 있든 <b>붙는 쪽은 같다</b>.</div></div><div class="v"><span class="b">3</span><div>모델이 받는 것은 <b>이름 · 설명 · 스키마</b> 셋뿐이다. 몸통은 안 간다.</div></div><div class="v"><span class="b">4</span><div>권한은 프롬프트가 아니라 <b>만들 도구를 고르는 것</b>으로 정한다.</div></div><div class="v"><span class="b">5</span><div>도구 이름은 전역이다. 서버를 여럿 붙일 때는 <b>접두어</b>로 가른다.</div></div></div><div class="keymsg"><span class="k">여섯째</span><div>컨테이너는 <b>한 덩이</b>로 싸고, compose 는 그 덩이 여럿을 <b>이름으로</b> 잇는다.</div></div>
+<div class="vlist"><div class="v"><span class="b">1</span><div><code>mcp.run()</code> 한 줄이 서버를 띄운다. 그 순간 <b>주소가 생긴다</b>.</div></div><div class="v"><span class="b">2</span><div><code>Client()</code> 괄호 안만 바뀐다. 서버가 어디에 있든 <b>붙는 쪽은 같다</b>.</div></div><div class="v"><span class="b">3</span><div>모델이 받는 것은 <b>이름 · 설명 · 스키마</b> 셋뿐이다. 몸통은 안 간다.</div></div><div class="v"><span class="b">4</span><div>권한은 프롬프트가 아니라 <b>만들 도구를 고르는 것</b>으로 정한다.</div></div><div class="v"><span class="b">5</span><div>도구 이름은 전역이다. 서버를 여럿 붙일 때는 <b>접두어</b>로 가른다.</div></div></div><div class="keymsg"><span class="k">한 가지 더</span><div>컨테이너는 <b>한 덩이</b>로 싸고, compose 는 그 덩이 여럿을 <b>이름으로</b> 잇는다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="오개념">

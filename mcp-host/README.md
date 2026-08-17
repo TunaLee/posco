@@ -16,7 +16,7 @@ mcp-host/
 
 ## 조가 낼 파일
 
-`teams/우리조/server.py` 로 넣는다. 맨 아래는 **`mcp.run()`** 한 줄로 끝낸다.
+`teams/조이름/server.py` 로 넣는다. 맨 아래는 **`mcp.run()`** 한 줄로 끝낸다.
 전송 방식은 호스트나 `Dockerfile` 이 정하므로 여기에 적지 않는다.
 
 ```python
