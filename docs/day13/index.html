@@ -586,22 +586,13 @@ $ ls node_modules/@next/ | grep linux
 </div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>2013년에 나왔다. 지금은 <b>서버에 무엇을 올릴 때 기본으로 쓰는 방식</b>이다.</div></div><div class="v"><span class="b">&rarr;</span><div>클라우드에 올리는 것도, 사내 서버에 두는 것도 대개 이 형태로 간다.</div></div><div class="v"><span class="b">&#9733;</span><div><b>규격이 하나라</b> 어디에 올려도 같은 것이 돈다.</div></div></div><div class="keymsg"><span class="k">오늘 쓰는 도구</span><div>컨테이너를 <b>만들고 띄우는</b> 도구가 Docker 다.</div></div>
   </div>
 </section>
-<section class="slide" data-title="가상머신">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>견주기</div>
-  <h2 class="s-title sm">가상머신</h2>
-  <div class="rule"></div>
-  <div class="body">
-<div class="figwrap"><img src="assets/vm-stack.webp" alt="가상머신 구조도 — 인프라 위에 하이퍼바이저가 있고 그 위에 가상머신 셋이 각각 게스트 운영체제와 앱을 따로 올리고 있다"/></div><div class="keymsg"><span class="k">먼저 있던 방법</span><div>운영체제를 <b>하나씩 통째로</b> 올린다. 되기는 하는데 뜨는 데 몇 분, 크기는 수 GB 다.</div></div>
-  </div>
-</section>
 <section class="slide" data-title="컨테이너 구조">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>견주기</div>
   <h2 class="s-title sm">컨테이너 구조</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="figwrap"><img src="assets/container-apps.webp" alt="컨테이너 셋이 나란히 있는 구조도. 컨테이너 1은 Next.js 앱으로 앱 코드·node_modules·환경변수·포트 3000 을 담고, 2는 PostgreSQL 로 데이터베이스·데이터 볼륨·포트 5432 를, 3은 MCP 서버로 서버 코드·의존 라이브러리·포트 8000 을 담는다. 그 아래로 Docker 이미지(Alpine Linux), Docker 엔진, 호스트 운영체제, 물리 서버가 깔려 있다"/></div><div class="keymsg"><span class="k">게스트 운영체제가 없다</span><div>앞 그림과 견주면 <b>한 층이 빠졌다</b>. 밑에 있는 것을 나눠 쓰니 몇 초에 뜬다.</div></div>
+<div class="figwrap"><img src="assets/container-apps.webp" alt="컨테이너 셋이 나란히 있는 구조도. 컨테이너 1은 Next.js 앱으로 앱 코드·node_modules·환경변수·포트 3000 을 담고, 2는 PostgreSQL 로 데이터베이스·데이터 볼륨·포트 5432 를, 3은 MCP 서버로 서버 코드·의존 라이브러리·포트 8000 을 담는다. 그 아래로 Docker 이미지(Alpine Linux), Docker 엔진, 호스트 운영체제, 물리 서버가 깔려 있다"/></div><div class="keymsg"><span class="k">한 상자에 한 앱</span><div>앱마다 상자를 따로 두고 <b>밑에 있는 것은 나눠 쓴다</b>. 그래서 몇 초에 뜬다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="나눠 주는 범위">
@@ -639,21 +630,21 @@ PRETTY_NAME="Debian GNU/Linux 13 (trixie)"
 NAME="Debian GNU/Linux"                              <span class="cm">← 맥이 아니라 데비안</span></code></pre></div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>운영체제 층이 들어 있으니 <b><code>apt install</code> 로 tesseract 도 깐다</b>.</div></div><div class="v"><span class="b">&#9733;</span><div>그 상태 그대로 <b>파일 하나로 옮긴다</b>. 두 벽이 다 넘어갔다.</div></div></div><div class="keymsg"><span class="k">벽 둘이 사라졌다</span><div><b>운영체제</b>와 <b>옮기기</b> &mdash; 처음의 「제 PC 에서는 잘 되는데」가 여기서 풀린다.</div></div>
   </div>
 </section>
-<section class="slide" data-title="셋 견주기">
+<section class="slide" data-title="둘 견주기">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>정리</div>
-  <h2 class="s-title sm">셋 비교</h2>
+  <h2 class="s-title sm">가상환경과 컨테이너</h2>
   <div class="rule"></div>
   <div class="body">
 <div class="ctable"><table>
-  <thead><tr><th></th><th>가상환경</th><th>컨테이너</th><th>가상머신</th></tr></thead>
+  <thead><tr><th>하고 싶은 일</th><th>가상환경</th><th>컨테이너</th></tr></thead>
   <tbody>
-  <tr><td>라이브러리를 나누나</td><td class="hl">나눈다</td><td class="hl">나눈다</td><td>나눈다</td></tr>
-  <tr><td>파이썬 버전을 바꾸나</td><td>conda 는 된다</td><td class="hl">된다</td><td>된다</td></tr>
-  <tr><td>운영체제를 바꾸나</td><td>못 바꾼다</td><td class="hl">바꾼다</td><td>바꾼다</td></tr>
-  <tr><td>통째로 옮기나</td><td>못 옮긴다</td><td class="hl">옮긴다</td><td>옮긴다</td></tr>
-  <tr><td>뜨는 시간</td><td>즉시</td><td class="hl">몇 초</td><td>몇 분</td></tr>
-  <tr><td>크기</td><td>수십 MB</td><td class="hl">수백 MB</td><td>수 GB</td></tr>
+  <tr><td>라이브러리를 프로젝트마다 나누기</td><td class="hl">된다</td><td class="hl">된다</td></tr>
+  <tr><td>파이썬 버전 바꾸기</td><td>conda 는 된다</td><td class="hl">된다</td></tr>
+  <tr><td>운영체제 도구 깔기</td><td>거의 안 된다</td><td class="hl">된다</td></tr>
+  <tr><td>통째로 옮기기</td><td>안 된다</td><td class="hl">된다</td></tr>
+  <tr><td>뜨는 시간</td><td>즉시</td><td class="hl">몇 초</td></tr>
+  <tr><td>크기</td><td>수십 MB</td><td class="hl">수백 MB</td></tr>
   </tbody></table></div><div class="keymsg"><span class="k">자리가 정해진다</span><div>가상환경으로 <b>되는 일은 그대로</b> 한다. 운영체제를 넘거나 옮길 때 컨테이너를 쓴다.</div></div>
   </div>
 </section>
@@ -697,17 +688,6 @@ NAME="Debian GNU/Linux"                              <span class="cm">← 맥이
   <div class="rule"></div>
   <div class="body">
 <div class="figwrap"><img src="assets/arch.webp" alt="Docker 공식 구조도 — 왼쪽 Client 의 docker run · build · pull 명령이 가운데 Docker 데몬으로 가고, 데몬이 이미지와 컨테이너를 다루며 오른쪽 레지스트리에서 이미지를 받아 온다"/></div><div class="keymsg"><span class="k">셋으로 나뉜다</span><div>내가 치는 <b>명령</b>, 실제로 일하는 <b>데몬</b>, 이미지가 모여 있는 <b>레지스트리</b>.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="데몬">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>동작</div>
-  <h2 class="s-title sm">Docker 데몬</h2>
-  <div class="rule"></div>
-  <div class="body">
-<div class="vlist"><div class="v"><span class="b">&rarr;</span><div><code>docker</code> 명령은 <b>부탁하는 창구</b>일 뿐이다. 일은 데몬이 한다.</div></div><div class="v"><span class="b">&rarr;</span><div>그래서 Docker 가 안 떠 있으면 <b>명령만 쳐서는 아무 일도 안 난다</b>.</div></div><div class="v"><span class="b">&#9733;</span><div><b>「Cannot connect to the Docker daemon」</b> 이 나오면 Docker 를 켜지 않은 것이다.</div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">맨 먼저 확인하는 것</span></div><pre><code>$ docker version
-Client:  Version: 29.5.2
-Server:  Version: 29.5.2      <span class="cm">← 이 줄이 나와야 켜져 있다</span></code></pre></div><div class="keymsg"><span class="k">첫 번째 점검</span><div>무엇이 안 되면 <b>서버 줄이 나오는지</b>부터 본다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="층 구조">
@@ -755,15 +735,6 @@ posco-app:1.2                220MB         47.9MB
 mcp-host-team2:latest        719MB          153MB   <span class="cm">← 무거운 라이브러리가 들었다</span></code></pre></div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div><b>바탕으로 무엇을 골랐느냐</b>가 크기를 거의 정한다.</div></div><div class="v"><span class="b">&#9733;</span><div><code>slim</code> · <code>alpine</code> 이 붙은 것이 가벼운 판이다. 사내망으로 옮길 때 크기가 곧 시간이다.</div></div></div><div class="keymsg"><span class="k">고르는 법</span><div>특별한 이유가 없으면 <b>slim</b> 을 쓴다. Codex 에게도 그렇게 시킨다.</div></div>
   </div>
 </section>
-<section class="slide" data-title="레지스트리">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>보관</div>
-  <h2 class="s-title sm">레지스트리</h2>
-  <div class="rule"></div>
-  <div class="body">
-<div class="vlist"><div class="v"><span class="b">&rarr;</span><div><b>Docker Hub</b> &mdash; 누구나 올리고 받는 공개 창고다. 기본값이 여기다.</div></div><div class="v"><span class="b">&rarr;</span><div><b>사내 저장소</b> &mdash; Harbor · Nexus 같은 것. 바깥이 막힌 곳에서 쓴다.</div></div><div class="v"><span class="b">&#9733;</span><div><b>클라우드 저장소</b> &mdash; AWS ECR, Azure ACR. 그쪽에 올릴 때 쓴다.</div></div></div><div class="keymsg"><span class="k">오늘 쓰는 것</span><div><b>Docker Hub</b> 에서 받아 쓴다. 사내 저장소는 뒤에서 따로 본다.</div></div>
-  </div>
-</section>
 <section class="slide section" data-title="[섹션] 이미지 받아 띄우고 들여다보기">
   <div class="ghost">02</div>
   <div class="seyebrow">CHAPTER 02</div>
@@ -785,17 +756,7 @@ mcp-host-team2:latest        719MB          153MB   <span class="cm">← 무거�
   <h2 class="s-title sm">태그</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="shot"><div class="sbar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">Docker Hub · python 태그 목록</span></div><img src="assets/hub-tags.webp" alt="python 이미지의 태그 목록 화면. 태그마다 docker pull 명령, OS와 아키텍처, 알려진 취약점 개수, 압축 크기가 표로 나와 있다"></div><div class="keymsg"><span class="k">여기서 셋을 본다</span><div><b>받는 명령</b> · <b>크기</b> · <b>알려진 취약점</b>. 이름만 보고 고르지 않는다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="latest">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>함정</div>
-  <h2 class="s-title sm">latest 의 함정</h2>
-  <div class="rule"></div>
-  <div class="body">
-<div class="vlist"><div class="v"><span class="b">&rarr;</span><div><code>latest</code> 는 「최신」이 아니라 <b>태그를 안 붙였을 때 붙는 이름</b>이다.</div></div><div class="v"><span class="b">&rarr;</span><div>어제 받은 <code>latest</code> 와 오늘 받은 <code>latest</code> 가 <b>다른 것일 수 있다</b>.</div></div><div class="v"><span class="b">&#9733;</span><div>그러면 <b>어제는 됐는데 오늘 안 되는</b> 일이 생긴다. 원인을 찾기가 아주 어렵다.</div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">버전을 박아 둔다</span></div><pre><code>python:latest         <span class="cm">← 언제 바뀔지 모른다</span>
-python:3.12-slim      <span class="cm">← 항상 같은 것</span></code></pre></div><div class="keymsg"><span class="k">규칙</span><div><b>버전을 적는다.</b> Codex 에게 시킬 때도 이걸 못 박아 준다.</div></div>
+<div class="shot"><div class="sbar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">Docker Hub · python 태그 목록</span></div><img src="assets/hub-tags.webp" alt="python 이미지의 태그 목록 화면. 태그마다 docker pull 명령, OS와 아키텍처, 알려진 취약점 개수, 압축 크기가 표로 나와 있다"></div><div class="keymsg"><span class="k">버전을 적는다</span><div><b>받는 명령 · 크기 · 취약점</b>이 다 보인다. <code>latest</code> 는 <b>언제 바뀔지 몰라</b> 쓰지 않는다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="첫 실행">
@@ -852,20 +813,11 @@ $ curl http://127.0.0.1:8081/
   <h2 class="s-title sm">docker exec</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">$ docker exec web ls /usr/share/nginx/html</span></div><pre><code>50x.html
-index.html
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">상자 안으로 들어가 본다</span></div><pre><code>$ docker exec web cat /etc/os-release
+NAME="Alpine Linux"       <span class="cm">← 내 컴퓨터가 아니라 리눅스다</span>
 
-$ docker exec web cat /etc/os-release
-NAME="Alpine Linux"       <span class="cm">← 내 컴퓨터가 아니라 리눅스다</span></code></pre></div><div class="keymsg"><span class="k">안은 딴 세상</span><div>맥이든 윈도든 <b>상자 안은 리눅스</b>다. 그래서 어디서 열어도 같다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="격리">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>경계</div>
-  <h2 class="s-title sm">컨테이너 격리</h2>
-  <div class="rule"></div>
-  <div class="body">
-<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">$ docker exec web ls /Users</span></div><pre><code>ls: /Users: No such file or directory   <span class="cm">← 내 폴더가 안 보인다</span></code></pre></div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div>상자 안에는 <b>넣은 것만</b> 있다. 내 컴퓨터의 다른 파일은 없는 것과 같다.</div></div><div class="v"><span class="b">&rarr;</span><div>그래서 <b>안전하기도 하다</b> &mdash; 프로그램이 잘못 짜여도 상자 밖은 못 건드린다.</div></div><div class="v"><span class="b">&rarr;</span><div>뒤집으면 <b>내 데이터도 안 들어간다</b>. 넣으려면 따로 물려 줘야 한다. CH5 에서 본다.</div></div></div><div class="keymsg"><span class="k">한 줄로</span><div>상자는 <b>벽이 있는 방</b>이다. 문을 내 준 것만 드나든다.</div></div>
+$ docker exec web ls /Users
+ls: /Users: No such file or directory   <span class="cm">← 내 폴더는 안 보인다</span></code></pre></div><div class="keymsg"><span class="k">벽이 있는 방</span><div><b>안은 리눅스</b>고, <b>넣은 것만</b> 들어 있다. 상자 밖 파일은 못 건드린다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="정리">
@@ -946,46 +898,6 @@ Python 3.12.13
 $ pip freeze &gt; requirements.txt      <span class="cm">← 깔린 것을 파일로 뽑는다</span>
 
 $ python app.py                       <span class="cm">← 이게 시작 명령이다</span></code></pre></div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div><code>pip freeze</code> 결과를 <b>그대로 붙여 넣는</b> 것이 제일 정확하다. 기억으로 적지 않는다.</div></div></div><div class="keymsg"><span class="k">나머지 셋</span><div>포트 · 데이터 위치 · 키는 <b>코드를 열어 확인한다</b>. Codex 에게 물어봐도 된다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="프롬프트">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>작성</div>
-  <h2 class="s-title sm">프롬프트</h2>
-  <div class="rule"></div>
-  <div class="body">
-<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">Codex 에게</span></div><pre><code>우리 앱을 도커라이징 해줘. Dockerfile 과 .dockerignore 를 만든다.
-
-파이썬 3.12 · 바탕 이미지는 slim 판을 쓴다
-꾸러미는 requirements.txt 를 그대로 쓴다
-시작 명령은 python app.py
-8000 포트를 연다
-데이터 cell_process.csv 는 이미지에 넣지 말고 밖에서 물린다
-NVIDIA_API_KEY 를 환경변수로 받는다. 값은 적지 마라</code></pre></div><div class="keymsg"><span class="k">마지막 줄이 중요</span><div><b>「값은 적지 마라」</b>를 안 쓰면 키를 파일에 그대로 박아 넣는다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="덧붙일 말">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>작성</div>
-  <h2 class="s-title sm">더 적을 네 줄</h2>
-  <div class="rule"></div>
-  <div class="body">
-<div class="vlist"><div class="v"><span class="b">&rarr;</span><div><b>「0.0.0.0 으로 열어라」</b> &mdash; 안 적으면 밖에서 못 붙는 것이 나온다. CH4 에서 본다.</div></div><div class="v"><span class="b">&rarr;</span><div><b>「requirements 를 먼저 복사하고 코드를 나중에」</b> &mdash; 빌드가 빨라진다.</div></div><div class="v"><span class="b">&rarr;</span><div><b>「.dockerignore 도 만들어라」</b> &mdash; 안 그러면 잡동사니를 다 퍼담는다.</div></div><div class="v"><span class="b">&#9733;</span><div><b>「이미지 이름은 영문 소문자」</b> &mdash; 한글 이름은 빌드에서 거절당한다.</div></div></div><div class="keymsg"><span class="k">한 번 만들어 두면</span><div>이 목록은 <b>다음에도 그대로 쓴다</b>. 앱만 바뀐다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="돌려받은 것">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>결과</div>
-  <h2 class="s-title sm">받은 Dockerfile</h2>
-  <div class="rule"></div>
-  <div class="body">
-<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">Dockerfile</span></div><pre><code>FROM python:3.12-slim
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-COPY app.py .
-EXPOSE 8000
-CMD ["python", "app.py"]</code></pre></div><div class="keymsg"><span class="k">바로 돌리지 않는다</span><div>다음 챕터에서 <b>줄마다 무슨 뜻인지</b> 보고, 틀린 데가 없는지 찾는다.</div></div>
   </div>
 </section>
 <section class="slide" data-title=".dockerignore">
@@ -1107,31 +1019,6 @@ ENV NVIDIA_API_KEY=nvapi-Vgkifk...       <span class="cm">← 이미지를 받�
 3. cell_process.csv 를 COPY 하지 말고 밖에서 물리는 방식으로 바꾼다</code></pre></div><div class="keymsg"><span class="k">짚어 주면 고친다</span><div>「안 돼」가 아니라 <b>어디가 왜 틀렸는지</b>를 적는다. 그게 검토의 값이다.</div></div>
   </div>
 </section>
-<section class="slide" data-title="빌드">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>실행</div>
-  <h2 class="s-title sm">build 와 run</h2>
-  <div class="rule"></div>
-  <div class="body">
-<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">터미널</span></div><pre><code>$ docker build -t posco-app:1.0 .        <span class="cm">← 마지막 점 = 지금 폴더</span>
- =&gt; [4/5] RUN pip install -r requirements.txt
- =&gt; exporting to image
-
-$ docker run -d --name app -p 8000:8000 posco-app:1.0
-$ curl http://127.0.0.1:8000/
-3호기 불량률 12.0%</code></pre></div><div class="keymsg"><span class="k">마지막 점</span><div><b>어느 폴더를 재료로 쓸지</b>를 가리킨다. 빼먹으면 빌드가 안 된다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="이름 규칙">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>함정</div>
-  <h2 class="s-title sm">이미지 이름 규칙</h2>
-  <div class="rule"></div>
-  <div class="body">
-<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">$ docker build -t 공정앱:1.0 .</span></div><pre><code>ERROR: failed to build: invalid tag "공정앱:1.0":
-       invalid reference format          <span class="cm">← 한글은 안 된다</span></code></pre></div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div><b>영문 소문자 · 숫자 · 하이픈</b> 만 쓴다. <code>posco-app</code> 처럼.</div></div><div class="v"><span class="b">&#9733;</span><div><b>이름:버전</b> 으로 붙인다. 버전을 안 붙이면 <code>latest</code> 가 되어 앞의 함정에 걸린다.</div></div></div><div class="keymsg"><span class="k">규칙 하나</span><div><code>-t 이름:버전</code> &mdash; 이름은 영문, 버전은 반드시 적는다.</div></div>
-  </div>
-</section>
 <section class="slide section" data-title="[섹션] 데이터를 남기는 법">
   <div class="ghost">05</div>
   <div class="seyebrow">CHAPTER 05</div>
@@ -1150,16 +1037,7 @@ $ docker exec web cat /memo.txt
 
 $ docker rm -f web  &amp;&amp;  docker run -d --name web nginx:1.27-alpine
 $ docker exec web cat /memo.txt
-cat: can't open '/memo.txt': No such file or directory   <span class="cm">← 없다</span></code></pre></div><div class="keymsg"><span class="k">상자는 일회용</span><div><b>안에 쌓인 것은 상자와 함께 사라진다.</b> 남길 것은 밖에 둬야 한다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="어디가 위험한가">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>위험</div>
-  <h2 class="s-title sm">사고 나는 곳</h2>
-  <div class="rule"></div>
-  <div class="body">
-<div class="vlist"><div class="v"><span class="b">&rarr;</span><div><b>업로드한 파일</b> &mdash; 사용자가 올린 것이 상자 안에 쌓인다.</div></div><div class="v"><span class="b">&rarr;</span><div><b>데이터베이스</b> &mdash; 상자 안 DB 는 지우는 순간 전부 날아간다.</div></div><div class="v"><span class="b">&rarr;</span><div><b>로그와 기록</b> &mdash; 남겨야 할 것이 같이 사라진다.</div></div><div class="v"><span class="b">&#9733;</span><div><b>재시작만 해도</b> 사라지는 줄 아는 사람이 많은데, 재시작은 괜찮다. <b>지울 때</b> 사라진다.</div></div></div><div class="keymsg"><span class="k">구분</span><div><code>stop</code> 은 멈추는 것, <code>rm</code> 은 없애는 것. 사라지는 것은 <code>rm</code> 이다.</div></div>
+cat: can't open '/memo.txt': No such file or directory   <span class="cm">← 없다</span></code></pre></div><div class="keymsg"><span class="k">rm 이 지운다</span><div><code>stop</code> 은 멈추는 것이라 괜찮다. <b>사라지는 것은 <code>rm</code></b> 이다. 남길 것은 밖에 둔다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="셋의 관계">
@@ -1253,15 +1131,6 @@ $ cat note.txt
   </tbody></table></div><div class="keymsg"><span class="k">Codex 에게</span><div><b>「이 파일은 밖에서 물린다」</b>를 프롬프트에 적어 준다. 안 적으면 다 COPY 한다.</div></div>
   </div>
 </section>
-<section class="slide" data-title="되짚기">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>정리</div>
-  <h2 class="s-title sm">데이터 정리</h2>
-  <div class="rule"></div>
-  <div class="body">
-<div class="vlist"><div class="v"><span class="b">1</span><div><code>rm</code> 하면 <b>상자 안이 사라진다</b>. <code>stop</code> 은 괜찮다.</div></div><div class="v"><span class="b">2</span><div><b>볼륨</b>은 Docker 가 관리하고, <b>폴더 물리기</b>는 내가 관리한다.</div></div><div class="v"><span class="b">3</span><div>볼륨은 <b>상자를 지워도 안 지워진다</b>. 따로 지워야 한다.</div></div></div><div class="keymsg"><span class="k">한 문장</span><div><b>버려도 되는 것만 상자 안에 둔다.</b></div></div>
-  </div>
-</section>
 <section class="slide section" data-title="[섹션] 포트와 환경변수">
   <div class="ghost">06</div>
   <div class="seyebrow">CHAPTER 06</div>
@@ -1325,16 +1194,7 @@ $ cat .env                       <span class="cm">← 여러 개면 파일로 �
 NVIDIA_API_KEY=nvapi-...
 BIND=0.0.0.0
 
-$ docker run -d --env-file .env -p 8000:8000 posco-app:1.0</code></pre></div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>키는 <b>띄울 때만</b> 들어간다. 이미지를 남에게 줘도 키는 안 간다.</div></div><div class="v"><span class="b">&#9733;</span><div><b><code>.env</code> 는 절대 커밋하지 않는다.</b> <code>.gitignore</code> 와 <code>.dockerignore</code> 둘 다에 적는다.</div></div><div class="v"><span class="b">&rarr;</span><div>대신 <code>env.example</code> 처럼 <b>값이 빈 견본</b>을 같이 둔다.</div></div></div><div class="keymsg"><span class="k">규칙</span><div><b>키는 파일로 관리하고 그 파일은 안 올린다.</b></div></div>
-  </div>
-</section>
-<section class="slide" data-title="새는 자리">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>점검</div>
-  <h2 class="s-title sm">키가 새는 곳</h2>
-  <div class="rule"></div>
-  <div class="body">
-<div class="vlist"><div class="v"><span class="b">1</span><div><b>Dockerfile 의 <code>ENV</code></b> &mdash; 이미지 층에 굳는다. 지워도 남는다.</div></div><div class="v"><span class="b">2</span><div><b><code>COPY . .</code></b> &mdash; <code>.env</code> 가 통째로 들어간다.</div></div><div class="v"><span class="b">3</span><div><b>로그</b> &mdash; 키를 찍는 코드가 있으면 로그에 남는다.</div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">확인하는 법</span></div><pre><code>$ docker history posco-app:1.0 | grep -i key    <span class="cm">← 아무것도 안 나와야 한다</span></code></pre></div><div class="keymsg"><span class="k">한 번은 확인한다</span><div>만든 이미지를 남에게 주기 전에 <b>이 한 줄</b>을 쳐 본다.</div></div>
+$ docker run -d --env-file .env -p 8000:8000 posco-app:1.0</code></pre></div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>키는 <b>띄울 때만</b> 들어간다. 이미지를 남에게 줘도 키는 안 간다.</div></div><div class="v"><span class="b">&#9733;</span><div><b><code>.env</code> 는 절대 커밋하지 않는다.</b> <code>.gitignore</code> 와 <code>.dockerignore</code> 둘 다에 적는다.</div></div><div class="v"><span class="b">&rarr;</span><div>대신 <code>env.example</code> 처럼 <b>값이 빈 견본</b>을 같이 둔다.</div></div></div><div class="keymsg"><span class="k">주기 전에 확인한다</span><div><code>docker history 이미지 | grep -i key</code> &mdash; <b>아무것도 안 나와야</b> 한다.</div></div>
   </div>
 </section>
 <section class="slide section" data-title="[섹션] compose 로 여럿 띄우기">
@@ -1413,34 +1273,7 @@ SERVICE   STATUS         PORTS
 api       Up 3 minutes   0.0.0.0:8000-&gt;8000/tcp
 db        Up 3 minutes   5432/tcp                <span class="cm">← 밖으로 안 열렸다</span>
 
-$ docker compose down                            <span class="cm">← 한 번에 내린다</span></code></pre></div><div class="keymsg"><span class="k">한 벌로 다룬다</span><div>개별 상자가 아니라 <b>묶음 하나</b>로 올리고 내린다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="로그">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>진단</div>
-  <h2 class="s-title sm">compose logs</h2>
-  <div class="rule"></div>
-  <div class="body">
-<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">터미널</span></div><pre><code>$ docker compose logs api --tail 5      <span class="cm">← 하나만</span>
-api-1  | listening on 0.0.0.0:8000
-
-$ docker compose logs -f                <span class="cm">← 전부 흐르는 대로</span></code></pre></div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div>무엇이 안 뜨면 <b>그 서비스 로그부터</b> 본다. <code>Exited</code> 면 반드시 이유가 찍혀 있다.</div></div></div><div class="keymsg"><span class="k">순서 문제</span><div><code>depends_on</code> 은 <b>뜨는 순서만</b> 정한다. DB 가 <b>준비될 때까지</b> 기다리지는 않는다.</div></div>
-  </div>
-</section>
-<section class="slide" data-title="Codex 에게">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>작성</div>
-  <h2 class="s-title sm">compose 프롬프트</h2>
-  <div class="rule"></div>
-  <div class="body">
-<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">Codex 에게</span></div><pre><code>compose.yml 을 만들어 줘. 서비스는 셋이다.
-
-db   postgres:16. 데이터는 볼륨에 남긴다. 밖으로 열지 마라.
-api  ./api 를 빌드한다. 8000 포트를 밖으로 연다. DB_HOST 는 db.
-web  ./web 을 빌드한다. 8080 포트를 밖으로 연다.
-
-키는 .env 에서 읽는다. 값은 파일에 적지 마라.</code></pre></div><div class="keymsg"><span class="k">읽을 때 볼 것 셋</span><div><b>ports 를 필요 없는 데 열었나</b>, <b>볼륨을 빠뜨렸나</b>, <b>키를 적어 넣었나</b>.</div></div>
+$ docker compose down                            <span class="cm">← 한 번에 내린다</span></code></pre></div><div class="keymsg"><span class="k">안 뜨면</span><div><code>docker compose logs 서비스</code> 로 본다. <b>Exited</b> 면 이유가 반드시 찍혀 있다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="바꿀 때">
