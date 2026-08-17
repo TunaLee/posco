@@ -389,14 +389,14 @@
 <section class="slide" data-title="안 되는 상황">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>문제</div>
-  <h2 class="s-title sm">「제 자리에서는 잘 돌던 것」</h2>
+  <h2 class="s-title sm">만든 컴퓨터와 받은 컴퓨터</h2>
   <div class="rule"></div>
   <div class="body">
 <div class="twopane">
-  <div class="pane good"><h4>만든 사람 자리</h4>
+  <div class="pane good"><h4>만든 컴퓨터</h4>
     <p>파이썬 3.12 · pandas 3.0 설치됨<br/>데이터는 <code>~/work/data.csv</code><br/>키는 환경변수에 넣어 둠</p>
     <div class="mini">잘 돈다</div></div>
-  <div class="pane bad"><h4>받은 사람 자리</h4>
+  <div class="pane bad"><h4>받은 컴퓨터</h4>
     <p>파이썬 3.9 · pandas 없음<br/>그 경로에 파일이 없음<br/>키가 뭔지 모름</p>
     <div class="mini">첫 줄에서 멈춘다</div></div>
 </div><div class="keymsg"><span class="k">오늘 따라갈 순서</span><div>이 문제를 <b>가상환경 &rarr; 컨테이너</b> 순서로 하나씩 풀어 간다.</div></div>
@@ -420,7 +420,7 @@ $ python -c "import numpy; print(numpy.__version__)"
 <section class="slide" data-title="가상환경">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>2단계</div>
-  <h2 class="s-title sm">가상환경으로 자리 나누기</h2>
+  <h2 class="s-title sm">가상환경으로 나누기</h2>
   <div class="rule"></div>
   <div class="body">
 <div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">환경을 둘로 만들어 각각 깐다</span></div><pre><code>$ python -m venv A  &amp;&amp;  A/bin/pip install numpy==2.5.2
@@ -487,7 +487,7 @@ $ which libgl               <span class="cm">그림 처리 라이브러리</span
     <div class="mini">받는 사람이 직접 깔아야 한다</div></div>
   <div class="pane bad"><h4>안 넘어가는 것</h4>
     <p>파이썬 버전 · 운영체제 도구<br/>데이터 위치 · 시작 명령</p>
-    <div class="mini">그래서 「제 자리에서는 됐는데」가 나온다</div></div>
+    <div class="mini">그래서 받은 컴퓨터에서 안 돈다</div></div>
 </div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div>가상환경은 <b>내 컴퓨터 안에서만</b> 나눠 준다. 밖으로 옮기는 도구가 아니다.</div></div></div><div class="keymsg"><span class="k">세 한계를 모으면</span><div><b>파이썬 버전 · 운영체제 층 · 옮기기</b> 셋이 남았다.</div></div>
   </div>
 </section>
@@ -523,7 +523,7 @@ NAME="Debian GNU/Linux"                              <span class="cm">← 맥이
   <h2 class="s-title sm">운영체제를 통째로 올리는 가상머신</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="figwrap"><img src="assets/vm-stack.png" alt="가상머신 구조도 — 인프라 위에 하이퍼바이저가 있고 그 위에 가상머신 셋이 각각 게스트 운영체제와 앱을 따로 올리고 있다"/></div><div class="keymsg"><span class="k">무거운 까닭</span><div>앱마다 <b>운영체제를 하나씩</b> 올린다. 뜨는 데 몇 분, 크기는 수 GB 다.</div></div>
+<div class="figwrap"><img src="assets/vm-stack.png" alt="가상머신 구조도 — 인프라 위에 하이퍼바이저가 있고 그 위에 가상머신 셋이 각각 게스트 운영체제와 앱을 따로 올리고 있다"/></div><div class="keymsg"><span class="k">무거운 이유</span><div>앱마다 <b>운영체제를 하나씩</b> 올린다. 뜨는 데 몇 분, 크기는 수 GB 다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="컨테이너 구조">
@@ -532,7 +532,7 @@ NAME="Debian GNU/Linux"                              <span class="cm">← 맥이
   <h2 class="s-title sm">운영체제를 나눠 쓰는 컨테이너</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="figwrap"><img src="assets/container-stack.png" alt="컨테이너 구조도 — 인프라와 호스트 운영체제 위에 Docker 한 층이 있고 그 위에 앱 여섯 개가 나란히 올라가 있다. 게스트 운영체제가 없다"/></div><div class="keymsg"><span class="k">가벼운 까닭</span><div><b>운영체제를 새로 안 올린다.</b> 그래서 몇 초에 뜨고 수십 MB 로 끝난다.</div></div>
+<div class="figwrap"><img src="assets/container-stack.png" alt="컨테이너 구조도 — 인프라와 호스트 운영체제 위에 Docker 한 층이 있고 그 위에 앱 여섯 개가 나란히 올라가 있다. 게스트 운영체제가 없다"/></div><div class="keymsg"><span class="k">가벼운 이유</span><div><b>운영체제를 새로 안 올린다.</b> 그래서 몇 초에 뜨고 수십 MB 로 끝난다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="셋 견주기">
@@ -593,7 +593,7 @@ NAME="Debian GNU/Linux"                              <span class="cm">← 맥이
   <div class="body">
 <div class="pipe">
   <div class="step"><div class="si">1</div><div class="sn">Dockerfile</div><div class="sd">무엇을 담을지 적은 <b>설명서</b>. 글자 파일이다</div></div>
-  <div class="step"><div class="si">2</div><div class="sn">이미지</div><div class="sd">설명서대로 <b>만들어 둔 덩이</b>. 안 움직인다</div></div>
+  <div class="step"><div class="si">2</div><div class="sn">이미지</div><div class="sd">설명서대로 <b>만들어 둔 것</b>. 안 움직인다</div></div>
   <div class="step"><div class="si">3</div><div class="sn">컨테이너</div><div class="sd">이미지를 <b>돌린 것</b>. 실제로 도는 프로그램</div></div>
 </div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div>이미지 하나로 <b>컨테이너 여럿</b>을 띄운다. 붕어빵 틀과 붕어빵 관계다.</div></div><div class="v"><span class="b">&rarr;</span><div><code>build</code> 가 이미지를 만들고, <code>run</code> 이 컨테이너를 띄운다.</div></div></div><div class="keymsg"><span class="k">헷갈리면</span><div><b>이미지는 명사, 컨테이너는 동사</b>다. 하나는 놓여 있고 하나는 돌고 있다.</div></div>
   </div>
@@ -604,7 +604,7 @@ NAME="Debian GNU/Linux"                              <span class="cm">← 맥이
   <h2 class="s-title sm">명령이 흘러가는 곳</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="figwrap"><img src="assets/arch.webp" alt="Docker 공식 구조도 — 왼쪽 Client 의 docker run · build · pull 명령이 가운데 Docker 데몬으로 가고, 데몬이 이미지와 컨테이너를 다루며 오른쪽 레지스트리에서 이미지를 받아 온다"/></div><div class="keymsg"><span class="k">세 덩이</span><div>내가 치는 <b>명령</b>, 실제로 일하는 <b>데몬</b>, 이미지가 모여 있는 <b>레지스트리</b>.</div></div>
+<div class="figwrap"><img src="assets/arch.webp" alt="Docker 공식 구조도 — 왼쪽 Client 의 docker run · build · pull 명령이 가운데 Docker 데몬으로 가고, 데몬이 이미지와 컨테이너를 다루며 오른쪽 레지스트리에서 이미지를 받아 온다"/></div><div class="keymsg"><span class="k">셋으로 나뉜다</span><div>내가 치는 <b>명령</b>, 실제로 일하는 <b>데몬</b>, 이미지가 모여 있는 <b>레지스트리</b>.</div></div>
   </div>
 </section>
 <section class="slide" data-title="데몬">
@@ -1045,7 +1045,7 @@ cat: can't open '/memo.txt': No such file or directory   <span class="cm">← �
 <section class="slide" data-title="어디가 위험한가">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>위험</div>
-  <h2 class="s-title sm">사고가 나는 자리</h2>
+  <h2 class="s-title sm">데이터가 사라지는 곳</h2>
   <div class="rule"></div>
   <div class="body">
 <div class="vlist"><div class="v"><span class="b">&rarr;</span><div><b>업로드한 파일</b> &mdash; 사용자가 올린 것이 상자 안에 쌓인다.</div></div><div class="v"><span class="b">&rarr;</span><div><b>데이터베이스</b> &mdash; 상자 안 DB 는 지우는 순간 전부 날아간다.</div></div><div class="v"><span class="b">&rarr;</span><div><b>로그와 기록</b> &mdash; 남겨야 할 것이 같이 사라진다.</div></div><div class="v"><span class="b">&#9733;</span><div><b>재시작만 해도</b> 사라지는 줄 아는 사람이 많은데, 재시작은 괜찮다. <b>지울 때</b> 사라진다.</div></div></div><div class="keymsg"><span class="k">구분</span><div><code>stop</code> 은 멈추는 것, <code>rm</code> 은 없애는 것. 사라지는 것은 <code>rm</code> 이다.</div></div>
