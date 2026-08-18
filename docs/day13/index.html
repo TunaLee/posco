@@ -564,6 +564,35 @@ $ ls node_modules/@next/ | grep linux
 </div><div class="vlist"><div class="v"><span class="b">&rarr;</span><div>2013년에 나왔다. 지금은 <b>서버에 무엇을 올릴 때 기본으로 쓰는 방식</b>이다.</div></div><div class="v"><span class="b">&rarr;</span><div>클라우드에 올리는 것도, 사내 서버에 두는 것도 대개 이 형태로 간다.</div></div><div class="v"><span class="b">&#9733;</span><div><b>규격이 하나라</b> 어디에 올려도 같은 것이 돈다.</div></div></div><div class="keymsg"><span class="k">오늘 쓰는 도구</span><div>컨테이너를 <b>만들고 띄우는</b> 도구가 Docker 다.</div></div>
   </div>
 </section>
+<section class="slide" data-title="설치">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>준비</div>
+  <h2 class="s-title sm">Docker Desktop 받는 곳</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">docker.com &rarr; Products &rarr; Docker Desktop</span></div><pre><code>윈도우   Windows 10/11 · Pro · Enterprise · Education
+        WSL 2 를 같이 깐다 · 메모리 8GB 이상
+        <span class="cm">사용자별 설치를 고르면 관리자 권한이 필요 없다</span>
+
+맥      Apple 칩과 인텔 칩 설치 파일이 다르다
+        내 칩 확인 &mdash; 왼쪽 위 사과 &rarr; 이 Mac 에 관하여</code></pre></div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div><b>관리자 권한 없이도 깔린다.</b> 설치할 때 「사용자별」을 고른다.</div></div><div class="v"><span class="b">&rarr;</span><div>깔고 나면 <b>고래 아이콘</b>이 뜬다. 그게 떠 있어야 명령이 먹는다.</div></div></div><div class="keymsg"><span class="k">먼저 확인할 것</span><div><code>docker version</code> 을 쳐서 <b>Server 줄</b>이 나오면 준비가 끝난 것이다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="라이선스">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>준비</div>
+  <h2 class="s-title sm">회사에서 쓸 때의 라이선스</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="ctable"><table>
+  <thead><tr><th>어떤 경우</th><th>Docker Desktop</th></tr></thead>
+  <tbody>
+  <tr><td>개인 · 교육 · 비상업 오픈소스</td><td class="hl">무료</td></tr>
+  <tr><td>직원 250명 미만 <b>이면서</b> 연매출 1천만 달러 미만</td><td class="hl">무료</td></tr>
+  <tr><td class="hl">그보다 큰 회사의 업무용</td><td class="hl">유료 구독이 필요하다</td></tr>
+  </tbody></table></div><div class="vlist"><div class="v"><span class="b">&#9733;</span><div><b>정보시스템 담당에게 먼저 확인한다.</b> 사내에 이미 계약이 있을 수 있다.</div></div><div class="v"><span class="b">&rarr;</span><div>막히면 <b>Rancher Desktop</b> 이나 <b>Podman Desktop</b> 을 쓴다. 둘 다 무료고 명령이 거의 같다.</div></div></div><div class="keymsg"><span class="k">오늘 배우는 것은</span><div><b>Docker Desktop 이 아니라 컨테이너</b>다. 도구가 바뀌어도 명령은 그대로 쓴다.</div></div>
+  </div>
+</section>
 <section class="slide" data-title="오늘 하는 일">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>흐름</div>
