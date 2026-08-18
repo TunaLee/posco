@@ -1,0 +1,1669 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>하네스 다루기</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#16142B; --ink-soft:#4A4766; --mut:#8E8AAC;
+    --violet:#5B3DF5; --violet-700:#3A1FC9; --violet-300:#B7A9FF;
+    --wash:#F4F1FF; --wash-2:#FAF9FF; --line:#E8E4F8;
+    --paper:#FFFFFF; --mint:#0FB5A1; --mint-soft:#E4F8F4;
+    --amber:#F4A93C; --rose:#E8537A;
+    --code-bg:#1C1933; --code-ink:#ECEAFF; --code-dim:#9C97D6;
+    --sw:1280px; --sh:720px;
+    --shadow:0 24px 60px -24px rgba(43,28,120,.45);
+    --serif: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:var(--serif); color:var(--ink);
+    background:
+      radial-gradient(1200px 600px at 15% -10%, #ECE7FF 0%, rgba(236,231,255,0) 60%),
+      radial-gradient(1000px 700px at 110% 10%, #F0EBFF 0%, rgba(240,235,255,0) 55%),
+      #EAE7F4;
+    min-height:100vh; -webkit-font-smoothing:antialiased;
+  }
+  .progress{position:fixed; top:0; left:0; right:0; height:3px; z-index:60; background:transparent;}
+  .progress .fill{height:100%; width:0; background:linear-gradient(90deg,var(--violet),#9B7BFF); transition:width .2s ease;}
+
+  .stage{
+    position:fixed; inset:0 0 0 0; z-index:10;
+    display:flex; justify-content:safe center; align-items:safe center;
+    overflow:auto; padding:30px 30px 96px;
+  }
+  .sizer{position:relative;}
+  .scaler{ width:var(--sw); height:var(--sh); transform-origin:top left; position:relative; }
+
+  .slide{
+    width:var(--sw); height:var(--sh);
+    background:var(--paper); border:1px solid var(--line);
+    border-radius:22px; box-shadow:var(--shadow);
+    overflow:hidden; display:none; flex-direction:column;
+    padding:50px 60px 46px; position:relative;
+  }
+  .slide.active{display:flex;}
+
+  .eyebrow{display:inline-flex; align-items:center; gap:10px; font-family:var(--mono); font-size:13px; font-weight:700; letter-spacing:.04em; color:var(--violet); text-transform:uppercase;}
+  .eyebrow .tag{color:#fff; background:var(--violet); border-radius:6px; padding:3px 8px; font-size:11px; letter-spacing:.05em;}
+  .eyebrow .tag.mint{background:var(--mint);}
+  .eyebrow .dot{width:5px;height:5px;border-radius:50%;background:var(--violet-300);}
+  .coord{position:absolute; top:30px; right:40px; font-family:var(--mono); font-size:12px; color:var(--mut); font-weight:600; letter-spacing:.05em;}
+  .coord b{color:var(--ink);}
+
+  .s-title{font-size:39px; line-height:1.12; letter-spacing:-.025em; font-weight:800; margin:14px 0 4px;}
+  .s-title.sm{font-size:32px;} .s-title.xs{font-size:28px;}
+  .s-sub{font-size:17px; color:var(--ink-soft); font-weight:500; line-height:1.5; max-width:64ch;}
+  .rule{height:4px; width:54px; border-radius:3px; background:var(--violet); margin:13px 0 6px;}
+  .body{flex:1; min-height:0; display:flex; flex-direction:column; justify-content:center;}
+  .body.top{justify-content:flex-start; padding-top:6px;}
+
+  .slide.cover{ padding:0; justify-content:center;
+    background:
+      radial-gradient(900px 520px at 100% 0%, #6B4BFF 0%, rgba(107,75,255,0) 58%),
+      radial-gradient(700px 600px at -5% 110%, #3A1FC9 0%, rgba(58,31,201,0) 55%),
+      linear-gradient(135deg,#2A1B8C 0%, #4226D6 48%, #5B3DF5 100%);
+    color:#fff; border:none; }
+  .cover .aperture{position:absolute; top:-120px; right:-120px; width:460px; height:460px; border-radius:50%; background:radial-gradient(circle at 35% 35%, rgba(255,255,255,.5), rgba(255,255,255,0) 62%); filter:blur(2px);}
+  .cover .ring{position:absolute; right:60px; top:60px; width:120px; height:120px; border-radius:50%; border:1.5px solid rgba(255,255,255,.4);}
+  .cover .ring::after{content:""; position:absolute; inset:18px; border-radius:50%; border:1.5px dashed rgba(255,255,255,.35);}
+  .cover .wrap{padding:60px 70px; position:relative; z-index:2; width:100%;}
+  .cover .kick{font-family:var(--mono); letter-spacing:.18em; font-size:13.5px; font-weight:600; color:rgba(255,255,255,.86); text-transform:uppercase; display:flex; align-items:center; gap:14px;}
+  .cover .kick .pill{border:1px solid rgba(255,255,255,.45); border-radius:999px; padding:4px 12px;}
+  .cover h1{font-size:58px; line-height:1.08; letter-spacing:-.03em; font-weight:800; margin:24px 0 16px; max-width:21ch;}
+  .cover .lead{font-size:18px; line-height:1.55; color:rgba(255,255,255,.9); max-width:56ch; font-weight:400;}
+  .cover .meta{margin-top:36px; display:flex; gap:24px; flex-wrap:wrap; font-size:14px;}
+  .cover .meta .it{display:flex; flex-direction:column; gap:3px;}
+  .cover .meta .it .k{font-family:var(--mono); font-size:11px; letter-spacing:.1em; color:rgba(255,255,255,.6); text-transform:uppercase;}
+  .cover .meta .it .v{font-size:15px; font-weight:700; color:#fff;}
+
+  .slide.section{ background:linear-gradient(140deg,#3A1FC9 0%, #5B3DF5 70%, #7A5BFF 100%); color:#fff; border:none; justify-content:center; padding:60px 70px; }
+  .slide.section.mintbg{ background:linear-gradient(140deg,#0A8A7A 0%, #0FB5A1 70%, #34D6C2 100%); }
+  .slide.section .ghost{position:absolute; right:34px; bottom:-66px; font-family:var(--mono); font-weight:700; font-size:330px; line-height:.8; color:rgba(255,255,255,.10); letter-spacing:-.04em;}
+  .slide.section .lab-flag{display:inline-flex; align-items:center; gap:9px; align-self:flex-start; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.4); padding:7px 14px; border-radius:999px; font-weight:700; font-size:13px; font-family:var(--mono); letter-spacing:.06em;}
+  .slide.section .lab-flag .sq{width:9px;height:9px;border-radius:3px;background:#fff;}
+  .slide.section .seyebrow{font-family:var(--mono); letter-spacing:.16em; font-size:14px; color:rgba(255,255,255,.85); text-transform:uppercase; margin-bottom:14px;}
+  .slide.section h2{font-size:48px; line-height:1.1; letter-spacing:-.025em; font-weight:800; margin:0 0 14px; max-width:24ch; position:relative; z-index:2;}
+  .slide.section p{font-size:18px; color:rgba(255,255,255,.92); max-width:54ch; line-height:1.55; position:relative; z-index:2;}
+  .slide.section .agenda{display:flex; gap:10px; flex-wrap:wrap; margin-top:22px; position:relative; z-index:2;}
+  .slide.section .agenda span{font-size:13px; font-weight:600; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3); padding:6px 12px; border-radius:999px;}
+
+  .cards{display:grid; gap:16px;}
+  .cards.c2{grid-template-columns:repeat(2,1fr);} .cards.c3{grid-template-columns:repeat(3,1fr);} .cards.c4{grid-template-columns:repeat(4,1fr);}
+  .card{background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:17px 19px; display:flex; flex-direction:column; gap:7px; position:relative;}
+  .card .ic{width:38px; height:38px; border-radius:4px; display:grid; place-items:center; background:transparent; border:1.5px solid var(--violet-300); color:var(--violet); margin-bottom:3px;}
+  .card .ic svg{width:20px;height:20px;}
+  .card h3{font-size:17px; font-weight:800; letter-spacing:-.01em; margin:0 0 1px; padding-bottom:8px; border-bottom:1px solid var(--line);}
+  .card p{font-size:14px; color:var(--ink-soft); line-height:1.5; margin:0;}
+  .card .n{font-family:var(--mono); font-size:11.5px; color:var(--violet); font-weight:700;}
+
+  .biglist{display:flex; flex-direction:column; gap:13px;}
+  .biglist .li{display:flex; gap:15px; align-items:flex-start;}
+  .biglist .li .num{flex:none; width:34px; height:34px; border-radius:10px; background:var(--violet); color:#fff; font-family:var(--mono); font-weight:700; display:grid; place-items:center; font-size:14px; margin-top:1px;}
+  .biglist .li .tx h4{margin:0 0 3px; font-size:17.5px; font-weight:800;}
+  .biglist .li .tx p{margin:0; font-size:14px; color:var(--ink-soft); line-height:1.5;}
+
+  .phase-label{font-family:var(--mono); font-size:12px; font-weight:700; letter-spacing:.08em; color:var(--violet); text-transform:uppercase; margin:0 0 10px; display:flex; align-items:center; gap:9px;}
+  .phase-label .ln{height:1px; flex:1; background:var(--line);}
+  .pipe{display:flex; align-items:stretch; gap:0; margin-bottom:20px;}
+  .pipe .step{flex:1; background:var(--paper); border:1px solid var(--line); border-top:3px solid var(--violet); border-radius:4px; padding:12px 10px; text-align:center; min-width:0;}
+  .pipe .step .si{font-family:var(--mono); font-size:11px; color:var(--violet); font-weight:700;}
+  .pipe .step .sn{font-size:14.5px; font-weight:800; margin-top:3px; letter-spacing:-.01em;}
+  .pipe .step .sd{font-size:11px; color:var(--mut); margin-top:2px; line-height:1.3;}
+  .pipe .arrow{display:flex; align-items:center; padding:0 5px; color:var(--violet-300);}
+  .pipe .arrow svg{width:17px;height:17px;}
+  .pipe.q .step{background:var(--paper); border-color:var(--line); border-top-color:var(--mint);} .pipe.q .step .si{color:var(--mint);} .pipe.q .arrow{color:#8AD7CC;}
+
+  .code{background:var(--code-bg); border-radius:14px; overflow:hidden; border:1px solid #2A2548; box-shadow:0 18px 40px -22px rgba(28,25,51,.7);}
+  .code .bar{display:flex; align-items:center; gap:7px; padding:10px 15px; border-bottom:1px solid #2A2548; background:#171430;}
+  .code .bar .dot{width:11px;height:11px;border-radius:50%;}
+  .code .bar .r{background:#FF6058;} .code .bar .y{background:#FFC130;} .code .bar .g{background:#28CA42;}
+  .code .bar .fn{margin-left:8px; font-family:var(--mono); font-size:12px; color:var(--code-dim);}
+  .code pre{margin:0; padding:16px 18px; overflow:auto;}
+  .code code{font-family:var(--mono); font-size:13px; line-height:1.6; color:var(--code-ink); white-space:pre;}
+  .code.sm code{font-size:12px; line-height:1.55;}
+  .cm{color:#7D78B8;} .kw{color:#C792FF;} .st{color:#9DE39A;} .fn2{color:#82D3FF;} .nm{color:#FFD479;}
+
+  .callout{border-radius:4px; padding:15px 18px; display:flex; gap:13px; align-items:flex-start; background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet);}
+  .callout .ci{flex:none; width:34px;height:34px;border-radius:4px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .callout .ci svg{width:18px;height:18px;}
+  .callout .ct h4{margin:0 0 3px; font-size:15.5px; font-weight:800;}
+  .callout .ct p{margin:0; font-size:13.5px; color:var(--ink-soft); line-height:1.5;}
+  .callout.mint{border-left-color:var(--mint);} .callout.mint .ci{background:var(--mint);}
+  .callout.amber{border-left-color:var(--amber);} .callout.amber .ci{background:var(--amber);}
+  .callout.rose{border-left-color:var(--rose);} .callout.rose .ci{background:var(--rose);}
+
+  .lab-badge{display:inline-flex; align-items:center; gap:9px; background:var(--mint-soft); color:#0A7F70; border:1px solid #BFE9E1; padding:7px 13px; border-radius:999px; font-weight:700; font-size:13px; font-family:var(--mono); letter-spacing:.04em;}
+  .lab-badge .sq{width:9px;height:9px;border-radius:3px;background:var(--mint);}
+
+  .twocol{display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start;}
+  .twocol.w{grid-template-columns:1.15fr .85fr;} .twocol.w2{grid-template-columns:.85fr 1.15fr;}
+
+  .chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{font-size:12.5px; font-weight:600; color:var(--ink-soft); background:#fff; border:1px solid var(--line); padding:6px 12px; border-radius:999px;}
+  .chip b{color:var(--violet);}
+
+  .deliv{background:var(--paper); border:1px dashed var(--violet-300); border-left:3px solid var(--violet); border-radius:4px; padding:15px 18px; display:flex; align-items:center; gap:13px;}
+  .deliv .di{flex:none;width:36px;height:36px;border-radius:4px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .deliv .di svg{width:19px;height:19px;}
+  .deliv .dt b{display:block;font-size:11px;font-family:var(--mono);letter-spacing:.08em;color:var(--violet);text-transform:uppercase;}
+  .deliv .dt span{font-size:15px;font-weight:700;}
+
+  .vlist{display:flex;flex-direction:column;gap:10px;}
+  .vlist .v{display:flex;gap:11px;align-items:flex-start;font-size:14.5px;color:var(--ink-soft);line-height:1.45;}
+  .vlist .v .b{flex:none;width:22px;height:22px;border-radius:7px;background:var(--wash);color:var(--violet);display:grid;place-items:center;font-family:var(--mono);font-size:12px;font-weight:700;margin-top:1px;}
+  .vlist .v b{color:var(--ink);font-weight:700;}
+
+  .keymsg{margin-top:auto; background:var(--ink); color:#fff; border-radius:4px; padding:15px 20px; display:flex; gap:13px; align-items:center; font-size:15px; line-height:1.5;}
+  .keymsg .k{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;color:var(--violet-300);text-transform:uppercase;flex:none;}
+  .keymsg b{color:#fff;}
+
+  .formula{display:flex; flex-direction:column; gap:10px; background:var(--code-bg); border-radius:13px; padding:20px; color:#fff; font-family:var(--mono);}
+  .formula .big{font-size:21px; text-align:center;}
+
+  .ctable{width:100%; border-collapse:separate; border-spacing:0; font-size:14px; border:1px solid var(--line); border-radius:13px; overflow:hidden;}
+  .ctable th,.ctable td{padding:13px 16px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top;}
+  .ctable thead th{background:var(--wash); color:var(--violet); font-family:var(--mono); font-size:12px; letter-spacing:.04em; text-transform:uppercase; font-weight:700;}
+  .ctable tbody tr:last-child td{border-bottom:none;}
+  .ctable td b{color:var(--ink);} .ctable .hl{color:var(--violet); font-weight:700;}
+  .ctable .yes{color:var(--mint); font-weight:700;} .ctable .no{color:var(--rose); font-weight:700;}
+
+  .timeline{display:flex; gap:0; align-items:stretch; margin-top:6px;}
+  .timeline .t{flex:1; position:relative; padding:0 6px;}
+  .timeline .t .yr{font-family:var(--mono); font-size:13px; font-weight:700; color:var(--violet);}
+  .timeline .t .ev{font-size:13px; font-weight:700; margin-top:30px; line-height:1.3;}
+  .timeline .t .ds{font-size:11.5px; color:var(--mut); margin-top:3px; line-height:1.35;}
+  .timeline .t::before{content:""; position:absolute; left:0; right:0; top:26px; height:2px; background:var(--line);}
+  .timeline .t::after{content:""; position:absolute; left:8px; top:21px; width:12px; height:12px; border-radius:50%; background:var(--violet); border:3px solid #fff; box-shadow:0 0 0 1px var(--violet-300);}
+
+  .quote{background:var(--wash-2); border-left:4px solid var(--violet); border-radius:0 13px 13px 0; padding:18px 22px;}
+  .quote p{margin:0; font-size:18px; line-height:1.5; font-weight:600; color:var(--ink);}
+  .quote .src{margin-top:10px; font-size:12.5px; color:var(--mut); font-family:var(--mono);}
+  .refbox{background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:14px 16px; display:flex; gap:12px; align-items:flex-start;}
+  .refbox .rk{font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; color:var(--violet); text-transform:uppercase; font-weight:700;}
+  .refbox h4{margin:2px 0 3px; font-size:14.5px; font-weight:800;}
+  .refbox p{margin:0; font-size:12.5px; color:var(--ink-soft); line-height:1.45;}
+  .refbox .ri{flex:none;width:30px;height:30px;border-radius:8px;background:var(--violet);color:#fff;display:grid;place-items:center;}
+  .refbox .ri svg{width:16px;height:16px;}
+
+  .arch{display:flex; align-items:center; gap:18px; justify-content:center; margin:6px 0;}
+  .arch .box{border:1.5px solid var(--line); border-radius:14px; padding:18px 20px; text-align:center; background:var(--wash-2); min-width:160px;}
+  .arch .box .bt{font-size:15px; font-weight:800;} .arch .box .bs{font-size:12px; color:var(--mut); margin-top:3px; line-height:1.35;}
+  .arch .box.local{border-style:dashed; border-color:var(--violet-300); background:#fff;}
+  .arch .box.api{background:linear-gradient(135deg,#EFEAFF,#F8F5FF); border-color:var(--violet-300);}
+  .arch .conn{display:flex; flex-direction:column; align-items:center; gap:4px; color:var(--violet); font-family:var(--mono); font-size:11px; font-weight:700;}
+  .arch .conn svg{width:34px;height:18px;}
+
+  .stat-row{display:flex; gap:16px;}
+  .stat{flex:1; background:var(--paper); border:1px solid var(--line); border-left:3px solid var(--violet); border-radius:4px; padding:16px 18px;}
+  .stat .num{font-size:30px; font-weight:800; letter-spacing:-.02em; color:var(--violet); font-family:var(--mono);}
+  .stat .lab{font-size:13px; color:var(--ink-soft); margin-top:4px; line-height:1.4;}
+
+  .twopane{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .pane{border:1px solid var(--line); border-radius:4px; padding:16px 18px; background:var(--paper);}
+  .pane.bad{border-left:3px solid var(--rose);} .pane.good{border-left:3px solid var(--mint);}
+  .pane h4{margin:0 0 9px; font-size:14px; font-weight:800; display:flex; align-items:center; gap:7px;}
+  .pane.bad h4{color:#C9405B;} .pane.good h4{color:#0E9E6E;}
+  .pane p{margin:0; font-size:13px; color:var(--ink-soft); line-height:1.5;}
+  .mini{font-family:var(--mono); font-size:13.5px; background:#16142B; border:1px solid #2A2545; border-radius:6px; padding:13px 15px; color:#E8E4F5; line-height:1.7; white-space:pre-wrap;}
+  .pane .mini{font-family:var(--mono); font-size:12px; background:var(--wash-2); border:1px solid var(--line); border-radius:3px; padding:8px 10px; color:var(--ink-soft); line-height:1.5; margin-top:8px;}
+
+  .controlbar{
+    position:fixed; left:50%; bottom:18px; transform:translateX(-50%); z-index:70;
+    display:flex; align-items:center; gap:4px;
+    background:#2B2B2E; border-radius:999px; padding:8px 10px;
+    box-shadow:0 16px 40px -12px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.04) inset;
+  }
+  .controlbar button{appearance:none; border:none; background:transparent; cursor:pointer; color:#C9C9D2; display:grid; place-items:center; border-radius:999px; transition:.12s ease; font-family:var(--serif);}
+  .controlbar .ico{width:38px; height:38px;}
+  .controlbar .ico svg{width:19px;height:19px;}
+  .controlbar .ico:hover{color:#fff; background:rgba(255,255,255,.1);}
+  .controlbar .ico:disabled{color:#5C5C66; cursor:not-allowed; background:transparent;}
+  .controlbar .sep{width:1px; height:24px; background:rgba(255,255,255,.16); margin:0 6px;}
+  .controlbar .count{ color:#EDEDF2; font-style:italic; font-family:Georgia,'Times New Roman',serif; font-size:17px; min-width:78px; text-align:center; letter-spacing:.02em; user-select:none;}
+  .controlbar .count b{font-style:italic; font-weight:600;}
+  .controlbar .zoom{width:32px;height:38px; color:#9A9AA6; font-size:18px;}
+  .controlbar .zoom:hover{color:#fff;}
+  .controlbar .zoom svg{width:17px;height:17px;}
+  .controlbar .pdf{
+    margin-left:6px; background:#7CB342; color:#fff; font-weight:800; font-size:14px; letter-spacing:.06em;
+    padding:0 22px; height:38px; border-radius:999px; display:flex; align-items:center;
+    box-shadow:0 6px 16px -6px rgba(124,179,66,.8);
+  }
+  .controlbar .pdf:hover{background:#86BD4B; color:#fff;}
+
+  .overview{position:fixed; inset:0; z-index:80; background:rgba(22,20,43,.55); backdrop-filter:blur(8px); display:none; padding:40px; overflow:auto;}
+  .overview.on{display:block;}
+  .overview .head{display:flex; align-items:center; justify-content:space-between; max-width:1100px; margin:0 auto 18px; color:#fff;}
+  .overview .head h3{margin:0; font-size:18px; font-weight:800;}
+  .overview .head button{appearance:none;border:1px solid rgba(255,255,255,.3); background:rgba(255,255,255,.1); color:#fff; border-radius:10px; padding:8px 14px; cursor:pointer; font-family:var(--serif); font-weight:700; font-size:13px;}
+  .ovgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; max-width:1100px; margin:0 auto;}
+  .ovcard{background:#fff; border:1px solid var(--line); border-radius:11px; padding:13px 15px; cursor:pointer; transition:.12s; text-align:left;}
+  .ovcard:hover{transform:translateY(-2px); box-shadow:0 12px 22px -12px rgba(0,0,0,.4); border-color:var(--violet);}
+  .ovcard .ovn{font-family:var(--mono); font-size:11px; color:var(--violet); font-weight:700;}
+  .ovcard .ovt{font-size:13.5px; font-weight:700; margin-top:4px; line-height:1.3; color:var(--ink);}
+
+  .hint{position:fixed; left:18px; bottom:24px; z-index:65; font-size:11px; color:var(--mut); font-family:var(--mono);}
+
+
+  /* ===== 이미지 / 도해 컴포넌트 (덱 하네스 추가분) ===== */
+  .figure{border:1px solid var(--line); border-radius:4px; background:var(--wash-2); overflow:hidden; display:flex; flex-direction:column; min-height:0;}
+  .figure img{display:block; width:100%; height:auto; object-fit:contain; min-height:0;}
+  .figure figcaption{font-family:var(--mono); font-size:11px; color:var(--mut); padding:7px 11px; border-top:1px solid var(--line); background:#fff;}
+  .figure.tight img{max-height:330px; object-fit:contain; background:#fff;}
+  /* 원본이 검은 여백을 달고 있는 캡처용 */
+  .figure.dark{background:#16142B; border-color:#2A2548;}
+  .figure.dark img{background:#16142B;}
+  .figure.dark figcaption{background:#1C1933; color:#9C97D6; border-top-color:#2A2548;}
+
+  /* 스크린샷: 창 프레임을 씌워 원본 캡처임을 드러낸다 */
+  .shot{border:1px solid var(--line); border-radius:9px; overflow:hidden; background:#fff; box-shadow:0 10px 26px -18px rgba(28,25,51,.6); display:flex; flex-direction:column; min-height:0;}
+  .shot .sbar{display:flex; align-items:center; gap:6px; padding:7px 11px; background:var(--wash); border-bottom:1px solid var(--line);}
+  .shot .sbar .d{width:9px;height:9px;border-radius:50%;background:var(--violet-300);}
+  .shot .sbar .t{margin-left:6px; font-family:var(--mono); font-size:11px; color:var(--mut);}
+  .shot img{display:block; width:100%; height:auto; max-height:400px; object-fit:contain; min-height:0;}
+
+  /* 도구 두 가지를 나란히 처음 보여줄 때 — 그림과 한 줄만 */
+  .duo{display:grid; grid-template-columns:1fr 1fr; gap:30px;}
+  .duo .side{border:1px solid var(--line); border-radius:18px; background:var(--wash-2);
+    padding:34px 30px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:20px; text-align:center;}
+  .duo .side img{max-height:92px; max-width:78%; width:auto; display:block;}
+  .duo .side .tagline{font-family:var(--mono); font-size:11.5px; letter-spacing:.12em;
+    color:var(--violet); text-transform:uppercase; font-weight:700;}
+  .duo .side h3{margin:0; font-size:23px; font-weight:800; letter-spacing:-.02em;}
+  .duo .side p{margin:0; font-size:15px; color:var(--ink-soft); line-height:1.55; max-width:30ch;}
+
+  /* 제품·도구 로고 — 작은 브랜드 마크 */
+  .brandmark{display:flex; align-items:center; gap:15px; margin-bottom:18px;}
+  .brandmark img{height:46px; width:auto; display:block;}
+  .brandmark .bt{font-size:13.5px; color:var(--ink-soft); line-height:1.45;}
+  .brandmark .bt b{color:var(--ink);}
+
+  /* 채워야 할 이미지 자리 — 인쇄에도 남으므로 발표 전 반드시 교체 */
+  .need-img{border:2px dashed var(--violet-300); border-radius:4px; background:repeating-linear-gradient(135deg,#FBFAFF,#FBFAFF 10px,#F4F1FF 10px,#F4F1FF 20px);
+    display:flex; flex-direction:column; justify-content:center; gap:6px; padding:20px 22px; min-height:150px;}
+  .need-img .nk{font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:.1em; color:var(--violet); text-transform:uppercase;}
+  .need-img .nd{font-size:14px; font-weight:700; color:var(--ink); line-height:1.4;}
+  .need-img .nm2{font-family:var(--mono); font-size:11.5px; color:var(--mut);}
+  .need-img.sm{min-height:92px; padding:14px 16px; align-items:center; text-align:center;}
+
+  /* 코드 실행 결과 */
+  .code .out{border-top:1px dashed #38325C; background:#141127; padding:11px 18px; font-family:var(--mono); font-size:12.5px; line-height:1.55; color:#9DE39A; white-space:pre; overflow:auto;}
+  .code .out .ol{color:#7D78B8;}
+  .code .err{color:#FF8E8E;}
+
+  /* 메모리 슬롯 도해 */
+  .slots{display:flex; gap:8px; flex-wrap:wrap; align-items:flex-start;}
+  .slot{border:1.5px solid var(--line); border-radius:8px; min-width:74px; padding:9px 11px; text-align:center; background:#fff;}
+  .slot .adr{font-family:var(--mono); font-size:10px; color:var(--mut); letter-spacing:.02em;}
+  .slot .val{font-family:var(--mono); font-size:15px; font-weight:700; color:var(--ink); margin-top:2px;}
+  .slot .nm{font-size:11px; color:var(--violet); font-weight:700; margin-top:3px;}
+  .slot.ref{border-style:dashed; border-color:var(--violet-300); background:var(--wash-2);}
+  .slot.dim{opacity:.45;}
+  .ptr{display:grid; place-items:center; color:var(--violet); font-family:var(--mono); font-size:18px; font-weight:700; padding:0 2px; align-self:center;}
+
+  /* 인라인 SVG 차트 */
+  .plot{background:var(--wash-2); border:1px solid var(--line); border-radius:4px; padding:14px; display:grid; place-items:center; min-height:0;}
+  .plot svg{width:100%; height:auto; display:block; max-height:300px;}
+  .plot .cap{font-family:var(--mono); font-size:11px; color:var(--mut); margin-top:8px; text-align:center;}
+  .formula .cap{font-family:var(--mono); font-size:11.5px; color:var(--code-dim); text-align:center;}
+
+  /* 수정·보강 표시 (원본 pptx에 없던 내용) */
+  .newmark{position:absolute; top:30px; right:112px; font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.08em;
+    color:var(--mint); border:1px solid #BFE9E1; background:var(--mint-soft); border-radius:999px; padding:3px 9px;}
+
+  @media print{
+    @page{ size:1280px 720px; margin:0; }
+    body{background:#fff !important;}
+    .controlbar,.progress,.hint,.overview{display:none !important;}
+    .stage{position:static; inset:auto; overflow:visible; display:block; padding:0;}
+    .sizer{width:auto !important; height:auto !important;}
+    .scaler{transform:none !important; width:auto !important; height:auto !important;}
+    .slide{ display:flex !important; width:1280px !important; height:720px !important;
+      border-radius:0 !important; border:none !important; box-shadow:none !important;
+      page-break-after:always; break-after:page;
+      -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .slide:last-child{page-break-after:auto;}
+  }
+
+/* nvidia-dli 원본 규칙 */
+.figwrap img{max-width:100%; max-height:100%; object-fit:contain; border-radius:3px;
+    box-shadow:0 8px 24px -18px rgba(43,28,120,.4);}
+
+/* nvidia-dli 컨테이너 규칙 */
+.figwrap{flex:1; min-height:0; display:flex; align-items:center; justify-content:center;
+    background:var(--wash-2); border:1px solid var(--line); border-radius:4px; padding:12px;}
+</style>
+</head>
+<body>
+
+<div class="progress"><div class="fill" id="pfill"></div></div>
+
+<main class="stage" id="stage">
+  <div class="sizer" id="sizer">
+    <div class="scaler" id="scaler">
+
+
+
+<!-- ============================================================
+     슬라이드는 여기부터. 규격: 1280x720 고정.
+     첫 장은 slide cover active, 나머지는 active 없이.
+     ============================================================ -->
+
+<section class="slide cover active" data-title="표지 · 하네스">
+  <div class="aperture"></div><div class="ring"></div>
+  <div class="wrap">
+    <div class="kick"><span class="pill">WEEK 4 · DAY 2</span><span>Harness</span></div>
+    <h1>하네스 다루기</h1>
+  </div>
+</section>
+<section class="slide" data-title="오늘의 일정">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">AGENDA</span><span class="dot"></span>일정</div>
+  <h2 class="s-title">오늘의 일정</h2>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="cards c4">
+      <div class="card"><span class="n">CH0~1</span><h3>하네스의 정체</h3><p>모델 바깥에 붙은 장치가 무엇인지, 그 안에서 어떤 루프가 도는지 본다.</p></div>
+      <div class="card"><span class="n">CH2~3</span><h3>규칙 파일과 스킬</h3><p>같은 말을 매번 다시 적지 않게 만드는 두 가지다. 오늘 직접 만든다.</p></div>
+      <div class="card"><span class="n">CH4~6</span><h3>위임 · 병렬 · 안전장치</h3><p>일을 나눠 맡기고, 여럿을 동시에 돌리고, 사고를 막는 울타리를 친다.</p></div>
+      <div class="card"><span class="n">CH7~8</span><h3>지형도와 사내 도입</h3><p>지금 쓸 만한 하네스를 늘어놓고, 사내에 무엇을 들일지 판단 기준을 세운다.</p></div>
+    </div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 하네스 — 모델 바깥에 붙은 장치">
+  <div class="ghost">00</div>
+  <div class="seyebrow">CHAPTER 00</div>
+  <h2>하네스 — 모델 바깥에 붙은 장치</h2>
+  <div class="agenda"><span>이름의 유래</span><span>모델과의 경계</span><span>루프</span></div>
+</section>
+<section class="slide" data-title="이름의 유래">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>유래</div>
+  <h2 class="s-title sm">하네스라는 이름</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="figure"><img src="assets/harness-one.webp" alt="마구를 채운 짐말이 수레를 끄는 사진. 목에 두른 멍에가 어깨의 힘을 수레채로 보내고, 가슴과 배를 두른 가죽띠가 몸에 고정하며, 눈가리개가 옆을 못 보게 막고, 고삐가 마부의 손까지 이어져 방향을 잡는다"/><figcaption>출처 — Draft horse, Guédelon, France, Ibex73, CC BY-SA 4.0</figcaption></div><div class="keymsg"><span class="k">마구가 하는 일</span><div>말을 <b>세게 만들지 않는다.</b> 힘을 수레로 잇고, 옆을 막고, 방향을 준다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="경계">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>경계</div>
+  <h2 class="s-title sm">모델과 하네스의 경계</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="twopane">
+  <div class="pane good"><h4>모델이 하는 일</h4>
+    <p>글을 읽고 <b>다음에 무엇을 할지</b> 고른다.</p>
+    <p class="mini">말할 줄 안다 &middot; 코드를 쓸 줄 안다<br/>
+       파일을 직접 열지는 못한다</p></div>
+  <div class="pane"><h4>하네스가 하는 일</h4>
+    <p>고른 것을 <b>실제로 실행하고</b> 결과를 돌려준다.</p>
+    <p class="mini">파일을 열어 준다 &middot; 명령을 돌려 준다<br/>
+       못 할 일을 막고 &middot; 규칙을 앞에 붙인다</p></div>
+</div><div class="keymsg"><span class="k">바꿀 수 있는 쪽</span><div>모델은 <b>고르는 데까지</b>다. 나머지는 전부 하네스가 하고, <b>그쪽은 고칠 수 있다.</b></div></div>
+  </div>
+</section>
+<section class="slide" data-title="네 가지">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>역할</div>
+  <h2 class="s-title sm">하네스가 맡는 네 가지</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="vlist"><div class="v"><span class="b">도구</span><div>파일 읽기 &middot; 명령 실행 &middot; 검색 &middot; 브라우저를 <b>쥐여 준다</b>. 없으면 말만 한다.</div></div><div class="v"><span class="b">순서</span><div>무엇을 먼저 하고 언제 멈출지 정한다. <b>계획 &rarr; 실행 &rarr; 검증</b> 같은 흐름이다.</div></div><div class="v"><span class="b">울타리</span><div>지우면 안 될 것을 막고, 위험한 명령은 사람에게 물어본다.</div></div><div class="v"><span class="b">배경</span><div>프로젝트 규칙 &middot; 코딩 관례 &middot; 자주 쓰는 절차를 <b>매번 안 적어도</b> 들어가게 한다.</div></div></div><div class="keymsg"><span class="k">오늘 손대는 곳</span><div>넷 다 <b>설정 파일과 문서</b>로 바꾼다. 모델을 바꾸는 것이 아니다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="루프">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>구조</div>
+  <h2 class="s-title sm">에이전트 루프</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="plot"><svg viewBox="0 0 1116 300">
+  <rect x="30" y="60" width="180" height="90" rx="12" fill="#EFEAFF" stroke="#3A1FC9" stroke-width="1.8"/>
+  <text x="120" y="98" font-size="14" font-weight="800" fill="#3A1FC9" text-anchor="middle">사람의 요청</text>
+  <text x="120" y="122" font-size="11.5" fill="#16142B" text-anchor="middle">로그인 화면을 고쳐 줘</text>
+
+  <path d="M216 105 H286" stroke="#3A1FC9" stroke-width="2.2" fill="none"/>
+  <path d="M282 98l14 7-14 7z" fill="#3A1FC9"/>
+
+  <rect x="294" y="34" width="700" height="188" rx="14" fill="#FAFAFD" stroke="#C9C4E4" stroke-width="1.6" stroke-dasharray="7 5"/>
+  <text x="644" y="58" font-size="11.5" font-weight="800" fill="#8E8AAC" text-anchor="middle">하네스가 도는 고리 &mdash; 끝날 때까지 반복한다</text>
+
+  <rect x="320" y="76" width="152" height="72" rx="10" fill="#fff" stroke="#3A1FC9" stroke-width="1.6"/>
+  <text x="396" y="106" font-size="13" font-weight="800" fill="#3A1FC9" text-anchor="middle">생각</text>
+  <text x="396" y="128" font-size="11" fill="#5B5580" text-anchor="middle">다음에 뭘 하지</text>
+
+  <path d="M476 112 H520" stroke="#3A1FC9" stroke-width="2" fill="none"/>
+  <path d="M516 105l14 7-14 7z" fill="#3A1FC9"/>
+
+  <rect x="530" y="76" width="152" height="72" rx="10" fill="#fff" stroke="#3A1FC9" stroke-width="1.6"/>
+  <text x="606" y="106" font-size="13" font-weight="800" fill="#3A1FC9" text-anchor="middle">도구 실행</text>
+  <text x="606" y="128" font-size="11" fill="#5B5580" text-anchor="middle">파일을 연다</text>
+
+  <path d="M686 112 H730" stroke="#3A1FC9" stroke-width="2" fill="none"/>
+  <path d="M726 105l14 7-14 7z" fill="#3A1FC9"/>
+
+  <rect x="740" y="76" width="152" height="72" rx="10" fill="#fff" stroke="#3A1FC9" stroke-width="1.6"/>
+  <text x="816" y="106" font-size="13" font-weight="800" fill="#3A1FC9" text-anchor="middle">결과 읽기</text>
+  <text x="816" y="128" font-size="11" fill="#5B5580" text-anchor="middle">됐나 안 됐나</text>
+
+  <path d="M816 152 V186 H396 V152" stroke="#8E7BE8" stroke-width="2" fill="none" stroke-dasharray="6 4"/>
+  <path d="M389 156l7 -12 7 12z" fill="#8E7BE8"/>
+  <text x="606" y="204" font-size="11.5" font-weight="800" fill="#8E7BE8" text-anchor="middle">아직 안 끝났으면 다시 위로</text>
+
+  <path d="M898 112 H1010" stroke="#0B6B4F" stroke-width="2.2" fill="none"/>
+  <path d="M1006 105l14 7-14 7z" fill="#0B6B4F"/>
+  <text x="1058" y="100" font-size="12.5" font-weight="800" fill="#0B6B4F" text-anchor="middle">끝</text>
+  <text x="1058" y="120" font-size="11" fill="#0B6B4F" text-anchor="middle">보고</text>
+
+  <text x="558" y="262" font-size="12.5" font-weight="800" fill="#3A1FC9" text-anchor="middle">한 번 시켜서 한 번 답하는 것이 아니다 &nbsp;&middot;&nbsp; 스스로 될 때까지 돈다</text>
+</svg></div><div class="keymsg"><span class="k">채팅과 다른 점</span><div>채팅은 <b>한 번 주고받는다.</b> 하네스는 <b>결과를 보고 다시 고른다.</b></div></div>
+  </div>
+</section>
+<section class="slide" data-title="실물">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>실측</div>
+  <h2 class="s-title sm">루프가 도는 실물</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">로그인 버튼 색을 바꿔 달라고 시킨 뒤</span></div><pre><code>&#9679; Glob(pattern: "**/login*.tsx")            <span class="cm">&larr; 찾는다</span>
+  &#8627; 2 files
+
+&#9679; Read(src/app/login/page.tsx)              <span class="cm">&larr; 읽는다</span>
+  &#8627; 84 lines
+
+&#9679; Edit(src/app/login/page.tsx)              <span class="cm">&larr; 고친다</span>
+  &#8627; 1 addition, 1 removal
+
+&#9679; Bash(npm run build)                       <span class="cm">&larr; 확인한다</span>
+  &#8627; Compiled successfully in 4.1s</code></pre></div><div class="keymsg"><span class="k">네 줄이 한 번의 요청</span><div>사람이 시킨 것은 <b>한 문장</b>이다. 나머지 네 단계는 <b>루프가 스스로</b> 돈 것이다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="근거">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>근거</div>
+  <h2 class="s-title sm">모델을 그대로 두고 올린 점수</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="ctable"><table style="width:100%"><thead><tr><th>무엇을 바꿨나</th><th>결과</th><th>출처</th></tr></thead><tbody><tr><td class="hl">모델은 그대로 두고 하네스만 고침</td><td class="hl">코딩 과제 정답률이 크게 올랐다</td><td>LangChain, Deep Agents</td></tr><tr><td>에이전트 16개를 한 저장소에 병렬 투입</td><td>C 컴파일러 한 벌을 완성했다</td><td>Anthropic</td></tr><tr><td>도구 설명을 다시 쓰고 결과를 줄임</td><td>토큰이 줄고 정확도가 올랐다</td><td>Anthropic, 도구 설계</td></tr><tr><td class="hl">하네스 없이 채팅창에만 붙여 넣음</td><td class="hl">파일을 못 열어 사람이 계속 나른다</td><td>&mdash;</td></tr></tbody></table></div><div class="keymsg"><span class="k">돈이 덜 드는 쪽</span><div>더 좋은 모델을 기다리는 것보다 <b>하네스를 고치는 편</b>이 빠르고 싸다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="다섯 층">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>구조</div>
+  <h2 class="s-title sm">하네스를 이루는 다섯 층</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="plot"><svg viewBox="0 0 1116 300">
+  <text x="558" y="20" font-size="11.5" font-weight="800" fill="#8E8AAC" text-anchor="middle">아래로 갈수록 바꾸기 쉽다</text>
+
+  <rect x="230" y="32" width="656" height="46" rx="10" fill="#EDEBF6" stroke="#C9C4E4" stroke-width="1.5"/>
+  <text x="252" y="60" font-size="12" font-weight="800" fill="#8E8AAC">5층</text>
+  <text x="558" y="60" font-size="13.5" font-weight="800" fill="#5B5580" text-anchor="middle">모델</text>
+  <text x="864" y="60" font-size="11.5" font-weight="700" fill="#8E8AAC" text-anchor="end">고를 수만 있다</text>
+
+  <rect x="230" y="84" width="656" height="46" rx="10" fill="#F4F1FF" stroke="#8E7BE8" stroke-width="1.6"/>
+  <text x="252" y="112" font-size="12" font-weight="800" fill="#6A5ACD">4층</text>
+  <text x="558" y="112" font-size="13.5" font-weight="800" fill="#16142B" text-anchor="middle">루프와 도구</text>
+  <text x="864" y="112" font-size="11.5" font-weight="700" fill="#8E8AAC" text-anchor="end">하네스가 정해 둔다</text>
+
+  <rect x="230" y="136" width="656" height="46" rx="10" fill="#EFEAFF" stroke="#3A1FC9" stroke-width="1.8"/>
+  <text x="252" y="164" font-size="12" font-weight="800" fill="#3A1FC9">3층</text>
+  <text x="558" y="164" font-size="13.5" font-weight="800" fill="#16142B" text-anchor="middle">권한과 훅</text>
+  <text x="864" y="164" font-size="11.5" font-weight="800" fill="#3A1FC9" text-anchor="end">설정 파일</text>
+
+  <rect x="230" y="188" width="656" height="46" rx="10" fill="#EFEAFF" stroke="#3A1FC9" stroke-width="1.8"/>
+  <text x="252" y="216" font-size="12" font-weight="800" fill="#3A1FC9">2층</text>
+  <text x="558" y="216" font-size="13.5" font-weight="800" fill="#16142B" text-anchor="middle">스킬과 서브에이전트</text>
+  <text x="864" y="216" font-size="11.5" font-weight="800" fill="#3A1FC9" text-anchor="end">마크다운 한 장</text>
+
+  <rect x="230" y="240" width="656" height="46" rx="10" fill="#EFF9F4" stroke="#0B6B4F" stroke-width="1.8"/>
+  <text x="252" y="268" font-size="12" font-weight="800" fill="#0B6B4F">1층</text>
+  <text x="558" y="268" font-size="13.5" font-weight="800" fill="#16142B" text-anchor="middle">규칙 파일</text>
+  <text x="864" y="268" font-size="11.5" font-weight="800" fill="#0B6B4F" text-anchor="end">지금 바로</text>
+</svg></div><div class="keymsg"><span class="k">오늘 만지는 층</span><div><b>1층부터 3층까지</b>다. 셋 다 파일이라서 저장소에 넣고 팀이 같이 쓴다.</div></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 루프에 무엇이 들어가나">
+  <div class="ghost">01</div>
+  <div class="seyebrow">CHAPTER 01</div>
+  <h2>루프에 무엇이 들어가나</h2>
+  <div class="agenda"><span>컨텍스트 창</span><span>통째로 붙이기의 값</span><span>덜어 내는 법</span></div>
+</section>
+<section class="slide" data-title="창">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>컨텍스트</div>
+  <h2 class="s-title sm">창을 채우는 네 가지</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="plot"><svg viewBox="0 0 1116 300">
+  <rect x="120" y="30" width="876" height="212" rx="14" fill="#FAFAFD" stroke="#3A1FC9" stroke-width="2"/>
+  <text x="558" y="22" font-size="11.5" font-weight="800" fill="#3A1FC9" text-anchor="middle">컨텍스트 창 &mdash; 한 번에 읽을 수 있는 글의 총량</text>
+
+  <rect x="140" y="44" width="836" height="36" rx="8" fill="#EDEBF6"/>
+  <text x="162" y="67" font-size="12" font-weight="800" fill="#5B5580">하네스 기본 설명</text>
+  <text x="956" y="67" font-size="11.5" font-weight="700" fill="#8E8AAC" text-anchor="end">도구 목록 &middot; 지켜야 할 것</text>
+
+  <rect x="140" y="86" width="836" height="36" rx="8" fill="#EFF9F4"/>
+  <text x="162" y="109" font-size="12" font-weight="800" fill="#0B6B4F">규칙 파일 &middot; 스킬 설명</text>
+  <text x="956" y="109" font-size="11.5" font-weight="700" fill="#0B6B4F" text-anchor="end">사람이 넣는 곳</text>
+
+  <rect x="140" y="128" width="836" height="36" rx="8" fill="#EFEAFF"/>
+  <text x="162" y="151" font-size="12" font-weight="800" fill="#3A1FC9">주고받은 말</text>
+  <text x="956" y="151" font-size="11.5" font-weight="700" fill="#3A1FC9" text-anchor="end">돌수록 쌓인다</text>
+
+  <rect x="140" y="170" width="836" height="58" rx="8" fill="#FDF0EE" stroke="#C4442E" stroke-width="1.4"/>
+  <text x="162" y="194" font-size="12" font-weight="800" fill="#C4442E">읽은 파일 &middot; 명령 출력</text>
+  <text x="956" y="194" font-size="11.5" font-weight="800" fill="#C4442E" text-anchor="end">여기가 제일 빨리 찬다</text>
+  <text x="558" y="216" font-size="11" fill="#8E8AAC" text-anchor="middle">파일 하나가 수천 글자다 &middot; 로그 한 번이 수만 글자다</text>
+
+  <text x="558" y="272" font-size="12.5" font-weight="800" fill="#3A1FC9" text-anchor="middle">넣는 것이 늘수록 답이 좋아지지 않는다 &nbsp;&middot;&nbsp; 찾아야 할 것이 묻힌다</text>
+</svg></div><div class="keymsg"><span class="k">창은 책상이다</span><div>넓다고 좋은 것이 아니다. <b>필요한 것만 올려 둘 때</b> 제일 잘 찾는다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="차면">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>한계</div>
+  <h2 class="s-title sm">창이 찼을 때 벌어지는 일</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="twopane">
+  <div class="pane bad"><h4>그냥 두면</h4>
+    <p>앞쪽 말이 <b>요약으로 접힌다.</b></p>
+    <p>접히면서 <q>테스트를 먼저 돌린다</q> 같은 <b>초반 지시가 흐려진다.</b></p>
+    <p class="mini">같은 파일을 두 번 읽고, 이미 고친 곳을 또 고친다</p></div>
+  <div class="pane good"><h4>미리 나누면</h4>
+    <p>큰 일을 <b>단계로 쪼개고</b> 단계마다 새 창에서 시작한다.</p>
+    <p>지시는 <b>파일에 적어 둔다.</b> 접혀도 다시 읽힌다.</p>
+    <p class="mini">규칙 파일 &middot; 진행 파일이 그 노릇을 한다</p></div>
+</div><div class="keymsg"><span class="k">길게 끌수록 나빠진다</span><div>한 창에서 <b>오래 붙들지 않는다.</b> 끊고 다시 시작하는 것이 대개 낫다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="값">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>실측</div>
+  <h2 class="s-title sm">통째로 붙이기의 값</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">스킬 문서를 전부 넣으면 어떻게 되나</span></div><pre><code>$ cat ~/.claude/skills/*/SKILL.md | wc -m
+3211271          <span class="cm">&larr; 본문을 다 합치면 321만 자</span>
+
+$ grep -h "^description:" ~/.claude/skills/*/SKILL.md | wc -m
+5011             <span class="cm">&larr; 한 줄 설명만 합치면 5천 자</span></code></pre></div><div class="keymsg"><span class="k">641배</span><div>본문을 다 넣으면 <b>창에 안 들어간다.</b> 그래서 한 줄 설명만 띄우고 본문은 필요할 때 부른다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="찾아 읽기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>방법</div>
+  <h2 class="s-title sm">읽기와 찾기의 차이</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="ctable"><table style="width:100%"><thead><tr><th>시키는 말</th><th>무슨 일이 벌어지나</th><th>창에 쌓이는 양</th></tr></thead><tbody><tr><td class="hl">이 폴더를 다 읽고 알려 줘</td><td class="hl">파일 수백 개를 통째로 넣는다</td><td class="hl">수십만 글자</td></tr><tr><td>로그인 처리하는 곳을 찾아 줘</td><td>검색으로 후보를 좁힌 뒤 그 파일만 읽는다</td><td>수천 글자</td></tr><tr><td>이 함수를 부르는 곳을 알려 줘</td><td>이름으로 검색해 줄 번호만 모은다</td><td>수백 글자</td></tr></tbody></table></div><div class="keymsg"><span class="k">시키는 말을 바꾼다</span><div><b>다 읽어</b> 대신 <b>찾아 줘</b> 라고 적는다. 같은 답이 나오고 값은 백 분의 일이다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="세 가지">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>방법</div>
+  <h2 class="s-title sm">창을 덜어 내는 세 가지</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="vlist"><div class="v"><span class="b">압축</span><div>주고받은 말을 요약으로 접는다. <code>/compact</code> 로 직접 하거나 차면 알아서 접힌다.</div></div><div class="v"><span class="b">참조</span><div>내용을 넣지 않고 <b>어디에 있는지만</b> 넣는다. 스킬과 규칙 파일이 이 방식이다.</div></div><div class="v"><span class="b">위임</span><div>읽어야 할 것이 많은 일은 <b>따로 떼어</b> 다른 창에서 시키고 결론만 받는다.</div></div></div><div class="keymsg"><span class="k">셋 중 제일 센 것</span><div><b>위임</b>이다. 파일 200개를 읽어도 본체 창에는 <b>결론 열 줄</b>만 들어온다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="이어 가기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>방법</div>
+  <h2 class="s-title sm">긴 작업을 이어 가는 파일</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">PROGRESS.md &mdash; 창이 새로 시작해도 여기부터 읽는다</span></div><pre><code># 목표
+사내 설비 조회 화면을 만든다
+
+## 끝난 것
+- [x] 화면 뼈대와 목록 표
+- [x] 검색 상자
+
+## 다음에 할 것
+- [ ] 설비 상세 화면            <span class="cm">&larr; 여기서 이어 간다</span>
+- [ ] 엑셀 내려받기
+
+## 정한 것
+- 날짜는 YYYY-MM-DD 로만 쓴다   <span class="cm">&larr; 다시 물어보지 않게 적어 둔다</span></code></pre></div><div class="keymsg"><span class="k">창은 지워져도</span><div><b>파일은 남는다.</b> 하루 넘게 가는 일은 반드시 이런 파일을 하나 둔다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="토큰">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH1</span><span class="dot"></span>값</div>
+  <h2 class="s-title sm">토큰과 값의 관계</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="ctable"><table style="width:100%"><thead><tr><th>버릇</th><th>한 번에 드는 값</th><th>하루 스무 번이면</th></tr></thead><tbody><tr><td class="hl">폴더를 통째로 읽힌다</td><td class="hl">비싸다</td><td class="hl">하루 값의 대부분이 여기서 나간다</td></tr><tr><td>검색으로 좁혀서 읽힌다</td><td>싸다</td><td>거의 안 든다</td></tr><tr><td>한 창을 종일 끌고 간다</td><td>돌수록 비싸진다</td><td>뒤로 갈수록 느리고 비싸다</td></tr><tr><td class="hl">단계마다 새로 시작한다</td><td class="hl">싸게 유지된다</td><td class="hl">답도 더 정확하다</td></tr></tbody></table></div><div class="keymsg"><span class="k">느려지면 값이 새는 것이다</span><div>답이 <b>느려지고 헤매기 시작하면</b> 창이 찬 것이다. 끊고 다시 시작한다.</div></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 규칙 파일 — 매번 안 적어도 되게">
+  <div class="ghost">02</div>
+  <div class="seyebrow">CHAPTER 02</div>
+  <h2>규칙 파일 — 매번 안 적어도 되게</h2>
+  <div class="agenda"><span>읽히는 순서</span><span>적을 것</span><span>실습</span></div>
+</section>
+<section class="slide" data-title="규칙 파일">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>개념</div>
+  <h2 class="s-title sm">규칙 파일</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="duo">
+  <div class="side"><div class="tagline">없을 때</div>
+    <h3>매번 다시 적는다</h3>
+    <p>패키지 관리자는 npm 이고, 날짜는 이 꼴로 쓰고, 커밋 메시지는 한글로 &mdash;
+       새 창을 열 때마다 같은 말을 다시 적는다.</p></div>
+  <div class="side"><div class="tagline">있을 때</div>
+    <h3>파일 한 장에 적어 둔다</h3>
+    <p>프로젝트 폴더에 <code>CLAUDE.md</code> 를 두면 <b>창을 열 때 자동으로 읽힌다.</b>
+       사람이 아무것도 안 해도 앞에 붙는다.</p></div>
+</div><div class="keymsg"><span class="k">한 번 적고 계속 쓴다</span><div>규칙 파일은 <b>프롬프트를 저장해 둔 것</b>이다. 저장소에 넣으면 팀이 같이 쓴다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="순서">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>구조</div>
+  <h2 class="s-title sm">읽히는 순서</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="plot"><svg viewBox="0 0 1116 300">
+  <rect x="60" y="40" width="300" height="82" rx="12" fill="#EDEBF6" stroke="#C9C4E4" stroke-width="1.6"/>
+  <text x="210" y="70" font-size="13" font-weight="800" fill="#5B5580" text-anchor="middle">내 계정 전체</text>
+  <text x="210" y="92" font-size="11.5" font-family="ui-monospace,monospace" fill="#8E8AAC" text-anchor="middle">~/.claude/CLAUDE.md</text>
+  <text x="210" y="110" font-size="11" fill="#8E8AAC" text-anchor="middle">말투 &middot; 개인 취향</text>
+
+  <rect x="408" y="40" width="300" height="82" rx="12" fill="#EFEAFF" stroke="#3A1FC9" stroke-width="1.8"/>
+  <text x="558" y="70" font-size="13" font-weight="800" fill="#3A1FC9" text-anchor="middle">프로젝트</text>
+  <text x="558" y="92" font-size="11.5" font-family="ui-monospace,monospace" fill="#3A1FC9" text-anchor="middle">&lt;저장소&gt;/CLAUDE.md</text>
+  <text x="558" y="110" font-size="11" fill="#16142B" text-anchor="middle">기술 &middot; 규칙 &middot; 명령</text>
+
+  <rect x="756" y="40" width="300" height="82" rx="12" fill="#EFF9F4" stroke="#0B6B4F" stroke-width="1.8"/>
+  <text x="906" y="70" font-size="13" font-weight="800" fill="#0B6B4F" text-anchor="middle">하위 폴더</text>
+  <text x="906" y="92" font-size="11.5" font-family="ui-monospace,monospace" fill="#0B6B4F" text-anchor="middle">src/api/CLAUDE.md</text>
+  <text x="906" y="110" font-size="11" fill="#16142B" text-anchor="middle">그 폴더에서만</text>
+
+  <path d="M364 81 H400" stroke="#8E8AAC" stroke-width="2"/><path d="M396 74l14 7-14 7z" fill="#8E8AAC"/>
+  <path d="M712 81 H748" stroke="#8E8AAC" stroke-width="2"/><path d="M744 74l14 7-14 7z" fill="#8E8AAC"/>
+
+  <path d="M120 140 H1000" stroke="#E7E4F5" stroke-width="1.4"/>
+  <text x="558" y="176" font-size="13" font-weight="800" fill="#16142B" text-anchor="middle">셋이 겹치면 &mdash; 뒤에 읽힌 것이 이긴다</text>
+  <text x="558" y="200" font-size="11.5" fill="#8E8AAC" text-anchor="middle">좁은 곳의 규칙이 넓은 곳의 규칙을 덮는다</text>
+
+  <rect x="290" y="222" width="536" height="52" rx="10" fill="#FDF0EE" stroke="#C4442E" stroke-width="1.4"/>
+  <text x="558" y="244" font-size="12.5" font-weight="800" fill="#C4442E" text-anchor="middle">저장소에 넣으면 팀 전체에 적용된다</text>
+  <text x="558" y="264" font-size="11.5" fill="#5B5580" text-anchor="middle">개인 취향은 계정 쪽에, 팀 규칙은 저장소 쪽에</text>
+</svg></div><div class="keymsg"><span class="k">어디에 적느냐가 곧 범위다</span><div>나만 쓸 것은 <b>계정</b>에, 팀이 같이 쓸 것은 <b>저장소</b>에 적는다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="두 이름">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>비교</div>
+  <h2 class="s-title sm">CLAUDE.md 와 AGENTS.md</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="ctable"><table style="width:100%"><thead><tr><th></th><th>CLAUDE.md</th><th>AGENTS.md</th></tr></thead><tbody><tr><td>누가 읽나</td><td>Claude Code</td><td class="hl">Codex &middot; Cursor &middot; 여러 도구가 같이</td></tr><tr><td>성격</td><td>한 도구 전용</td><td class="hl">여러 도구가 같이 보는 공용 규격</td></tr><tr><td>둘 다 있으면</td><td class="hl">첫 줄에 <code>@AGENTS.md</code> 를 적어 불러온다</td><td>내용은 여기 한 벌만 둔다</td></tr><tr><td>권하는 방식</td><td>얇게 &mdash; 불러오는 줄만</td><td class="hl">두껍게 &mdash; 실제 규칙은 전부 여기</td></tr></tbody></table></div><div class="keymsg"><span class="k">두 벌로 나누지 않는다</span><div>규칙이 두 곳에 갈라지면 <b>반드시 어긋난다.</b> 한 벌만 두고 <b>불러다 쓴다.</b></div></div>
+  </div>
+</section>
+<section class="slide" data-title="한 벌">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>실측</div>
+  <h2 class="s-title sm">한 벌만 두는 방식</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">프로젝트 여섯 곳을 세어 본 결과</span></div><pre><code>$ wc -l */CLAUDE.md
+     136 dduki/CLAUDE.md            <span class="cm">&larr; 여기만 두껍다</span>
+       1 poll-it/CLAUDE.md
+       1 real-estate/CLAUDE.md      <span class="cm">&larr; 나머지는 한 줄</span>
+       1 budget/CLAUDE.md
+       1 asset-management/CLAUDE.md
+
+$ cat poll-it/CLAUDE.md
+@AGENTS.md                          <span class="cm">&larr; 이 한 줄이 전부다</span></code></pre></div><div class="keymsg"><span class="k">한 줄이면 충분하다</span><div><code>@파일이름</code> 한 줄이 그 파일을 <b>통째로 끌어온다.</b> 규칙은 한 곳에만 적는다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="적을 것">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>작성</div>
+  <h2 class="s-title sm">규칙 파일에 남길 줄과 지울 줄</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="twopane">
+  <div class="pane good"><h4>적는다</h4>
+    <p><b>확인이 되는 줄</b>만 적는다.</p>
+    <p class="mini">고친 뒤 <code>npm run build</code> 를 돌린다<br/>
+       날짜는 <code>YYYY-MM-DD</code> 로만 쓴다<br/>
+       DB 접속은 <code>lib/db.ts</code> 를 거친다<br/>
+       테스트 파일은 <code>__tests__</code> 아래에 만든다</p></div>
+  <div class="pane bad"><h4>안 적는다</h4>
+    <p><b>지켰는지 알 수 없는 줄</b>은 창만 차지한다.</p>
+    <p class="mini">깨끗한 코드를 쓴다<br/>
+       모범 사례를 따른다<br/>
+       성능을 고려한다<br/>
+       사용자 경험을 중시한다</p></div>
+</div><div class="keymsg"><span class="k">가려내는 기준 하나</span><div><b>지켰는지 확인할 수 있나.</b> 확인이 안 되는 줄은 지운다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="나쁜 예">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>작성</div>
+  <h2 class="s-title sm">고쳐야 할 규칙 파일</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">CLAUDE.md &mdash; 있으나 마나 한 것</span></div><pre><code># 프로젝트
+
+이 프로젝트는 웹 서비스입니다.          <span class="cm">&larr; 폴더만 봐도 안다</span>
+코드를 깔끔하게 작성해 주세요.
+가독성을 최우선으로 합니다.
+최신 기술을 사용합니다.               <span class="cm">&larr; 무엇이 최신인지 안 적혀 있다</span>
+버그가 없도록 신경 써 주세요.
+사용자 경험이 중요합니다.</code></pre></div><div class="keymsg"><span class="k">여섯 줄이 다 지워진다</span><div>전부 <b>지켰는지 확인할 수 없다.</b> 창만 차지하고 답은 안 바꾼다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="좋은 예">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>작성</div>
+  <h2 class="s-title sm">쓸 만한 규칙 파일</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">CLAUDE.md &mdash; 같은 프로젝트를 다시 적은 것</span></div><pre><code># 설비 조회 웹
+
+## 기술
+Next.js 16 App Router &middot; TypeScript &middot; PostgreSQL
+
+## 규칙
+- DB 접근은 `lib/db.ts` 를 거친다. 직접 연결하지 않는다
+- 날짜는 `YYYY-MM-DD` 로만 쓴다
+- 화면 문구는 한국어. 변수 이름은 영어
+
+## 고친 뒤 반드시
+```
+npm run build      <span class="cm">&larr; 안 돌리고 끝냈다고 하지 않는다</span>
+```</code></pre></div><div class="keymsg"><span class="k">줄마다 확인이 된다</span><div>어긋나면 <b>바로 보인다.</b> 그래서 실제로 답이 달라진다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="실습 하나">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>실습</div>
+  <h2 class="s-title sm">규칙 파일 만들기</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="pipe"><div class="step"><div class="si">1</div><div class="sn">프로젝트를 연다</div><div class="sd">지난 회차에 만든 폴더를 그대로 쓴다</div></div><div class="step"><div class="si">2</div><div class="sn">규칙을 부른다</div><div class="sd"><code>/init</code> 을 치면 코드를 훑어 초안을 써 준다</div></div><div class="step"><div class="si">3</div><div class="sn">초안을 깎는다</div><div class="sd">확인 안 되는 줄을 지운다. 대개 절반이 지워진다</div></div><div class="step"><div class="si">4</div><div class="sn">세 줄을 더한다</div><div class="sd">자주 다시 시키던 말을 적는다</div></div><div class="step"><div class="si">5</div><div class="sn">새 창에서 확인</div><div class="sd">창을 새로 열고 규칙이 지켜지는지 시켜 본다</div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">직접 쳐 보는 것</span></div><pre><code>$ claude
+&gt; /init                              <span class="cm">&larr; 초안을 써 준다</span>
+
+&gt; CLAUDE.md 에서 확인이 안 되는 줄을 지워 줘
+
+$ cat CLAUDE.md                      <span class="cm">&larr; 절반이 지워졌는지 본다</span></code></pre></div><div class="keymsg"><span class="k">직접 확인하는 곳</span><div><b>새 창</b>에서 <q>날짜 형식이 뭐야</q> 라고 물어 <b>파일에 적은 대로</b> 답하는지 본다.</div></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 스킬 — 필요할 때만 불러오는 절차">
+  <div class="ghost">03</div>
+  <div class="seyebrow">CHAPTER 03</div>
+  <h2>스킬 — 필요할 때만 불러오는 절차</h2>
+  <div class="agenda"><span>규칙 파일과의 차이</span><span>한 장의 구조</span><span>실습</span></div>
+</section>
+<section class="slide" data-title="스킬">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>개념</div>
+  <h2 class="s-title sm">스킬</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="duo">
+  <div class="side"><div class="tagline">규칙 파일</div>
+    <h3>언제나 붙는다</h3>
+    <p>창을 열 때마다 <b>전부</b> 읽힌다. 그래서 짧아야 하고,
+       프로젝트 전체에 걸리는 것만 적는다.</p></div>
+  <div class="side"><div class="tagline">스킬</div>
+    <h3>필요할 때만 붙는다</h3>
+    <p>평소에는 <b>한 줄 설명만</b> 떠 있다. 그 일이 실제로 생기면
+       그때 본문이 통째로 들어온다.</p></div>
+</div><div class="keymsg"><span class="k">길게 써도 되는 곳</span><div>스킬은 <b>수십 장이어도 된다.</b> 안 쓸 때는 창에 안 들어오기 때문이다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="불려 오는 방식">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>구조</div>
+  <h2 class="s-title sm">스킬이 불려 오는 방식</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="plot"><svg viewBox="0 0 1116 300">
+  <rect x="50" y="40" width="300" height="150" rx="12" fill="#FAFAFD" stroke="#C9C4E4" stroke-width="1.6"/>
+  <text x="200" y="66" font-size="12.5" font-weight="800" fill="#5B5580" text-anchor="middle">평소 &mdash; 창에 떠 있는 것</text>
+  <rect x="70" y="80" width="260" height="24" rx="6" fill="#EFF9F4"/>
+  <text x="200" y="97" font-size="10.5" fill="#0B6B4F" text-anchor="middle">browse &mdash; 브라우저로 화면을 본다</text>
+  <rect x="70" y="110" width="260" height="24" rx="6" fill="#EFF9F4"/>
+  <text x="200" y="127" font-size="10.5" fill="#0B6B4F" text-anchor="middle">review &mdash; 바뀐 코드를 검토한다</text>
+  <rect x="70" y="140" width="260" height="24" rx="6" fill="#EFF9F4"/>
+  <text x="200" y="157" font-size="10.5" fill="#0B6B4F" text-anchor="middle">&hellip; 쉰다섯 줄 더</text>
+  <text x="200" y="182" font-size="11.5" font-weight="800" fill="#0B6B4F" text-anchor="middle">다 합쳐 5천 자</text>
+
+  <path d="M356 115 H432" stroke="#3A1FC9" stroke-width="2.2"/>
+  <path d="M428 108l14 7-14 7z" fill="#3A1FC9"/>
+  <text x="394" y="102" font-size="11" font-weight="800" fill="#3A1FC9" text-anchor="middle">그 일이</text>
+  <text x="394" y="140" font-size="11" font-weight="800" fill="#3A1FC9" text-anchor="middle">생기면</text>
+
+  <rect x="442" y="40" width="300" height="150" rx="12" fill="#EFEAFF" stroke="#3A1FC9" stroke-width="1.8"/>
+  <text x="592" y="66" font-size="12.5" font-weight="800" fill="#3A1FC9" text-anchor="middle">그때 &mdash; 본문이 들어온다</text>
+  <rect x="462" y="80" width="260" height="84" rx="8" fill="#fff" stroke="#3A1FC9" stroke-width="1.2"/>
+  <text x="592" y="104" font-size="11" fill="#16142B" text-anchor="middle">browse/SKILL.md 전문</text>
+  <text x="592" y="126" font-size="11" fill="#16142B" text-anchor="middle">명령 &middot; 예시 &middot; 주의</text>
+  <text x="592" y="150" font-size="11.5" font-weight="800" fill="#3A1FC9" text-anchor="middle">4만 8천 자</text>
+
+  <rect x="800" y="40" width="266" height="150" rx="12" fill="#FDF0EE" stroke="#C4442E" stroke-width="1.6"/>
+  <text x="933" y="66" font-size="12.5" font-weight="800" fill="#C4442E" text-anchor="middle">만약 전부 띄웠다면</text>
+  <text x="933" y="106" font-size="22" font-weight="800" fill="#C4442E" text-anchor="middle">321만 자</text>
+  <text x="933" y="134" font-size="11.5" fill="#5B5580" text-anchor="middle">어떤 창에도 안 들어간다</text>
+  <text x="933" y="160" font-size="11.5" font-weight="800" fill="#C4442E" text-anchor="middle">641배</text>
+
+  <text x="558" y="240" font-size="13" font-weight="800" fill="#16142B" text-anchor="middle">한 줄 설명이 목록이고, 본문은 그 목록에서 골라 꺼낸다</text>
+  <text x="558" y="266" font-size="11.5" fill="#8E8AAC" text-anchor="middle">그래서 한 줄 설명을 어떻게 쓰느냐가 스킬의 전부다</text>
+</svg></div><div class="keymsg"><span class="k">설명이 곧 색인이다</span><div>본문이 아무리 좋아도 <b>설명이 안 맞으면 안 불린다.</b></div></div>
+  </div>
+</section>
+<section class="slide" data-title="한 장">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>구조</div>
+  <h2 class="s-title sm">스킬 한 장의 구조</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">~/.claude/skills/설비조회/SKILL.md</span></div><pre><code>---
+name: 설비조회
+description: 설비 번호로 상태를 조회하는 화면을 만들거나
+  고칠 때 쓴다. 조회 API 규격과 상태 코드 표가 들어 있다.
+---
+
+# 설비 조회
+
+## 조회 API
+GET /api/equipment/{id}
+상태 코드 &mdash; 0 정상 / 1 점검 / 2 정지 / 9 폐기
+
+## 화면 규칙
+- 정지와 폐기는 빨간 배지로 표시한다</code></pre></div><div class="keymsg"><span class="k">두 부분뿐이다</span><div><b>머리말</b>에 이름과 설명, <b>본문</b>에 절차. 마크다운 한 장이 전부다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="설명 쓰기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>작성</div>
+  <h2 class="s-title sm">불리는 설명과 안 불리는 설명</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="twopane">
+  <div class="pane bad"><h4>안 불린다</h4>
+    <p class="mini">description: 설비 관련 도우미</p>
+    <p><b>언제</b> 쓰는지가 없다. 무슨 일이 생겨야 부를지 알 수 없다.</p>
+    <p class="mini">description: 유용한 유틸리티 모음</p>
+    <p>어느 말에도 안 걸린다.</p></div>
+  <div class="pane good"><h4>불린다</h4>
+    <p class="mini">description: 설비 번호로 상태를 조회하는 화면을 만들거나 고칠 때 쓴다</p>
+    <p><b>~할 때 쓴다</b> 로 끝낸다. 걸리는 낱말이 여럿 들어간다.</p>
+    <p class="mini">설비 &middot; 번호 &middot; 상태 &middot; 조회 &middot; 화면</p></div>
+</div><div class="keymsg"><span class="k">쓰는 꼴이 정해져 있다</span><div><b>무엇을 &mdash; 언제 쓴다</b> 두 조각이면 된다. 형용사는 넣지 않는다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="실측">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>실측</div>
+  <h2 class="s-title sm">깔려 있는 스킬</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">스킬이 몇 장이나 있나</span></div><pre><code>$ ls ~/.claude/skills/ | wc -l
+57
+
+$ ls ~/.claude/skills/ | head -8
+autoplan     benchmark    browse       careful
+codex        context-save design-html  lecture-deck
+
+$ head -4 ~/.claude/skills/browse/SKILL.md
+---
+name: browse
+description: Fast headless browser for QA testing
+  and site dogfooding.                <span class="cm">&larr; 이 두 줄만 평소에 떠 있다</span></code></pre></div><div class="keymsg"><span class="k">쉰일곱 장이 붙어 있어도</span><div>창에 들어간 것은 <b>이름과 설명뿐</b>이다. 그래서 부담이 없다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="쓸 곳">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>판단</div>
+  <h2 class="s-title sm">스킬로 뺄 만한 것</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="vlist"><div class="v"><span class="b">세 번 이상 시킨 절차</span><div>같은 설명을 세 번 넘게 적고 있으면 스킬로 뺀다.</div></div><div class="v"><span class="b">사람마다 다르게 하는 일</span><div>배포 &middot; 검토 &middot; 문서 작성처럼 <b>손마다 결과가 다른</b> 일을 한 가지로 묶는다.</div></div><div class="v"><span class="b">사내에만 있는 규격</span><div>설비 코드 &middot; 결재 단계 &middot; 문서 양식처럼 <b>바깥에 없는</b> 지식.</div></div><div class="v"><span class="b">길어서 규칙 파일에 못 넣는 것</span><div>표 한 장, 예시 열 개짜리는 스킬로 뺀다.</div></div></div><div class="keymsg"><span class="k">가르는 기준</span><div><b>항상 필요하면</b> 규칙 파일, <b>가끔 필요하면</b> 스킬.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="플러그인">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>배포</div>
+  <h2 class="s-title sm">플러그인과 마켓플레이스</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">남이 만든 스킬 묶음을 통째로 받는다</span></div><pre><code>$ claude plugin marketplace add anthropics/claude-plugins-official
+$ claude plugin install code-simplifier
+
+$ claude plugin list
+superpowers@5.1.0        <span class="cm">&larr; 스킬 여러 장이 한 묶음</span>
+vercel@0.45.1
+
+$ ls ~/.claude/plugins/marketplaces/
+claude-plugins-official
+superpowers-marketplace  <span class="cm">&larr; 사내 저장소도 여기에 걸 수 있다</span></code></pre></div><div class="keymsg"><span class="k">사내 배포 방식</span><div>사내 GitHub 저장소 하나를 마켓플레이스로 걸면 <b>스킬을 사내에만</b> 돌린다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="실습 둘">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>실습</div>
+  <h2 class="s-title sm">스킬 만들기</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="pipe"><div class="step"><div class="si">1</div><div class="sn">반복을 고른다</div><div class="sd">이번 주에 세 번 넘게 다시 설명한 절차를 하나 고른다</div></div><div class="step"><div class="si">2</div><div class="sn">폴더를 만든다</div><div class="sd"><code>.claude/skills/&lt;이름&gt;/SKILL.md</code> 를 만든다</div></div><div class="step"><div class="si">3</div><div class="sn">머리말을 쓴다</div><div class="sd"><code>name</code> 과 <code>description</code> 두 줄. 설명은 <b>~할 때 쓴다</b></div></div><div class="step"><div class="si">4</div><div class="sn">본문을 붙인다</div><div class="sd">평소에 말로 설명하던 것을 그대로 옮긴다</div></div><div class="step"><div class="si">5</div><div class="sn">불리는지 본다</div><div class="sd">새 창에서 <b>스킬 이름을 안 대고</b> 그 일을 시켜 본다</div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">직접 쳐 보는 것</span></div><pre><code>$ mkdir -p .claude/skills/주간보고
+$ code .claude/skills/주간보고/SKILL.md
+
+# 새 창을 열고 &mdash; 스킬 이름을 대지 않는다
+&gt; 이번 주 한 일로 주간 보고를 써 줘
+
+&#9679; Skill(주간보고)                    <span class="cm">&larr; 알아서 불리면 성공</span></code></pre></div><div class="keymsg"><span class="k">마지막 단계가 검사다</span><div>이름을 안 댔는데 <b>알아서 불리면</b> 설명이 맞게 쓰인 것이다.</div></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 위임 — 일을 떼어서 맡기기">
+  <div class="ghost">04</div>
+  <div class="seyebrow">CHAPTER 04</div>
+  <h2>위임 — 일을 떼어서 맡기기</h2>
+  <div class="agenda"><span>창을 나누는 이유</span><span>도구를 좁히기</span><span>실습</span></div>
+</section>
+<section class="slide" data-title="서브에이전트">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>개념</div>
+  <h2 class="s-title sm">서브에이전트</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="duo">
+  <div class="side"><div class="tagline">혼자 할 때</div>
+    <h3>읽은 것이 다 쌓인다</h3>
+    <p>파일 200개를 뒤져 버그를 찾으면 <b>그 200개가 전부 창에 남는다.</b>
+       정작 고칠 때는 창이 이미 차 있다.</p></div>
+  <div class="side"><div class="tagline">떼어 맡길 때</div>
+    <h3>결론만 돌아온다</h3>
+    <p>따로 뜬 창이 200개를 읽고 <b>버그 세 줄만</b> 보고한다.
+       본체 창에는 그 세 줄만 들어온다.</p></div>
+</div><div class="keymsg"><span class="k">위임이 하는 일</span><div>일을 <b>빨리</b> 하는 것이 아니라 <b>창을 안 더럽히는</b> 것이다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="창 나눔">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>구조</div>
+  <h2 class="s-title sm">창이 나뉘는 모양</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="plot"><svg viewBox="0 0 1116 300">
+  <rect x="40" y="34" width="330" height="230" rx="14" fill="#EFEAFF" stroke="#3A1FC9" stroke-width="2"/>
+  <text x="205" y="60" font-size="13" font-weight="800" fill="#3A1FC9" text-anchor="middle">본체 창</text>
+  <rect x="62" y="76" width="286" height="26" rx="6" fill="#fff"/>
+  <text x="205" y="94" font-size="11" fill="#16142B" text-anchor="middle">규칙 파일</text>
+  <rect x="62" y="108" width="286" height="26" rx="6" fill="#fff"/>
+  <text x="205" y="126" font-size="11" fill="#16142B" text-anchor="middle">주고받은 말</text>
+  <rect x="62" y="140" width="286" height="26" rx="6" fill="#EFF9F4" stroke="#0B6B4F" stroke-width="1.2"/>
+  <text x="205" y="158" font-size="11" font-weight="800" fill="#0B6B4F" text-anchor="middle">돌아온 보고 &mdash; 세 줄</text>
+  <text x="205" y="200" font-size="12" font-weight="800" fill="#3A1FC9" text-anchor="middle">여유가 남는다</text>
+  <rect x="62" y="216" width="286" height="30" rx="6" fill="#fff" stroke="#C9C4E4" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="205" y="236" font-size="11" fill="#8E8AAC" text-anchor="middle">고치는 일에 쓸 여유</text>
+
+  <path d="M376 120 H452" stroke="#3A1FC9" stroke-width="2.2"/>
+  <path d="M448 113l14 7-14 7z" fill="#3A1FC9"/>
+  <text x="414" y="110" font-size="11" font-weight="800" fill="#3A1FC9" text-anchor="middle">지시</text>
+  <path d="M452 176 H376" stroke="#0B6B4F" stroke-width="2.2"/>
+  <path d="M380 169l-14 7 14 7z" fill="#0B6B4F"/>
+  <text x="414" y="196" font-size="11" font-weight="800" fill="#0B6B4F" text-anchor="middle">보고</text>
+
+  <rect x="462" y="34" width="604" height="230" rx="14" fill="#FAFAFD" stroke="#C9C4E4" stroke-width="1.6" stroke-dasharray="7 5"/>
+  <text x="764" y="60" font-size="13" font-weight="800" fill="#8E8AAC" text-anchor="middle">떼어 낸 창 &mdash; 끝나면 통째로 사라진다</text>
+  <rect x="486" y="76" width="556" height="26" rx="6" fill="#FDF0EE"/>
+  <text x="764" y="94" font-size="11" fill="#C4442E" text-anchor="middle">파일 1 &hellip; 파일 200 을 다 읽는다</text>
+  <rect x="486" y="108" width="556" height="26" rx="6" fill="#FDF0EE"/>
+  <text x="764" y="126" font-size="11" fill="#C4442E" text-anchor="middle">검색 결과 &middot; 명령 출력이 잔뜩 쌓인다</text>
+  <rect x="486" y="140" width="556" height="26" rx="6" fill="#FDF0EE"/>
+  <text x="764" y="158" font-size="11" fill="#C4442E" text-anchor="middle">여기서 창이 거의 다 찬다</text>
+  <text x="764" y="200" font-size="12" font-weight="800" fill="#8E8AAC" text-anchor="middle">다 차도 상관없다</text>
+  <text x="764" y="226" font-size="11.5" fill="#8E8AAC" text-anchor="middle">본체로 넘어오는 것은 마지막 보고뿐이다</text>
+</svg></div><div class="keymsg"><span class="k">버리는 것이 이득이다</span><div>읽은 것을 <b>안 가져오는</b> 것이 핵심이다. 그래서 큰 조사일수록 떼어 맡긴다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="이득">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>판단</div>
+  <h2 class="s-title sm">위임이 이득인 곳과 손해인 곳</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="ctable"><table style="width:100%"><thead><tr><th>일</th><th>떼어 맡기면</th><th>판단</th></tr></thead><tbody><tr><td class="hl">저장소 전체에서 어디를 고칠지 찾기</td><td class="hl">읽은 파일이 본체에 안 남는다</td><td class="hl">이득</td></tr><tr><td class="hl">구현이 끝난 뒤 버그 감사</td><td class="hl">다른 시선으로 다시 본다</td><td class="hl">이득</td></tr><tr><td>긴 문서 열 개를 요약</td><td>요약만 돌아온다</td><td>이득</td></tr><tr><td>한 파일 두 줄 고치기</td><td>지시를 적는 값이 더 든다</td><td>손해</td></tr><tr><td class="hl">앞뒤 맥락이 계속 필요한 일</td><td class="hl">떼어 낸 창은 앞 대화를 모른다</td><td class="hl">손해</td></tr></tbody></table></div><div class="keymsg"><span class="k">가르는 기준</span><div><b>읽을 것이 많고 결론이 짧으면</b> 떼어 낸다. 반대면 직접 한다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="정의">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>작성</div>
+  <h2 class="s-title sm">서브에이전트 정의</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">.claude/agents/bug-hunter.md</span></div><pre><code>---
+name: bug-hunter
+description: 코드를 읽고 버그·취약점만 보고한다. 수정·실행은
+  하지 않는다. 구현 후 읽기전용 감사가 필요할 때 호출한다.
+tools: Read, Grep, Glob          <span class="cm">&larr; 이 셋만 준다</span>
+model: haiku                     <span class="cm">&larr; 싼 모델로 충분하다</span>
+---
+
+너는 코드 감사자다. 주어진 코드를 읽고 결함을 찾아 보고만 한다.
+
+- 절대 파일을 수정하거나 명령을 실행하지 않는다
+- 발견을 심각도(높음 / 중간 / 낮음)로 나눠 적는다</code></pre></div><div class="keymsg"><span class="k">스킬과 같은 꼴이다</span><div><b>머리말 + 본문</b>. 다른 것은 <code>tools</code> 로 <b>줄 도구를 정한다</b>는 것뿐이다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="도구 좁히기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>설계</div>
+  <h2 class="s-title sm">도구를 좁히는 이유</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="twopane">
+  <div class="pane bad"><h4>도구를 다 주면</h4>
+    <p>감사를 시켰는데 <b>고치기 시작한다.</b></p>
+    <p>보고서 대신 <q>다 고쳤습니다</q> 가 돌아온다.
+       무엇을 고쳤는지는 본체 창에 안 남는다.</p>
+    <p class="mini">확인할 방법이 없어진다</p></div>
+  <div class="pane good"><h4>읽기만 주면</h4>
+    <p>고칠 수단이 <b>없어서</b> 보고만 한다.</p>
+    <p>말로 <q>고치지 마라</q> 하는 것보다 세다.
+       도구가 없으면 못 하는 것이다.</p>
+    <p class="mini">Read &middot; Grep &middot; Glob 셋이면 감사는 된다</p></div>
+</div><div class="keymsg"><span class="k">말보다 확실한 것</span><div>지시로 막지 않는다. <b>도구를 빼서</b> 막는다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="짝 짓기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>설계</div>
+  <h2 class="s-title sm">만드는 쪽과 보는 쪽</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="pipe"><div class="step"><div class="si">1</div><div class="sn">본체가 만든다</div><div class="sd">기능을 구현하고 스스로 돌려 본다</div></div><div class="step"><div class="si">2</div><div class="sn">감사원을 부른다</div><div class="sd">읽기 전용 서브에이전트에게 바뀐 곳만 준다</div></div><div class="step"><div class="si">3</div><div class="sn">보고를 받는다</div><div class="sd">심각도로 나뉜 목록이 돌아온다</div></div><div class="step"><div class="si">4</div><div class="sn">본체가 고친다</div><div class="sd">높음만 먼저 고치고 나머지는 적어 둔다</div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">실제로 오가는 말</span></div><pre><code>&gt; 설비 목록 화면을 만들어 줘
+&#9679; Write(app/list/page.tsx)
+
+&gt; bug-hunter 로 방금 만든 곳을 감사해 줘
+&#9679; Task(bug-hunter)                   <span class="cm">&larr; 창이 따로 뜬다</span>
+  &#8627; 높음 1 &middot; 중간 2 &middot; 낮음 3
+
+&gt; 높음만 고쳐 줘                       <span class="cm">&larr; 본체가 고친다</span></code></pre></div><div class="keymsg"><span class="k">같은 창에서 하면 안 되는 것</span><div>자기가 쓴 코드를 자기가 보면 <b>같은 곳을 또 놓친다.</b> 창을 나누면 시선이 바뀐다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="갈래">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>판단</div>
+  <h2 class="s-title sm">스킬과 서브에이전트의 차이</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="ctable"><table style="width:100%"><thead><tr><th></th><th>스킬</th><th>서브에이전트</th></tr></thead><tbody><tr><td>무엇인가</td><td>절차를 적은 문서</td><td class="hl">따로 뜬 창</td></tr><tr><td>창</td><td>본체 창에 붙는다</td><td class="hl">자기 창을 따로 쓴다</td></tr><tr><td>도구</td><td>본체가 가진 것을 그대로</td><td class="hl">줄 것만 골라 준다</td></tr><tr><td>돌아오는 것</td><td>&mdash; 본체가 계속 한다</td><td class="hl">보고 한 벌</td></tr><tr><td class="hl">쓸 때</td><td class="hl">하는 법을 알려 줄 때</td><td class="hl">읽을 것이 많을 때</td></tr></tbody></table></div><div class="keymsg"><span class="k">둘은 같이 쓴다</span><div>서브에이전트에게 <b>스킬을 들려</b> 보낼 수 있다. 배타적인 것이 아니다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="실습 셋">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH4</span><span class="dot"></span>실습</div>
+  <h2 class="s-title sm">감사원 붙이기</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="pipe"><div class="step"><div class="si">1</div><div class="sn">파일을 만든다</div><div class="sd"><code>.claude/agents/bug-hunter.md</code></div></div><div class="step"><div class="si">2</div><div class="sn">도구를 셋만 준다</div><div class="sd"><code>tools: Read, Grep, Glob</code></div></div><div class="step"><div class="si">3</div><div class="sn">기능을 하나 만든다</div><div class="sd">아무 화면이나 새로 하나 만든다</div></div><div class="step"><div class="si">4</div><div class="sn">감사를 시킨다</div><div class="sd"><q>bug-hunter 로 방금 바뀐 곳을 감사해 줘</q></div></div><div class="step"><div class="si">5</div><div class="sn">고치는지 본다</div><div class="sd">파일이 안 바뀌고 <b>보고만</b> 오면 제대로 걸린 것이다</div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">.claude/agents/bug-hunter.md</span></div><pre><code>---
+name: bug-hunter
+description: 바뀐 코드를 읽고 버그만 보고한다. 고치지는 않는다.
+tools: Read, Grep, Glob
+---
+
+너는 코드 감사자다. 읽고 보고만 한다.
+- 파일을 고치거나 명령을 실행하지 않는다
+- 심각도를 높음 / 중간 / 낮음으로 나눠 적는다</code></pre></div><div class="keymsg"><span class="k">확인하는 방법</span><div>실습 뒤 <code>git status</code> 로 <b>바뀐 파일이 없는지</b> 본다.</div></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 여럿을 한꺼번에">
+  <div class="ghost">05</div>
+  <div class="seyebrow">CHAPTER 05</div>
+  <h2>여럿을 한꺼번에</h2>
+  <div class="agenda"><span>오케스트레이션</span><span>갈라 놓기</span><span>실패하는 이유</span></div>
+</section>
+<section class="slide" data-title="여러 마리">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>비유</div>
+  <h2 class="s-title sm">한 마구에 묶인 여섯 마리</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="figure"><img src="assets/harness-team.webp" alt="짐말 여섯 마리가 한 마구로 묶여 수레 하나를 끄는 사진. 앞뒤 두 줄로 서서 가슴줄과 사슬이 모두 같은 수레채로 모이고, 마부 한 사람이 고삐를 쥐고 있다"/><figcaption>출처 — The draft horse team, Bernard Spragg. NZ, Public domain</figcaption></div><div class="keymsg"><span class="k">묶는 장치가 있어야 한다</span><div>여섯 마리를 그냥 풀어 놓으면 <b>제각각 간다.</b> 한 수레로 모으는 것이 하네스다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="다섯 패턴">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>패턴</div>
+  <h2 class="s-title sm">엮는 다섯 가지 방식</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="cards c3">
+  <div class="card"><span class="n">01</span><h3>이어 달리기</h3><p>앞이 끝나야 뒤가 시작한다. 계획 &rarr; 구현 &rarr; 검토.</p></div>
+  <div class="card"><span class="n">02</span><h3>나눠 하기</h3><p>겹치지 않는 일을 동시에 준다. 화면 셋을 셋이 만든다.</p></div>
+  <div class="card"><span class="n">03</span><h3>지휘자</h3><p>가운데 하나가 일을 쪼개 나눠 주고 결과를 합친다.</p></div>
+  <div class="card"><span class="n">04</span><h3>같은 일 여럿</h3><p>같은 것을 셋에게 시키고 둘 이상이 같으면 받아들인다.</p></div>
+  <div class="card"><span class="n">05</span><h3>되먹임</h3><p>만들고 검사하고 다시 만든다. 통과할 때까지 돈다.</p></div>
+</div><div class="keymsg"><span class="k">제일 많이 쓰는 둘</span><div><b>이어 달리기</b>와 <b>나눠 하기</b>다. 나머지 셋은 값이 세 배로 든다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="나눠 하기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>패턴</div>
+  <h2 class="s-title sm">나눠 하기가 되는 조건</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="plot"><svg viewBox="0 0 1116 300">
+  <rect x="410" y="26" width="296" height="52" rx="10" fill="#EFEAFF" stroke="#3A1FC9" stroke-width="1.8"/>
+  <text x="558" y="58" font-size="13" font-weight="800" fill="#3A1FC9" text-anchor="middle">화면 세 개를 만든다</text>
+
+  <path d="M480 82 V116" stroke="#3A1FC9" stroke-width="2"/><path d="M473 112l7 12 7-12z" fill="#3A1FC9"/>
+  <path d="M558 82 V116" stroke="#3A1FC9" stroke-width="2"/><path d="M551 112l7 12 7-12z" fill="#3A1FC9"/>
+  <path d="M636 82 V116" stroke="#3A1FC9" stroke-width="2"/><path d="M629 112l7 12 7-12z" fill="#3A1FC9"/>
+
+  <rect x="80" y="128" width="290" height="80" rx="12" fill="#EFF9F4" stroke="#0B6B4F" stroke-width="1.6"/>
+  <text x="225" y="156" font-size="12.5" font-weight="800" fill="#0B6B4F" text-anchor="middle">목록 화면</text>
+  <text x="225" y="178" font-size="11" font-family="ui-monospace,monospace" fill="#0B6B4F" text-anchor="middle">app/list/page.tsx</text>
+  <text x="225" y="196" font-size="11" fill="#5B5580" text-anchor="middle">이 파일만 건드린다</text>
+
+  <rect x="413" y="128" width="290" height="80" rx="12" fill="#EFF9F4" stroke="#0B6B4F" stroke-width="1.6"/>
+  <text x="558" y="156" font-size="12.5" font-weight="800" fill="#0B6B4F" text-anchor="middle">상세 화면</text>
+  <text x="558" y="178" font-size="11" font-family="ui-monospace,monospace" fill="#0B6B4F" text-anchor="middle">app/detail/page.tsx</text>
+  <text x="558" y="196" font-size="11" fill="#5B5580" text-anchor="middle">겹치는 파일이 없다</text>
+
+  <rect x="746" y="128" width="290" height="80" rx="12" fill="#EFF9F4" stroke="#0B6B4F" stroke-width="1.6"/>
+  <text x="891" y="156" font-size="12.5" font-weight="800" fill="#0B6B4F" text-anchor="middle">설정 화면</text>
+  <text x="891" y="178" font-size="11" font-family="ui-monospace,monospace" fill="#0B6B4F" text-anchor="middle">app/settings/page.tsx</text>
+  <text x="891" y="196" font-size="11" fill="#5B5580" text-anchor="middle">동시에 돌아도 된다</text>
+
+  <rect x="290" y="228" width="536" height="52" rx="10" fill="#FDF0EE" stroke="#C4442E" stroke-width="1.5"/>
+  <text x="558" y="250" font-size="12.5" font-weight="800" fill="#C4442E" text-anchor="middle">셋 다 lib/db.ts 를 고쳐야 한다면 나누면 안 된다</text>
+  <text x="558" y="270" font-size="11.5" fill="#5B5580" text-anchor="middle">뒤에 저장한 것이 앞의 것을 덮는다</text>
+</svg></div><div class="keymsg"><span class="k">나누기 전에 볼 것</span><div><b>고칠 파일이 겹치나.</b> 겹치면 순서대로 하고, 안 겹치면 동시에 한다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="갈라 놓기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>방법</div>
+  <h2 class="s-title sm">작업 폴더를 갈라 놓기</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">git worktree — 같은 저장소를 폴더 셋으로 편다</span></div><pre><code>$ git worktree add ../work-list  feat/list
+$ git worktree add ../work-detail feat/detail
+$ git worktree add ../work-set    feat/settings
+
+$ ls ..
+work-list  work-detail  work-set     <span class="cm">&larr; 폴더가 셋이라 충돌이 없다</span>
+
+# 각 폴더에서 따로 돌린다 — 서로 파일을 안 건드린다
+# 끝나면 브랜치를 하나씩 합친다        <span class="cm">&larr; 합칠 때만 사람이 본다</span></code></pre></div><div class="keymsg"><span class="k">겹칠 수밖에 없을 때</span><div>파일이 겹치면 <b>폴더를 나눈다.</b> 합치는 것은 나중에 한 번만 한다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="지휘자">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>패턴</div>
+  <h2 class="s-title sm">지휘자를 두는 방식</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="pipe"><div class="step"><div class="si">1</div><div class="sn">쪼갠다</div><div class="sd">큰 요청을 겹치지 않는 조각으로 나눈다</div></div><div class="step"><div class="si">2</div><div class="sn">나눠 준다</div><div class="sd">조각마다 서브에이전트를 하나씩 띄운다</div></div><div class="step"><div class="si">3</div><div class="sn">거둔다</div><div class="sd">보고가 다 올 때까지 기다린다</div></div><div class="step"><div class="si">4</div><div class="sn">합친다</div><div class="sd">겹치는 결론을 하나로 묶고 어긋난 것을 가려낸다</div></div><div class="step"><div class="si">5</div><div class="sn">검사한다</div><div class="sd">합친 결과를 다시 한 번 돌려 본다</div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">한 줄로 시키면 안쪽에서 이렇게 나뉜다</span></div><pre><code>&gt; 설비 화면 세 개를 만들어 줘
+
+&#9679; Task(목록 화면)      &#9679; Task(상세 화면)      &#9679; Task(설정 화면)
+  &#8627; 끝                 &#8627; 끝                 &#8627; 끝
+
+&#9679; Read(3개 결과 비교)                 <span class="cm">&larr; 여기서 합친다</span>
+&#9679; Bash(npm run build)                 <span class="cm">&larr; 합친 뒤 한 번 돌린다</span></code></pre></div><div class="keymsg"><span class="k">4단계가 제일 어렵다</span><div>쪼개기는 쉽다. <b>합치기에서 대부분 깨진다.</b> 그래서 조각을 겹치지 않게 자른다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="실패">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>한계</div>
+  <h2 class="s-title sm">멀티가 깨지는 세 가지</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="ctable"><table style="width:100%"><thead><tr><th>어떻게 깨지나</th><th>겉으로 보이는 모습</th><th>막는 법</th></tr></thead><tbody><tr><td class="hl">같은 파일을 동시에 고침</td><td class="hl">마지막 것만 남고 나머지가 사라진다</td><td class="hl">폴더를 나눈다</td></tr><tr><td>서로 다른 가정을 세움</td><td>합치니 이름이 안 맞아 빌드가 깨진다</td><td>규격을 먼저 정해 준다</td></tr><tr><td class="hl">아무도 전체를 안 봄</td><td class="hl">조각은 다 맞는데 화면이 안 돈다</td><td class="hl">마지막에 통째로 돌려 본다</td></tr><tr><td>값만 세 배</td><td>결과는 혼자 한 것과 같다</td><td>겹치는 일은 안 나눈다</td></tr></tbody></table></div><div class="keymsg"><span class="k">먼저 물을 것</span><div><b>정말 나눌 수 있나.</b> 못 나누는 일을 나누면 값만 늘고 결과가 나빠진다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="언제 안 쓰나">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>판단</div>
+  <h2 class="s-title sm">혼자 하는 편이 나은 곳</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="vlist"><div class="v"><span class="b">한 시간 안에 끝나는 일</span><div>나누는 값이 더 든다. 지시를 세 벌 적는 사이에 끝난다.</div></div><div class="v"><span class="b">규격이 아직 안 정해진 일</span><div>무엇을 만들지 모르는 채로 나누면 <b>세 가지 다른 것</b>이 나온다.</div></div><div class="v"><span class="b">한 파일에 몰린 일</span><div>결국 한 사람이 순서대로 고쳐야 한다.</div></div><div class="v"><span class="b">처음 해 보는 일</span><div>한 번 혼자 해 봐야 <b>어떻게 나눌지</b>가 보인다.</div></div></div><div class="keymsg"><span class="k">나누는 순서</span><div><b>혼자 한 번 해 보고</b> 나눈다. 처음부터 나누면 대개 다시 한다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="실습 넷">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH5</span><span class="dot"></span>실습</div>
+  <h2 class="s-title sm">셋을 동시에 돌리기</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="pipe"><div class="step"><div class="si">1</div><div class="sn">겹치지 않게 자른다</div><div class="sd">화면 세 개를 고르고 파일이 안 겹치는지 확인한다</div></div><div class="step"><div class="si">2</div><div class="sn">규격을 먼저 준다</div><div class="sd">쓸 색 &middot; 부품 이름 &middot; 데이터 꼴을 한 곳에 적는다</div></div><div class="step"><div class="si">3</div><div class="sn">폴더를 편다</div><div class="sd"><code>git worktree add</code> 로 셋을 만든다</div></div><div class="step"><div class="si">4</div><div class="sn">동시에 시킨다</div><div class="sd">창 셋을 열고 각각 하나씩 맡긴다</div></div><div class="step"><div class="si">5</div><div class="sn">합쳐서 돌린다</div><div class="sd">브랜치를 합치고 <b>화면 셋을 다</b> 열어 본다</div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">직접 쳐 보는 것</span></div><pre><code>$ git worktree add ../w1 feat/list
+$ git worktree add ../w2 feat/detail
+$ git worktree add ../w3 feat/settings
+
+# 창 셋을 열고 각각에서
+$ claude                             <span class="cm">&larr; 폴더가 다르니 안 부딪힌다</span>
+
+$ git merge feat/list feat/detail feat/settings</code></pre></div><div class="keymsg"><span class="k">2단계를 빼면 실패한다</span><div>규격을 안 주면 <b>버튼 색이 셋 다 다르게</b> 나온다.</div></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 울타리 — 사고를 막는 장치">
+  <div class="ghost">06</div>
+  <div class="seyebrow">CHAPTER 06</div>
+  <h2>울타리 — 사고를 막는 장치</h2>
+  <div class="agenda"><span>권한</span><span>훅</span><span>사내에서 꼭 켤 것</span></div>
+</section>
+<section class="slide" data-title="권한">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>구조</div>
+  <h2 class="s-title sm">허용 · 확인 · 금지 세 칸</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="plot"><svg viewBox="0 0 1116 300">
+  <rect x="120" y="30" width="876" height="60" rx="12" fill="#EFF9F4" stroke="#0B6B4F" stroke-width="1.8"/>
+  <text x="150" y="56" font-size="12.5" font-weight="800" fill="#0B6B4F">허용</text>
+  <text x="558" y="56" font-size="12.5" font-weight="800" fill="#16142B" text-anchor="middle">묻지 않고 바로 한다</text>
+  <text x="558" y="78" font-size="11" font-family="ui-monospace,monospace" fill="#0B6B4F" text-anchor="middle">Read &middot; Grep &middot; npm run build &middot; git status</text>
+
+  <rect x="120" y="102" width="876" height="60" rx="12" fill="#FFF6E8" stroke="#B77900" stroke-width="1.8"/>
+  <text x="150" y="128" font-size="12.5" font-weight="800" fill="#B77900">확인</text>
+  <text x="558" y="128" font-size="12.5" font-weight="800" fill="#16142B" text-anchor="middle">할 때마다 사람에게 물어본다</text>
+  <text x="558" y="150" font-size="11" font-family="ui-monospace,monospace" fill="#B77900" text-anchor="middle">파일 고치기 &middot; git push &middot; 처음 보는 명령</text>
+
+  <rect x="120" y="174" width="876" height="60" rx="12" fill="#FDF0EE" stroke="#C4442E" stroke-width="1.8"/>
+  <text x="150" y="200" font-size="12.5" font-weight="800" fill="#C4442E">금지</text>
+  <text x="558" y="200" font-size="12.5" font-weight="800" fill="#16142B" text-anchor="middle">물어보지도 않고 막는다</text>
+  <text x="558" y="222" font-size="11" font-family="ui-monospace,monospace" fill="#C4442E" text-anchor="middle">rm -rf &middot; .env 읽기 &middot; 운영 DB 접속 &middot; force push</text>
+
+  <text x="558" y="272" font-size="12.5" font-weight="800" fill="#3A1FC9" text-anchor="middle">세 칸 다 파일 한 장에 적는다 &nbsp;&middot;&nbsp; 저장소에 넣으면 팀 전체에 걸린다</text>
+</svg></div><div class="keymsg"><span class="k">셋 중 제일 중요한 칸</span><div><b>금지</b>다. 허용은 편하려고 있고, <b>금지는 사고를 막으려고</b> 있다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="허용만 늘 때">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>사고</div>
+  <h2 class="s-title sm">허용 목록만 자란 설정</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="twopane">
+  <div class="pane bad"><h4>흔한 모습</h4>
+    <p>물어볼 때마다 <q>항상 허용</q> 을 눌러 <b>허용 목록이 계속 자란다.</b></p>
+    <p class="mini">실제로 센 결과 &mdash; 허용 168줄, 금지 0줄</p>
+    <p>목록에 접속 정보가 통째로 들어가 있기도 하다.
+       그 파일이 저장소에 올라가면 <b>그대로 새어 나간다.</b></p></div>
+  <div class="pane good"><h4>사내에서 할 일</h4>
+    <p><b>금지부터</b> 적는다. 허용은 나중에 필요한 만큼만 늘린다.</p>
+    <p>비밀번호가 들어간 명령은 <b>허용 목록에 넣지 않는다.</b>
+       환경 변수로 빼고 명령에서 지운다.</p>
+    <p class="mini">설정 파일도 코드처럼 검토 대상이다</p></div>
+</div><div class="keymsg"><span class="k">가장 잦은 사고</span><div>허용 목록에 <b>접속 정보가 섞여</b> 공개 저장소로 올라간다. 넣기 전에 한 번 읽어 본다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="훅">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>구조</div>
+  <h2 class="s-title sm">훅</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="pipe"><div class="step"><div class="si">1</div><div class="sn">도구를 부르기 직전</div><div class="sd">무엇을 하려는지 보고 <b>막을 수 있다</b></div></div><div class="step"><div class="si">2</div><div class="sn">도구가 끝난 직후</div><div class="sd">고친 파일에 <b>서식 검사를 자동으로</b> 돌린다</div></div><div class="step"><div class="si">3</div><div class="sn">일을 끝냈다고 할 때</div><div class="sd"><b>테스트가 통과했는지</b> 확인하고 아니면 되돌린다</div></div><div class="step"><div class="si">4</div><div class="sn">창이 시작할 때</div><div class="sd"><b>지금 브랜치와 밀린 변경</b>을 먼저 알려 준다</div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">.claude/settings.json &mdash; 고칠 때마다 검사가 자동으로 돈다</span></div><pre><code>"hooks": {
+  "PostToolUse": [{
+    "matcher": "Edit|Write",
+    "hooks": [{ "type": "command",
+                "command": "npm run lint --silent" }]
+  }]
+}</code></pre></div><div class="keymsg"><span class="k">규칙 파일과 다른 점</span><div>규칙 파일은 <b>부탁</b>이고 훅은 <b>기계</b>다. 훅은 안 지킬 수가 없다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="막을 것">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>판단</div>
+  <h2 class="s-title sm">사내에서 반드시 막는 다섯 가지</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="vlist"><div class="v"><span class="b">운영 데이터베이스 접속</span><div>읽기라도 막는다. 개인 정보가 창에 통째로 들어온다.</div></div><div class="v"><span class="b">비밀 파일 읽기</span><div><code>.env</code> &middot; 키 파일 &middot; 인증서. 한 번 들어가면 대화 기록에 남는다.</div></div><div class="v"><span class="b">되돌릴 수 없는 명령</span><div><code>rm -rf</code> &middot; <code>git push --force</code> &middot; 테이블 지우기.</div></div><div class="v"><span class="b">바깥으로 보내기</span><div>사내 코드를 외부 서비스에 올리는 명령을 막는다.</div></div><div class="v"><span class="b">결재 없는 배포</span><div>운영에 올리는 명령은 사람 손을 반드시 거치게 한다.</div></div></div><div class="keymsg"><span class="k">막는 방법 두 가지</span><div><b>금지 목록</b>에 적거나 <b>도구를 아예 빼는</b> 것이다. 둘 다 파일로 한다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="기록">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>감사</div>
+  <h2 class="s-title sm">남는 기록</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="ctable"><table style="width:100%"><thead><tr><th>무엇이 남나</th><th>어디에</th><th>사내에서 볼 것</th></tr></thead><tbody><tr><td>주고받은 말 전체</td><td>내 PC 안</td><td class="hl">밖으로 안 나가는지</td></tr><tr><td class="hl">돌린 명령과 결과</td><td class="hl">같은 곳</td><td class="hl">감사 요청이 오면 낼 수 있는지</td></tr><tr><td>고친 파일</td><td>git 이력</td><td>누가 시켰는지 남는지</td></tr><tr><td class="hl">모델에 보낸 내용</td><td class="hl">제공사 서버</td><td class="hl">계약에서 학습 금지가 되어 있는지</td></tr></tbody></table></div><div class="keymsg"><span class="k">도입 전에 확인할 한 가지</span><div><b>주고받은 말이 어디에 저장되고 누가 볼 수 있나.</b> 여기서 대부분 걸린다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="실습 다섯">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>실습</div>
+  <h2 class="s-title sm">금지 목록 만들기</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">.claude/settings.json — 저장소에 같이 넣는다</span></div><pre><code>{
+  "permissions": {
+    "deny": [
+      "Read(./.env*)",                 <span class="cm">&larr; 비밀 파일</span>
+      "Bash(rm -rf:*)",
+      "Bash(git push --force:*)",
+      "Bash(psql:*)"                   <span class="cm">&larr; DB 직접 접속</span>
+    ]
+  }
+}</code></pre></div><div class="keymsg"><span class="k">직접 확인하는 법</span><div>적은 뒤 <q>.env 를 읽어 줘</q> 라고 시켜 본다. <b>막히면</b> 제대로 걸린 것이다.</div></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 지금 쓸 만한 하네스">
+  <div class="ghost">07</div>
+  <div class="seyebrow">CHAPTER 07</div>
+  <h2>지금 쓸 만한 하네스</h2>
+  <div class="agenda"><span>터미널형</span><span>편집기형</span><span>프레임워크형</span></div>
+</section>
+<section class="slide" data-title="세 갈래">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>지형</div>
+  <h2 class="s-title sm">하네스가 나뉘는 세 갈래</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="cards c3">
+  <div class="card"><span class="n">01</span><h3>터미널형</h3><p>명령창에서 돈다. 파일과 명령을 그대로 다룬다. 스스로 오래 돈다.<br/><br/>
+    Claude Code &middot; Codex CLI &middot; OpenCode &middot; Aider &middot; Goose</p></div>
+  <div class="card"><span class="n">02</span><h3>편집기형</h3><p>편집기 안에 붙는다. 고친 곳이 바로 보이고 되돌리기 쉽다.<br/><br/>
+    Cursor &middot; Cline &middot; GitHub Copilot &middot; Antigravity</p></div>
+  <div class="card"><span class="n">03</span><h3>프레임워크형</h3><p>제품에 넣을 에이전트를 <b>직접 짤 때</b> 쓴다. 코드로 흐름을 정한다.<br/><br/>
+    LangGraph &middot; Agent Framework &middot; ADK &middot; CrewAI</p></div>
+</div><div class="keymsg"><span class="k">오늘 쓴 것</span><div><b>터미널형</b>이다. 앞의 둘은 <b>일을 시키는 도구</b>, 셋째는 <b>제품을 만드는 재료</b>다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="터미널형">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>비교</div>
+  <h2 class="s-title sm">터미널형 넷</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="ctable"><table style="width:100%"><thead><tr><th>이름</th><th>만든 곳</th><th>성격</th><th>라이선스</th></tr></thead><tbody><tr><td class="hl">Claude Code</td><td class="hl">Anthropic</td><td class="hl">스킬 &middot; 서브에이전트 &middot; 훅이 다 갖춰져 있다</td><td class="hl">상용</td></tr><tr><td>Codex CLI</td><td>OpenAI</td><td>오래 도는 일과 비동기 실행에 강하다</td><td>오픈소스</td></tr><tr><td class="hl">OpenCode</td><td class="hl">커뮤니티</td><td class="hl">모델을 골라 붙인다. 터미널형 중 가장 많이 쓰인다</td><td class="hl">오픈소스</td></tr><tr><td>Aider</td><td>커뮤니티</td><td>git 커밋 단위로 움직인다. 되돌리기가 쉽다</td><td>Apache 2.0</td></tr></tbody></table></div><div class="keymsg"><span class="k">먼저 가르는 것</span><div><b>모델을 고를 수 있어야 하나.</b> 사내 모델을 쓸 거면 오픈소스 쪽이다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="대응표">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>비교</div>
+  <h2 class="s-title sm">Claude Code 와 Codex 대응</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="ctable"><table style="width:100%"><thead><tr><th>하는 일</th><th>Claude Code</th><th>Codex</th></tr></thead><tbody><tr><td>규칙 파일</td><td><code>CLAUDE.md</code></td><td class="hl"><code>AGENTS.md</code></td></tr><tr><td>절차 문서</td><td>스킬</td><td class="hl">스킬</td></tr><tr><td>일 떼어 맡기기</td><td>서브에이전트</td><td class="hl">지시 파일로 나눈다</td></tr><tr><td>정해진 때 검사</td><td>훅</td><td class="hl">훅</td></tr><tr><td class="hl">도구 붙이기</td><td class="hl">MCP</td><td class="hl">MCP</td></tr></tbody></table></div><div class="keymsg"><span class="k">옮겨 타기 쉬운 이유</span><div><b>MCP 와 <code>AGENTS.md</code></b> 는 양쪽이 같다. 규격이 같으면 갈아타도 다시 안 만든다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="자체 호스팅">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>사내</div>
+  <h2 class="s-title sm">사내에 올려 쓰는 하네스</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="ctable"><table style="width:100%"><thead><tr><th>이름</th><th>무엇이 좋은가</th><th>따져 볼 것</th></tr></thead><tbody><tr><td class="hl">OpenHands</td><td class="hl">실행 환경이 분리돼 있다. 사내 서버에 통째로 올린다</td><td class="hl">설치와 운영에 손이 든다</td></tr><tr><td>Goose</td><td>재단이 관리해 특정 회사에 안 묶인다</td><td>기능이 상용보다 적다</td></tr><tr><td>Cline</td><td>편집기 안에서 돈다. 조직 계정 연동이 된다</td><td>편집기를 벗어난 일은 약하다</td></tr><tr><td class="hl">Conductor</td><td class="hl">설정 한 장으로 여러 에이전트 순서를 고정한다</td><td class="hl">직접 짜야 할 것이 많다</td></tr></tbody></table></div><div class="keymsg"><span class="k">폐쇄망에서 가르는 것</span><div><b>모델을 어디에 두나.</b> 사내 GPU 에 올릴 수 있어야 바깥을 안 탄다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="프레임워크형">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>비교</div>
+  <h2 class="s-title sm">제품에 넣을 때 쓰는 재료</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="ctable"><table style="width:100%"><thead><tr><th>이름</th><th>만든 곳</th><th>쓸 곳</th></tr></thead><tbody><tr><td class="hl">Agent Framework</td><td class="hl">Microsoft</td><td class="hl">Azure &middot; M365 를 쓰면 첫 후보</td></tr><tr><td>LangGraph</td><td>LangChain</td><td>흐름을 그림으로 못 박아야 할 때</td></tr><tr><td class="hl">Agent Development Kit</td><td class="hl">Google</td><td class="hl">Google Cloud 에 붙일 때</td></tr><tr><td>CrewAI</td><td>커뮤니티</td><td>역할을 나눈 팀 꼴로 짤 때</td></tr><tr><td>Claude Agent SDK</td><td>Anthropic</td><td>오늘 쓴 하네스를 코드로 넓힐 때</td></tr></tbody></table></div><div class="keymsg"><span class="k">언제 여기로 오나</span><div><b>사람이 시키는 것</b>이 아니라 <b>제품이 알아서 도는 것</b>을 만들 때다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="새 규격">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>규격</div>
+  <h2 class="s-title sm">굳어지는 중인 규격</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="vlist"><div class="v"><span class="b">MCP</span><div>도구를 붙이는 규약. 이제 거의 모든 하네스가 같은 것을 쓴다.</div></div><div class="v"><span class="b">AGENTS.md</span><div>규칙 파일의 공용 이름. 도구를 갈아타도 그대로 읽힌다.</div></div><div class="v"><span class="b">A2A</span><div>에이전트끼리 말을 주고받는 규약. Google 이 열어 둔 것이다.</div></div><div class="v"><span class="b">Agentic Resource Discovery</span><div>쓸 수 있는 도구 서버를 <b>찾고 확인하는</b> 규격.</div></div><div class="v"><span class="b">에이전트 인증</span><div>에이전트가 누구인지 증명하는 표준. 아직 초안이다.</div></div></div><div class="keymsg"><span class="k">사내에서 볼 것</span><div><b>MCP 와 <code>AGENTS.md</code></b> 둘만 맞춰 두면 하네스를 바꿔도 다시 안 만든다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="고르는 기준">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>판단</div>
+  <h2 class="s-title sm">고를 때 볼 네 가지</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="vlist"><div class="v"><span class="b">모델을 어디에 두나</span><div>사내 GPU 여야 하면 오픈소스 쪽으로 좁혀진다.</div></div><div class="v"><span class="b">기록이 어디에 남나</span><div>감사 요청에 낼 수 있어야 한다.</div></div><div class="v"><span class="b">무엇이 걸리나</span><div>금지 목록 &middot; 훅 &middot; 승인 절차가 <b>파일로</b> 관리되나.</div></div><div class="v"><span class="b">갈아탈 수 있나</span><div>MCP 와 <code>AGENTS.md</code> 를 쓰면 다시 안 만든다.</div></div></div><div class="keymsg"><span class="k">셋째가 제일 급하다</span><div>기능은 다 비슷해졌다. <b>막는 장치가 있느냐</b>에서 갈린다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="한 장 비교">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH7</span><span class="dot"></span>요약</div>
+  <h2 class="s-title sm">한 장으로 본 지형도</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="ctable"><table style="width:100%"><thead><tr><th>쓰려는 곳</th><th>권하는 것</th><th>이유</th></tr></thead><tbody><tr><td class="hl">지금 손에 익히기</td><td class="hl">Claude Code</td><td class="hl">스킬 &middot; 서브에이전트 &middot; 훅이 한 벌로 갖춰져 있다</td></tr><tr><td>오래 도는 일</td><td>Codex CLI</td><td>비동기로 돌려 두고 나중에 본다</td></tr><tr><td class="hl">폐쇄망 자체 호스팅</td><td class="hl">OpenHands</td><td class="hl">실행 환경이 분리돼 사내 서버에 올린다</td></tr><tr><td>Azure 를 쓰는 사내 시스템</td><td>Agent Framework</td><td>인증 &middot; 감사 &middot; 배포가 이미 붙어 있다</td></tr><tr><td class="hl">제품 안에 넣을 에이전트</td><td class="hl">LangGraph</td><td class="hl">흐름을 코드로 못 박고 검사한다</td></tr></tbody></table></div><div class="keymsg"><span class="k">하나만 고르라면</span><div>지금은 <b>손에 익히는 것</b>이 먼저다. 규격이 같으니 <b>나중에 갈아타면 된다.</b></div></div>
+  </div>
+</section>
+<section class="slide section" data-title="[섹션] 사내에 들이는 순서">
+  <div class="ghost">08</div>
+  <div class="seyebrow">CHAPTER 08</div>
+  <h2>사내에 들이는 순서</h2>
+  <div class="agenda"><span>무엇부터</span><span>누가 관리하나</span><span>판단표</span></div>
+</section>
+<section class="slide" data-title="순서">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>도입</div>
+  <h2 class="s-title sm">들이는 순서</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="pipe"><div class="step"><div class="si">1</div><div class="sn">한 팀에서 쓴다</div><div class="sd">규칙 파일 한 장부터 만들어 두 주 써 본다</div></div><div class="step"><div class="si">2</div><div class="sn">막는 장치를 건다</div><div class="sd">금지 목록과 훅을 저장소에 넣는다</div></div><div class="step"><div class="si">3</div><div class="sn">반복을 스킬로 뺀다</div><div class="sd">세 번 넘게 설명한 절차를 문서로 굳힌다</div></div><div class="step"><div class="si">4</div><div class="sn">묶어서 나눈다</div><div class="sd">스킬 묶음을 사내 저장소에 올려 다른 팀이 받게 한다</div></div><div class="step"><div class="si">5</div><div class="sn">규격을 맞춘다</div><div class="sd"><code>AGENTS.md</code> 와 MCP 로 통일해 도구를 바꿔도 남게 한다</div></div></div><div class="ctable"><table style="width:100%"><thead><tr><th>단계</th><th>걸리는 기간</th><th>끝난 표시</th></tr></thead><tbody><tr><td class="hl">한 팀에서 쓴다</td><td class="hl">두 주</td><td class="hl">규칙 파일이 저장소에 있다</td></tr><tr><td>막는 장치를 건다</td><td>한 주</td><td>.env 읽기가 실제로 막힌다</td></tr><tr><td class="hl">반복을 스킬로 뺀다</td><td class="hl">계속</td><td class="hl">세 번 넘게 설명한 것이 없다</td></tr><tr><td>묶어서 나눈다</td><td>한 달</td><td>다른 팀이 받아 쓴다</td></tr></tbody></table></div><div class="keymsg"><span class="k">1단계를 건너뛰지 않는다</span><div><b>한 팀이 두 주</b> 써 보기 전에 전사로 펴면 반드시 되돌린다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="관리">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>운영</div>
+  <h2 class="s-title sm">누가 관리하나</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="ctable"><table style="width:100%"><thead><tr><th>무엇</th><th>어디에 둔다</th><th>누가 고친다</th></tr></thead><tbody><tr><td class="hl">금지 목록 &middot; 훅</td><td class="hl">저장소 <code>.claude/</code></td><td class="hl">보안 담당이 검토한다</td></tr><tr><td>프로젝트 규칙</td><td>저장소 <code>AGENTS.md</code></td><td>그 팀이 고친다</td></tr><tr><td class="hl">사내 공통 스킬</td><td class="hl">사내 마켓플레이스 저장소</td><td class="hl">담당자를 정해 둔다</td></tr><tr><td>개인 취향</td><td>내 계정 폴더</td><td>각자</td></tr></tbody></table></div><div class="keymsg"><span class="k">저장소에 넣는 이유</span><div>설정이 <b>사람 PC 에만</b> 있으면 사람이 바뀔 때 사라진다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="폐쇄망">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>사내</div>
+  <h2 class="s-title sm">바깥이 막힌 곳</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="ctable"><table style="width:100%"><thead><tr><th>무엇이 필요한가</th><th>바깥이 열린 곳</th><th>막힌 곳</th></tr></thead><tbody><tr><td>모델</td><td>제공사 서버</td><td class="hl">사내 GPU 에 올린 모델</td></tr><tr><td class="hl">하네스 설치</td><td class="hl">설치 명령 한 줄</td><td class="hl">사내 저장소에 미리 받아 둔다</td></tr><tr><td>스킬 묶음</td><td>공개 마켓플레이스</td><td class="hl">사내 저장소를 마켓플레이스로 건다</td></tr><tr><td>MCP 서버</td><td>외부 서비스</td><td class="hl">사내에 컨테이너로 띄운다</td></tr></tbody></table></div><div class="keymsg"><span class="k">담는 방법은 같다</span><div>하네스도 MCP 서버도 <b>컨테이너로 담아</b> 사내에 올린다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="값">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>판단</div>
+  <h2 class="s-title sm">값이 나가는 곳</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="vlist"><div class="v"><span class="b">통째로 읽히는 버릇</span><div>폴더를 다 읽히면 한 번에 크게 나간다. 찾아 읽게 바꾸면 확 준다.</div></div><div class="v"><span class="b">한 창을 종일 끌기</span><div>돌수록 앞의 말이 계속 다시 들어간다.</div></div><div class="v"><span class="b">안 나눠도 될 일을 나누기</span><div>에이전트를 셋 띄우면 값도 세 배다.</div></div><div class="v"><span class="b">싼 모델로 되는 일</span><div>검색 &middot; 요약 &middot; 감사는 싼 모델로 충분하다.</div></div></div><div class="keymsg"><span class="k">제일 크게 줄이는 한 가지</span><div><b>단계마다 창을 새로 시작하는 것</b>이다. 값도 줄고 답도 좋아진다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="판단표">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>요약</div>
+  <h2 class="s-title sm">도입 전 확인표</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="ctable"><table style="width:100%"><thead><tr><th>확인할 것</th><th>통과 기준</th></tr></thead><tbody><tr><td class="hl">대화 기록이 어디에 남나</td><td class="hl">사내에서 낼 수 있는 형태로 남는다</td></tr><tr><td>보낸 내용이 학습에 쓰이나</td><td>계약에 학습 금지가 적혀 있다</td></tr><tr><td class="hl">운영 DB 와 비밀 파일이 막혔나</td><td class="hl">금지 목록에 적혀 있고 실제로 막힌다</td></tr><tr><td>설정이 저장소에 있나</td><td>사람 PC 가 아니라 저장소에 있다</td></tr><tr><td class="hl">갈아탈 수 있나</td><td class="hl">MCP 와 <code>AGENTS.md</code> 로 되어 있다</td></tr></tbody></table></div><div class="keymsg"><span class="k">다섯 줄이 다 통과해야</span><div>하나라도 비면 <b>한 팀 안에서만</b> 쓴다. 전사로 펴지 않는다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="한 문장">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>정리</div>
+  <h2 class="s-title sm">오늘의 한 문장</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="vlist"><div class="v"><span class="b">모델은 고를 뿐이다</span><div>나머지는 전부 하네스가 하고, 그쪽은 <b>파일로 고칠 수 있다.</b></div></div><div class="v"><span class="b">항상 필요하면 규칙 파일</span><div>가끔 필요하면 스킬. 읽을 것이 많으면 서브에이전트.</div></div><div class="v"><span class="b">막는 것은 도구를 빼서</span><div>말로 부탁하지 않는다. <b>금지 목록과 훅</b>으로 건다.</div></div><div class="v"><span class="b">나누기 전에 겹치는지</span><div>고칠 파일이 겹치면 나누지 않는다. 겹치면 폴더를 가른다.</div></div><div class="v"><span class="b">규격만 맞춰 두면</span><div>MCP 와 <code>AGENTS.md</code> 가 같으니 <b>갈아타도 다시 안 만든다.</b></div></div></div><div class="keymsg"><span class="k">가장 값싼 개선</span><div>더 좋은 모델을 기다리는 것보다 <b>규칙 파일 한 장</b>이 빠르다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="오개념">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>오개념</div>
+  <h2 class="s-title sm">오개념 다섯</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="ctable"><table style="width:100%"><thead><tr><th>흔한 생각</th><th>실제</th></tr></thead><tbody><tr><td>모델이 좋아지면 다 해결된다</td><td class="hl">하네스만 고쳐도 결과가 크게 달라진다</td></tr><tr><td>컨텍스트가 넓으면 다 넣으면 된다</td><td class="hl">많이 넣을수록 찾아야 할 것이 묻힌다</td></tr><tr><td class="hl">규칙 파일은 길수록 좋다</td><td class="hl">확인 안 되는 줄은 창만 차지한다</td></tr><tr><td>에이전트를 여럿 띄우면 빨라진다</td><td class="hl">겹치는 일이면 느려지고 값만 는다</td></tr><tr><td class="hl">하지 말라고 적으면 안 한다</td><td class="hl">도구가 있으면 한다. 도구를 빼야 안 한다</td></tr></tbody></table></div><div class="keymsg"><span class="k">제일 많이 데는 것</span><div><b>여럿 띄우면 빠르겠지</b> &mdash; 나눌 수 있는 일인지 <b>먼저 본다.</b></div></div>
+  </div>
+</section>
+<section class="slide" data-title="치트시트">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH8</span><span class="dot"></span>요약</div>
+  <h2 class="s-title sm">치트시트</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">오늘 만든 파일들</span></div><pre><code>AGENTS.md                     프로젝트 규칙 — 언제나 읽힌다
+CLAUDE.md                     @AGENTS.md 한 줄만
+.claude/settings.json         금지 목록과 훅
+.claude/skills/&lt;이름&gt;/SKILL.md  절차 — 필요할 때만 들어온다
+.claude/agents/&lt;이름&gt;.md       서브에이전트 — 창을 따로 쓴다
+PROGRESS.md                   긴 일을 이어 가는 기록
+
+/init      규칙 파일 초안 만들기
+/compact   주고받은 말 접기</code></pre></div><div class="keymsg"><span class="k">전부 저장소에 넣는다</span><div>여섯 파일이 하네스의 전부다. <b>코드처럼 검토하고 코드처럼 관리한다.</b></div></div>
+  </div>
+</section>
+
+
+    </div>
+  </div>
+</main>
+<div class="overview" id="overview">
+  <div class="head"><h3>슬라이드 목차</h3><button id="ovClose">닫기 </button></div>
+  <div class="ovgrid" id="ovgrid"></div>
+</div>
+
+<div class="controlbar">
+  <button class="ico" id="btnMenu" title="목차"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+  <span class="sep"></span>
+  <button class="ico" id="btnPrev" title="이전"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <span class="count"><b id="cur">1</b> / <span id="tot2">75</span></span>
+  <button class="ico" id="btnNext" title="다음"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 18l6-6-6-6"/></svg></button>
+  <span class="sep"></span>
+  <button class="zoom" id="btnOut" title="축소"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14"/></svg></button>
+  <button class="zoom" id="btnIn" title="확대"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></button>
+  <button class="zoom" id="btnFit" title="화면 맞춤"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 4H5a1 1 0 0 0-1 1v4M15 4h4a1 1 0 0 1 1 1v4M9 20H5a1 1 0 0 1-1-1v-4M15 20h4a1 1 0 0 0 1-1v-4"/></svg></button>
+  <button class="pdf" id="btnPdf" title="PDF로 저장 (인쇄 → PDF로 저장)">PDF</button>
+</div>
+
+<div class="hint">← → 또는 Space · 목차(≡) · 줌(−/+) · 숫자 입력 후 Enter로 이동</div>
+<div id="jumpHint"></div>
+<style>
+  #jumpHint{position:fixed; left:50%; bottom:74px; transform:translateX(-50%) translateY(6px); z-index:75;
+    background:#2B2B2E; color:#fff; font-family:Georgia,'Times New Roman',serif; font-style:italic;
+    font-size:20px; letter-spacing:.04em; padding:8px 20px; border-radius:999px;
+    box-shadow:0 12px 28px -10px rgba(0,0,0,.55); opacity:0; pointer-events:none;
+    transition:opacity .12s ease, transform .12s ease;}
+  #jumpHint.on{opacity:1; transform:translateX(-50%) translateY(0);}
+  @media print{ #jumpHint{display:none !important;} }
+</style>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const scaler = document.getElementById('scaler');
+  const sizer  = document.getElementById('sizer');
+  const stage  = document.getElementById('stage');
+  const total  = slides.length;
+  let idx = 0, userZoom = 1;
+  const BW = 1280, BH = 720;
+
+  document.getElementById('tot2').textContent = total;
+  slides.forEach((s, i) => {
+    const c = s.querySelector('.coord b');     if (c) c.textContent = String(i + 1).padStart(2, '0');
+    const t = s.querySelector('.coord .tot');  if (t) t.textContent = total;
+  });
+
+  const ovgrid = document.getElementById('ovgrid');
+  slides.forEach((s, i) => {
+    const b = document.createElement('button');
+    b.className = 'ovcard';
+    b.innerHTML = '<div class="ovn">' + String(i + 1).padStart(2, '0') + '</div><div class="ovt">' + (s.dataset.title || '') + '</div>';
+    b.addEventListener('click', () => { go(i); closeOverview(); });
+    ovgrid.appendChild(b);
+  });
+  const overview = document.getElementById('overview');
+  function openOverview(){ overview.classList.add('on'); }
+  function closeOverview(){ overview.classList.remove('on'); }
+  document.getElementById('btnMenu').addEventListener('click', openOverview);
+  document.getElementById('ovClose').addEventListener('click', closeOverview);
+  overview.addEventListener('click', (e) => { if (e.target === overview) closeOverview(); });
+
+  function fitScale(){
+    const availW = stage.clientWidth  - 60;
+    const availH = stage.clientHeight - 60;
+    return Math.min(availW / BW, availH / BH);
+  }
+  function applyScale(){
+    const eff = fitScale() * userZoom;
+    scaler.style.transform = 'scale(' + eff + ')';
+    sizer.style.width  = (BW * eff) + 'px';
+    sizer.style.height = (BH * eff) + 'px';
+  }
+  window.addEventListener('resize', applyScale);
+
+  function go(n){
+    idx = Math.max(0, Math.min(total - 1, n));
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    document.getElementById('cur').textContent = idx + 1;
+    document.getElementById('btnPrev').disabled = idx === 0;
+    document.getElementById('btnNext').disabled = idx === total - 1;
+    document.getElementById('pfill').style.width = (idx / (total - 1) * 100) + '%';
+    applyScale();
+    stage.scrollTop = 0; stage.scrollLeft = 0;
+  }
+  document.getElementById('btnPrev').addEventListener('click', () => go(idx - 1));
+  document.getElementById('btnNext').addEventListener('click', () => go(idx + 1));
+  document.getElementById('btnIn').addEventListener('click',  () => { userZoom = Math.min(2.4, userZoom + 0.15); applyScale(); });
+  document.getElementById('btnOut').addEventListener('click', () => { userZoom = Math.max(0.5, userZoom - 0.15); applyScale(); });
+  document.getElementById('btnFit').addEventListener('click', () => { userZoom = 1; applyScale(); });
+  document.getElementById('btnPdf').addEventListener('click', () => window.print());
+
+  // ---- 슬라이드 번호 입력 → Enter 로 점프 ----
+  let jumpBuf = '', jumpTimer = null;
+  const jumpHint = document.getElementById('jumpHint');
+  function showJump(){
+    if (!jumpHint) return;
+    if (jumpBuf){ jumpHint.textContent = '→ ' + jumpBuf; jumpHint.classList.add('on'); }
+    else { jumpHint.classList.remove('on'); }
+  }
+  function clearJump(){ jumpBuf = ''; if (jumpTimer) clearTimeout(jumpTimer); showJump(); }
+  function commitJump(){
+    if (jumpBuf){ const n = parseInt(jumpBuf, 10); if (!isNaN(n)) go(n - 1); }
+    clearJump();
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (overview.classList.contains('on')) { if (e.key === 'Escape') closeOverview(); return; }
+    if (/^[0-9]$/.test(e.key)){
+      e.preventDefault();
+      jumpBuf = (jumpBuf + e.key).slice(0, 3);
+      showJump();
+      if (jumpTimer) clearTimeout(jumpTimer);
+      jumpTimer = setTimeout(clearJump, 1600);
+      return;
+    }
+    if (e.key === 'Enter'){ e.preventDefault(); commitJump(); return; }
+    if (e.key === 'Escape'){ clearJump(); }
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown'){ e.preventDefault(); clearJump(); go(idx + 1); }
+    if (e.key === 'ArrowLeft'  || e.key === 'PageUp'){ e.preventDefault(); clearJump(); go(idx - 1); }
+    if (e.key === 'Home'){ clearJump(); go(0); } if (e.key === 'End'){ clearJump(); go(total - 1); }
+    if (e.key === '+' || e.key === '='){ userZoom = Math.min(2.4, userZoom + 0.15); applyScale(); }
+    if (e.key === '-'){ userZoom = Math.max(0.5, userZoom - 0.15); applyScale(); }
+  });
+
+  applyScale(); go(0);
+</script>
+</body>
+</html>

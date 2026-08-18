@@ -233,7 +233,7 @@ pptx 기반 이전 덱은 [_archive-pptx/](_archive-pptx/)에 보관돼 있다.
 | 8/13 | RAG 심화 — 검색 품질 | [day11/index.html](day11/index.html) |
 | 8/14 | MCP — 도구를 붙이는 규약 | 기존 강의 D04·D06 을 줄여 옮긴다 |
 | 8/18 | Docker 다루기 | [day13/index.html](day13/index.html) |
-| 8/19 | 멀티 에이전트와 하네스 | 기존 강의 D08 발췌 |
+| 8/19 | 하네스 다루기 | [day14/index.html](day14/index.html) |
 | 8/20 | 서빙과 프로젝트 워크타임 | |
 | 8/21 | 과제 발표회 및 수료식 | |
 
