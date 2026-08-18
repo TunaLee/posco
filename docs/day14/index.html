@@ -476,26 +476,52 @@
   <h2 class="s-title sm">루프가 도는 실물</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">로그인 버튼 색을 바꿔 달라고 시킨 뒤</span></div><pre><code>&#9679; Glob(pattern: "**/login*.tsx")            <span class="cm">&larr; 찾는다</span>
-  &#8627; 2 files
-
-&#9679; Read(src/app/login/page.tsx)              <span class="cm">&larr; 읽는다</span>
-  &#8627; 84 lines
-
-&#9679; Edit(src/app/login/page.tsx)              <span class="cm">&larr; 고친다</span>
-  &#8627; 1 addition, 1 removal
-
-&#9679; Bash(npm run build)                       <span class="cm">&larr; 확인한다</span>
-  &#8627; Compiled successfully in 4.1s</code></pre></div><div class="keymsg"><span class="k">네 줄이 한 번의 요청</span><div>사람이 시킨 것은 <b>한 문장</b>이다. 나머지 네 단계는 <b>루프가 스스로</b> 돈 것이다.</div></div>
+<div class="figure"><img src="assets/agent-loop.webp" alt="코딩 에이전트가 로그인 파일을 Glob 으로 찾고, Read 로 읽고, Edit 으로 고치고, Bash 로 빌드해 확인하는 네 단계 흐름도"/><figcaption>로그인 버튼 색을 바꿔 달라고 시킨 뒤 남은 실행 기록</figcaption></div><div class="keymsg"><span class="k">네 줄이 한 번의 요청</span><div>사람이 시킨 것은 <b>한 문장</b>이다. 나머지 네 단계는 <b>루프가 스스로</b> 돈 것이다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="근거">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>근거</div>
-  <h2 class="s-title sm">모델을 그대로 두고 올린 점수</h2>
+  <h2 class="s-title sm">하네스만 붙여서 9배가 된 정답률</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="ctable"><table style="width:100%"><thead><tr><th>무엇을 바꿨나</th><th>결과</th><th>출처</th></tr></thead><tbody><tr><td class="hl">모델은 그대로 두고 하네스만 고침</td><td class="hl">코딩 과제 정답률이 크게 올랐다</td><td>LangChain, Deep Agents</td></tr><tr><td>한 저장소에 에이전트 16개를 동시에 붙임</td><td>C 컴파일러 한 벌을 완성했다</td><td>Anthropic</td></tr><tr><td>도구 설명을 다시 쓰고 결과를 줄임</td><td>토큰이 줄고 정확도가 올랐다</td><td>Anthropic, 도구 설계</td></tr><tr><td class="hl">하네스 없이 채팅창에만 붙여 넣음</td><td class="hl">파일을 못 열어 사람이 계속 나른다</td><td>&mdash;</td></tr></tbody></table></div><div class="keymsg"><span class="k">돈이 덜 드는 쪽</span><div>더 좋은 모델을 기다리는 것보다 <b>하네스를 고치는 편</b>이 빠르고 싸다.</div></div>
+<div class="plot"><svg viewBox="0 0 1116 268">
+  <text x="0" y="12" font-size="11.5" font-weight="800" fill="#8E8AAC">SWE-bench 전체 2,294 문제 &middot; 테스트까지 통과한 비율</text>
+
+  <text x="0" y="42" font-size="12.5" font-weight="800" fill="#E8537A">하네스 없이</text>
+  <text x="86" y="42" font-size="11.5" fill="#8E8AAC">관련 파일을 찾아 넣어 주고 고친 코드만 받는다</text>
+
+  <text x="300" y="70" font-size="13" font-weight="700" fill="#4A4766" text-anchor="end">GPT-4 Turbo</text>
+  <rect x="312" y="52" width="63" height="26" rx="4" fill="#B7A9FF"/>
+  <text x="387" y="71" font-size="14.5" font-weight="800" fill="#4A4766">1.31%</text>
+
+  <text x="300" y="106" font-size="13" font-weight="700" fill="#4A4766" text-anchor="end">Claude 3 Opus</text>
+  <rect x="312" y="88" width="182" height="26" rx="4" fill="#B7A9FF"/>
+  <text x="506" y="107" font-size="14.5" font-weight="800" fill="#4A4766">3.79%</text>
+
+  <text x="0" y="150" font-size="12.5" font-weight="800" fill="#3A1FC9">하네스 붙여</text>
+  <text x="86" y="150" font-size="11.5" fill="#8E8AAC">같은 모델이 스스로 찾고 고치고 빌드해 본다</text>
+
+  <text x="300" y="178" font-size="13" font-weight="700" fill="#16142B" text-anchor="end">Claude 3 Opus</text>
+  <rect x="312" y="160" width="502" height="26" rx="4" fill="#5B3DF5"/>
+  <text x="826" y="179" font-size="14.5" font-weight="800" fill="#3A1FC9">10.46%</text>
+
+  <text x="300" y="214" font-size="13" font-weight="700" fill="#16142B" text-anchor="end">GPT-4 Turbo</text>
+  <rect x="312" y="196" width="599" height="26" rx="4" fill="#3A1FC9"/>
+  <text x="923" y="215" font-size="14.5" font-weight="800" fill="#3A1FC9">12.47%</text>
+
+  <path d="M375 46 V234" stroke="#E8537A" stroke-width="1.5" stroke-dasharray="5 4" fill="none"/>
+  <text x="0" y="256" font-size="11.5" font-weight="800" fill="#E8537A">붉은 선 &mdash; 하네스 없는 GPT-4 Turbo 가 닿은 곳. 아래 두 줄은 모델을 바꾼 것이 아니다</text>
+</svg><div class="cap">출처 &mdash; Yang et al., SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering, NeurIPS 2024, Table 1</div></div><div class="keymsg"><span class="k">모델이 아니라 바깥</span><div>하네스 없는 <b>GPT-4 Turbo</b>는 1.31% 에서 멈춘다. 하네스를 붙인 <b>Claude 3 Opus</b>는 8배인 10.46% 다.</div></div>
+  </div>
+</section>
+<section class="slide" data-title="지금도">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">CH0</span><span class="dot"></span>근거</div>
+  <h2 class="s-title sm">같은 모델에서 하네스가 가른 18점</h2>
+  <div class="rule"></div>
+  <div class="body">
+<div class="twocol w"><div><div class="figure dark"><img src="assets/terminal-bench-opus.webp" alt="Terminal-Bench 2.0 리더보드에서 모델을 Claude Opus 4.6 으로 걸러 낸 아홉 줄. Agent 칸만 다르고 정확도는 76.4%부터 58.0%까지 벌어져 있다"/><figcaption>출처 &mdash; Terminal-Bench 2.0 리더보드, 모델을 Claude Opus 4.6 으로 걸러 낸 화면</figcaption></div></div><div><div class="stat-row"><div class="stat"><div class="num">76.4%</div><div class="lab">Meta-Harness</div></div><div class="stat"><div class="num">58.0%</div><div class="lab">Claude Code 기본값</div></div></div><div class="vlist" style="margin-top:16px"><div class="v"><span class="b">=</span><div>아홉 줄 모두 <b>Claude Opus 4.6</b> 이다. Model 칸이 전부 같다.</div></div><div class="v"><span class="b">≠</span><div>다른 것은 <b>Agent 칸</b> 하나다. 도구 &middot; 순서 &middot; 울타리 &middot; 배경을 짠 방식이다.</div></div><div class="v"><span class="b">★</span><div>제조사가 낸 기본값이 <b>맨 아래</b>다. 손대지 않으면 점수가 남는다.</div></div></div></div></div><div class="keymsg"><span class="k">고칠 곳이 남아 있다</span><div>모델을 갈아 봐야 이 <b>18.4점</b>은 안 따라온다. 하네스를 손봐야 따라온다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="다섯 층">
