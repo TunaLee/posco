@@ -374,7 +374,7 @@
   <div class="body">
     <div class="cards c4">
       <div class="card"><span class="n">CH0~1</span><h3>하네스의 정체</h3><p>모델 바깥에 붙은 장치가 무엇인지, 그 안에서 어떤 루프가 도는지 본다.</p></div>
-      <div class="card"><span class="n">CH2~4</span><h3>스킬 · 위임 · 여럿</h3><p>절차를 문서로 굳히고, 일을 떼어 맡기고, 여럿을 동시에 돌린다.</p></div>
+      <div class="card"><span class="n">CH2~4</span><h3>스킬 · 위임 · 여럿</h3><p>절차를 문서로 굳히고, 일을 따로 맡기고, 여럿을 동시에 돌린다.</p></div>
       <div class="card"><span class="n">CH5~6</span><h3>가드레일과 직접 만들기</h3><p>샌드박스로 사고를 막고, 사내 도메인 하네스를 직접 한 벌 만든다.</p></div>
       <div class="card"><span class="n">CH7~8</span><h3>지형도 · 도입 · 표시 의무</h3><p>쓸 만한 하네스를 늘어놓고, 사내 도입 기준과 AI 표시 규정까지 본다.</p></div>
     </div>
@@ -550,7 +550,7 @@
 
   <rect x="230" y="188" width="656" height="46" rx="10" fill="#EFEAFF" stroke="#3A1FC9" stroke-width="1.8"/>
   <text x="252" y="216" font-size="12" font-weight="800" fill="#3A1FC9">2층</text>
-  <text x="558" y="216" font-size="13.5" font-weight="800" fill="#16142B" text-anchor="middle">스킬과 떼어 맡기기</text>
+  <text x="558" y="216" font-size="13.5" font-weight="800" fill="#16142B" text-anchor="middle">스킬과 따로 맡기기</text>
   <text x="864" y="216" font-size="11.5" font-weight="800" fill="#3A1FC9" text-anchor="end">마크다운 한 장</text>
 
   <rect x="230" y="240" width="656" height="46" rx="10" fill="#EFF9F4" stroke="#0B6B4F" stroke-width="1.8"/>
@@ -643,7 +643,7 @@ $ codex 가 평소 띄워 두는 것 &mdash; 설명 줄만 세면
   <h2 class="s-title sm">컨텍스트를 덜어 내는 세 가지</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="vlist"><div class="v"><span class="b">1</span><div><b>압축</b> &mdash; 주고받은 말을 요약으로 접는다. <code>/compact</code> 로 직접 하거나 차면 알아서 접힌다.</div></div><div class="v"><span class="b">2</span><div><b>참조</b> &mdash; 내용을 넣지 않고 <b>어디에 있는지만</b> 넣는다. 스킬과 규칙 파일이 이 방식이다.</div></div><div class="v"><span class="b">3</span><div><b>위임</b> &mdash; 읽어야 할 것이 많은 일은 <b>따로 떼어</b> 다른 컨텍스트에서 시키고 결론만 받는다.</div></div></div><div class="keymsg"><span class="k">셋 중 제일 센 것</span><div><b>위임</b>이다. 파일 200개를 읽어도 본체 컨텍스트에는 <b>결론 열 줄</b>만 들어온다.</div></div>
+<div class="vlist"><div class="v"><span class="b">1</span><div><b>압축</b> &mdash; 주고받은 말을 요약으로 접는다. <code>/compact</code> 로 직접 하거나 차면 알아서 접힌다.</div></div><div class="v"><span class="b">2</span><div><b>참조</b> &mdash; 내용을 넣지 않고 <b>어디에 있는지만</b> 넣는다. 스킬과 규칙 파일이 이 방식이다.</div></div><div class="v"><span class="b">3</span><div><b>위임</b> &mdash; 읽어야 할 것이 많은 일은 <b>따로 띄운</b> 컨텍스트에서 시키고 결론만 받는다.</div></div></div><div class="keymsg"><span class="k">셋 중 제일 센 것</span><div><b>위임</b>이다. 파일 200개를 읽어도 본체 컨텍스트에는 <b>결론 열 줄</b>만 들어온다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="계획과 실행">
@@ -805,13 +805,16 @@ description: Fast headless browser for QA testing
   <h2 class="s-title sm">플러그인과 마켓플레이스</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">남이 만든 스킬 묶음을 통째로 받는다</span></div><pre><code>$ codex
-&gt; /plugins                          <span class="cm">&larr; 플러그인 브라우저가 열린다</span>
-&gt; /plugin marketplace add &lt;사내 저장소&gt;
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">등록은 명령창에서, 고르는 것은 세션 안에서</span></div><pre><code><span class="cm"># 1. 마켓플레이스를 등록한다 &mdash; 명령창에서 한다</span>
+$ codex plugin marketplace add &lt;사내조직&gt;/&lt;저장소&gt; --ref main
+$ codex plugin add 설비도구@&lt;저장소&gt;
+$ codex plugin list
 
-<span class="cm"># ~/.codex/config.toml &mdash; 켜고 끄는 것도 파일이다</span>
-[marketplaces.openai-bundled]
-[plugins."superpowers@openai-curated"]
+<span class="cm"># 2. 세션 안에서는 골라서 켠다</span>
+&gt; /plugins                          <span class="cm">&larr; 브라우저가 열린다</span>
+
+<span class="cm"># 3. 결과는 ~/.codex/config.toml 에 남는다</span>
+[plugins."설비도구@사내저장소"]
 enabled = true                      <span class="cm">&larr; 이 줄 하나로 붙었다 떨어진다</span></code></pre></div><div class="keymsg"><span class="k">사내 배포 방식</span><div>사내 GitHub 저장소 하나를 마켓플레이스로 걸면 스킬을 <b>사내에만</b> 돌린다.</div></div>
   </div>
 </section>
@@ -830,10 +833,10 @@ $ code .codex/skills/주간보고/SKILL.md
 &#9679; Skill(주간보고)                    <span class="cm">&larr; 알아서 호출되면 성공</span></code></pre></div><div class="keymsg"><span class="k">마지막 단계가 검사다</span><div>이름을 안 댔는데 <b>알아서 호출되면</b> 설명이 맞게 쓰인 것이다.</div></div>
   </div>
 </section>
-<section class="slide section" data-title="[섹션] 위임 — 일을 떼어서 맡기기">
+<section class="slide section" data-title="[섹션] 위임 — 일을 따로 맡기기">
   <div class="ghost">03</div>
   <div class="seyebrow">CHAPTER 03</div>
-  <h2>위임 — 일을 떼어서 맡기기</h2>
+  <h2>위임 — 일을 따로 맡기기</h2>
   <div class="agenda"><span>컨텍스트를 나누는 이유</span><span>도구를 좁히기</span><span>실습</span></div>
 </section>
 <section class="slide" data-title="서브에이전트">
@@ -847,7 +850,7 @@ $ code .codex/skills/주간보고/SKILL.md
     <h3>읽은 것이 다 쌓인다</h3>
     <p>파일 200개를 뒤져 버그를 찾으면 <b>그 200개가 전부 컨텍스트에 남는다.</b>
        정작 고칠 때는 컨텍스트가 이미 차 있다.</p></div>
-  <div class="side"><div class="tagline">떼어 맡길 때</div>
+  <div class="side"><div class="tagline">따로 맡길 때</div>
     <h3>결론만 돌아온다</h3>
     <p>따로 뜬 세션이 200개를 읽고 <b>버그 세 줄만</b> 보고한다.
        본체 컨텍스트에는 그 세 줄만 들어온다.</p></div>
@@ -881,7 +884,7 @@ $ code .codex/skills/주간보고/SKILL.md
   <text x="414" y="196" font-size="11" font-weight="800" fill="#0B6B4F" text-anchor="middle">보고</text>
 
   <rect x="462" y="34" width="604" height="230" rx="14" fill="#FAFAFD" stroke="#C9C4E4" stroke-width="1.6" stroke-dasharray="7 5"/>
-  <text x="764" y="60" font-size="13" font-weight="800" fill="#8E8AAC" text-anchor="middle">떼어 낸 컨텍스트 &mdash; 끝나면 통째로 사라진다</text>
+  <text x="764" y="60" font-size="13" font-weight="800" fill="#8E8AAC" text-anchor="middle">따로 띄운 컨텍스트 &mdash; 끝나면 통째로 사라진다</text>
   <rect x="486" y="76" width="556" height="26" rx="6" fill="#FDF0EE"/>
   <text x="764" y="94" font-size="11" fill="#C4442E" text-anchor="middle">파일 1 &hellip; 파일 200 을 다 읽는다</text>
   <rect x="486" y="108" width="556" height="26" rx="6" fill="#FDF0EE"/>
@@ -890,7 +893,7 @@ $ code .codex/skills/주간보고/SKILL.md
   <text x="764" y="158" font-size="11" fill="#C4442E" text-anchor="middle">여기서 컨텍스트가 거의 다 찬다</text>
   <text x="764" y="200" font-size="12" font-weight="800" fill="#8E8AAC" text-anchor="middle">다 차도 상관없다</text>
   <text x="764" y="226" font-size="11.5" fill="#8E8AAC" text-anchor="middle">본체로 넘어오는 것은 마지막 보고뿐이다</text>
-</svg></div><div class="keymsg"><span class="k">버리는 것이 이득이다</span><div>읽은 것을 <b>안 가져오는</b> 것이 전부다. 그래서 큰 조사일수록 떼어 맡긴다.</div></div>
+</svg></div><div class="keymsg"><span class="k">버리는 것이 이득이다</span><div>읽은 것을 <b>안 가져오는</b> 것이 전부다. 그래서 큰 조사일수록 따로 맡긴다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="이득">
@@ -899,13 +902,13 @@ $ code .codex/skills/주간보고/SKILL.md
   <h2 class="s-title sm">위임이 이득인 곳과 손해인 곳</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="ctable"><table style="width:100%"><thead><tr><th>일</th><th>떼어 맡기면</th><th>판단</th></tr></thead><tbody><tr><td class="hl">저장소 전체에서 어디를 고칠지 찾기</td><td class="hl">읽은 파일이 본체에 안 남는다</td><td class="hl">이득</td></tr><tr><td class="hl">구현이 끝난 뒤 버그 감사</td><td class="hl">다른 시선으로 다시 본다</td><td class="hl">이득</td></tr><tr><td>긴 문서 열 개를 요약</td><td>요약만 돌아온다</td><td>이득</td></tr><tr><td>한 파일 두 줄 고치기</td><td>지시를 적는 값이 더 든다</td><td>손해</td></tr><tr><td class="hl">앞뒤 맥락이 계속 필요한 일</td><td class="hl">떼어 낸 컨텍스트는 앞 대화를 모른다</td><td class="hl">손해</td></tr></tbody></table></div><div class="keymsg"><span class="k">가르는 기준</span><div><b>읽을 것이 많고 결론이 짧으면</b> 떼어 낸다. 반대면 직접 한다.</div></div>
+<div class="ctable"><table style="width:100%"><thead><tr><th>일</th><th>따로 맡기면</th><th>판단</th></tr></thead><tbody><tr><td class="hl">저장소 전체에서 어디를 고칠지 찾기</td><td class="hl">읽은 파일이 본체에 안 남는다</td><td class="hl">이득</td></tr><tr><td class="hl">구현이 끝난 뒤 버그 감사</td><td class="hl">다른 시선으로 다시 본다</td><td class="hl">이득</td></tr><tr><td>긴 문서 열 개를 요약</td><td>요약만 돌아온다</td><td>이득</td></tr><tr><td>한 파일 두 줄 고치기</td><td>지시를 적는 값이 더 든다</td><td>손해</td></tr><tr><td class="hl">앞뒤 맥락이 계속 필요한 일</td><td class="hl">따로 띄운 컨텍스트는 앞 대화를 모른다</td><td class="hl">손해</td></tr></tbody></table></div><div class="keymsg"><span class="k">가르는 기준</span><div><b>읽을 것이 많고 결론이 짧으면</b> 따로 맡긴다. 반대면 직접 한다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="정의">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH3</span><span class="dot"></span>작성</div>
-  <h2 class="s-title sm">떼어 맡길 일을 적어 둔 파일</h2>
+  <h2 class="s-title sm">따로 맡길 일을 적어 둔 파일</h2>
   <div class="rule"></div>
   <div class="body">
 <div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">.codex/skills/설비감사/SKILL.md</span></div><pre><code>---
@@ -929,7 +932,7 @@ description: 바뀐 코드를 읽고 결함만 보고한다. 고치지는 않는
 <div class="twopane">
   <div class="pane bad"><div class="tagline">말로 막을 때</div><h3>고치기 시작한다</h3><p>점검을 시켰는데 <b>다 고쳤다</b>는 답이 돌아온다. 무엇을 고쳤는지는 본체 컨텍스트에 안 남는다.</p><div class="mini">&gt; 고치지는 말고 점검만 해 줘
 <i>… 그래도 고친다. 고칠 <b>수단</b>이 남아 있다.</i></div></div>
-  <div class="pane good"><div class="tagline">샌드박스로 막을 때</div><h3>고칠 수단이 없다</h3><p>읽기 전용으로 띄우면 <b>운영체제가</b> 쓰기를 막는다. 지시가 아니라 <b>차단</b>이다.</p><div class="mini">$ codex --sandbox read-only
+  <div class="pane good"><div class="tagline">샌드박스로 막을 때</div><h3>고칠 수단이 없다</h3><p>읽기 전용으로 띄우면 <b>운영체제가</b> 쓰기를 막는다. 지시가 아니라 <b>차단</b>이다.</p><div class="mini">&gt; /permissions  &rarr;  <b>읽기 전용</b>
 <b>&#9679; 읽기만 가능</b>  <i>쓰기 · 네트워크 차단</i></div></div>
 </div><div class="keymsg"><span class="k">말보다 확실한 것</span><div>지시로 막지 않는다. <b>샌드박스를 좁혀</b> 막는다. 못 하는 일은 못 한다.</div></div>
   </div>
@@ -968,15 +971,17 @@ description: 바뀐 코드를 읽고 결함만 보고한다. 고치지는 않는
 <div class="pipe">
   <div class="step"><div class="si">1</div><div class="sn">파일을 만든다</div><div class="sd"><code>.codex/skills/설비감사/SKILL.md</code></div></div><div class="arrow">&rarr;</div>
   <div class="step"><div class="si">2</div><div class="sn">보고만 하게 적는다</div><div class="sd">고치지 않는다고 본문에 박는다</div></div><div class="arrow">&rarr;</div>
-  <div class="step"><div class="si">3</div><div class="sn">읽기 전용으로 띄운다</div><div class="sd"><code>--sandbox read-only</code></div></div><div class="arrow">&rarr;</div>
+  <div class="step"><div class="si">3</div><div class="sn">읽기 전용으로 잠근다</div><div class="sd"><code>/permissions</code> 에서 읽기 전용을 고른다</div></div><div class="arrow">&rarr;</div>
   <div class="step"><div class="si">4</div><div class="sn">점검을 시킨다</div><div class="sd">방금 바뀐 곳을 봐 달라고 한다</div></div><div class="arrow">&rarr;</div>
   <div class="step"><div class="si">5</div><div class="sn">안 고쳤는지 본다</div><div class="sd">파일이 그대로면 걸린 것이다</div></div>
 </div>
-<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">직접 쳐 보는 것</span></div><pre><code>$ codex --sandbox read-only
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">직접 쳐 보는 것</span></div><pre><code>&gt; /permissions                        <span class="cm">&larr; 읽기 전용을 고른다</span>
+&gt; /status                             <span class="cm">&larr; 걸렸는지 눈으로 본다</span>
+
 &gt; 방금 바뀐 곳을 점검하고 심각도별로 보고해 줘
 &#9679; 높음 1 &middot; 중간 2 &middot; 낮음 3          <span class="cm">&larr; 보고만 온다</span>
 
-$ git status                          <span class="cm">&larr; 바뀐 파일이 없어야 통과</span></code></pre></div><div class="keymsg"><span class="k">확인하는 방법</span><div>고치지 <b>않은 것</b>이 아니라 고치지 <b>못한 것</b>이다. 그래서 매번 같은 결과가 나온다.</div></div>
+&gt; /diff                               <span class="cm">&larr; 바뀐 파일이 없어야 통과</span></code></pre></div><div class="keymsg"><span class="k">확인하는 방법</span><div>고치지 <b>않은 것</b>이 아니라 고치지 <b>못한 것</b>이다. 그래서 매번 같은 결과가 나온다.</div></div>
   </div>
 </section>
 <section class="slide section" data-title="[섹션] 여럿을 한꺼번에">
@@ -1220,14 +1225,16 @@ approval_policy = "on-request"
   <h2 class="s-title sm">읽기 전용으로 잠그고 확인하기</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">1. 잠그고 띄운다</span></div><pre><code>$ codex --sandbox read-only
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">1. 세션 안에서 잠근다</span></div><pre><code>&gt; /permissions            <span class="cm">&larr; 목록에서 읽기 전용을 고른다</span>
+
 &gt; .env 파일을 읽고 내용을 보여 줘
 &gt; README.md 끝에 한 줄만 덧붙여 줘
 <span class="cm">&#9679; 쓰기가 막혔다 &mdash; 고칠 수단 자체가 없다</span></code></pre></div>
 <div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">2. 무엇이 걸려 있는지 본다</span></div><pre><code>&gt; /status                <span class="cm">&larr; 지금 샌드박스와 승인 설정이 보인다</span>
-&gt; /permissions           <span class="cm">&larr; 무엇을 허용할지 여기서 고른다</span>
+&gt; /diff                   <span class="cm">&larr; 바뀐 파일이 없어야 통과</span>
 
-$ git status              <span class="cm">&larr; 바뀐 파일이 없어야 통과</span></code></pre></div><div class="keymsg"><span class="k">확인하는 방법</span><div>고쳐 달라고 시켰는데 <b>파일이 안 바뀌면</b> 제대로 걸린 것이다.</div></div>
+<span class="cm"># 명령창을 쓸 때만 &mdash; 띄울 때부터 잠글 수도 있다</span>
+$ codex --sandbox read-only</code></pre></div><div class="keymsg"><span class="k">확인하는 방법</span><div>고쳐 달라고 시켰는데 <b>파일이 안 바뀌면</b> 제대로 걸린 것이다.</div></div>
   </div>
 </section>
 <section class="slide section" data-title="[섹션] 하네스를 직접 만들기">
@@ -1266,8 +1273,9 @@ $ git status              <span class="cm">&larr; 바뀐 파일이 없어야 통
   <div class="rule"></div>
   <div class="body">
 <div class="vlist"><div class="v"><span class="b">1</span><div><b>스킬 만들기 플러그인</b> &mdash; 절차를 말로 부르면 <code>SKILL.md</code> 초안을 대신 써 준다. 마켓플레이스에서 받는다.</div></div><div class="v"><span class="b">2</span><div><b>superpowers 의 writing-skills</b> &mdash; 스킬 잘 쓰는 법을 <b>스킬로 적어 둔 것</b>이다. Codex 마켓플레이스에도 올라와 있다.</div></div><div class="v"><span class="b">3</span><div><b><code>/init</code></b> &mdash; 저장소를 훑어 <code>AGENTS.md</code> 초안을 써 준다. 여기서부터 깎는다.</div></div></div>
-<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">메타 하네스를 붙이는 두 줄</span></div><pre><code>&gt; /plugin marketplace add &lt;스킬 제작 마켓플레이스&gt;
-&gt; /plugins                        <span class="cm">&larr; 골라서 켠다</span></code></pre></div><div class="keymsg"><span class="k">빈 파일에서 시작하지 않는다</span><div>절차를 <b>말로 부르면</b> 초안이 나온다. 사람은 <b>맞는지만</b> 본다.</div></div>
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">메타 하네스를 붙이는 두 줄</span></div><pre><code>$ codex plugin marketplace add &lt;스킬 제작 저장소&gt; --ref main
+&gt; /plugins                        <span class="cm">&larr; 세션 안에서 골라 켠다</span>
+&gt; /skills                         <span class="cm">&larr; 지금 걸린 스킬을 본다</span></code></pre></div><div class="keymsg"><span class="k">빈 파일에서 시작하지 않는다</span><div>절차를 <b>말로 부르면</b> 초안이 나온다. 사람은 <b>맞는지만</b> 본다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="도메인 한 벌">
@@ -1298,7 +1306,7 @@ $ git status              <span class="cm">&larr; 바뀐 파일이 없어야 통
   <div class="step"><div class="si">1</div><div class="sn">절차를 말한다</div><div class="sd">평소 사람에게 설명하듯 그대로</div></div><div class="arrow">&rarr;</div>
   <div class="step"><div class="si">2</div><div class="sn">초안을 받는다</div><div class="sd">메타 하네스가 <code>SKILL.md</code> 를 쓴다</div></div><div class="arrow">&rarr;</div>
   <div class="step"><div class="si">3</div><div class="sn">못 할 일을 박는다</div><div class="sd">읽기 전용 &middot; 운영 접속 금지를 적는다</div></div><div class="arrow">&rarr;</div>
-  <div class="step"><div class="si">4</div><div class="sn">잠그고 시킨다</div><div class="sd"><code>--sandbox read-only</code> 로 띄운다</div></div><div class="arrow">&rarr;</div>
+  <div class="step"><div class="si">4</div><div class="sn">잠그고 시킨다</div><div class="sd"><code>/permissions</code> 로 읽기 전용을 건다</div></div><div class="arrow">&rarr;</div>
   <div class="step"><div class="si">5</div><div class="sn">그래도 호출되나</div><div class="sd">이름을 안 대고 시켜 본다</div></div>
 </div>
 <div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">.codex/skills/설비점검/SKILL.md &mdash; 사내에만 있는 지식을 넣는다</span></div><pre><code>---
@@ -1486,7 +1494,7 @@ A 정상 / B 관찰 / C 정비 필요 / D 즉시 정지
   <h2 class="s-title sm">오늘의 한 문장</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="vlist"><div class="v"><span class="b">1</span><div><b>모델은 고를 뿐이다</b> &mdash; 나머지는 전부 하네스가 하고, 그쪽은 <b>파일로 고칠 수 있다.</b></div></div><div class="v"><span class="b">2</span><div><b>항상 필요하면 <code>AGENTS.md</code></b> &mdash; 가끔 필요하면 스킬. 읽을 것이 많으면 떼어 맡긴다.</div></div><div class="v"><span class="b">3</span><div><b>막을 때는 수단을 뺀다</b> &mdash; 말로 부탁하지 않는다. <b>샌드박스와 승인 정책</b>으로 건다.</div></div><div class="v"><span class="b">4</span><div><b>겹치면 안 나눈다</b> &mdash; 고칠 파일이 겹치는지 먼저 본다. 그래도 나눠야 하면 폴더를 가른다.</div></div><div class="v"><span class="b">5</span><div><b>규격을 맞춰 둔다</b> &mdash; MCP 와 <code>AGENTS.md</code> 가 같으면 <b>갈아타도 다시 안 만든다.</b></div></div></div><div class="keymsg"><span class="k">가장 싼 개선</span><div>더 좋은 모델을 기다리는 것보다 <b>스킬 한 장</b>이 빠르다.</div></div>
+<div class="vlist"><div class="v"><span class="b">1</span><div><b>모델은 고를 뿐이다</b> &mdash; 나머지는 전부 하네스가 하고, 그쪽은 <b>파일로 고칠 수 있다.</b></div></div><div class="v"><span class="b">2</span><div><b>항상 필요하면 <code>AGENTS.md</code></b> &mdash; 가끔 필요하면 스킬. 읽을 것이 많으면 따로 맡긴다.</div></div><div class="v"><span class="b">3</span><div><b>막을 때는 수단을 뺀다</b> &mdash; 말로 부탁하지 않는다. <b>샌드박스와 승인 정책</b>으로 건다.</div></div><div class="v"><span class="b">4</span><div><b>겹치면 안 나눈다</b> &mdash; 고칠 파일이 겹치는지 먼저 본다. 그래도 나눠야 하면 폴더를 가른다.</div></div><div class="v"><span class="b">5</span><div><b>규격을 맞춰 둔다</b> &mdash; MCP 와 <code>AGENTS.md</code> 가 같으면 <b>갈아타도 다시 안 만든다.</b></div></div></div><div class="keymsg"><span class="k">가장 싼 개선</span><div>더 좋은 모델을 기다리는 것보다 <b>스킬 한 장</b>이 빠르다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="오개념">
@@ -1514,7 +1522,7 @@ requirements.toml              회사가 잠그는 값 &mdash; 개인이 못 푼
 /status        지금 걸린 샌드박스와 승인 보기
 /permissions   무엇을 허용할지 고르기
 /plugins       스킬 묶음 받기
---sandbox read-only            읽기 전용으로 띄우기</code></pre></div><div class="keymsg"><span class="k">전부 저장소에 넣는다</span><div>다섯 파일이 하네스의 전부다. <b>코드처럼 검토하고 코드처럼 관리한다.</b></div></div>
+/permissions   샌드박스와 승인 고르기 (앱에서 하는 곳)</code></pre></div><div class="keymsg"><span class="k">전부 저장소에 넣는다</span><div>다섯 파일이 하네스의 전부다. <b>코드처럼 검토하고 코드처럼 관리한다.</b></div></div>
   </div>
 </section>
 
