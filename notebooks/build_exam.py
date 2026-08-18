@@ -71,12 +71,12 @@ for _p in ('exam{WK}.ipynb', '/content/exam{WK}.ipynb'):
         pass
 print("이름:", 이름 if 이름 else "(비어 있다 — 이름을 적고 다시 실행한다)")
 print()
-_ok = []
-for _no, _fn in sorted(_CHECKS.items()):
-    try:
-        _fn(); _ok.append(_no)
-    except Exception as _e:
-        print("  %2d번  아직 안 됨  %s" % (_no, str(_e)[:60]))
+_ok = [_no for _no, _v in sorted(_CHECKS.items()) if _v]
+for _no in range(1, _TOTAL_N + 1):
+    if _no not in _CHECKS:
+        print("  %2d번  검사 셀을 아직 안 돌렸다" % _no)
+    elif not _CHECKS[_no]:
+        print("  %2d번  아직 안 됨" % _no)
 print()
 print("맞힌 문항 %d / %d" % (len(_ok), _TOTAL_N))
 print("점수      %d / %d" % (len(_ok) * _PER, _TOTAL_N * _PER))
@@ -98,8 +98,14 @@ def build(S, wk, answer: bool):
         cells.append(md("**문제 %d.** (%d점) %s" % (no, pt, prompt)))
         cells.append(code(ans if answer else blank, tag="q%d" % no))
         body = "\n".join("    " + l for l in chk.split("\n"))
+        # 검사 결과를 그 자리에서 기록한다. 뒤 문제가 같은 변수명을 덮어써도
+        # 채점이 흔들리지 않는다.
         cells.append(code("# [검사] 이 셀은 고치지 않는다\n"
-                          "def _c%d():\n%s\n_CHECKS[%d] = _c%d\n_c%d()\nprint('%d번 통과')"
+                          "def _c%d():\n%s\n"
+                          "try:\n"
+                          "    _c%d(); _CHECKS[%d] = True; print('%d번 통과')\n"
+                          "except AssertionError:\n"
+                          "    _CHECKS[%d] = False; raise"
                           % (no, body, no, no, no, no), tag="check%d" % no))
     cells.append(md(FOOT_STUDENT))
     cells.append(code(GRADE_CELL.replace("{WK}", str(wk)), tag="grade"))
