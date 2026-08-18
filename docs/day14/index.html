@@ -625,7 +625,7 @@
 2956834          <span class="cm">&larr; 본문을 다 합치면 296만 자</span>
 
 $ codex 가 평소 띄워 두는 것 &mdash; 설명 줄만 세면
-25770             <span class="cm">&larr; 설명만 합치면 2.6만 자</span></code></pre></div><div class="keymsg"><span class="k">115배</span><div>본문을 다 넣으면 <b>컨텍스트에 안 들어간다.</b> 그래서 한 줄 설명만 띄우고 본문은 필요할 때 부른다.</div></div>
+25770             <span class="cm">&larr; 설명만 합치면 2.6만 자</span></code></pre></div><div class="keymsg"><span class="k">115배</span><div>본문을 다 넣으면 <b>컨텍스트에 안 들어간다.</b> 그래서 한 줄 설명만 띄워 두고 본문은 필요할 때 호출한다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="찾아 읽기">
@@ -665,10 +665,10 @@ $ codex 가 평소 띄워 두는 것 &mdash; 설명 줄만 세면
   &#8627; 1번 통과 &mdash; 계획서에 [x] 로 표시</code></pre></div><div class="keymsg"><span class="k">두 세션으로 나눈다</span><div>계획 세션은 <b>정하기만</b> 한다. 실행 세션은 그 파일만 읽고 <b>차례대로</b> 해 나간다.</div></div>
   </div>
 </section>
-<section class="slide section" data-title="[섹션] 스킬 — 필요할 때만 불러오는 절차">
+<section class="slide section" data-title="[섹션] 스킬 — 필요할 때만 호출되는 절차">
   <div class="ghost">02</div>
   <div class="seyebrow">CHAPTER 02</div>
-  <h2>스킬 — 필요할 때만 불러오는 절차</h2>
+  <h2>스킬 — 필요할 때만 호출되는 절차</h2>
   <div class="agenda"><span>규칙 파일과의 차이</span><span>한 장의 구조</span><span>실습</span></div>
 </section>
 <section class="slide" data-title="스킬">
@@ -689,10 +689,10 @@ $ codex 가 평소 띄워 두는 것 &mdash; 설명 줄만 세면
 </div><div class="keymsg"><span class="k">길게 써도 되는 곳</span><div>스킬은 <b>수십 장이어도 된다.</b> 안 쓸 때는 컨텍스트에 안 들어오기 때문이다.</div></div>
   </div>
 </section>
-<section class="slide" data-title="불려 오는 방식">
+<section class="slide" data-title="호출되는 방식">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>구조</div>
-  <h2 class="s-title sm">스킬이 불려 오는 방식</h2>
+  <h2 class="s-title sm">스킬이 호출되는 방식</h2>
   <div class="rule"></div>
   <div class="body">
 <div class="plot"><svg viewBox="0 0 1116 300">
@@ -703,8 +703,8 @@ $ codex 가 평소 띄워 두는 것 &mdash; 설명 줄만 세면
   <rect x="70" y="110" width="260" height="24" rx="6" fill="#EFF9F4"/>
   <text x="200" y="127" font-size="10.5" fill="#0B6B4F" text-anchor="middle">review &mdash; 바뀐 코드를 검토한다</text>
   <rect x="70" y="140" width="260" height="24" rx="6" fill="#EFF9F4"/>
-  <text x="200" y="157" font-size="10.5" fill="#0B6B4F" text-anchor="middle">&hellip; 쉰다섯 줄 더</text>
-  <text x="200" y="182" font-size="11.5" font-weight="800" fill="#0B6B4F" text-anchor="middle">다 합쳐 5천 자</text>
+  <text x="200" y="157" font-size="10.5" fill="#0B6B4F" text-anchor="middle">&hellip; 쉰한 줄 더</text>
+  <text x="200" y="182" font-size="11.5" font-weight="800" fill="#0B6B4F" text-anchor="middle">다 합쳐 2만 6천 자</text>
 
   <path d="M356 115 H432" stroke="#3A1FC9" stroke-width="2.2"/>
   <path d="M428 108l14 7-14 7z" fill="#3A1FC9"/>
@@ -714,19 +714,19 @@ $ codex 가 평소 띄워 두는 것 &mdash; 설명 줄만 세면
   <rect x="442" y="40" width="300" height="150" rx="12" fill="#EFEAFF" stroke="#3A1FC9" stroke-width="1.8"/>
   <text x="592" y="66" font-size="12.5" font-weight="800" fill="#3A1FC9" text-anchor="middle">그때 &mdash; 본문이 들어온다</text>
   <rect x="462" y="80" width="260" height="84" rx="8" fill="#fff" stroke="#3A1FC9" stroke-width="1.2"/>
-  <text x="592" y="104" font-size="11" fill="#16142B" text-anchor="middle">browse/SKILL.md 전문</text>
+  <text x="592" y="104" font-size="11" fill="#16142B" text-anchor="middle">gstack-browse/SKILL.md 전문</text>
   <text x="592" y="126" font-size="11" fill="#16142B" text-anchor="middle">명령 &middot; 예시 &middot; 주의</text>
   <text x="592" y="150" font-size="11.5" font-weight="800" fill="#3A1FC9" text-anchor="middle">4만 8천 자</text>
 
   <rect x="800" y="40" width="266" height="150" rx="12" fill="#FDF0EE" stroke="#C4442E" stroke-width="1.6"/>
   <text x="933" y="66" font-size="12.5" font-weight="800" fill="#C4442E" text-anchor="middle">만약 전부 띄웠다면</text>
-  <text x="933" y="106" font-size="22" font-weight="800" fill="#C4442E" text-anchor="middle">321만 자</text>
+  <text x="933" y="106" font-size="22" font-weight="800" fill="#C4442E" text-anchor="middle">296만 자</text>
   <text x="933" y="134" font-size="11.5" fill="#5B5580" text-anchor="middle">어떤 컨텍스트에도 안 들어간다</text>
-  <text x="933" y="160" font-size="11.5" font-weight="800" fill="#C4442E" text-anchor="middle">641배</text>
+  <text x="933" y="160" font-size="11.5" font-weight="800" fill="#C4442E" text-anchor="middle">115배</text>
 
   <text x="558" y="240" font-size="13" font-weight="800" fill="#16142B" text-anchor="middle">한 줄 설명이 목록이고, 본문은 그 목록에서 골라 꺼낸다</text>
   <text x="558" y="266" font-size="11.5" fill="#8E8AAC" text-anchor="middle">그래서 한 줄 설명을 어떻게 쓰느냐가 스킬의 전부다</text>
-</svg></div><div class="keymsg"><span class="k">설명을 보고 고른다</span><div>본문이 아무리 좋아도 <b>설명이 안 맞으면 안 불린다.</b></div></div>
+</svg></div><div class="keymsg"><span class="k">설명을 보고 고른다</span><div>본문이 아무리 좋아도 <b>설명이 안 맞으면 호출이 안 된다.</b></div></div>
   </div>
 </section>
 <section class="slide" data-title="한 장">
@@ -754,16 +754,16 @@ GET /api/equipment/{id}
 <section class="slide" data-title="설명 쓰기">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH2</span><span class="dot"></span>작성</div>
-  <h2 class="s-title sm">불리는 설명과 안 불리는 설명</h2>
+  <h2 class="s-title sm">호출되는 설명과 안 되는 설명</h2>
   <div class="rule"></div>
   <div class="body">
 <div class="twopane">
-  <div class="pane bad"><h4>안 불린다</h4>
+  <div class="pane bad"><h4>호출 안 된다</h4>
     <p class="mini">description: 설비 관련 도우미</p>
-    <p><b>언제</b> 쓰는지가 없다. 무슨 일이 생겨야 부를지 알 수 없다.</p>
+    <p><b>언제</b> 쓰는지가 없다. 무슨 일이 생겨야 호출할지 알 수 없다.</p>
     <p class="mini">description: 유용한 유틸리티 모음</p>
     <p>어느 말에도 안 걸린다.</p></div>
-  <div class="pane good"><h4>불린다</h4>
+  <div class="pane good"><h4>호출된다</h4>
     <p class="mini">description: 설비 번호로 상태를 조회하는 화면을 만들거나 고칠 때 쓴다</p>
     <p><b>~할 때 쓴다</b> 로 끝낸다. 걸리는 단어가 여럿 들어간다.</p>
     <p class="mini">설비 &middot; 번호 &middot; 상태 &middot; 조회 &middot; 화면</p></div>
@@ -821,13 +821,13 @@ enabled = true                      <span class="cm">&larr; 이 줄 하나로 �
   <h2 class="s-title sm">스킬 만들기</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="pipe"><div class="step"><div class="si">1</div><div class="sn">반복을 고른다</div><div class="sd">이번 주에 세 번 넘게 다시 설명한 절차를 하나 고른다</div></div><div class="step"><div class="si">2</div><div class="sn">폴더를 만든다</div><div class="sd"><code>.codex/skills/&lt;이름&gt;/SKILL.md</code> 를 만든다</div></div><div class="step"><div class="si">3</div><div class="sn">머리말을 쓴다</div><div class="sd"><code>name</code> 과 <code>description</code> 두 줄. 설명은 <b>~할 때 쓴다</b></div></div><div class="step"><div class="si">4</div><div class="sn">본문을 붙인다</div><div class="sd">평소에 말로 설명하던 것을 그대로 옮긴다</div></div><div class="step"><div class="si">5</div><div class="sn">불리는지 본다</div><div class="sd">새 세션에서 <b>스킬 이름을 안 대고</b> 그 일을 시켜 본다</div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">직접 쳐 보는 것</span></div><pre><code>$ mkdir -p .codex/skills/주간보고
+<div class="pipe"><div class="step"><div class="si">1</div><div class="sn">반복을 고른다</div><div class="sd">이번 주에 세 번 넘게 다시 설명한 절차를 하나 고른다</div></div><div class="step"><div class="si">2</div><div class="sn">폴더를 만든다</div><div class="sd"><code>.codex/skills/&lt;이름&gt;/SKILL.md</code> 를 만든다</div></div><div class="step"><div class="si">3</div><div class="sn">머리말을 쓴다</div><div class="sd"><code>name</code> 과 <code>description</code> 두 줄. 설명은 <b>~할 때 쓴다</b></div></div><div class="step"><div class="si">4</div><div class="sn">본문을 붙인다</div><div class="sd">평소에 말로 설명하던 것을 그대로 옮긴다</div></div><div class="step"><div class="si">5</div><div class="sn">호출되는지 본다</div><div class="sd">새 세션에서 <b>스킬 이름을 안 대고</b> 그 일을 시켜 본다</div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">직접 쳐 보는 것</span></div><pre><code>$ mkdir -p .codex/skills/주간보고
 $ code .codex/skills/주간보고/SKILL.md
 
 # 새 세션을 열고 &mdash; 스킬 이름을 대지 않는다
 &gt; 이번 주 한 일로 주간 보고를 써 줘
 
-&#9679; Skill(주간보고)                    <span class="cm">&larr; 알아서 불리면 성공</span></code></pre></div><div class="keymsg"><span class="k">마지막 단계가 검사다</span><div>이름을 안 댔는데 <b>알아서 불리면</b> 설명이 맞게 쓰인 것이다.</div></div>
+&#9679; Skill(주간보고)                    <span class="cm">&larr; 알아서 호출되면 성공</span></code></pre></div><div class="keymsg"><span class="k">마지막 단계가 검사다</span><div>이름을 안 댔는데 <b>알아서 호출되면</b> 설명이 맞게 쓰인 것이다.</div></div>
   </div>
 </section>
 <section class="slide section" data-title="[섹션] 위임 — 일을 떼어서 맡기기">
@@ -1299,7 +1299,7 @@ $ git status              <span class="cm">&larr; 바뀐 파일이 없어야 통
   <div class="step"><div class="si">2</div><div class="sn">초안을 받는다</div><div class="sd">메타 하네스가 <code>SKILL.md</code> 를 쓴다</div></div><div class="arrow">&rarr;</div>
   <div class="step"><div class="si">3</div><div class="sn">못 할 일을 박는다</div><div class="sd">읽기 전용 &middot; 운영 접속 금지를 적는다</div></div><div class="arrow">&rarr;</div>
   <div class="step"><div class="si">4</div><div class="sn">잠그고 시킨다</div><div class="sd"><code>--sandbox read-only</code> 로 띄운다</div></div><div class="arrow">&rarr;</div>
-  <div class="step"><div class="si">5</div><div class="sn">안 불려도 보나</div><div class="sd">이름을 안 대고 시켜 본다</div></div>
+  <div class="step"><div class="si">5</div><div class="sn">그래도 호출되나</div><div class="sd">이름을 안 대고 시켜 본다</div></div>
 </div>
 <div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">.codex/skills/설비점검/SKILL.md &mdash; 사내에만 있는 지식을 넣는다</span></div><pre><code>---
 name: 설비점검
