@@ -375,7 +375,7 @@
     <div class="cards c4">
       <div class="card"><span class="n">CH0~1</span><h3>하네스의 정체</h3><p>모델 바깥에 붙은 장치가 무엇인지, 그 안에서 어떤 루프가 도는지 본다.</p></div>
       <div class="card"><span class="n">CH2~4</span><h3>스킬 · 위임 · 여럿</h3><p>절차를 문서로 굳히고, 일을 따로 맡기고, 여럿을 동시에 돌린다.</p></div>
-      <div class="card"><span class="n">CH5~6</span><h3>가드레일과 직접 만들기</h3><p>샌드박스로 사고를 막고, 사내 도메인 하네스를 직접 한 벌 만든다.</p></div>
+      <div class="card"><span class="n">CH5~6</span><h3>가드레일과 직접 만들기</h3><p>샌드박스로 사고를 막고, 사내 전용 하네스를 직접 만들어 본다.</p></div>
       <div class="card"><span class="n">CH7~8</span><h3>지형도 · 도입 · 표시 의무</h3><p>쓸 만한 하네스를 늘어놓고, 사내 도입 기준과 AI 표시 규정까지 본다.</p></div>
     </div>
   </div>
@@ -959,7 +959,7 @@ description: 바뀐 코드를 읽고 결함만 보고한다. 고치지는 않는
   <h2 class="s-title sm">스킬과 서브에이전트의 차이</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="ctable"><table style="width:100%"><thead><tr><th></th><th>스킬</th><th>서브에이전트</th></tr></thead><tbody><tr><td>무엇인가</td><td>절차를 적은 문서</td><td class="hl">따로 뜬 세션</td></tr><tr><td>컨텍스트</td><td>본체 컨텍스트에 붙는다</td><td class="hl">자기 컨텍스트를 따로 쓴다</td></tr><tr><td>도구</td><td>본체가 가진 것을 그대로</td><td class="hl">골라 준 것만 쓴다</td></tr><tr><td>돌아오는 것</td><td>&mdash; 본체가 계속 한다</td><td class="hl">보고 한 벌</td></tr><tr><td class="hl">쓸 때</td><td class="hl">하는 법을 알려 줄 때</td><td class="hl">읽을 것이 많을 때</td></tr></tbody></table></div><div class="keymsg"><span class="k">둘은 같이 쓴다</span><div>서브에이전트에게 <b>스킬을 들려</b> 보낼 수 있다. 둘 중 하나만 고르는 것이 아니다.</div></div>
+<div class="ctable"><table style="width:100%"><thead><tr><th></th><th>스킬</th><th>서브에이전트</th></tr></thead><tbody><tr><td>무엇인가</td><td>절차를 적은 문서</td><td class="hl">따로 뜬 세션</td></tr><tr><td>컨텍스트</td><td>본체 컨텍스트에 붙는다</td><td class="hl">자기 컨텍스트를 따로 쓴다</td></tr><tr><td>도구</td><td>본체가 가진 것을 그대로</td><td class="hl">골라 준 것만 쓴다</td></tr><tr><td>돌아오는 것</td><td>&mdash; 본체가 계속 한다</td><td class="hl">보고서 하나</td></tr><tr><td class="hl">쓸 때</td><td class="hl">하는 법을 알려 줄 때</td><td class="hl">읽을 것이 많을 때</td></tr></tbody></table></div><div class="keymsg"><span class="k">둘은 같이 쓴다</span><div>서브에이전트에게 <b>스킬을 들려</b> 보낼 수 있다. 둘 중 하나만 고르는 것이 아니다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="실습 셋">
@@ -1010,7 +1010,7 @@ description: 바뀐 코드를 읽고 결함만 보고한다. 고치지는 않는
   <div class="card"><span class="n">03</span><h3>오케스트레이터</h3><p>가운데 하나가 일을 쪼개 나눠 주고 결과를 합친다.</p></div>
   <div class="card"><span class="n">04</span><h3>다수결</h3><p>같은 것을 셋에게 시키고 둘 이상이 같으면 받아들인다.</p></div>
   <div class="card"><span class="n">05</span><h3>반복 개선</h3><p>만들고 검사하고 다시 만든다. 통과할 때까지 돈다.</p></div>
-</div><div class="keymsg"><span class="k">제일 많이 쓰는 둘</span><div><b>순차 실행</b>과 <b>병렬 실행</b>이다. 나머지 셋은 컨텍스트를 여러 벌 돌려서 비용이 뛴다.</div></div>
+</div><div class="keymsg"><span class="k">제일 많이 쓰는 둘</span><div><b>순차 실행</b>과 <b>병렬 실행</b>이다. 나머지 셋은 컨텍스트를 여러 개 돌려서 비용이 뛴다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="효과와 비용">
@@ -1099,7 +1099,7 @@ work-list  work-detail  work-set     <span class="cm">&larr; 폴더가 셋이라
   <h2 class="s-title sm">단일 에이전트가 나은 곳</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="vlist"><div class="v"><span class="b">1</span><div><b>한 시간 안에 끝나는 일</b> &mdash; 나누는 비용이 더 든다. 지시를 세 벌 적는 사이에 끝난다.</div></div><div class="v"><span class="b">2</span><div><b>규격이 아직 안 정해진 일</b> &mdash; 무엇을 만들지 모르는 채로 나누면 <b>세 가지 다른 것</b>이 나온다.</div></div><div class="v"><span class="b">3</span><div><b>한 파일에 몰린 일</b> &mdash; 결국 한 사람이 순서대로 고쳐야 한다.</div></div><div class="v"><span class="b">4</span><div><b>처음 해 보는 일</b> &mdash; 단일 에이전트로 한 번 해 봐야 <b>어떻게 나눌지</b>가 보인다.</div></div><div class="v"><span class="b">★</span><div>Anthropic 도 같은 말을 적어 뒀다 &mdash; <b>코딩 일은 조사보다 나눌 조각이 적다.</b></div></div></div><div class="keymsg"><span class="k">나누는 순서</span><div><b>단일 에이전트로 한 번 해 보고</b> 나눈다. 처음부터 나누면 대개 다시 한다.</div></div>
+<div class="vlist"><div class="v"><span class="b">1</span><div><b>한 시간 안에 끝나는 일</b> &mdash; 나누는 비용이 더 든다. 지시를 세 번 적는 사이에 끝난다.</div></div><div class="v"><span class="b">2</span><div><b>규격이 아직 안 정해진 일</b> &mdash; 무엇을 만들지 모르는 채로 나누면 <b>세 가지 다른 것</b>이 나온다.</div></div><div class="v"><span class="b">3</span><div><b>한 파일에 몰린 일</b> &mdash; 결국 한 사람이 순서대로 고쳐야 한다.</div></div><div class="v"><span class="b">4</span><div><b>처음 해 보는 일</b> &mdash; 단일 에이전트로 한 번 해 봐야 <b>어떻게 나눌지</b>가 보인다.</div></div><div class="v"><span class="b">★</span><div>Anthropic 도 같은 말을 적어 뒀다 &mdash; <b>코딩 일은 조사보다 나눌 조각이 적다.</b></div></div></div><div class="keymsg"><span class="k">나누는 순서</span><div><b>단일 에이전트로 한 번 해 보고</b> 나눈다. 처음부터 나누면 대개 다시 한다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="실습 넷">
@@ -1234,16 +1234,16 @@ $ git merge feat/list feat/detail feat/settings</code></pre></div><div class="ke
   <div class="rule"></div>
   <div class="body">
 <div class="cards c3">
-  <div class="card"><span class="n">01</span><h3>범용 하네스</h3><p>남이 만든 개발 방법론 한 벌. 어느 회사에나 맞게 넓게 써 뒀다.</p></div>
+  <div class="card"><span class="n">01</span><h3>범용 하네스</h3><p>남이 만들어 놓은 개발 방법론. 어느 회사에나 맞게 넓게 써 뒀다.</p></div>
   <div class="card"><span class="n">02</span><h3>도메인 하네스</h3><p>사내 설비 코드 &middot; 결재 단계 &middot; 문서 양식을 박아 넣은 것.</p></div>
   <div class="card"><span class="n">03</span><h3>메타 하네스</h3><p>하네스를 만들어 주는 하네스. 빈 파일에서 시작하지 않게 해 준다.</p></div>
 </div><div class="keymsg"><span class="k">셋은 층으로 쌓인다</span><div>범용 위에 도메인을 얹는다. 그 도메인을 <b>메타 하네스가 대신 써 준다.</b></div></div>
   </div>
 </section>
-<section class="slide" data-title="범용 두 벌">
+<section class="slide" data-title="범용 하네스">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>비교</div>
-  <h2 class="s-title sm">많이 쓰는 범용 하네스 두 벌</h2>
+  <h2 class="s-title sm">많이 쓰는 범용 하네스 둘</h2>
   <div class="rule"></div>
   <div class="body">
 <div class="ctable"><table style="width:100%"><thead><tr><th>이름</th><th>만든 곳</th><th>들어 있는 것</th><th>무엇에 세나</th></tr></thead><tbody><tr><td class="hl">superpowers 5.1.0</td><td class="hl">Jesse Vincent &middot; MIT</td><td class="hl">스킬 14장 &mdash; 계획 &middot; TDD &middot; 디버깅 &middot; 코드 검토</td><td class="hl">개발 순서를 통째로 강제한다</td></tr><tr><td>gstack 1.1.0</td><td>Garry Tan &middot; MIT</td><td>스킬 57장 &mdash; 브라우저 QA &middot; 디자인 검토 &middot; 배포</td><td>만든 뒤 확인하는 쪽이 두껍다</td></tr></tbody></table></div>
@@ -1262,13 +1262,13 @@ $ git merge feat/list feat/detail feat/settings</code></pre></div><div class="ke
 &gt; /skills                         <span class="cm">&larr; 지금 걸린 스킬을 본다</span></code></pre></div><div class="keymsg"><span class="k">빈 파일에서 시작하지 않는다</span><div>절차를 <b>말로 부르면</b> 초안이 나온다. 사람은 <b>맞는지만</b> 본다.</div></div>
   </div>
 </section>
-<section class="slide" data-title="도메인 한 벌">
+<section class="slide" data-title="도메인 하네스">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">CH6</span><span class="dot"></span>실측</div>
-  <h2 class="s-title sm">도메인 하네스 한 벌의 생김새</h2>
+  <h2 class="s-title sm">도메인 하네스의 생김새</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">기능 개발 절차를 통째로 굳혀 둔 하네스 한 벌</span></div><pre><code>harness/
+<div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">기능 개발 절차를 통째로 굳혀 둔 하네스</span></div><pre><code>harness/
   skills/spec/SKILL.md          <span class="cm">인수 조건을 3개 이상 확정한다</span>
   skills/breakdown/SKILL.md     <span class="cm">검증 가능한 작업 단위로 쪼갠다</span>
   skills/tdd/SKILL.md           <span class="cm">실패하는 테스트를 먼저 쓴다</span>
@@ -1336,7 +1336,7 @@ A 정상 / B 관찰 / C 정비 필요 / D 즉시 정지
   <h2 class="s-title sm">터미널형 넷</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="ctable"><table style="width:100%"><thead><tr><th>이름</th><th>만든 곳</th><th>성격</th><th>라이선스</th></tr></thead><tbody><tr><td class="hl">Codex CLI</td><td class="hl">OpenAI</td><td class="hl">운영체제 샌드박스가 기본이다. 맡겨 두고 나중에 본다</td><td class="hl">Apache 2.0</td></tr><tr><td>Claude Code</td><td>Anthropic</td><td>스킬 &middot; 서브에이전트 &middot; 훅이 한 벌로 갖춰져 있다</td><td>상용</td></tr><tr><td class="hl">OpenCode</td><td class="hl">커뮤니티</td><td class="hl">모델을 골라 붙인다. 공개된 코딩 하네스 중 별이 가장 많다</td><td class="hl">MIT</td></tr><tr><td>Aider</td><td>커뮤니티</td><td>git 커밋 단위로 움직인다. 되돌리기가 쉽다</td><td>Apache 2.0</td></tr></tbody></table></div><div class="keymsg"><span class="k">먼저 가르는 것</span><div><b>모델을 고를 수 있어야 하나.</b> 사내 모델을 쓸 거면 오픈소스 쪽이다.</div></div>
+<div class="ctable"><table style="width:100%"><thead><tr><th>이름</th><th>만든 곳</th><th>성격</th><th>라이선스</th></tr></thead><tbody><tr><td class="hl">Codex CLI</td><td class="hl">OpenAI</td><td class="hl">운영체제 샌드박스가 기본이다. 맡겨 두고 나중에 본다</td><td class="hl">Apache 2.0</td></tr><tr><td>Claude Code</td><td>Anthropic</td><td>스킬 &middot; 서브에이전트 &middot; 훅이 처음부터 갖춰져 있다</td><td>상용</td></tr><tr><td class="hl">OpenCode</td><td class="hl">커뮤니티</td><td class="hl">모델을 골라 붙인다. 공개된 코딩 하네스 중 별이 가장 많다</td><td class="hl">MIT</td></tr><tr><td>Aider</td><td>커뮤니티</td><td>git 커밋 단위로 움직인다. 되돌리기가 쉽다</td><td>Apache 2.0</td></tr></tbody></table></div><div class="keymsg"><span class="k">먼저 가르는 것</span><div><b>모델을 고를 수 있어야 하나.</b> 사내 모델을 쓸 거면 오픈소스 쪽이다.</div></div>
   </div>
 </section>
 <section class="slide" data-title="대응표">
@@ -1390,7 +1390,7 @@ A 정상 / B 관찰 / C 정비 필요 / D 즉시 정지
   <h2 class="s-title sm">한 장으로 본 지형도</h2>
   <div class="rule"></div>
   <div class="body">
-<div class="ctable"><table style="width:100%"><thead><tr><th>쓰려는 곳</th><th>권하는 것</th><th>이유</th></tr></thead><tbody><tr><td class="hl">지금 손에 익히기</td><td class="hl">Codex CLI</td><td class="hl">샌드박스가 기본으로 걸려 있어 사내에서 겁이 덜 난다</td></tr><tr><td>스킬 한 벌 그대로</td><td>Claude Code</td><td>같은 <code>SKILL.md</code> 규격이라 옮겨 붙는다</td></tr><tr><td class="hl">폐쇄망에 올려 쓰기</td><td class="hl">OpenHands</td><td class="hl">실행 환경이 분리돼 사내 서버에 올린다</td></tr><tr><td>Azure 를 쓰는 사내 시스템</td><td>Agent Framework</td><td>인증 &middot; 감사 &middot; 배포가 이미 붙어 있다</td></tr><tr><td class="hl">제품 안에 넣을 에이전트</td><td class="hl">LangGraph</td><td class="hl">흐름을 코드로 못 박고 검사한다</td></tr></tbody></table></div><div class="keymsg"><span class="k">하나만 고르라면</span><div>지금은 <b>손에 익히는 것</b>이 먼저다. 규격이 같으니 <b>나중에 갈아타면 된다.</b></div></div>
+<div class="ctable"><table style="width:100%"><thead><tr><th>쓰려는 곳</th><th>권하는 것</th><th>이유</th></tr></thead><tbody><tr><td class="hl">지금 손에 익히기</td><td class="hl">Codex CLI</td><td class="hl">샌드박스가 기본으로 걸려 있어 사내에서 겁이 덜 난다</td></tr><tr><td>스킬을 그대로 옮길 때</td><td>Claude Code</td><td>같은 <code>SKILL.md</code> 규격이라 옮겨 붙는다</td></tr><tr><td class="hl">폐쇄망에 올려 쓰기</td><td class="hl">OpenHands</td><td class="hl">실행 환경이 분리돼 사내 서버에 올린다</td></tr><tr><td>Azure 를 쓰는 사내 시스템</td><td>Agent Framework</td><td>인증 &middot; 감사 &middot; 배포가 이미 붙어 있다</td></tr><tr><td class="hl">제품 안에 넣을 에이전트</td><td class="hl">LangGraph</td><td class="hl">흐름을 코드로 못 박고 검사한다</td></tr></tbody></table></div><div class="keymsg"><span class="k">하나만 고르라면</span><div>지금은 <b>손에 익히는 것</b>이 먼저다. 규격이 같으니 <b>나중에 갈아타면 된다.</b></div></div>
   </div>
 </section>
 <section class="slide section" data-title="[섹션] 사내에 들이는 순서">
